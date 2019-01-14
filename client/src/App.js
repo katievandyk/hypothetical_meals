@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class App extends Component {
   render() {
-    return <div> HYPOTHETICAL MEALS </div>;
+    return <div> hypothetical meals </div>
   }
 }
 
