@@ -1,0 +1,5 @@
+.DS_Store
+*.js~
+*.css~
+backend/node_modules/*
+.idea*
