@@ -37,8 +37,16 @@ router.post('/', (req, res) => {
 router.delete('/:id', (req, res) => {
     Ingredient.findById(req.params.id)
         .then(ingredient => ingredient.remove().then(
-            () => res.json({success: true, message: err.message}))
-        ).catch(err => res.status(404).json({success: false}))
+            () => res.json({success: true}))
+        ).catch(err => res.status(404).json({success: false, message: err.message}))
 });
+
+// @route POST api/ingredients/update/:id
+// @desc updates an ingredient
+// @access public
+router.post('/update/:id', (req, res) => {
+    Ingredient.findByIdAndUpdate(req.params.id, {$set:req.body})
+        .then(() => res.json({success: true}))
+        .catch(err => res.status(404).json({success: false, message: err.message}))});
 
 module.exports = router;
