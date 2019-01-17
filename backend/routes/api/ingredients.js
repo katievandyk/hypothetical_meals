@@ -10,7 +10,6 @@ const Ingredient = require('../../models/Ingredient');
 router.get('/', (req, res) => {
     Ingredient
         .find()
-        .sort({date: -1})
         .then(ingredient => res.json(ingredient))
 });
 
@@ -18,9 +17,10 @@ router.get('/', (req, res) => {
 // @desc create an ingredient
 // @access public
 router.post('/', (req, res) => {
+    var numberResolved = req.body.number ? req.body.number : new Date().valueOf();
     const newIngredient = new Ingredient({
         name: req.body.name,
-        number: req.body.number | new Date().valueOf(),
+        number: numberResolved,
         vendor_info: req.body.vendor_info,
         package_size: req.body.package_size,
         cost_per_package: req.body.cost_per_package,
@@ -48,5 +48,28 @@ router.post('/update/:id', (req, res) => {
     Ingredient.findByIdAndUpdate(req.params.id, {$set:req.body})
         .then(() => res.json({success: true}))
         .catch(err => res.status(404).json({success: false, message: err.message}))});
+
+// @route GET api/ingredients/search
+// @desc searches keywords in database
+// @access public
+router.get('/search', (req, res) => {
+    Ingredient.find({$text: {$search: req.body.keywords}},
+        {score:{$meta: "textScore"}})
+        .sort({score: {$meta: "textScore"}})
+        .then(search_res => {
+            res.json({success: true, results: search_res});
+        })
+        .catch(err => res.status(404).json({success: false, message: err.message}))});
+
+// @route GET api/ingredients/sort/:field/:asc
+// @desc gets a list of ingredients specified order for the field
+// @access public
+router.get('/sort/:field/:asc', (req, res) => {
+    var sortOrder = req.params.asc === 'asc' ? 1 : -1;
+    Ingredient
+        .find()
+        .sort({[req.params.field] : sortOrder})
+        .then(ingredient => res.json(ingredient))
+    });
 
 module.exports = router;

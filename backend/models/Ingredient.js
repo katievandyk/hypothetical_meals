@@ -8,7 +8,7 @@ const IngredientSchema = new Schema({
         unique: true
     },
     number: {
-        type: String,
+        type: Number,
         required: true,
         unique: true
     },
@@ -29,5 +29,7 @@ const IngredientSchema = new Schema({
         required: false
     }
 });
+
+IngredientSchema.index({'$**': 'text'});
 
 module.exports = Ingredient = mongoose.model('ingredient', IngredientSchema);
