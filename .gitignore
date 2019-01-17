@@ -2,5 +2,6 @@
 *.js~
 *.css~
 backend/node_modules/*
+backend/configs.js
 node_modules/*
 .idea*
