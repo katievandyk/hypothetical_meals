@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
+import IngredientsSKUsDropdown from '../components/IngredientsSKUsDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
-import { Table, Container } from 'reactstrap';
+import {
+  Table,
+  Container, Row, Col
+} from 'reactstrap';
 
 class Ingredient extends Component {
    render() {
@@ -13,7 +17,12 @@ class Ingredient extends Component {
             <AppNavbar />
           </div>
           <Container>
-          <h1>Ingredients</h1>
+          <Container className="mb-3">
+            <h1>Ingredients</h1>
+            <Row>
+              <Col> <IngredientsSKUsDropdown /> </Col>
+            </Row>
+          </Container>
             <Table>
               <thead>
                 <tr>
@@ -27,6 +36,15 @@ class Ingredient extends Component {
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td> name </td>
+                  <td> 1 </td>
+                  <td> vinfo </td>
+                  <td> pkg size </td>
+                  <td> cost pkg </td>
+                  <td> skus </td>
+                  <td> cmmts </td>
+                </tr>
               </tbody>
             </Table>
           </Container>
