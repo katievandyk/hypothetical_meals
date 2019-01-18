@@ -11,6 +11,8 @@ import {
   Container
 } from 'reactstrap';
 
+import { NavLink as RRNavLink } from 'react-router-dom';
+
 class AppNavbar extends Component {
   state = {
     isOpen: false
@@ -23,6 +25,7 @@ class AppNavbar extends Component {
   }
 
   render() {
+    //TO DO: Add when page is active
     return(<div>
       <Navbar dark expand="md" className="mb-5" style={{backgroundColor: '#8EE18C'}}>
           <NavbarBrand href="/">Hypothetical Meals</NavbarBrand>
@@ -31,25 +34,25 @@ class AppNavbar extends Component {
         <Collapse className="justify-content-end" isOpen={this.state.isOpen} navbar>
           <Nav className="navbar-expand-md" navbar>
             <NavItem>
-              <NavLink href="/ingredients">Ingredients</NavLink>
+              <NavLink tag={RRNavLink} to="/ingredients" className="nav-link" activeClassName="active">Ingredients</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/ingredients">Product Lines</NavLink>
+              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">Product Lines</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/ingredients">SKUs</NavLink>
+              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">SKUs</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/ingredients">Import</NavLink>
+              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">Import</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/">Manufacturing</NavLink>
+              <NavLink tag={RRNavLink} to="/goals" className="nav-link" activeClassName="active">Manufacturing</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/">Reports</NavLink>
+              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">Reports</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/">Sign Out</NavLink>
+              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">Sign Out</NavLink>
             </NavItem>
           </Nav>
         </Collapse>
