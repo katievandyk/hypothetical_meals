@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
+import AppNavbar from '../components/AppNavbar';
 
 class Login extends Component {
    render() {
-       return <div> login </div>
+       return(
+         <div>
+           <AppNavbar />
+         </div>
+       );
     }
 }
 
