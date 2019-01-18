@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import ManufacturingGoals from './views/ManufacturingGoals';
+import Manufacturing from './views/Manufacturing';
 import Login from './views/Login';
-import Home from './views/Home';
 import Ingredients from './views/Ingredients';
+import ProductLines from './views/ProductLines';
+import Reports from './views/Reports';
+import Import from './views/Import';
+import SKU from './views/SKU';
 import { BrowserRouter, Route} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -15,10 +18,14 @@ class App extends Component {
        return (
             <BrowserRouter>
                 <div>
-                  <Route exact={true} path="/" component={Home} />
-                  <Route path="/login" component={Login} />
+                  <Route exact={true} path="/login" component={Login} />
                   <Route path="/ingredients" component={Ingredients} />
-                  <Route path="/goals" component={ManufacturingGoals} />
+                  <Route path="/manufacturing" component={Manufacturing} />
+                  <Route path="/productlines" component={ProductLines} />
+                  <Route path="/sku" component={SKU} />
+                  <Route path="/productlines" component={ProductLines} />
+                  <Route path="/import" component={Import} />
+                  <Route path="/reports" component={Reports} />
                 </div>
             </BrowserRouter>
           );

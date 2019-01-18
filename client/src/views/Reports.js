@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-class ManufacturingGoals extends Component {
+class Reports extends Component {
    render() {
         return <div> manufacturing goals </div>
    }
 }
 
-export default ManufacturingGoals;
+export default Reports;

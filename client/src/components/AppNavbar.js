@@ -28,7 +28,7 @@ class AppNavbar extends Component {
     //TO DO: Add when page is active
     return(<div>
       <Navbar dark expand="md" className="mb-5" style={{backgroundColor: '#8EE18C'}}>
-          <NavbarBrand href="/">Hypothetical Meals</NavbarBrand>
+          <NavbarBrand style={{color:'white'}}>Hypothetical Meals</NavbarBrand>
         <NavbarToggler onClick={this.toggle} />
         <Container className="">
         <Collapse className="justify-content-end" isOpen={this.state.isOpen} navbar>
@@ -37,19 +37,19 @@ class AppNavbar extends Component {
               <NavLink tag={RRNavLink} to="/ingredients" className="nav-link" activeClassName="active">Ingredients</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">Product Lines</NavLink>
+              <NavLink tag={RRNavLink} to="/productlines" className="nav-link" activeClassName="active">Product Lines</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">SKUs</NavLink>
+              <NavLink tag={RRNavLink} to="/sku" className="nav-link" activeClassName="active">SKUs</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">Import</NavLink>
+              <NavLink tag={RRNavLink} to="/import" className="nav-link" activeClassName="active">Import</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={RRNavLink} to="/goals" className="nav-link" activeClassName="active">Manufacturing</NavLink>
+              <NavLink tag={RRNavLink} to="/manufacturing" className="nav-link" activeClassName="active">Manufacturing</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">Reports</NavLink>
+              <NavLink tag={RRNavLink} to="/reports" className="nav-link" activeClassName="active">Reports</NavLink>
             </NavItem>
             <NavItem>
               <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">Sign Out</NavLink>
