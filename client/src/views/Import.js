@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
+import AppNavbar from '../components/AppNavbar';
 
 class Import extends Component {
    render() {
-        return <div> Import Page </div>
+        return(
+          <div>
+            <AppNavbar />
+          </div>
+        );
    }
 }
 

@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
+import AppNavbar from '../components/AppNavbar';
 
 class ProductLines extends Component {
    render() {
-        return <div> Product Lines Page </div>
+     return(
+       <div>
+         <AppNavbar />
+       </div>
+     );
    }
 }
 

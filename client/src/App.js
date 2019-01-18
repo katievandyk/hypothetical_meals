@@ -6,7 +6,7 @@ import ProductLines from './views/ProductLines';
 import Reports from './views/Reports';
 import Import from './views/Import';
 import SKU from './views/SKU';
-import { BrowserRouter, Route} from "react-router-dom";
+import { BrowserRouter, Route, Redirect} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -26,7 +26,9 @@ class App extends Component {
                   <Route path="/productlines" component={ProductLines} />
                   <Route path="/import" component={Import} />
                   <Route path="/reports" component={Reports} />
+                  <Redirect from="/" to="login"/>
                 </div>
+
             </BrowserRouter>
           );
   }

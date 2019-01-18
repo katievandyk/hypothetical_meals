@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
+import AppNavbar from '../components/AppNavbar';
 
 class Manufacturing extends Component {
    render() {
-        return <div> manufacturing goals </div>
+     return(
+       <div>
+         <AppNavbar />
+       </div>
+     );
    }
 }
 
