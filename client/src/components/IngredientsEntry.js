@@ -1,8 +1,9 @@
 import React from 'react';
-import { Table } from 'reactstrap';
+import { Table, Input } from 'reactstrap';
 import { connect } from 'react-redux';
 import { getIngs } from '../actions/ingActions';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class IngredientsEntry extends React.Component {
 
@@ -27,6 +28,8 @@ class IngredientsEntry extends React.Component {
               <th>Cost/Package</th>
               <th>SKUs List</th>
               <th>Comments</th>
+              <th>Edit</th>
+              <th>Select</th>
             </tr>
           </thead>
           <tbody>
@@ -39,6 +42,8 @@ class IngredientsEntry extends React.Component {
               <td> {cost_per_package} </td>
               <td> skus </td>
               <td> {comment} </td>
+              <td> <FontAwesomeIcon icon = "edit"/> </td>
+              <td style={{'textAlign':'center'}}> <Input type="checkbox"/> </td>
             </tr>
           ))}
           </tbody>

@@ -9,9 +9,9 @@ import SKU from './views/SKU';
 import { BrowserRouter, Route, Redirect} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faEdit } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faSearch);
+library.add(faSearch, faEdit);
 
 class App extends Component {
   render() {
@@ -26,7 +26,7 @@ class App extends Component {
                   <Route path="/productlines" component={ProductLines} />
                   <Route path="/import" component={Import} />
                   <Route path="/reports" component={Reports} />
-                  <Redirect from="/" to="login"/>
+                  {/*<Redirect from="/" to="/login"/>*/}
                 </div>
 
             </BrowserRouter>

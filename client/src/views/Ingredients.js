@@ -11,7 +11,7 @@ import store from '../store';
 
 import {
   Table,
-  Container, Row, Col
+  Container, Row, Col, Button
 } from 'reactstrap';
 
 class Ingredient extends Component {
@@ -28,6 +28,14 @@ class Ingredient extends Component {
                   <Col> <h1>Ingredients</h1> </Col>
                   <Col> <IngredientsSKUsDropdown /> </Col>
                   <Col> <IngredientsKeywordSearch /> </Col>
+                </Row>
+                <Row>
+                  <Col></Col>
+                  <Col></Col>
+                  <Col style={{'textAlign': 'right'}}>
+                    <Button color="secondary" size="sm">Add Ingredient</Button> {' '}
+                    <Button color="secondary" size="sm">Delete Selected</Button>
+                  </Col>
                 </Row>
               </Container>
                 <IngredientsEntry/>
