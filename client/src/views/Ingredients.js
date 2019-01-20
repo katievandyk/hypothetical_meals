@@ -11,7 +11,8 @@ import store from '../store';
 
 import {
   Table,
-  Container, Row, Col, Button
+  Container, Row, Col, Button,
+  Badge
 } from 'reactstrap';
 
 class Ingredient extends Component {
@@ -26,15 +27,16 @@ class Ingredient extends Component {
               <Container className="mb-3">
                 <Row>
                   <Col> <h1>Ingredients</h1> </Col>
-                  <Col> <IngredientsSKUsDropdown /> </Col>
+                  <Col style={{'textAlign': 'right'}}> </Col>
                   <Col> <IngredientsKeywordSearch /> </Col>
                 </Row>
                 <Row>
-                  <Col></Col>
-                  <Col></Col>
-                  <Col style={{'textAlign': 'right'}}>
-                    <Button color="secondary" size="sm">Add Ingredient</Button> {' '}
-                    <Button color="secondary" size="sm">Delete Selected</Button>
+                  <Col xs="8">SKU Filters:  {'  '}
+                    <Badge href="#" color="light">None</Badge> {' '}
+                    <Badge href="#" color="success">+ Add SKU Filter</Badge>
+                  </Col>
+                  <Col xs="4" style={{'textAlign': 'right'}}>
+                    <Button color="success" size="sm" >Add Ingredient</Button>
                   </Col>
                 </Row>
               </Container>

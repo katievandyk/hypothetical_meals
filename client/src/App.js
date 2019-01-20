@@ -9,9 +9,9 @@ import SKU from './views/SKU';
 import { BrowserRouter, Route, Redirect} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSearch, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faSearch, faEdit);
+library.add(faSearch, faEdit, faTrash);
 
 class App extends Component {
   render() {

@@ -23,13 +23,13 @@ class IngredientsEntry extends React.Component {
             <tr>
               <th>Name</th>
               <th>#</th>
-              <th>Vendors Info</th>
+              <th>Vendor's Info</th>
               <th>Package Size</th>
               <th>Cost/Package</th>
               <th>SKUs List</th>
               <th>Comments</th>
               <th>Edit</th>
-              <th>Select</th>
+              <th>Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -43,7 +43,7 @@ class IngredientsEntry extends React.Component {
               <td> skus </td>
               <td> {comment} </td>
               <td> <FontAwesomeIcon icon = "edit"/> </td>
-              <td style={{'textAlign':'center'}}> <Input type="checkbox"/> </td>
+              <td > <FontAwesomeIcon icon="trash"/> </td>
             </tr>
           ))}
           </tbody>
