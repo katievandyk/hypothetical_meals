@@ -21,7 +21,7 @@ export const addIng = ing => dispatch => {
 };
 
 export const deleteIng = id => dispatch => {
-  axios.delete('/api/ingredients/${id}').then(res =>
+  axios.delete(`/api/ingredients/${id}`).then(res =>
     dispatch({
       type: DELETE_ING,
       payload: id
