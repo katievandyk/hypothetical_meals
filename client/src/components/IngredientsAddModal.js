@@ -135,6 +135,6 @@ class IngredientsAddModal extends React.Component {
   }
 }
 const mapStateToProps = state => ({
-  item: state.item
+  ing: state.ing
 });
 export default connect(mapStateToProps, {addIng, getIngs})(IngredientsAddModal);
