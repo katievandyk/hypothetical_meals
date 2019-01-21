@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 
 // Product Line Model
@@ -19,6 +20,7 @@ router.get('/', (req, res) => {
 // @access public
 router.post('/', (req, res) => {
     const newProductLine = new ProductLine({
+        _id: new mongoose.Types.ObjectId(),
         name: req.body.name
     });
 

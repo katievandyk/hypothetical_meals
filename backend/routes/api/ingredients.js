@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 
 // Ingredient Model
@@ -23,6 +24,7 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     var numberResolved = req.body.number ? req.body.number : new Date().valueOf();
     const newIngredient = new Ingredient({
+        _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         number: numberResolved,
         vendor_info: req.body.vendor_info,
@@ -101,5 +103,7 @@ router.get('/byskus', (req, res) => {
     ).then(result => res.json(result))
     .catch(err => res.status(404).json({success: false, message: err.message}));
 });
+
+
 
 module.exports = router;

@@ -1,15 +1,25 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 // SKU Model
 const SKU = require('../../models/SKU');
+
+// Ingredient Model
+const Ingredient = require('../../models/Ingredient');
+
+// Product Line Model
+const ProductLine = require('../../models/ProductLine');
 
 // @route GET api/skus
 // @desc get all SKUs
 // @access public
 router.get('/', (req, res) => {
     SKU
-        .find()
+        .find({})
+        // .populate('product_line')
+        // .populate('ingredients_list._id')
         .lean()
         .then(sku => res.json(sku))
 });
@@ -19,20 +29,22 @@ router.get('/', (req, res) => {
 // @access public
 router.post('/', (req, res) => {
     var numberResolved = req.body.number ? req.body.number : new Date().valueOf();
+    
     const newSKU = new SKU({
         name: req.body.name,
         number: numberResolved,
         case_number: req.body.case_number,
         unit_number: req.body.unit_number,
         unit_size: req.body.unit_size,
+        product_line: mongoose.Types.ObjectId(req.body.product_line),
         count_per_case: req.body.count_per_case,
-        product_line: req.body.product_line,
         ingredients_list: req.body.ingredients_list,
         comment: req.body.comment
     });
 
     newSKU.save().then(sku => res.json(sku))
         .catch(err => res.status(404).json({success: false, message: err.message}));
+    
 });
 
 // @route DELETE api/skus/:id
