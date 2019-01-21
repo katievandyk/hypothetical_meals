@@ -12,7 +12,7 @@ export const getIngs = () => dispatch =>  {
 };
 
 export const addIng = ing => dispatch => {
-  axios.post('/api/ingredients').then(res =>
+  axios.post('/api/ingredients', ing).then(res =>
     dispatch({
       type: ADD_ING,
       payload: res.data

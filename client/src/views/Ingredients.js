@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
-import IngredientsSKUsDropdown from '../components/IngredientsSKUsDropdown';
+import IngredientsAddModal from '../components/IngredientsAddModal';
 import IngredientsKeywordSearch from '../components/IngredientsKeywordSearch';
 import IngredientsEntry from '../components/IngredientsEntry';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,8 +10,7 @@ import { Provider } from 'react-redux';
 import store from '../store';
 
 import {
-  Table,
-  Container, Row, Col, Button,
+  Container, Row, Col,
   Badge
 } from 'reactstrap';
 
@@ -36,7 +35,7 @@ class Ingredient extends Component {
                     <Badge href="#" color="success">+ Add SKU Filter</Badge>
                   </Col>
                   <Col xs="4" style={{'textAlign': 'right'}}>
-                    <Button color="success" size="sm" >Add Ingredient</Button>
+                    <IngredientsAddModal/>
                   </Col>
                 </Row>
               </Container>

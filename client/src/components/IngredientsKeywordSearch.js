@@ -1,7 +1,6 @@
 import React from 'react';
 import {
-  InputGroup, InputGroupAddon, Input, Button,
-  Dropdown, DropdownToggle, DropdownMenu, DropdownItem
+  InputGroup, InputGroupAddon, Input, Button
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 

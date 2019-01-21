@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, Button } from 'reactstrap';
+import { Table, Button } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { getIngs, deleteIng } from '../actions/ingActions';
@@ -39,21 +39,23 @@ class IngredientsEntry extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {ings.map(({_id, name, number, vendor_info, package_size, cost_per_package, comment }) => (
-              <CSSTransition key={_id} timeout={500} classNames="fade">
-                <tr>
-                  <td> {name} </td>
-                  <td> {number} </td>
-                  <td> {vendor_info} </td>
-                  <td> {package_size} </td>
-                  <td> {cost_per_package} </td>
-                  <td> skus </td>
-                  <td> {comment} </td>
-                  <td> <Button size="sm" color="link" style={{'color':'black'}}> <FontAwesomeIcon icon = "edit"/> </Button> </td>
-                  <td > <Button size="sm" color="link" onClick={this.onDeleteClick.bind(this, _id)} style={{'color':'black'}}><FontAwesomeIcon icon="trash"/> </Button></td>
-                </tr>
-              </CSSTransition>
-          ))}
+            <TransitionGroup className="ingredients-table" component={null}>
+              {ings.map(({_id, name, number, vendor_info, package_size, cost_per_package, comment }) => (
+                <CSSTransition key={_id} timeout={500} classNames="fade">
+                  <tr>
+                    <td> {name} </td>
+                    <td> {number} </td>
+                    <td> {vendor_info} </td>
+                    <td> {package_size} </td>
+                    <td> {cost_per_package} </td>
+                    <td> skus </td>
+                    <td> {comment} </td>
+                    <td> <Button size="sm" color="link" style={{'color':'black'}}> <FontAwesomeIcon icon = "edit"/> </Button> </td>
+                    <td > <Button size="sm" color="link" onClick={this.onDeleteClick.bind(this, _id)} style={{'color':'black'}}><FontAwesomeIcon icon="trash"/> </Button></td>
+                  </tr>
+                </CSSTransition>
+            ))}
+            </TransitionGroup>
           </tbody>
         </Table>
 
