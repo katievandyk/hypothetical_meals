@@ -28,12 +28,9 @@ const SKUSchema = new Schema({
         type: Number,
         required: true 
     },
-    product_line: {
-        type: String,
-        required: true
-    },
+    product_line: { type: Schema.Types.ObjectId, ref: 'productLine'},
     ingredients_list: [{
-        name: String,
+        _id: { type: Schema.Types.ObjectId, ref: 'ingredient' },
         quantity: Number
     }],
     comments: {
