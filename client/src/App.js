@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Manufacturing from './views/Manufacturing';
 import Login from './views/Login';
+import Register from './views/Register';
 import Ingredients from './views/Ingredients';
 import ProductLines from './views/ProductLines';
 import Reports from './views/Reports';
@@ -19,6 +20,7 @@ class App extends Component {
             <BrowserRouter>
                 <div>
                   <Route exact={true} path="/login" component={Login} />
+                  <Route exact={true} path="/register" component={Register} />
                   <Route path="/ingredients" component={Ingredients} />
                   <Route path="/manufacturing" component={Manufacturing} />
                   <Route path="/productlines" component={ProductLines} />
