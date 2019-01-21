@@ -13,6 +13,7 @@ const User = require("../../models/User");
 // @desc Register user
 // @access Public
 router.post("/register", (req, res) => {
+  console.log("gets here register");
     // Form validation
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check validation
@@ -50,8 +51,10 @@ router.post("/register", (req, res) => {
 router.post("/login", (req, res) => {
     // Form validation
   const { errors, isValid } = validateLoginInput(req.body);
+  console.log("gets here");
   // Check validation
     if (!isValid) {
+      console.log("isn't valid");
       return res.status(400).json(errors);
     }
   const email = req.body.email;
@@ -65,6 +68,7 @@ router.post("/login", (req, res) => {
   // Check password
       bcrypt.compare(password, user.password).then(isMatch => {
         if (isMatch) {
+          console.log("password match");
           // User matched
           // Create JWT Payload
           const payload = {
@@ -86,6 +90,7 @@ router.post("/login", (req, res) => {
             }
           );
         } else {
+          console.log("no password");
           return res
             .status(400)
             .json({ passwordincorrect: "Password incorrect" });
