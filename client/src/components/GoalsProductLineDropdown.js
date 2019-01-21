@@ -24,8 +24,7 @@ export default class GoalsProductLineDropdown extends React.Component {
           Product Line
         </DropdownToggle>
         <DropdownMenu>
-          <DropdownItem header>Header</DropdownItem>
-          <DropdownItem disabled>Action</DropdownItem>
+          <DropdownItem disabled>Product Lines</DropdownItem>
         </DropdownMenu>
       </ButtonDropdown>
     );

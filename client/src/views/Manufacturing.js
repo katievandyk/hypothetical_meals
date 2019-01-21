@@ -10,7 +10,7 @@ import '../styles.css';
 import { Provider } from 'react-redux';
 import store from '../store';
 
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row, Col} from 'reactstrap';
 
 class Manufacturing extends Component {
    render() {
@@ -31,6 +31,8 @@ class Manufacturing extends Component {
                     <Col> <GoalsCreateModal buttonLabel="Create Goal"/> </Col>
                     <Col> <GoalsExport/> </Col>
                 </Row>
+              </Container>
+              <Container className="mt-5">
                 <Container className="my-3">
                     <Row>
                         <Col> <h1>Manufacturing Calculator</h1> </Col>

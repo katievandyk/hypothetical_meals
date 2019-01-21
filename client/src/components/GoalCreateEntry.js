@@ -16,6 +16,7 @@ class GoalCreateEntry extends React.Component {
               <th>SKU</th>
               <th>Quantity</th>
             </tr>
+            <td> example sku</td>
           </thead>
           <tbody>
           </tbody>

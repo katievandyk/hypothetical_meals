@@ -29,8 +29,6 @@ class GoalsCreateModal extends React.Component {
             <GoalsCreateForm/>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.toggle}>Save</Button>{' '}
-            <Button color="secondary" onClick={this.toggle}>Cancel</Button>
           </ModalFooter>
         </Modal>
       </div>

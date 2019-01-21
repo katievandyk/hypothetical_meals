@@ -24,8 +24,7 @@ export default class GoalsSKUDropdown extends React.Component {
           SKU's
         </DropdownToggle>
         <DropdownMenu>
-          <DropdownItem header>Header</DropdownItem>
-          <DropdownItem disabled>Action</DropdownItem>
+          <DropdownItem disabled>Product line example</DropdownItem>
         </DropdownMenu>
       </ButtonDropdown>
     );

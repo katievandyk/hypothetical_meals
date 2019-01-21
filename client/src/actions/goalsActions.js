@@ -9,11 +9,19 @@ export const getGoals = () => dispatch =>  {
       payload: res.data
     })
   );
-
 };
 
 export const setGoalsLoading = () => {
   return {
     type: GOALS_LOADING
   };
+};
+
+export const addGoal = () => dispatch =>  {
+  axios.post('/api/manufacturing').then(res =>
+    dispatch({
+      type: ADD_GOAL,
+      payload: res.data
+    })
+  );
 };

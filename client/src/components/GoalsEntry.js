@@ -11,7 +11,7 @@ class GoalsEntry extends React.Component {
   }
 
   render() {
-    const { goals } = this.props.goal;
+    const { goals } = this.props.goals;
     return (
       /**
         **/
@@ -45,11 +45,11 @@ class GoalsEntry extends React.Component {
 
 GoalsEntry.propTypes = {
   getGoals: PropTypes.func.isRequired,
-  goal: PropTypes.object.isRequired
+  goals: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
-  goal: state.goal
+  goals: state.goals
 });
 
 export default connect(mapStateToProps, { getGoals })(GoalsEntry);

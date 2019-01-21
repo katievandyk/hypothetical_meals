@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 import ingReducer from './ingReducer';
-import goalReducer from './goalReducer';
+import goalsReducer from './goalsReducer';
 
 export default combineReducers({
   ing: ingReducer,
-  goal: goalReducer
+  goals: goalsReducer
 });
