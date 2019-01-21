@@ -16,12 +16,15 @@ mongoose
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
-// // append /api for our http requests
-// app.use("/api", router);
-
 // Use Routes
 const ingredients = require('./routes/api/ingredients');
 app.use('/api/ingredients', ingredients);
+
+const productLines = require('./routes/api/product-lines');
+app.use('/api/productlines', productLines);
+
+const skus = require('./routes/api/skus');
+app.use('/api/skus', skus);
 
 // launch our backend into a port
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
