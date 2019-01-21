@@ -12,7 +12,7 @@ import {
   Col
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { addIng } from '../actions/ingActions';
+import { addIng, getIngs } from '../actions/ingActions';
 
 class IngredientsAddModal extends React.Component {
   state = {
@@ -50,6 +50,7 @@ class IngredientsAddModal extends React.Component {
     };
 
     this.props.addIng(newIng);
+    this.props.getIngs();
     this.toggle();
   }
 
@@ -136,4 +137,4 @@ class IngredientsAddModal extends React.Component {
 const mapStateToProps = state => ({
   item: state.item
 });
-export default connect(mapStateToProps, {addIng})(IngredientsAddModal);
+export default connect(mapStateToProps, {addIng, getIngs})(IngredientsAddModal);

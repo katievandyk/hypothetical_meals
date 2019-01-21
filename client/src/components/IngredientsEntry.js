@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { getIngs, deleteIng } from '../actions/ingActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import '../styles.css'
 
 class IngredientsEntry extends React.Component {
 
@@ -14,7 +15,6 @@ class IngredientsEntry extends React.Component {
 
   onDeleteClick = id => {
     this.props.deleteIng(id);
-    console.log('hey');
   };
 
   render() {
@@ -38,7 +38,7 @@ class IngredientsEntry extends React.Component {
               <th>Delete</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody is="transition-group">
             <TransitionGroup className="ingredients-table" component={null}>
               {ings.map(({_id, name, number, vendor_info, package_size, cost_per_package, comment }) => (
                 <CSSTransition key={_id} timeout={500} classNames="fade">
