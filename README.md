@@ -10,6 +10,7 @@ ECE 458 design project.
 ```
 module.exports = {
     mongoURI: <INSERT URI>
+    secretOrKey: "secret"
 };
 ```
 4. Run `npm start` in the root directory.
