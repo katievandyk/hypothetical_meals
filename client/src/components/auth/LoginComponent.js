@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link, History } from "react-router-dom";
+import { Link, History, Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
@@ -8,6 +8,7 @@ class LoginComponent extends Component {
   constructor() {
     super();
     this.state = {
+      isLoggedIn: false,
       email: "",
       password: "",
       errors: {}
@@ -17,13 +18,12 @@ class LoginComponent extends Component {
 componentDidMount() {
   // If logged in and user navigates to Login page, should redirect them to dashboard
   if (this.props.auth.isAuthenticated) {
-    //this.props.history.push("/ingredients");
+    this.setState({isLoggedIn: true})
   }
 }
 componentWillReceiveProps(nextProps) {
   if (nextProps.auth.isAuthenticated) {
-    console.log(this.props.name);
-    this.context.history.push("/ingredients"); // push user to dashboard when they login
+    this.setState({isLoggedIn: true})
   }
   if (nextProps.errors) {
     this.setState({
@@ -44,6 +44,9 @@ this.props.loginUser(userData); // since we handle the redirect within our compo
   };
 render() {
     const { errors } = this.state;
+    if(this.state.isLoggedIn) {
+      return (<Redirect to={"/ingredients"} />);
+    }
 return (
       <div className="container">
         <div style={{ marginTop: "4rem" }} className="row">

@@ -48,19 +48,18 @@ class App extends Component {
             <Provider store = {store}>
               <BrowserRouter>
                   <div>
-                    <Route exact={true} path="/login" component={Login} />
-                    <Route exact={true} path="/register" component={Register} />
-                    <Route path="/ingredients" component={Ingredients} />
-                    <Route path="/manufacturing" component={Manufacturing} />
-                    <Route path="/productlines" component={ProductLines} />
-                    <Route path="/sku" component={SKU} />
-                    <Route path="/productlines" component={ProductLines} />
-                    <Route path="/import" component={Import} />
-                    <Route path="/reports" component={Reports} />
                     <Switch>
-                      <PrivateRoute exact path="/dashboard" component={Dashboard} />
+                      <Route exact={true} path="/login" component={Login} />
+                      <Route exact={true} path="/register" component={Register} />
+                      <PrivateRoute path="/ingredients" component={Ingredients} />
+                      <PrivateRoute path="/manufacturing" component={Manufacturing} />
+                      <PrivateRoute path="/productlines" component={ProductLines} />
+                      <PrivateRoute path="/sku" component={SKU} />
+                      <PrivateRoute path="/productlines" component={ProductLines} />
+                      <PrivateRoute path="/import" component={Import} />
+                      <PrivateRoute path="/reports" component={Reports} />
                     </Switch>
-                    <Redirect from="/" to="login"/>
+                    
                   </div>
 
               </BrowserRouter>
