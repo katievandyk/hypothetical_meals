@@ -104,6 +104,16 @@ router.get('/byskus', (req, res) => {
     .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
+// @route GET api/ingredients/:id/skus
+// @desc gets a list of skus for an ingredient
+// @access public
+router.get('/:id/skus', (req, res) => {
+    SKU
+        .find({ 'ingredients_list._id': mongoose.Types.ObjectId(req.params.id) })
+        .lean()
+        .then(skus => res.json(skus))
+        .catch(err => res.status(404).json({success: false, message: err.message}));
+});
 
 
 module.exports = router;
