@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import { logoutUser } from "../actions/authActions";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import '../styles.css'
 import {
   Collapse,
@@ -17,6 +20,11 @@ class AppNavbar extends Component {
   state = {
     isOpen: false
   }
+
+  onLogoutClick = e => {
+    e.preventDefault();
+    this.props.logoutUser();
+  };
 
   toggle = () => {
     this.setState({
@@ -52,7 +60,7 @@ class AppNavbar extends Component {
               <NavLink tag={RRNavLink} to="/reports" className="nav-link" activeClassName="active">Reports</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={RRNavLink} to="/x" className="nav-link" activeClassName="active">Sign Out</NavLink>
+              <NavLink tag={RRNavLink} onClick={this.onLogoutClick} to="/login" className="nav-link" activeClassName="active">Sign Out</NavLink>
             </NavItem>
           </Nav>
         </Collapse>
@@ -64,5 +72,14 @@ class AppNavbar extends Component {
 
 }
 
-
-export default AppNavbar;
+AppNavbar.propTypes = {
+  logoutUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
+};
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+export default connect(
+  mapStateToProps,
+  { logoutUser }
+)(AppNavbar);

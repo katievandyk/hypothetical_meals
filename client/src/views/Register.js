@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
-import LoginComponent from '../components/auth/LoginComponent';
+import RegisterComponent from '../components/auth/RegisterComponent';
 
-class Login extends Component {
+class Register extends Component {
    render() {
        return(
          <div>
            <AppNavbar />
            <div>
-             <LoginComponent />
+             <RegisterComponent />
            </div>
          </div>
        );
     }
 }
 
-export default Login;
+export default Register;
