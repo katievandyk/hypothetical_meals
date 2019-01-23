@@ -90,8 +90,8 @@ router.get('/byskus', (req, res) => {
         {
             $lookup: {
                 from: 'ingredients',
-                localField: 'ingredients_list.name',
-                foreignField: 'name',
+                localField: 'ingredients_list._id',
+                foreignField: '_id',
                 as: 'ingredients_joined'
             }
         },
@@ -102,6 +102,19 @@ router.get('/byskus', (req, res) => {
         ]
     ).then(result => res.json(result))
     .catch(err => res.status(404).json({success: false, message: err.message}));
+
+    // SKU.aggregate(
+    //     [{ $match: {'name': {$in: req.body.skus} }},
+    //     { $unwind: "$ingredients_list" },
+    //     { $group: { _id: { ingredients: '$ingredients_list'} } },
+    //     { $replaceRoot: { newRoot: "$_id" } },
+    //     { $replaceRoot: { newRoot: "$ingredients" } },
+    //     { $replaceRoot: { newRoot: "$_id" } },
+    //     { $project: { _id : 1 } }
+    //     ]
+    // ).then(result => Ingredient.populate(result, {path: ""}).then(finalres => res.json(finalres)))
+    // .catch(err => res.status(404).json({success: false, message: err.message}));
+
 });
 
 // @route GET api/ingredients/:id/skus
