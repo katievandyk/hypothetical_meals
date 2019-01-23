@@ -9,7 +9,7 @@ ECE 458 design project.
 3. Create a `configs.js` file in the `./backend` directory using the following tempate, but filling in the fields:
 ```
 module.exports = {
-    mongoURI: <INSERT URI>
+    mongoURI: <INSERT URI>,
     secretOrKey: "secret"
 };
 ```
