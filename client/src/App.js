@@ -10,7 +10,9 @@ import SKU from './views/SKU';
 import { BrowserRouter, Route, Redirect, Switch} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faEdit, faTrash, faList, faSortAlphaUp,
+  faSortAlphaDown, faSortNumericUp, faSortNumericDown }
+from '@fortawesome/free-solid-svg-icons';
 
 import { Provider } from "react-redux";
 import store from "./store";
@@ -21,7 +23,8 @@ import { setCurrentUser, logoutUser } from "./actions/authActions";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
 
-library.add(faSearch);
+library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
+   faSortAlphaDown, faSortNumericUp, faSortNumericDown);
 
 // Check for token to keep user logged in
 if (localStorage.jwtToken) {
@@ -59,7 +62,7 @@ class App extends Component {
                       <PrivateRoute path="/import" component={Import} />
                       <PrivateRoute path="/reports" component={Reports} />
                     </Switch>
-                    
+
                   </div>
 
               </BrowserRouter>
