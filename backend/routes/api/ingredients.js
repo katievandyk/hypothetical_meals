@@ -68,6 +68,56 @@ router.get('/search', (req, res) => {
         })
         .catch(err => res.status(404).json({success: false, message: err.message}))});
 
+// @route GET api/ingredients/filter/sort/:field/:asc
+// @desc searches keywords in database
+// request body fields:
+// - skus: Array of sku ids (String) to get ingredients for
+// - keywords: Array of words (String) to match entries on
+// note: sorting on keyword search result field=score
+// @access public
+router.get('/filter/sort/:field/:asc', (req, res) => {
+    var skus = req.body.skus == null ? [] : req.body.skus;
+    SKU.aggregate(
+        [{ $match: {'_id': {$in: skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
+        { $unwind: "$ingredients_list" },
+        { $group: { _id: { ingredients: '$ingredients_list'} } },
+        { $replaceRoot: { newRoot: "$_id" } },
+        { $unwind: "$ingredients" },
+        { $replaceRoot: { newRoot: "$ingredients" } }
+        ]
+    ).then(result => {
+        var onlyIds = result.map(obj => obj._id);
+        var ingredientFindPromise;
+        if (req.body.skus != null && req.body.keywords != null) {
+            ingredientFindPromise = Ingredient.find({$text: {
+                $search: req.body.keywords}},
+                {score:{$meta: "textScore"}}, 
+                ).where({_id: {$in: onlyIds}});
+        }
+        else if (req.body.skus != null) {
+            ingredientFindPromise = Ingredient.find().where({_id: {$in: onlyIds}});
+        }
+        else if (req.body.keywords != null) {
+            ingredientFindPromise = Ingredient.find({$text: {
+                $search: req.body.keywords}},
+                {score:{$meta: "textScore"}});
+        }
+        else {
+            ingredientFindPromise = Ingredient.find();
+        }
+
+        var sortOrder = req.params.asc === 'asc' ? 1 : -1;
+        if (req.params.field === 'score') {
+            ingredientFindPromise.lean().sort(
+                {score: {$meta: "textScore"}}).then(resultF => {res.json(resultF)})
+        }
+        else {
+            ingredientFindPromise.lean().sort(
+                {[req.params.field] : sortOrder}).then(resultF => {res.json(resultF)})}
+        }
+    ).catch(err => res.status(404).json({success: false, message: err.message}));
+});
+
 // @route GET api/ingredients/sort/:field/:asc
 // @desc gets a list of ingredients specified order for the field
 // @access public
@@ -82,10 +132,12 @@ router.get('/sort/:field/:asc', (req, res) => {
 
 // @route GET api/ingredients/byskus
 // @desc gets a list of ingredients for the given sku(s)
+// request body fields:
+// - skus: Array of SKU ids (Strings) to get ingredients for
 // @access public
 router.get('/byskus', (req, res) => {
     SKU.aggregate(
-        [{ $match: {'name': {$in: req.body.skus} }},
+        [{ $match: {'_id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
         { $unwind: "$ingredients_list" },
         {
             $lookup: {
@@ -102,19 +154,6 @@ router.get('/byskus', (req, res) => {
         ]
     ).then(result => res.json(result))
     .catch(err => res.status(404).json({success: false, message: err.message}));
-
-    // SKU.aggregate(
-    //     [{ $match: {'name': {$in: req.body.skus} }},
-    //     { $unwind: "$ingredients_list" },
-    //     { $group: { _id: { ingredients: '$ingredients_list'} } },
-    //     { $replaceRoot: { newRoot: "$_id" } },
-    //     { $replaceRoot: { newRoot: "$ingredients" } },
-    //     { $replaceRoot: { newRoot: "$_id" } },
-    //     { $project: { _id : 1 } }
-    //     ]
-    // ).then(result => Ingredient.populate(result, {path: ""}).then(finalres => res.json(finalres)))
-    // .catch(err => res.status(404).json({success: false, message: err.message}));
-
 });
 
 // @route GET api/ingredients/:id/skus
