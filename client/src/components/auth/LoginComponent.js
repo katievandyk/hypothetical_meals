@@ -53,7 +53,6 @@ render() {
       return (<Redirect to={"/ingredients"} />);
     }
 return (
-      <div className="container">
       <Container>
         <Row>
           <Col></Col>
@@ -102,7 +101,6 @@ return (
         <Col></Col>
         </Row>
         </Container>
-      </div>
     );
   }
 }
