@@ -5,9 +5,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class IngredientsKeywordSearch extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <div>

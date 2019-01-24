@@ -3,6 +3,7 @@ import AppNavbar from '../components/AppNavbar';
 import IngredientsAddModal from '../components/ingredients/IngredientsAddModal';
 import IngredientsKeywordSearch from '../components/ingredients/IngredientsKeywordSearch';
 import IngredientsEntry from '../components/ingredients/IngredientsEntry';
+import SKU_Filters from '../components/ingredients/SKU_Filters'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
@@ -43,9 +44,8 @@ class Ingredient extends Component {
                   <Col> <IngredientsKeywordSearch /> </Col>
                 </Row>
                 <Row>
-                  <Col>SKU Filters:  {'  '}
-                    <Badge href="#" color="light">None</Badge> {' '}
-                    <Badge href="#" color="success">+ Add SKU Filter</Badge>
+                  <Col>
+                    <SKU_Filters/>
                   </Col>
                   <Col style={{'textAlign': 'right'}}>
                     <ButtonDropdown style={{'display': 'inline-block'}} isOpen={this.state.dropdownOpen} toggle={this.toggle}>
