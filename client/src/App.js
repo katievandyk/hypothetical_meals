@@ -11,7 +11,8 @@ import { BrowserRouter, Route, Redirect, Switch} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch, faEdit, faTrash, faList, faSortAlphaUp,
-  faSortAlphaDown, faSortNumericUp, faSortNumericDown }
+  faSortAlphaDown, faSortNumericUp, faSortNumericDown,
+  faArrowLeft}
 from '@fortawesome/free-solid-svg-icons';
 
 import { Provider } from "react-redux";
@@ -24,7 +25,9 @@ import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
 
 library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
-   faSortAlphaDown, faSortNumericUp, faSortNumericDown);
+   faSortAlphaDown, faSortNumericUp, faSortNumericDown,
+   faArrowLeft
+  );
 
 // Check for token to keep user logged in
 if (localStorage.jwtToken) {

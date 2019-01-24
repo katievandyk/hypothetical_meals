@@ -12,7 +12,7 @@ import {
   Col
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { addIng, getIngs } from '../actions/ingActions';
+import { addIng, getIngs } from '../../actions/ingActions';
 
 class IngredientsAddModal extends React.Component {
   state = {

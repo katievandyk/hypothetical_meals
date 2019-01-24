@@ -13,10 +13,10 @@ import {
  } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { getIngs, deleteIng, updateIng } from '../actions/ingActions';
+import { getIngs, deleteIng, updateIng } from '../../actions/ingActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import '../styles.css'
+import '../../styles.css'
 
 class IngredientsEntry extends React.Component {
   state = {

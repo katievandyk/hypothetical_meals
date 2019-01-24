@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
-import IngredientsAddModal from '../components/IngredientsAddModal';
-import IngredientsKeywordSearch from '../components/IngredientsKeywordSearch';
-import IngredientsEntry from '../components/IngredientsEntry';
+import IngredientsAddModal from '../components/ingredients/IngredientsAddModal';
+import IngredientsKeywordSearch from '../components/ingredients/IngredientsKeywordSearch';
+import IngredientsEntry from '../components/ingredients/IngredientsEntry';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
