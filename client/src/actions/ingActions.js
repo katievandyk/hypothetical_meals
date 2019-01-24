@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_INGS, ADD_ING, DELETE_ING, INGS_LOADING } from './types';
+import { GET_INGS, ADD_ING, DELETE_ING, INGS_LOADING, UPDATE_ING } from './types';
 
 export const getIngs = () => dispatch =>  {
   dispatch(setIngsLoading());
@@ -15,6 +15,15 @@ export const addIng = ing => dispatch => {
   axios.post('/api/ingredients', ing).then(res =>
     dispatch({
       type: ADD_ING,
+      payload: res.data
+    })
+  );
+};
+
+export const updateIng = ing => dispatch => {
+  axios.post(`/api/ingredients/update/${ing.id}`, ing).then(res =>
+    dispatch({
+      type: UPDATE_ING,
       payload: res.data
     })
   );

@@ -56,7 +56,7 @@ class IngredientsAddModal extends React.Component {
 
   render() {
     return (
-      <div>
+      <div style={{'display': 'inline-block'}}>
       <Button color="success" onClick={this.toggle}>
         Add Ingredient
       </Button>
