@@ -1,8 +1,12 @@
-import {GET_INGS, ADD_ING, DELETE_ING, UPDATE_ING, INGS_LOADING} from '../actions/types';
+import {GET_INGS, ADD_ING, DELETE_ING, UPDATE_ING,
+  GET_ING_SKUS, INGS_LOADING, ING_SKUS_LOADING,
+  ING_KW_SEARCH, ING_SORT} from '../actions/types';
 
 const initialState = {
   ings: [],
-  loading: false
+  loading: false,
+  ing_skus: [],
+  ing_skus_loading: false
 };
 
 export default function(state = initialState, action) {
@@ -32,6 +36,29 @@ export default function(state = initialState, action) {
       return {
         ...state,
         ings: [action.payload, state.ings]
+      }
+    case GET_ING_SKUS:
+      return {
+        ...state,
+        ing_skus: action.payload,
+        ing_skus_loading: false
+      }
+    case ING_SKUS_LOADING:
+      return {
+        ...state,
+        ing_skus_loading: true
+      }
+    case ING_KW_SEARCH:
+      return {
+        ...state,
+        ings: [action.payload, state.ings],
+        ing_skus_loading: false
+      }
+    case ING_SORT:
+      return {
+        ...state,
+        ings: action.payload,
+        loading: false
       }
     default:
       return state;

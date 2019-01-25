@@ -3,12 +3,16 @@ import AppNavbar from '../components/AppNavbar';
 import IngredientsAddModal from '../components/ingredients/IngredientsAddModal';
 import IngredientsKeywordSearch from '../components/ingredients/IngredientsKeywordSearch';
 import IngredientsEntry from '../components/ingredients/IngredientsEntry';
-import SKU_Filters from '../components/ingredients/SKU_Filters'
+import SKUFilters from '../components/ingredients/SKUFilters'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
 import { Provider } from 'react-redux';
 import store from '../store';
+
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { sortIngs } from '../actions/ingActions';
 
 import {
   Container, Row, Col,
@@ -17,7 +21,7 @@ import {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-class Ingredient extends Component {
+class Ingredients extends Component {
   state = {
     dropdownOpen: false,
     sortby: ''
@@ -27,6 +31,43 @@ class Ingredient extends Component {
     this.setState({
       dropdownOpen: !this.state.dropdownOpen
     });
+  }
+
+  sortClick = type => {
+    switch(type) {
+      case "name-asc":
+        this.props.sortIngs('name', 'asc');
+        break;
+      case "name-desc":
+        this.props.sortIngs('name', 'desc');
+        break;
+      case "number-asc":
+        this.props.sortIngs('number', 'asc');
+        break;
+      case "number-desc":
+        this.props.sortIngs('number', 'desc');
+        break;
+      case "vendor-asc":
+        this.props.sortIngs('vendor_info', 'asc');
+        break;
+      case "vendor-desc":
+        this.props.sortIngs('vendor_info', 'desc');
+        break;
+      case "package-asc":
+        this.props.sortIngs('package_size', 'asc');
+        break;
+      case "package-desc":
+        this.props.sortIngs('package_size', 'desc');
+      case "cost-asc":
+        this.props.sortIngs('cost_per_package', 'asc');
+        break;
+      case "cost-desc":
+        this.props.sortIngs('cost_per_package', 'desc');
+        break;
+      default:
+        break;
+    }
+
   }
 
    render() {
@@ -45,7 +86,7 @@ class Ingredient extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <SKU_Filters/>
+                    <SKUFilters/>
                   </Col>
                   <Col style={{'textAlign': 'right'}}>
                     <ButtonDropdown style={{'display': 'inline-block'}} isOpen={this.state.dropdownOpen} toggle={this.toggle}>
@@ -54,35 +95,35 @@ class Ingredient extends Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>FIELDS</DropdownItem>
-                        <DropdownItem>
+                        <DropdownItem onClick={this.sortClick.bind(this, "name-asc")}>
                           Name {' '}
                           <FontAwesomeIcon icon = "sort-alpha-down"/>
                         </DropdownItem>
-                        <DropdownItem>
+                        <DropdownItem onClick={this.sortClick.bind(this, "name-desc")}>
                           Name {' '}
                           <FontAwesomeIcon icon = "sort-alpha-up"/>
                         </DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem>Number {' '}
+                        <DropdownItem onClick={this.sortClick.bind(this, "number-asc")}>Number {' '}
                           <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem>Number {' '}
+                        <DropdownItem onClick={this.sortClick.bind(this, "number-desc")}>Number {' '}
                           <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem>Vendor's Info {' '}
+                        <DropdownItem onClick={this.sortClick.bind(this, "vendor-asc")}>Vendor's Info {' '}
                           <FontAwesomeIcon icon = "sort-alpha-down"/>
                         </DropdownItem>
-                        <DropdownItem>Vendor's Info {' '}
+                        <DropdownItem onClick={this.sortClick.bind(this, "vendor-desc")}>Vendor's Info {' '}
                           <FontAwesomeIcon icon = "sort-alpha-up"/>
                         </DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem>Package Size {' '}
+                        <DropdownItem onClick={this.sortClick.bind(this, "package-asc")} >Package Size {' '}
                           <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem>Package Size {' '}
+                        <DropdownItem onClick={this.sortClick.bind(this, "package-desc")} >Package Size {' '}
                           <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem>Cost per Package {' '}
+                        <DropdownItem onClick={this.sortClick.bind(this, "cost-asc")}>Cost per Package {' '}
                           <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem>Cost per Package {' '}
+                        <DropdownItem onClick={this.sortClick.bind(this, "cost_desc")}>Cost per Package {' '}
                           <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                       </DropdownMenu>
                     </ButtonDropdown> {' '}
@@ -97,5 +138,13 @@ class Ingredient extends Component {
       );
    }
 }
+Ingredients.propTypes = {
+  sortIngs: PropTypes.func.isRequired,
+  ing: PropTypes.object.isRequired
+};
 
-export default Ingredient;
+const mapStateToProps = state => ({
+  ing: state.ing
+});
+
+export default connect(mapStateToProps, {sortIngs})(Ingredients);

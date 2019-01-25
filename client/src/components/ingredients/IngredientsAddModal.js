@@ -12,6 +12,7 @@ import {
   Col
 } from 'reactstrap';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { addIng, getIngs } from '../../actions/ingActions';
 
 class IngredientsAddModal extends React.Component {
@@ -134,6 +135,13 @@ class IngredientsAddModal extends React.Component {
     );
   }
 }
+
+IngredientsAddModal.propTypes = {
+  getIngs: PropTypes.func.isRequired,
+  addIng: PropTypes.func.isRequired,
+  ing: PropTypes.object.isRequired
+};
+
 const mapStateToProps = state => ({
   ing: state.ing
 });
