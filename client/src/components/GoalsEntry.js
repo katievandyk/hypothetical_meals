@@ -13,9 +13,6 @@ class GoalsEntry extends React.Component {
   render() {
     const { goals } = this.props.goals;
     return (
-      /**
-        **/
-
         <Table>
           <thead>
             <tr>
@@ -28,9 +25,7 @@ class GoalsEntry extends React.Component {
                 <tr key={_id}>
                   <td> {name} </td>
                   {skus_list.map(({_id, sku, quantity}) => (
-                        <tr>
-                            <td> {sku.name} ({quantity}) </td>
-                        </tr>
+                      <td key={_id}> {sku.name} ({quantity}) </td>
                   ))}
                 </tr>
           ))}

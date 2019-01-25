@@ -14,7 +14,6 @@ class GoalsCreateForm extends React.Component {
 
    constructor(props) {
        super(props);
-
        this.onFormSave = this.onFormSave.bind(this);
        this.onAdd = this.onAdd.bind(this);
        this.plineCallback = this.plineCallback.bind(this);
@@ -28,8 +27,13 @@ class GoalsCreateForm extends React.Component {
        };
     }
 
-      onSubmit = e => {
+      toggle = () => {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
 
+      onSubmit = e => {
         const newGoal = {
           name: this.state.name,
           skus_list: this.state.skus_list
@@ -40,16 +44,24 @@ class GoalsCreateForm extends React.Component {
       }
 
 
-    onFormSave() {
+    onFormSave = e => {
         this.props.addGoal({"name": this.state.name, "skus_list": this.state.skus_list})
     }
 
-    onAdd() {
+    onAdd = e => {
         var skus  = this.state.skus_list
         skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
         this.setState({
             skus_list: skus
         })
+    }
+
+    onCancel  = e => {
+        this.setState({
+            name: '',
+            skus_list: []
+        })
+        this.toggle();
     }
 
     plineCallback = (dataFromChild) => {
@@ -81,9 +93,9 @@ class GoalsCreateForm extends React.Component {
                    </thead>
                    <tbody>
                       {this.state.skus_list.map(({sku, quantity}) => (
-                          <tr>
-                             <th> {sku.name} </th>
-                             <th> {quantity} </th>
+                          <tr key={sku._id}>
+                             <td> {sku.name} </td>
+                             <td> {quantity} </td>
                           </tr>
                       ))}
                    </tbody>
@@ -96,7 +108,7 @@ class GoalsCreateForm extends React.Component {
                 <Col><Button color="primary" onClick={this.onAdd}>Add</Button>{' '}</Col>
         </Row>
         <Button type="submit" color="primary">Save</Button>{' '}
-        <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+        <Button color="secondary" onClick={this.onCancel}>Clear</Button>
       </Form>
     );
   }

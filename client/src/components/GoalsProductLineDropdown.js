@@ -41,9 +41,7 @@ class GoalsProductLineDropdown extends React.Component {
         </DropdownToggle>
         <DropdownMenu>
              {plines.map(({_id, name }) => (
-              <tr key={_id}>
-                <DropdownItem id={_id} onClick={this.changeValue}> {name} </DropdownItem>
-              </tr>
+                <DropdownItem key={_id} id={_id} onClick={this.changeValue}> {name} </DropdownItem>
             ))}
         </DropdownMenu>
       </ButtonDropdown>

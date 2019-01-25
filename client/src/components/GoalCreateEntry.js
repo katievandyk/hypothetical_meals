@@ -14,9 +14,6 @@ class GoalCreateEntry extends React.Component {
 
   render() {
     return (
-      /**
-        **/
-
         <Table>
           <thead>
             <tr>
@@ -26,9 +23,7 @@ class GoalCreateEntry extends React.Component {
           </thead>
           <tbody>
              {this.state.skus.map(({sku, quantity}) => (
-                 <tr>
-                    <td> {sku.name} ({quantity}) </td>
-                 </tr>
+                <td key={sku._id}> {sku.name} ({quantity}) </td>
              ))}
           </tbody>
         </Table>

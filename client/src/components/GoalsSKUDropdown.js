@@ -37,9 +37,7 @@ class GoalsSKUDropdown extends React.Component {
         </DropdownToggle>
         <DropdownMenu>
              {skus.map(({_id, name }) => (
-              <tr key={_id}>
-                <DropdownItem id={_id} onClick={this.changeValue}> {name} </DropdownItem>
-              </tr>
+                <DropdownItem key={_id} id={_id} onClick={this.changeValue}> {name} </DropdownItem>
             ))}
         </DropdownMenu>
       </ButtonDropdown>
