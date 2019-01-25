@@ -24,7 +24,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class Ingredients extends Component {
   state = {
     dropdownOpen: false,
-    sortby: ''
+    sortby: 'name-asc'
   };
 
   toggle = () => {
@@ -34,36 +34,39 @@ class Ingredients extends Component {
   }
 
   sortClick = type => {
+    this.setState({
+      sortby: type
+    });
     switch(type) {
       case "name-asc":
-        this.props.sortIngs('name', 'asc');
+        this.props.sortIngs('name', 'asc', this.props.ing.obj);
         break;
       case "name-desc":
-        this.props.sortIngs('name', 'desc');
+        this.props.sortIngs('name', 'desc', this.props.ing.obj);
         break;
       case "number-asc":
-        this.props.sortIngs('number', 'asc');
+        this.props.sortIngs('number', 'asc', this.props.ing.obj);
         break;
       case "number-desc":
-        this.props.sortIngs('number', 'desc');
+        this.props.sortIngs('number', 'desc', this.props.ing.obj);
         break;
       case "vendor-asc":
-        this.props.sortIngs('vendor_info', 'asc');
+        this.props.sortIngs('vendor_info', 'asc', this.props.ing.obj);
         break;
       case "vendor-desc":
-        this.props.sortIngs('vendor_info', 'desc');
+        this.props.sortIngs('vendor_info', 'desc', this.props.ing.obj);
         break;
       case "package-asc":
-        this.props.sortIngs('package_size', 'asc');
+        this.props.sortIngs('package_size', 'asc', this.props.ing.obj);
         break;
       case "package-desc":
-        this.props.sortIngs('package_size', 'desc');
+        this.props.sortIngs('package_size', 'desc', this.props.ing.obj);
         break;
       case "cost-asc":
-        this.props.sortIngs('cost_per_package', 'asc');
+        this.props.sortIngs('cost_per_package', 'asc', this.props.ing.obj);
         break;
       case "cost-desc":
-        this.props.sortIngs('cost_per_package', 'desc');
+        this.props.sortIngs('cost_per_package', 'desc', this.props.ing.obj);
         break;
       default:
         break;
@@ -83,7 +86,7 @@ class Ingredients extends Component {
                 <Row>
                   <Col> <h1>Ingredients</h1> </Col>
                   <Col style={{'textAlign': 'right'}}> </Col>
-                  <Col> <IngredientsKeywordSearch /> </Col>
+                  <Col> <IngredientsKeywordSearch/> </Col>
                 </Row>
                 <Row>
                   <Col>
@@ -96,35 +99,63 @@ class Ingredients extends Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>FIELDS</DropdownItem>
-                        <DropdownItem onClick={this.sortClick.bind(this, "name-asc")}>
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "name-asc")}
+                          className={this.state.sortby === 'name-asc'? "active" : ""}>
                           Name {' '}
                           <FontAwesomeIcon icon = "sort-alpha-down"/>
                         </DropdownItem>
-                        <DropdownItem onClick={this.sortClick.bind(this, "name-desc")}>
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "name-desc")}
+                          className={this.state.sortby === 'name-desc'? "active" : ""}>
                           Name {' '}
                           <FontAwesomeIcon icon = "sort-alpha-up"/>
                         </DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem onClick={this.sortClick.bind(this, "number-asc")}>Number {' '}
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "number-asc")}
+                          className={this.state.sortby === 'number-asc'? "active" : ""}>
+                          Number {' '}
                           <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem onClick={this.sortClick.bind(this, "number-desc")}>Number {' '}
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "number-desc")}
+                          className={this.state.sortby === 'number-desc'? "active" : ""}>
+                          Number {' '}
                           <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem onClick={this.sortClick.bind(this, "vendor-asc")}>Vendor's Info {' '}
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "vendor-asc")}
+                          className={this.state.sortby === 'vendor-asc'? "active" : ""}>
+                          Vendor's Info {' '}
                           <FontAwesomeIcon icon = "sort-alpha-down"/>
                         </DropdownItem>
-                        <DropdownItem onClick={this.sortClick.bind(this, "vendor-desc")}>Vendor's Info {' '}
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "vendor-desc")}
+                          className={this.state.sortby === 'vendor-desc'? "active" : ""}>
+                          Vendor's Info {' '}
                           <FontAwesomeIcon icon = "sort-alpha-up"/>
                         </DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem onClick={this.sortClick.bind(this, "package-asc")} >Package Size {' '}
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "package-asc")}
+                          className={this.state.sortby === 'package-asc'? "active" : ""}>
+                          Package Size {' '}
                           <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem onClick={this.sortClick.bind(this, "package-desc")} >Package Size {' '}
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "package-desc")}
+                          className={this.state.sortby === 'package-desc'? "active" : ""}>
+                          Package Size {' '}
                           <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem onClick={this.sortClick.bind(this, "cost-asc")}>Cost per Package {' '}
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "cost-asc")}
+                          className={this.state.sortby === 'cost-asc'? "active" : ""}>
+                          Cost per Package {' '}
                           <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem onClick={this.sortClick.bind(this, "cost_desc")}>Cost per Package {' '}
+                        <DropdownItem
+                          onClick={this.sortClick.bind(this, "cost-desc")}
+                          className={this.state.sortby === 'cost-desc'? "active" : ""}>
+                          Cost per Package {' '}
                           <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                       </DropdownMenu>
                     </ButtonDropdown> {' '}

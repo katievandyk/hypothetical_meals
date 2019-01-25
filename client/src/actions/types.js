@@ -7,6 +7,7 @@ export const GET_ING_SKUS = 'GET_ING_SKUS';
 export const INGS_LOADING = 'INGS_LOADING';
 export const ING_SKUS_LOADING = 'ING_SKUS_LOADING';
 export const ING_KW_SEARCH = 'ING_KW_SEARCH';
+export const ING_SKU_FILTER = 'ING_SKU_FILTER';
 export const ING_SORT = 'ING_SORT';
 //Login
 export const GET_ERRORS = "GET_ERRORS";

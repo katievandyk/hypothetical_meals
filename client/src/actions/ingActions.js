@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { GET_INGS, ADD_ING, DELETE_ING, INGS_LOADING, UPDATE_ING,
-GET_ING_SKUS, ING_SKUS_LOADING, ING_KW_SEARCH, ING_SORT } from './types';
+GET_ING_SKUS, ING_SKUS_LOADING, ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER } from './types';
 
 export const getIngs = () => dispatch =>  {
   dispatch(setIngsLoading());
-  axios.get('/api/ingredients').then(res =>
+  axios.post(`/api/ingredients/filter/sort/name/asc/1/-1`).then(res =>
     dispatch({
       type: GET_INGS,
       payload: res.data
@@ -62,23 +62,18 @@ export const setIngsLoading = () => {
 };
 
 export const searchIngbyKW = keywords => dispatch => {
-  console.log(keywords);
-  axios.get('/api/ingredients/search', {'headers':{'key': 'Content-Type', 'value': 'application/json'}, 'params': {'keywords':'salt'}}).then(res =>
-    dispatch({
-      type: ING_KW_SEARCH,
-      payload: res.data
-    })
-  );
+  dispatch({
+    type: ING_KW_SEARCH,
+    payload: keywords
+  });
 };
 
-export const sortIngs = (field, asc) => dispatch => {
+export const sortIngs = (field, asc, obj) => dispatch => {
   dispatch(setIngsLoading());
-  console.log(field);
-  console.log(asc);
-  axios.get(`api/ingredients/sort/${field}/${asc}`).then(res =>
+  axios.post(`/api/ingredients/filter/sort/${field}/${asc}/1/-1`, obj).then(res =>
     dispatch({
       type: ING_SORT,
-      payload: res.data
+      payload: {data: res.data, sortby: field, sortdir: asc, obj: obj}
     })
   );
 };

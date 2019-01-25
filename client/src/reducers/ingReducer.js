@@ -1,12 +1,15 @@
 import {GET_INGS, ADD_ING, DELETE_ING, UPDATE_ING,
   GET_ING_SKUS, INGS_LOADING, ING_SKUS_LOADING,
-  ING_KW_SEARCH, ING_SORT} from '../actions/types';
+  ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER} from '../actions/types';
 
 const initialState = {
   ings: [],
   loading: false,
   ing_skus: [],
-  ing_skus_loading: false
+  ing_skus_loading: false,
+  obj: {},
+  sortby: 'name',
+  sortdir: 'asc'
 };
 
 export default function(state = initialState, action) {
@@ -48,16 +51,25 @@ export default function(state = initialState, action) {
         ...state,
         ing_skus_loading: true
       }
-    case ING_KW_SEARCH:
+    case ING_KW_SEARCH:{
+        state.obj.keywords = action.payload;
+        return {
+          ...state,
+          obj: state.obj
+        }
+    }
+    case ING_SKU_FILTER:
       return {
         ...state,
-        ings: [action.payload, state.ings],
-        ing_skus_loading: false
+
       }
     case ING_SORT:
       return {
         ...state,
-        ings: action.payload,
+        ings: action.payload.data,
+        sortby: action.payload.sortby,
+        sortdir: action.payload.sortdir,
+        obj: action.payload.obj,
         loading: false
       }
     default:

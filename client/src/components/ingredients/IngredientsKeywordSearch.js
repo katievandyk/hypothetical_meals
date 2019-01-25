@@ -4,24 +4,32 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
-import { setIngsLoading, searchIngbyKW } from '../../actions/ingActions';
+import PropTypes from 'prop-types';
+import { setIngsLoading, searchIngbyKW, sortIngs } from '../../actions/ingActions';
 
 class IngredientsKeywordSearch extends React.Component {
   state = {
-    keywords: ''
+    keywords: '',
+    isSeached: false
   }
   onChange = e => {
     this.setState({
       [e.target.name]: e.target.value
     });
+    if(e.target.value.length == 0){
+      this.props.setIngsLoading();
+      const newObj = {};
+      if('skus' in this.props.ing.obj){
+        newObj.skus = this.props.ing.obj.skus
+      }
+      this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, newObj);
+    };
   }
+
   searchKW = () => {
     this.props.setIngsLoading();
-    console.log([this.state.keywords]);
-    const keywords = {
-      keywords: ['salt', 'honey']
-    };
-    this.props.searchIngbyKW(keywords);
+    this.props.searchIngbyKW(this.state.keywords);
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.obj);
   }
   render() {
     return (
@@ -34,9 +42,14 @@ class IngredientsKeywordSearch extends React.Component {
     );
   }
 }
+IngredientsKeywordSearch.propTypes = {
+  setIngsLoading: PropTypes.func.isRequired,
+  searchIngbyKW: PropTypes.func.isRequired,
+  ing: PropTypes.object.isRequired
+};
 
 const mapStateToProps = state => ( {
   ing: state.ing
 });
 
-export default connect(mapStateToProps, {searchIngbyKW, setIngsLoading})(IngredientsKeywordSearch);
+export default connect(mapStateToProps, {searchIngbyKW, setIngsLoading, sortIngs})(IngredientsKeywordSearch);
