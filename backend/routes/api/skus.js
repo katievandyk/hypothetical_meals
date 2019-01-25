@@ -44,7 +44,6 @@ router.post('/', (req, res) => {
 
     newSKU.save().then(sku => res.json(sku))
         .catch(err => res.status(404).json({success: false, message: err.message}));
-    
 });
 
 // @route DELETE api/skus/:id
@@ -104,7 +103,6 @@ router.get('/byproductlines', (req, res) => {
         .then(sku => res.json(sku))
     });
 
-
 // @route GET api/skus/byingredients
 // @desc gets skus for with the ingredients in the request
 // @access public
@@ -119,5 +117,57 @@ router.get('/byingredients', (req, res) => {
         .then(sku => res.json(sku))
         .catch(err => res.status(404).json({success: false, message: err.message}))
 });
+
+// @route POST api/skus/filter/sort/:field/:asc/:pagenumber/:limit
+// @desc gets skus with many filters
+// request param fields:
+// - pagenumber: current page number
+// - limit: number of records / page. -1 if want all records.
+// request body fields:
+// - ingredients: Array of ingredients ids (String) to search SKUs for
+// - product_lines: Array of product line ids (String) to find SKUs that are part of it
+// - keywords: Array of words (String) to match entries on
+// @access public
+router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
+    var skuFindPromise = SKU.find();
+
+    if (req.body.ingredients != null) {
+        skuFindPromise = skuFindPromise.find(
+            { 'ingredients_list._id': { $all: 
+                req.body.ingredients}});
+    }
+    if (req.body.product_lines != null) {
+        skuFindPromise = skuFindPromise.find(
+            { 'product_line': { $in: 
+                req.body.product_lines.map(
+                    function(el) { return mongoose.Types.ObjectId(el) }) }});
+    }
+    if (req.body.keywords != null) {
+        skuFindPromise = skuFindPromise.find(
+            {$text: {$search: req.body.keywords}},
+            {score:{$meta: "textScore"}});
+    }
+
+    var currentPage = parseInt(req.params.pagenumber);
+    var limit = parseInt(req.params.limit);
+    if (limit != -1) {
+        skuFindPromise = skuFindPromise.skip((currentPage-1)*limit).limit(limit);
+    }
+
+    var sortOrder = req.params.asc === 'asc' ? 1 : -1;
+    var skuSortPromise;
+    if (req.params.field === 'score') {
+        skuSortPromise = skuFindPromise.lean().sort(
+            {score: {$meta: "textScore"}});
+    }
+    else {
+        skuSortPromise = skuFindPromise.lean().sort(
+            {[req.params.field] : sortOrder});
+    }
+
+    skuSortPromise.then(sku => res.json(sku))
+    .catch(err => res.status(404).json({success: false, message: err.message}))
+});
+
 
 module.exports = router;

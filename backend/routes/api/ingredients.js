@@ -68,7 +68,7 @@ router.get('/search', (req, res) => {
         })
         .catch(err => res.status(404).json({success: false, message: err.message}))});
 
-// @route GET api/ingredients/filter/sort/:field/:asc/:pagenumber/:limit
+// @route POST api/ingredients/filter/sort/:field/:asc/:pagenumber/:limit
 // @desc searches keywords in database
 // request param fields:
 // - pagenumber: current page number
@@ -78,7 +78,7 @@ router.get('/search', (req, res) => {
 // - keywords: Array of words (String) to match entries on
 // note: sorting on keyword search result field=score. score sorting will only be descending.
 // @access public
-router.get('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
+router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     var skus = req.body.skus == null ? [] : req.body.skus;
     SKU.aggregate(
         [{ $match: {'_id': {$in: skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
