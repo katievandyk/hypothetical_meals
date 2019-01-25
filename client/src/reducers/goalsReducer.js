@@ -1,9 +1,7 @@
 import {GET_GOALS, ADD_GOAL, DELETE_GOAL, GOALS_LOADING} from '../actions/types';
 
 const initialState = {
-   goals: [{name:"fall goal", sku_list:[{sku:"wheat", quantity:500}, {sku:"flour", quantity:30}]}, {name:"spring goal",  sku_list:[{sku:"tomato soup", quantity:554} ]}, {name:"winter goal", sku_list:[{sku:"idk", quantity:2204}, {sku:"hot chocolate", quantity:243},
-   {sku:"meat", quantity:93}, {sku:"tofu", quantity:0}]}],
-//  goals: [],
+   goals: [],
    loading: false
 };
 
@@ -23,7 +21,7 @@ export default function(state = initialState, action) {
     case ADD_GOAL:
       return {
         ...state,
-        arr: [...state.goals, action.payload]
+        goals: [...state.goals, action.payload]
       }
     default:
       return state;

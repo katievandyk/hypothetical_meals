@@ -1,19 +1,17 @@
 import { combineReducers } from 'redux';
 import ingReducer from './ingReducer';
-<<<<<<< HEAD
 import goalsReducer from './goalsReducer';
-
-export default combineReducers({
-  ing: ingReducer,
-  goals: goalsReducer
-});
-=======
 import authReducer from './authReducer';
 import errorReducer from './errorReducer';
+import plineReducer from './plineReducer';
+import skuReducer from './skuReducer';
 
 export default combineReducers({
   ing: ingReducer,
   auth: authReducer,
-  errors: errorReducer
+  goals: goalsReducer,
+  errors: errorReducer,
+  plines: plineReducer,
+  skus: skuReducer
 });
->>>>>>> 966a002b5dbf0536c164c9f0bf635ea75a3ca62a
+

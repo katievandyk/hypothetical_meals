@@ -17,8 +17,8 @@ export const setGoalsLoading = () => {
   };
 };
 
-export const addGoal = () => dispatch =>  {
-  axios.post('/api/manufacturing').then(res =>
+export const addGoal = (goal) => dispatch =>  {
+  axios.post('/api/manufacturing', goal).then(res =>
     dispatch({
       type: ADD_GOAL,
       payload: res.data

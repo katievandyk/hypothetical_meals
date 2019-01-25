@@ -5,24 +5,25 @@ const router = express.Router();
 // Goal Model
 const Goal = require('../../models/Goal');
 
-// @route GET api/goals
+// @route GET api/manufacturing
 // @desc get all goals
 // @access public
 router.get('/', (req, res) => {
     Goal
         .find()
+        .populate({ path: 'skus_list.sku'})
         .lean()
         .then(goal => res.json(goal))
 });
 
-// @route POST api/goal
+// @route POST api/manufacturing
 // @desc create a goal
 // @access public
 router.post('/', (req, res) => {
     const newGoal = new Goal({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        SKUs_list: req.body.SKUs_list
+        skus_list: req.body.skus_list
     });
 
     newGoal.save().then(goal => res.json(goal))

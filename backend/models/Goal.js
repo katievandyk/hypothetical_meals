@@ -8,12 +8,10 @@ const GoalSchema = new Schema({
         required: true,
         unique: true
     },
-    SKUs_list: [{
-            SKU: { type: SKU, required: true, unique: true },
+    skus_list: [{
+            sku: { type: Schema.Types.ObjectId, ref: 'sku' },
             quantity: Number
     }]
 });
-
-IngredientSchema.index({'$**': 'text'});
 
 module.exports = Goal = mongoose.model('goal', GoalSchema);

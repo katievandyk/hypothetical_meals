@@ -35,7 +35,7 @@ class GoalsExport extends React.Component {
           </DropdownToggle>
           <DropdownMenu>
              {goals.map(({_id, name}) => (
-                  <DropdownItem>{name}</DropdownItem>
+                  <DropdownItem key={_id}>{name}</DropdownItem>
               ))}
           </DropdownMenu>
         </ButtonDropdown>
