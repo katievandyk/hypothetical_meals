@@ -48,5 +48,8 @@ app.use('/api/productlines', productLines);
 const skus = require('./routes/api/skus');
 app.use('/api/skus', skus);
 
+const manufacturing= require('./routes/api/manufacturing');
+app.use('/api/manufacturing', manufacturing);
+
 // launch our backend into a port
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));

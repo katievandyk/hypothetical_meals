@@ -1,14 +1,10 @@
 import React from 'react';
 import {
-  InputGroup, InputGroupAddon, Input, Button,
-  Dropdown, DropdownToggle, DropdownMenu, DropdownItem
+  InputGroup, InputGroupAddon, Input, Button
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class IngredientsKeywordSearch extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <div>
