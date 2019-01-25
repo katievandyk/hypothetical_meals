@@ -73,6 +73,8 @@ export const searchIngbyKW = keywords => dispatch => {
 
 export const sortIngs = (field, asc) => dispatch => {
   dispatch(setIngsLoading());
+  console.log(field);
+  console.log(asc);
   axios.get(`api/ingredients/sort/${field}/${asc}`).then(res =>
     dispatch({
       type: ING_SORT,

@@ -58,6 +58,7 @@ class Ingredients extends Component {
         break;
       case "package-desc":
         this.props.sortIngs('package_size', 'desc');
+        break;
       case "cost-asc":
         this.props.sortIngs('cost_per_package', 'asc');
         break;

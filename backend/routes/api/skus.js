@@ -31,6 +31,7 @@ router.post('/', (req, res) => {
     var numberResolved = req.body.number ? req.body.number : new Date().valueOf();
     
     const newSKU = new SKU({
+        _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         number: numberResolved,
         case_number: req.body.case_number,
@@ -93,11 +94,11 @@ router.get('/sort/:field/:asc', (req, res) => {
 // @route GET api/skus/byproductlines
 // @desc gets skus for (a) product line(s)
 // @access public
-router.get('/byproductlines', (req, res) => {
+router.get('/byproductlines/:product_lines', (req, res) => {
     SKU
         .find({
             'product_line': {
-                $in: req.body.product_lines
+                $in: req.params.product_lines
             }
         })
         .lean()
