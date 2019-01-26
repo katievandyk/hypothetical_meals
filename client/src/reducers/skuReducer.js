@@ -1,4 +1,4 @@
-import { GET_SKUS_BYPLINE, SKUS_LOADING} from '../actions/types';
+import { GET_SKUS_BYPLINE, SKUS_LOADING, GET_SKUS} from '../actions/types';
 
 const initialState = {
   skus: [],
@@ -17,6 +17,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         loading: true
+      }
+    case GET_SKUS:
+      return {
+        ...state,
+        skus: action.payload,
+        loading: false
       }
     default:
       return state;
