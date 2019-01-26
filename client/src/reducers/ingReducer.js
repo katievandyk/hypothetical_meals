@@ -58,11 +58,17 @@ export default function(state = initialState, action) {
           obj: state.obj
         }
     }
-    case ING_SKU_FILTER:
+    case ING_SKU_FILTER:{
+      if(action.payload.length !== 0)
+        state.obj.skus = action.payload;
+      else {
+        delete state.obj.skus;
+      }
       return {
         ...state,
-
+        obj: state.obj
       }
+    }
     case ING_SORT:
       return {
         ...state,

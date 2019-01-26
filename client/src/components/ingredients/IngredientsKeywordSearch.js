@@ -9,14 +9,13 @@ import { setIngsLoading, searchIngbyKW, sortIngs } from '../../actions/ingAction
 
 class IngredientsKeywordSearch extends React.Component {
   state = {
-    keywords: '',
-    isSeached: false
+    keywords: ''
   }
   onChange = e => {
     this.setState({
       [e.target.name]: e.target.value
     });
-    if(e.target.value.length == 0){
+    if(e.target.value.length === 0){
       this.props.setIngsLoading();
       const newObj = {};
       if('skus' in this.props.ing.obj){

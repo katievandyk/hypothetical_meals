@@ -77,3 +77,10 @@ export const sortIngs = (field, asc, obj) => dispatch => {
     })
   );
 };
+
+export const filterBySKUs = (ids) => dispatch => {
+  dispatch({
+    type: ING_SKU_FILTER,
+    payload: ids
+  });
+};
