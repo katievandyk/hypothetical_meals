@@ -1,7 +1,7 @@
 import React from 'react';
 import {Table } from 'reactstrap';
 import { connect } from 'react-redux';
-import { getGoals } from '../actions/goalsActions';
+import { getGoals } from '../../actions/goalsActions';
 import PropTypes from 'prop-types';
 
 class GoalsEntry extends React.Component {

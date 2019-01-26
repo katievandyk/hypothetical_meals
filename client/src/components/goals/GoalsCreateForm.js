@@ -1,10 +1,10 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css' // TODO change css file
-import GoalCreateEntry from '../components/GoalCreateEntry';
-import GoalsSKUDropdown from '../components/GoalsSKUDropdown';
-import GoalsProductLineDropdown from '../components/GoalsProductLineDropdown';
+import GoalCreateEntry from '../../components/goals/GoalCreateEntry';
+import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
+import GoalsProductLineDropdown from '../../components/goals/GoalsProductLineDropdown';
 
-import { addGoal }  from '../actions/goalsActions';
+import { addGoal }  from '../../actions/goalsActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 

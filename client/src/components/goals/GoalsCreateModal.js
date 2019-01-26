@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css' // TODO change css file
-import GoalsCreateForm from '../components/GoalsCreateForm';
+import GoalsCreateForm from '../../components/goals/GoalsCreateForm';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 
 class GoalsCreateModal extends React.Component {

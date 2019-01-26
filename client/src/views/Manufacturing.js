@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import GoalsEntry from '../components/GoalsEntry';
-import CalculatorEntry from '../components/CalculatorEntry';
-import GoalsCreateModal from '../components/GoalsCreateModal';
-import GoalsExport from '../components/GoalsExport';
+
+import { getGoals } from '../actions/goalsActions';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
+import GoalsEntry from '../components/goals/GoalsEntry';
+import CalculatorEntry from '../components/goals/CalculatorEntry';
+import CalculatorDropdown from '../components/goals/CalculatorDropdown';
+import GoalsCreateModal from '../components/goals/GoalsCreateModal';
+import GoalsExport from '../components/goals/GoalsExport';
 import '../styles.css';
 
 import { Provider } from 'react-redux';
@@ -13,6 +19,19 @@ import store from '../store';
 import { Container, Row, Col} from 'reactstrap';
 
 class Manufacturing extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+      this.props.getGoals();
+  }
+
+  calculatorCallback = e => {
+
+  }
+
    render() {
         return(
           <Provider store={store}>
@@ -29,7 +48,7 @@ class Manufacturing extends Component {
                 <GoalsEntry/>
                 <Row>
                     <Col> <GoalsCreateModal buttonLabel="Create Goal"/> </Col>
-                    <Col> <GoalsExport/> </Col>
+                    <Col> <GoalsExport goals={this.props.goals}/> </Col>
                 </Row>
               </Container>
               <Container className="mt-5">
@@ -39,6 +58,9 @@ class Manufacturing extends Component {
                     </Row>
                 </Container>
                 <CalculatorEntry/>
+                <Row>
+                    <Col> <CalculatorDropdown goals={this.props.goals} calculatorCallback={this.calculatorCallback}/> &nbsp; </Col>
+                </Row>
               </Container>
             </div>
           </Provider>
@@ -46,4 +68,13 @@ class Manufacturing extends Component {
    }
 }
 
-export default Manufacturing;
+Manufacturing.propTypes = {
+  getGoals: PropTypes.func.isRequired,
+  goals: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+  goals: state.goals
+});
+
+export default connect(mapStateToProps, { getGoals })(Manufacturing);
