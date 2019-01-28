@@ -48,6 +48,9 @@ app.use('/api/productlines', productLines);
 const skus = require('./routes/api/skus');
 app.use('/api/skus', skus);
 
+const imports = require('./routes/api/bulk-import');
+app.use('/api/bulk-import', imports);
+
 const manufacturing= require('./routes/api/manufacturing');
 app.use('/api/manufacturing', manufacturing);
 
