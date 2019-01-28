@@ -15,10 +15,20 @@ const https = require('https')
 const app = express();
 
 /* Https */
-var certOptions = {
-  key: fs.readFileSync('server.key'),
-  cert: fs.readFileSync('server.crt')
+try {
+  var certOptions = {
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.crt')
+  }
 }
+catch(err) {
+  var certOptions = {
+    key: null,
+    cert: null
+  }
+}
+
+
 
 // Bodyparser middleware
 app.use(
