@@ -79,7 +79,12 @@ if(process.env.NODE_ENV === 'production') {
 }
 
 //Set up HTTPS
-var server =  https.createServer(certOptions, app).listen(443);
+try {
+  var server =  https.createServer(certOptions, app).listen(443);
+}
+catch(err) {
+  var server = http.createServer(app).listen(API_PORT);
+}
 /* Http */
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
 
