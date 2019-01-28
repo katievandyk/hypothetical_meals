@@ -56,11 +56,10 @@ app.use('/api/productlines', productLines);
 const skus = require('./routes/api/skus');
 app.use('/api/skus', skus);
 
-
+const manufacturing= require('./routes/api/manufacturing');
+app.use('/api/manufacturing', manufacturing);
 
 //Set up HTTPS
-
-
 var server =  https.createServer(certOptions, app).listen(API_PORT);
 // launch our backend into a port
 console.log(`LISTENING ON PORT ${API_PORT}`);

@@ -68,14 +68,17 @@ router.get('/search', (req, res) => {
         })
         .catch(err => res.status(404).json({success: false, message: err.message}))});
 
-// @route GET api/ingredients/filter/sort/:field/:asc
+// @route POST api/ingredients/filter/sort/:field/:asc/:pagenumber/:limit
 // @desc searches keywords in database
+// request param fields:
+// - pagenumber: current page number
+// - limit: number of records / page. -1 if want all records.
 // request body fields:
 // - skus: Array of sku ids (String) to get ingredients for
 // - keywords: Array of words (String) to match entries on
-// note: sorting on keyword search result field=score
+// note: sorting on keyword search result field=score. score sorting will only be descending.
 // @access public
-router.get('/filter/sort/:field/:asc', (req, res) => {
+router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     var skus = req.body.skus == null ? [] : req.body.skus;
     SKU.aggregate(
         [{ $match: {'_id': {$in: skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
@@ -106,16 +109,27 @@ router.get('/filter/sort/:field/:asc', (req, res) => {
             ingredientFindPromise = Ingredient.find();
         }
 
+        // Paginate. If limit = -1, then gives all records
+        var currentPage = parseInt(req.params.pagenumber);
+        var limit = parseInt(req.params.limit);
+        if (limit != -1) {
+            ingredientFindPromise = ingredientFindPromise.skip((currentPage-1)*limit).limit(limit);
+        }
+
         var sortOrder = req.params.asc === 'asc' ? 1 : -1;
+        var sortPromise;
         if (req.params.field === 'score') {
-            ingredientFindPromise.lean().sort(
-                {score: {$meta: "textScore"}}).then(resultF => {res.json(resultF)})
+            sortPromise = ingredientFindPromise.lean().sort(
+                {score: {$meta: "textScore"}});
         }
         else {
-            ingredientFindPromise.lean().sort(
-                {[req.params.field] : sortOrder}).then(resultF => {res.json(resultF)})}
+            sortPromise = ingredientFindPromise.lean().sort(
+                {[req.params.field] : sortOrder}).then(resultF => {res.json(resultF)});
         }
-    ).catch(err => res.status(404).json({success: false, message: err.message}));
+
+        
+        sortPromise.then(resultF => {res.json(resultF)});
+    }).catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
 // @route GET api/ingredients/sort/:field/:asc
