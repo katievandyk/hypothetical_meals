@@ -2,14 +2,22 @@
 const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
-const logger = require("morgan");
 
-const API_PORT = 3001;
+const API_PORT = 443;
 
 const passport = require("passport");
 const users = require("./routes/api/users");
 
+const fs = require('fs')
+const https = require('https')
+
 const app = express();
+
+/* Https */
+var certOptions = {
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.crt')
+}
 
 // Bodyparser middleware
 app.use(
@@ -48,5 +56,11 @@ app.use('/api/productlines', productLines);
 const skus = require('./routes/api/skus');
 app.use('/api/skus', skus);
 
+
+
+//Set up HTTPS
+
+
+var server =  https.createServer(certOptions, app).listen(API_PORT);
 // launch our backend into a port
-app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
+console.log(`LISTENING ON PORT ${API_PORT}`);
