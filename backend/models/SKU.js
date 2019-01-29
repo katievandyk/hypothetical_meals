@@ -34,7 +34,7 @@ const SKUSchema = new Schema({
         _id: { type: Schema.Types.ObjectId, ref: 'ingredient' },
         quantity: Number
     }],
-    comments: {
+    comment: {
         type: String,
         required: false
     }
