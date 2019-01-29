@@ -131,22 +131,31 @@ router.get('/byingredients', (req, res) => {
 // @access public
 router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     var skuFindPromise = SKU.find();
+    let skuCountPromise = SKU.find();
 
+    if (req.body.keywords != null) {
+        skuFindPromise = SKU.find(
+            {$text: {$search: req.body.keywords}},
+            {score:{$meta: "textScore"}});
+        skuCountPromise = SKU.find({$text: {$search: req.body.keywords}},
+            {score:{$meta: "textScore"}});
+    }
     if (req.body.ingredients != null) {
         skuFindPromise = skuFindPromise.find(
             { 'ingredients_list._id': { $all: 
                 req.body.ingredients}});
+        skuCountPromise = skuCountPromise.find({ 'ingredients_list._id': { $all: 
+            req.body.ingredients}});
     }
     if (req.body.product_lines != null) {
         skuFindPromise = skuFindPromise.find(
             { 'product_line': { $in: 
                 req.body.product_lines.map(
                     function(el) { return mongoose.Types.ObjectId(el) }) }});
-    }
-    if (req.body.keywords != null) {
-        skuFindPromise = skuFindPromise.find(
-            {$text: {$search: req.body.keywords}},
-            {score:{$meta: "textScore"}});
+        skuCountPromise = skuCountPromise.find({ 'product_line': { $in: 
+            req.body.product_lines.map(
+                function(el) { return mongoose.Types.ObjectId(el) }) }});
+
     }
 
     var currentPage = parseInt(req.params.pagenumber);
@@ -166,8 +175,13 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
             {[req.params.field] : sortOrder});
     }
 
-    skuSortPromise.then(sku => res.json(sku))
-    .catch(err => res.status(404).json({success: false, message: err.message}))
+    Promise.all([skuCountPromise.count(), skuSortPromise])
+        .then(results => {
+            finalResult = {count: results[0], results: results[1]};
+            res.json(finalResult)})
+        .catch(err => res.status(404).json({success: false, message: err.message}))
+
+    skuSortPromise
 });
 
 
