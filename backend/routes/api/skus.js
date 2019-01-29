@@ -155,14 +155,15 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
         skuCountPromise = skuCountPromise.find({ 'product_line': { $in: 
             req.body.product_lines.map(
                 function(el) { return mongoose.Types.ObjectId(el) }) }});
-
     }
 
     var currentPage = parseInt(req.params.pagenumber);
     var limit = parseInt(req.params.limit);
     if (limit != -1) {
-        skuFindPromise = skuFindPromise.skip((currentPage-1)*limit).limit(limit);
+        skuFindPromise = skuFindPromise.skip((currentPage-1)*limit).limit(limit)
     }
+
+    skuFindPromise = skuFindPromise.populate("product_line").populate("ingredients_list._id");
 
     var sortOrder = req.params.asc === 'asc' ? 1 : -1;
     var skuSortPromise;
@@ -180,8 +181,6 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
             finalResult = {count: results[0], results: results[1]};
             res.json(finalResult)})
         .catch(err => res.status(404).json({success: false, message: err.message}))
-
-    skuSortPromise
 });
 
 
