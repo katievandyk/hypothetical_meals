@@ -17,9 +17,9 @@ function _isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-// TODO: check test this function
-function _isPositiveInteger(n) {
-    return 0 === n % (!isNaN(parseFloat(n)) && 0 <= ~~n);
+function _isPositiveInteger(str) {
+    var n = Math.floor(Number(str));
+    return n !== Infinity && String(n) === str && n >= 0;
 }
 
 function _is_upca_standard(code) {
