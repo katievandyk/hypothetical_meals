@@ -9,11 +9,13 @@ import {
   Label,
   Input,
   Row,
-  Col
+  Col,
+  ListGroup,
+  ListGroupItem
  } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { getIngs, deleteIng, updateIng } from '../../actions/ingActions';
+import { getIngs, deleteIng, updateIng, getIngSKUs } from '../../actions/ingActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../../styles.css'
@@ -27,12 +29,19 @@ class IngredientsEntry extends React.Component {
     edit_vendor_info: '',
     edit_package_size: '',
     edit_cost_per_package: '',
-    edit_comment: ''
+    edit_comment: '',
+    sku_modal: false
   };
 
   toggle = () => {
     this.setState({
       modal: !this.state.modal
+    });
+  }
+
+  sku_toggle = () => {
+    this.setState({
+      sku_modal: !this.state.sku_modal
     });
   }
 
@@ -80,7 +89,12 @@ class IngredientsEntry extends React.Component {
     this.props.updateIng(editedIng);
     this.props.getIngs();
     this.toggle();
-  }
+  };
+
+  onSKUListClick = id => {
+    this.sku_toggle();
+    this.props.getIngSKUs(id);
+  };
 
   render() {
     const { ings } = this.props.ing;
@@ -125,7 +139,7 @@ class IngredientsEntry extends React.Component {
                     <td> {cost_per_package} </td>
                     <td>
                       <Button size="sm" color="link"
-                      onClick={this.onDeleteClick.bind(this, _id)}
+                      onClick={this.onSKUListClick.bind(this, _id)}
                       style={{'color':'black'}}>
                       <FontAwesomeIcon icon="list"/>
                       </Button>
@@ -229,6 +243,16 @@ class IngredientsEntry extends React.Component {
             </Form>
           </ModalBody>
         </Modal>
+        <Modal isOpen={this.state.sku_modal} toggle={this.sku_toggle}>
+          <ModalHeader toggle={this.sku_toggle}>SKUs that use Ingredient: {this.props.ing.ing_skus.length}</ModalHeader>
+          <ModalBody>
+            <ListGroup>
+              {this.props.ing.ing_skus.map(({_id, name}) => (
+              <ListGroupItem key={_id}> <div>{name}</div> </ListGroupItem>
+              ))}
+            </ListGroup>
+          </ModalBody>
+        </Modal>
         </div>
 
     );
@@ -246,4 +270,4 @@ const mapStateToProps = (state) => ({
   ing: state.ing
 });
 
-export default connect(mapStateToProps, { getIngs, deleteIng, updateIng })(IngredientsEntry);
+export default connect(mapStateToProps, { getIngs, deleteIng, updateIng, getIngSKUs })(IngredientsEntry);
