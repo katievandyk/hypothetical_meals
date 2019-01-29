@@ -70,12 +70,19 @@ app.use('/api/skus', skus);
 const manufacturing= require('./routes/api/manufacturing');
 app.use('/api/manufacturing', manufacturing);
 
-if(process.env.NODE_ENV === 'production') {
-  app.use(express.static('/../client/build'));
-  
+if(true) {
+  console.log("in prod");
+  app.use(express.static(path.resolve(__dirname,'/../client/build')));
   app.get('*', (req, res) => {
-    res.sendfile(path.resolve(__dirname,'../client', 'build', 'index.html'));
+    res.sendfile(path.resolve(__dirname,'../client/build/index.html'));
+    res.end();
   })
+  app.listen(3000, () => console.log(`LISTENING ON PORT ${API_PORT}`));
+
+}
+else {
+  app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
+
 }
 
 //Set up HTTPS
@@ -86,5 +93,5 @@ if(process.env.NODE_ENV === 'production') {
 //   var server = http.createServer(app).listen(API_PORT);
 // }
 /* Http */
-app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
+//app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
 
