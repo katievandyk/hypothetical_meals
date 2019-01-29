@@ -22,6 +22,7 @@ export const GOALS_LOADING = 'GOALS_LOADING';
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';
 export const DELETE_PLINE = 'DELETE_PLINE';
+export const UPDATE_PLINE = 'UPDATE_PLINE';
 export const PLINES_LOADING = 'PLINES_LOADING';
 // SKU's
 export const GET_SKUS_BYPLINE = 'GET_SKUS';

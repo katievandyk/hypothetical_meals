@@ -1,4 +1,4 @@
-import {GET_PLINES, ADD_PLINE, DELETE_PLINE, PLINES_LOADING} from '../actions/types';
+import {GET_PLINES, ADD_PLINE, UPDATE_PLINE, DELETE_PLINE, PLINES_LOADING} from '../actions/types';
 
 const initialState = {
   plines: [],
@@ -17,6 +17,21 @@ export default function(state = initialState, action) {
       return {
         ...state,
         loading: true
+      }
+    case ADD_PLINE:
+      return {
+        ...state,
+        plines: [action.payload, state.plines]
+      }
+    case DELETE_PLINE:
+      return {
+        ...state,
+        plines: state.ings.filter( pline => pline._id !== action.payload )
+      }
+    case UPDATE_PLINE:
+      return {
+        ...state,
+        plines: [action.payload, state.plines]
       }
     default:
       return state;

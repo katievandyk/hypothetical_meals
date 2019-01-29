@@ -92,7 +92,7 @@ class SKUAddModal extends React.Component {
             <FormGroup>
               <Label for="case_number">Case UPC Number</Label>
                 <Input
-                  type="textarea"
+                  type="text"
                   name="case_number"
                   id="case_number"
                   placeholder="Add Case Number"
@@ -160,7 +160,7 @@ class SKUAddModal extends React.Component {
                 </Input>
             </FormGroup>
             <Button color="dark" style={{ marginTop: '2rem' }} type="submit" block>
-                  Add Ingredient
+                  Add SKU
                 </Button>
           </Form>
         </ModalBody>
