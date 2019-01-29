@@ -1,6 +1,5 @@
 const fs = require('fs');
 const Papa = require('papaparse');
-const assert = require('assert');
 const mongoose = require('mongoose');
 
 // Import Models
@@ -18,6 +17,7 @@ function _isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+// TODO: check test this function
 function _isPositiveInteger(n) {
     return 0 === n % (!isNaN(parseFloat(n)) && 0 <= ~~n);
 }
@@ -51,7 +51,8 @@ function checkFileHeaders(actual_header, expected_header) {
     var is_same = (actual_header.length == expected_header.length) && actual_header.every(function(element, index) {
         return element === expected_header[index]; 
     });
-    if(!is_same) throw new Error(`File header doesn't match expected header. Actual: ${actual_header}; Expected: ${expected_header}`);
+    if(!is_same) throw new Error(
+        `File header doesn't match expected header. Actual: ${actual_header}; Expected: ${expected_header}`);
 }
 
 module.exports.parsePLFile = parsePL = function() {
@@ -178,13 +179,16 @@ function preprocessOneIngredient(ing_data) {
                         status = "Ignore";
                      else {
                         status = "Overwrite";
+                        ing_data["ing_id"] = name_result._id;
                      }
                 }
                 else if(number_result) {
                     status = "Overwrite";
+                    ing_data["ing_id"] = number_result._id;
                 }
                 if(name_result && number_result && name_result.name != number_result.name) 
-                    reject(new Error(`Record name: ${ing_data[ing_fields.name]} and number ${ing_data[ing_fields.number]} conflicts with existing records in db`))
+                    reject(new Error(`Record name: ${ing_data[ing_fields.name]} `+
+                    `and number ${ing_data[ing_fields.number]} conflicts with existing records in db`))
                 ing_data["status"] = status;
                 accept(ing_data);
             })
@@ -285,15 +289,19 @@ function checkOneSKU(sku_data) {
                         (number_result.comment == sku_data[sku_fields.comment] ||
                         !number_result.comment && sku_data[sku_fields.comment].length == 0))
                         status = "Ignore";
-                    else 
+                    else {
                         status = "Overwrite";
+                        sku_data['sku_id'] = number_result._id;
+                    }
                 }
                 else if(case_number_result) {
                     status = "Overwrite";
+                    sku_data['sku_id'] = case_number_result._id;
                 }
 
                 if(number_result && case_number_result && number_result.case_number != case_number_result.case_number) 
-                    reject(new Error(`Record number: ${sku_data[sku_fields.number]} and case_number: ${sku_data[sku_fields.case_upc]} conflicts with existing records in db`))
+                    reject(new Error(`Record number: ${sku_data[sku_fields.number]} `+
+                    `and case_number: ${sku_data[sku_fields.case_upc]} conflicts with existing records in db`))
                 sku_data["status"] = status;
                 accept(sku_data)
             });
@@ -333,8 +341,10 @@ function checkFormulaFileDuplicates(formula_data) {
     let sku_to_ings = {};
     for(i = 0; i < formula_data.length; i++) {
         if(sku_to_ings[formula_data[i][formula_fields.sku_num]] && 
-            sku_to_ings[formula_data[i][formula_fields.sku_num]].includes(formula_data[i][formula_fields.ing_num]))
-            throw new Error(`Duplicate sku,ing entry in file: ${formula_data[i][formula_fields.sku_num]},${formula_data[i][formula_fields.ing_num]}`);
+            sku_to_ings[formula_data[i][formula_fields.sku_num]]
+            .includes(formula_data[i][formula_fields.ing_num]))
+            throw new Error(`Duplicate sku,ing entry in file: ` + 
+            `${formula_data[i][formula_fields.sku_num]},${formula_data[i][formula_fields.ing_num]}`);
         if(sku_to_ings[formula_data[i][formula_fields.sku_num]]) {
             sku_to_ing[formula_data[i]][formula_fields.sku_num].push(formula_data[i][formula_fields.ing_num]);
         }
@@ -346,17 +356,21 @@ function checkFormulaFileDuplicates(formula_data) {
 
 function checkOneForumla(formula_data) {
     if(!_isPositiveInteger(formula_data[formula_fields.sku_num])) 
-        throw new Error("SKU number is not a valid number: " + formula_data[formula_fields.sku_num]);
+        throw new Error(
+            "SKU number is not a valid number: " + formula_data[formula_fields.sku_num]);
     let sku = parseInt(formula_data[formula_fields.sku_num]);
 
     if(!_isPositiveInteger(formula_data[formula_fields.ing_num])) 
-        throw new Error("Ingredient number is not a valid number: " + formula_data[formula_fields.ing_num]);
+        throw new Error(
+            "Ingredient number is not a valid number: " + formula_data[formula_fields.ing_num]);
     let ing = parseInt(formula_data[formula_fields.ing_num]);
 
     if(!_isNumeric(formula_data[formula_fields.quantity])) 
-        throw new Error("Ingredient quantity is not a number: " + formula_data[formula_fields.quantity]);
+        throw new Error(
+            "Ingredient quantity is not a number: " + formula_data[formula_fields.quantity]);
     if (parseFloat(formula_data[formula_fields.quantity]) < 0) 
-        throw new Error("Ingredient quantity is not a positive number: " + formula_data[k]);
+        throw new Error(
+            "Ingredient quantity is not a positive number: " + formula_data[k]);
 
     var skuPromise = new Promise(function(accept, reject) {
         SKU.findOne({number: sku})
@@ -374,17 +388,13 @@ function checkOneForumla(formula_data) {
             });
     });
 
-    console.log("hello");
-
     return new Promise(function(accept, reject) {
         Promise.all([skuPromise, ingPromise]).then(result => {
-            console.log("in result");
             let skuDoc = result[0];
             let ingDoc = result[1];
     
             formula_data["ing_id"] = ingDoc._id;
             formula_data["sku_id"] = skuDoc._id;
-            console.log(formula_data);
             accept(formula_data);
         })
     });
