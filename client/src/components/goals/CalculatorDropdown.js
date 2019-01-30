@@ -21,8 +21,9 @@ class CalculatorDropdown extends React.Component {
   }
 
   changeValue(e) {
+    const { goals } = this.props.goals;
     this.setState({selectGoal: e.currentTarget.textContent})
-    this.props.calculatorCallback(e.currentTarget.id)
+    this.props.calculatorCallback(goals.find((goal) => goal._id === e.currentTarget.id))
   }
 
   render() {

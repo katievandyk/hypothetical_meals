@@ -1,16 +1,11 @@
 import React from 'react';
 import { Table } from 'reactstrap';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 
 class CalculatorEntry extends React.Component {
 
 
   render() {
     return (
-      /**
-        **/
-
         <Table>
           <thead>
             <tr>
@@ -19,6 +14,14 @@ class CalculatorEntry extends React.Component {
             </tr>
           </thead>
           <tbody>
+           {this.props.ingredients.map(({_id, ingredient, quantity}) => (
+                <tr key={_id}>
+                {ingredient.map(({name}) => (
+                    <td> {name} </td>
+                ))}
+                <td> {quantity} </td>
+                </tr>
+           ))}
           </tbody>
         </Table>
 

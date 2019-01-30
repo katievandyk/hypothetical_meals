@@ -27,3 +27,4 @@ export const PLINES_LOADING = 'PLINES_LOADING';
 export const GET_SKUS_BYPLINE = 'GET_SKUS';
 export const SKUS_LOADING = 'SKUS_LOADING';
 export const GET_SKUS = 'GET_SKUS';
+export const SKUS_INGQUANTITY = 'SKUS_INGQUANTITY';

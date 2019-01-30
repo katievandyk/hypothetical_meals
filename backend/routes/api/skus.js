@@ -119,6 +119,29 @@ router.get('/byingredients', (req, res) => {
         .catch(err => res.status(404).json({success: false, message: err.message}))
 });
 
+
+router.post('/ingquantities', (req, res) => {
+    SKU.aggregate(
+        [{ $match: {'_id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
+        { $group: { _id: { ingredients: '$ingredients_list' }}},
+        { $replaceRoot: { newRoot: "$_id" } },
+        { $unwind: "$ingredients" },
+        { $replaceRoot: { newRoot: "$ingredients" } },
+        { $group: { _id: "$_id", quantity: { $sum: "$quantity" }} },
+        {
+            $lookup: {
+                from: 'ingredients',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'ingredient'
+            }
+        }
+        ]
+    ).then(result => res.json(result))
+    .catch(err => res.status(404).json({success: false, message: err.message}));
+});
+
+
 // @route POST api/skus/filter/sort/:field/:asc/:pagenumber/:limit
 // @desc gets skus with many filters
 // request param fields:

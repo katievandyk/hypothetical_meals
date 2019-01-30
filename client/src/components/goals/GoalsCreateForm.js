@@ -105,9 +105,9 @@ class GoalsCreateForm extends React.Component {
                 <Col md={3.5}><GoalsProductLineDropdown callbackFromParent={this.plineCallback}/></Col>
                 <Col md={2.5}><GoalsSKUDropdown pline={this.state.plineSel} callbackFromParent={this.skuCallback}/></Col>
                 <Col md={2}><Input value={this.state.quantity} placeholder="Qty." onChange={e => this.setState({ quantity: e.target.value })}/> </Col>
-                <Col><Button color="primary" onClick={this.onAdd}>Add</Button>{' '}</Col>
+                <Col><Button color="success" onClick={this.onAdd}>Add</Button>{' '}</Col>
         </Row>
-        <Button type="submit" color="primary">Save</Button>{' '}
+        <Button type="submit"  color="success">Save</Button>{' '}
         <Button color="secondary" onClick={this.onCancel}>Clear</Button>
       </Form>
     );

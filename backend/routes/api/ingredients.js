@@ -149,7 +149,7 @@ router.get('/sort/:field/:asc', (req, res) => {
 // request body fields:
 // - skus: Array of SKU ids (Strings) to get ingredients for
 // @access public
-router.get('/byskus', (req, res) => {
+router.post('/byskus', (req, res) => {
     SKU.aggregate(
         [{ $match: {'_id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
         { $unwind: "$ingredients_list" },
