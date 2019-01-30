@@ -14,3 +14,9 @@ module.exports = {
 };
 ```
 4. Run `npm start` in the root directory.
+
+### Production Deployment
+1. ssh into prod server
+2. Run `npm install` in the root directory
+3. Run 'nvm install 8.9.1' in the root directory
+4. Run 'npm run-script deploy' in the root directory
