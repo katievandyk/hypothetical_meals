@@ -5,7 +5,9 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 const path = require ('path');
 
-const API_PORT = 8080;
+const API_PORT = 3001;
+const PROD_PORT = 8080;
+
 
 const passport = require("passport");
 const users = require("./routes/api/users");
@@ -65,4 +67,5 @@ app.get('*', function(req, res) {
 })
 
 // launch our backend into a port
+app.listen(PROD_PORT);
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
