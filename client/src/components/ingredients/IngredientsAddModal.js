@@ -7,12 +7,11 @@ import {
   Form,
   FormGroup,
   Label,
-  Input,
-  Row,
-  Col
+  Input
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { addIng, getIngs } from '../../actions/ingActions';
+import PropTypes from 'prop-types';
+import { addIng, sortIngs } from '../../actions/ingActions';
 
 class IngredientsAddModal extends React.Component {
   state = {
@@ -50,7 +49,7 @@ class IngredientsAddModal extends React.Component {
     };
 
     this.props.addIng(newIng);
-    this.props.getIngs();
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.obj);
     this.toggle();
   }
 
@@ -134,7 +133,14 @@ class IngredientsAddModal extends React.Component {
     );
   }
 }
+
+IngredientsAddModal.propTypes = {
+  sortIngs: PropTypes.func.isRequired,
+  addIng: PropTypes.func.isRequired,
+  ing: PropTypes.object.isRequired
+};
+
 const mapStateToProps = state => ({
   ing: state.ing
 });
-export default connect(mapStateToProps, {addIng, getIngs})(IngredientsAddModal);
+export default connect(mapStateToProps, {addIng, sortIngs})(IngredientsAddModal);
