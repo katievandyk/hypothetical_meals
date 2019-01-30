@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles.css';
 
 import { getGoals } from '../actions/goalsActions';
 import { getSKUsIngQuantity  } from '../actions/skuActions';
@@ -12,7 +13,6 @@ import CalculatorEntry from '../components/goals/CalculatorEntry';
 import CalculatorDropdown from '../components/goals/CalculatorDropdown';
 import GoalsCreateModal from '../components/goals/GoalsCreateModal';
 import GoalsExport from '../components/goals/GoalsExport';
-import '../styles.css';
 
 import { Provider } from 'react-redux';
 import store from '../store';
