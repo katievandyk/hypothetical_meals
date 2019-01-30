@@ -6,14 +6,14 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getSKUs } from '../../actions/skuActions';
-import { sortIngs, filterBySKUs } from '../../actions/ingActions';
+import { getPLines } from '../../actions/plineActions';
+import { sortSKUs, filterByPLines} from '../../actions/skuActions';
 
-class SKUFilters extends React.Component {
+class PLineFilters extends React.Component {
   state={
     modal: false,
-    sku_filters:{},
-    selected_skus:{}
+    pline_filters:{},
+    selected_plines:{}
   }
 
   toggle = () => {
@@ -23,44 +23,44 @@ class SKUFilters extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getSKUs();
+    this.props.getPLines();
   }
 
   onChange = (e, _id, name) =>{
     if(e.target.checked){
-      const newSelected = this.state.selected_skus;
+      const newSelected = this.state.selected_plines;
       newSelected[_id] = name;
       this.setState({
-        selected_skus: newSelected
+        selected_plines: newSelected
       });
     }
     else{
-      delete this.state.selected_skus[_id];
+      delete this.state.selected_plines[_id];
     }
   }
 
   onAddFilters = () => {
-    const newFilters = this.state.selected_skus;
+    const newFilters = this.state.selected_plines;
     this.setState({
-      sku_filters: newFilters
+      pline_filters: newFilters
     });
-    this.props.filterBySKUs(Object.keys(this.state.selected_skus));
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.obj);
+    this.props.filterByPLines(Object.keys(this.state.selected_plines));
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.obj);
     this.toggle();
   };
 
   onRemoveFilter = e => {
-    delete this.state.sku_filters[e.target.id];
-    this.props.filterBySKUs(Object.keys(this.state.sku_filters));
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.obj);
+    delete this.state.pline_filters[e.target.id];
+    this.props.filterByPLines(Object.keys(this.state.pline_filters));
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.obj);
   };
 
   render() {
-    const ids = this.state.sku_filters;
+    const ids = this.state.pline_filters;
     return (
-      <div>SKU Filters:  {'  '}
+      <div>Product Line Filters:  {'  '}
       <Badge style={{'marginLeft': '2px', 'marginRight': '2px'}} color="light"
-        className={Object.keys(this.state.sku_filters).length !== 0? "hidden": ""}>
+        className={Object.keys(this.state.pline_filters).length !== 0? "hidden": ""}>
         <FontAwesomeIcon icon = "times"/>
         {' '}None
         </Badge>
@@ -71,22 +71,24 @@ class SKUFilters extends React.Component {
             {value}
             </Badge>
         ))}
-      <Badge style={{'marginLeft': '2px', 'marginRight': '2px'}} href="#" onClick={this.toggle} color="success">+ Add Filter</Badge>
+      <Badge style={{'marginLeft': '2px', 'marginRight': '2px'}}
+        href="#" onClick={this.toggle} color="success">
+        + Add Filter</Badge>
       <Modal isOpen={this.state.modal} toggle={this.toggle}>
-        <ModalHeader toggle={this.toggle}>Select SKU Filters to Add</ModalHeader>
+        <ModalHeader toggle={this.toggle}>Select Product Line Filters to Add</ModalHeader>
         <ModalBody style={{'textAlign': 'center'}}>
           <Form>
             <FormGroup>
-              {this.props.skus.skus.map(({_id, name}) => (
+              {this.props.plines.plines.map(({_id, name}) => (
                 <CustomInput key={_id} type="checkbox" id={_id} label={name}
-                defaultChecked={{_id} in this.state.sku_filters}
+                defaultChecked={{_id} in this.state.pline_filters}
                 onChange={(e) => {this.onChange(e, _id, name)}}inline/>
               ))}
             </FormGroup>
           </Form>
         </ModalBody>
         <ModalFooter>  <Button color="dark" onClick={this.onAddFilters} block>
-                Add Selected SKU Filters
+                Add Selected Product Line Filters
               </Button></ModalFooter>
       </Modal>
       </div>
@@ -94,16 +96,16 @@ class SKUFilters extends React.Component {
   }
 }
 
-SKUFilters.propTypes = {
+PLineFilters.propTypes = {
   skus: PropTypes.object.isRequired,
-  ing: PropTypes.object.isRequired,
-  getSKUs: PropTypes.func.isRequired,
-  sortIngs: PropTypes.func.isRequired,
-  filterBySKUs: PropTypes.func.isRequired
+  plines: PropTypes.object.isRequired,
+  getPLines: PropTypes.func.isRequired,
+  sortSKUs: PropTypes.func.isRequired,
+  filterByPLines: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   skus: state.skus,
-  ing: state.ing
+  plines: state.plines
 });
-export default connect(mapStateToProps, {getSKUs, sortIngs, filterBySKUs})(SKUFilters);
+export default connect(mapStateToProps, {getPLines, sortSKUs, filterByPLines})(PLineFilters);

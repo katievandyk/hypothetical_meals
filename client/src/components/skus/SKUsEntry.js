@@ -7,28 +7,29 @@ import {
   Form,
   FormGroup,
   Label,
-  Input,
-  ListGroup,
-  ListGroupItem
+  Input
  } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { getIngs, deleteIng, updateIng, getIngSKUs } from '../../actions/ingActions';
+import { getSKUs, deleteSKU, updateSKU } from '../../actions/skuActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../../styles.css'
 
-class IngredientsEntry extends React.Component {
+class SKUsEntry extends React.Component {
   state = {
     modal: false,
     edit_id: '',
     edit_name: '',
     edit_number: '',
-    edit_vendor_info: '',
-    edit_package_size: '',
-    edit_cost_per_package: '',
+    edit_case_number: '',
+    edit_unit_number: '',
+    edit_unit_size: '',
+    edit_product_line: '',
+    edit_count_per_case: '',
+    edit_ingredients_list: [],
     edit_comment: '',
-    sku_modal: false
+    ing_modal: false
   };
 
   toggle = () => {
@@ -37,30 +38,33 @@ class IngredientsEntry extends React.Component {
     });
   }
 
-  sku_toggle = () => {
+  /*ing_toggle = () => {
     this.setState({
-      sku_modal: !this.state.sku_modal
+      ing_modal: !this.state.ing_modal
     });
-  }
+  }*/
 
   componentDidMount() {
-    this.props.getIngs();
+    this.props.getSKUs();
   }
 
   onDeleteClick = id => {
-    this.props.deleteIng(id);
+    this.props.deleteSKU(id);
   };
 
-  onEditClick = (id, name, number, vendor_info,
-  package_size, cost_per_package, comment) => {
+  onEditClick = (id, name, number, case_number, unit_number, unit_size, product_line, count_per_case,
+  ingredients_list, comment) => {
     this.setState({
       modal: true,
       edit_id: id,
       edit_name: name,
       edit_number: number,
-      edit_vendor_info: vendor_info,
-      edit_package_size: package_size,
-      edit_cost_per_package: cost_per_package,
+      edit_case_number: case_number,
+      edit_unit_number: unit_number,
+      edit_unit_size: unit_size,
+      edit_product_line: product_line,
+      edit_count_per_case: count_per_case,
+      edit_ingredients_list: ingredients_list,
       edit_comment: comment
     });
   };
@@ -74,29 +78,33 @@ class IngredientsEntry extends React.Component {
   onEditSubmit = e => {
     e.preventDefault();
 
-    const editedIng = {
+    const editedSKU = {
       id: this.state.edit_id,
       name: this.state.edit_name,
       number: this.state.edit_number,
-      vendor_info: this.state.edit_vendor_info,
-      package_size: this.state.edit_package_size,
-      cost_per_package: this.state.edit_cost_per_package,
+      case_number: this.state.edit_case_number,
+      unit_number: this.state.edit_unit_number,
+      unit_size: this.state.edit_unit_size,
+      product_line: this.state.edit_product_line,
+      count_per_case: this.state.edit_count_per_case,
+      ingredients_list: this.state.edit_ingredients_list,
       comment: this.state.edit_comment
     };
 
-    this.props.updateIng(editedIng);
-    this.props.getIngs();
+    this.props.updateSKU(editedSKU);
+    this.props.getSKUs();
     this.toggle();
   };
-
-  onSKUListClick = id => {
-    this.sku_toggle();
+/**
+  onIngListClick = id => {
+    this.ing_toggle();
     this.props.getIngSKUs(id);
   };
+  **/
 
   render() {
-    const { ings } = this.props.ing;
-    const loading = this.props.ing.loading;
+    const { skus } = this.props.skus;
+    const loading = this.props.skus.loading;
 
     if(loading){
       return (
@@ -115,10 +123,12 @@ class IngredientsEntry extends React.Component {
             <tr>
               <th>Name</th>
               <th>#</th>
-              <th>Vendor's Info</th>
-              <th>Package Size</th>
-              <th>Cost/Package</th>
-              <th>SKUs</th>
+              <th>Case #</th>
+              <th>Unit #</th>
+              <th>Unit Size</th>
+              <th>Count/Case</th>
+              <th>Product Line</th>
+              <th>Ingredients</th>
               <th>Comments</th>
               <th>Edit</th>
               <th>Delete</th>
@@ -126,28 +136,26 @@ class IngredientsEntry extends React.Component {
           </thead>
           <tbody is="transition-group" >
             <TransitionGroup className="ingredients-table" component={null}>
-              {ings.map(({_id, name, number, vendor_info, package_size,
-                cost_per_package, comment }) => (
+              {skus.map(({_id, name, number, case_number, unit_number, unit_size,
+                count_per_case, product_line, ingredients_list, comment }) => (
                 <CSSTransition key={_id} timeout={500} classNames="fade">
                   <tr>
                     <td> {name} </td>
                     <td> {number} </td>
-                    <td> {vendor_info} </td>
-                    <td> {package_size} </td>
-                    <td> {cost_per_package} </td>
+                    <td> {case_number} </td>
+                    <td> {unit_number} </td>
+                    <td> {unit_size} </td>
+                    <td> {count_per_case}</td>
+                    <td> {/**{product_line}**/}</td>
                     <td>
-                      <Button size="sm" color="link"
-                      onClick={this.onSKUListClick.bind(this, _id)}
-                      style={{'color':'black'}}>
-                      <FontAwesomeIcon icon="list"/>
-                      </Button>
+                      {/*{ingredients_list}*/}
                     </td>
                     <td> {comment} </td>
                     <td>
                       <Button size="sm" color="link"
                         onClick={this.onEditClick.bind(this,
-                          _id, name, number, vendor_info, package_size,
-                          cost_per_package, comment
+                          _id, name, number, case_number, unit_number, unit_size,
+                            count_per_case, product_line, ingredients_list, comment
                         )}
                         style={{'color':'black'}}>
                         <FontAwesomeIcon icon = "edit"/>
@@ -241,7 +249,7 @@ class IngredientsEntry extends React.Component {
             </Form>
           </ModalBody>
         </Modal>
-        <Modal isOpen={this.state.sku_modal} toggle={this.sku_toggle}>
+        {/*<Modal isOpen={this.state.sku_modal} toggle={this.sku_toggle}>
           <ModalHeader toggle={this.sku_toggle}>SKUs that use Ingredient: {this.props.ing.ing_skus.length}</ModalHeader>
           <ModalBody>
             <ListGroup>
@@ -250,22 +258,22 @@ class IngredientsEntry extends React.Component {
               ))}
             </ListGroup>
           </ModalBody>
-        </Modal>
+        </Modal>*/}
         </div>
 
     );
   }
 }
 
-IngredientsEntry.propTypes = {
-  getIngs: PropTypes.func.isRequired,
-  deleteIng: PropTypes.func.isRequired,
-  updateIng: PropTypes.func.isRequired,
-  ing: PropTypes.object.isRequired
+SKUsEntry.propTypes = {
+  getSKUs: PropTypes.func.isRequired,
+  deleteSKU: PropTypes.func.isRequired,
+  updateSKU: PropTypes.func.isRequired,
+  skus: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
-  ing: state.ing
+  skus: state.skus
 });
 
-export default connect(mapStateToProps, { getIngs, deleteIng, updateIng, getIngSKUs })(IngredientsEntry);
+export default connect(mapStateToProps, { getSKUs, deleteSKU, updateSKU })(SKUsEntry);
