@@ -68,12 +68,6 @@ class Ingredients extends Component {
       case "cost-desc":
         this.props.sortIngs('cost_per_package', 'desc', this.props.ing.obj);
         break;
-      case "comment-asc":
-        this.props.sortIngs('comment', 'asc', this.props.ing.obj);
-        break;
-      case "comment-desc":
-        this.props.sortIngs('comment', 'desc', this.props.ing.obj);
-        break;
       default:
         break;
     }
@@ -162,17 +156,6 @@ class Ingredients extends Component {
                           onClick={this.sortClick.bind(this, "cost-desc")}
                           className={this.state.sortby === 'cost-desc'? "active" : ""}>
                           Cost per Package {' '}
-                          <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "comment-asc")}
-                          className={this.state.sortby === 'comment-asc'? "active" : ""}>
-                          Comments per Package {' '}
-                          <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "comment-desc")}
-                          className={this.state.sortby === 'comment-desc'? "active" : ""}>
-                          Comments per Package {' '}
                           <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                       </DropdownMenu>
                     </ButtonDropdown> {' '}

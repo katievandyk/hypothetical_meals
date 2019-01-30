@@ -88,12 +88,6 @@ class SKU extends Component {
       case "ingredients-desc":
         this.props.sortSKUs('ingredients_list', 'desc', this.props.skus.obj);
         break;
-      case "comment-asc":
-        this.props.sortSKUs('comment', 'asc', this.props.skus.obj);
-        break;
-      case "comment-desc":
-        this.props.sortSKUs('comment', 'desc', this.props.skus.obj);
-        break;
       default:
         break;
     }
@@ -217,17 +211,6 @@ class SKU extends Component {
                        onClick={this.sortClick.bind(this, "ingredients-desc")}
                        className={this.state.sortby === 'ingredients-desc'? "active" : ""}>
                         Ingredients {' '}
-                       <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
-                    <DropdownItem divider />
-                     <DropdownItem
-                       onClick={this.sortClick.bind(this, "comment-asc")}
-                       className={this.state.sortby === 'comment-asc'? "active" : ""}>
-                       Comment {' '}
-                       <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                     <DropdownItem
-                       onClick={this.sortClick.bind(this, "comment-desc")}
-                       className={this.state.sortby === 'comment-desc'? "active" : ""}>
-                       Comment {' '}
                        <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                    </DropdownMenu>
                  </ButtonDropdown> {' '}
