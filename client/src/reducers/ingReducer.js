@@ -9,17 +9,19 @@ const initialState = {
   ing_skus_loading: false,
   obj: {},
   sortby: 'name',
-  sortdir: 'asc'
+  sortdir: 'asc',
+  count: 0
 };
 
 export default function(state = initialState, action) {
   switch(action.type) {
-    case GET_INGS:
+    case GET_INGS:{
       return {
         ...state,
-        ings: action.payload,
+        ings: action.payload.results,
+        count: action.payload.count,
         loading: false
-      }
+      }}
     case ADD_ING:
       return {
         ...state,
@@ -72,10 +74,11 @@ export default function(state = initialState, action) {
     case ING_SORT:
       return {
         ...state,
-        ings: action.payload.data,
+        ings: action.payload.data.results,
         sortby: action.payload.sortby,
         sortdir: action.payload.sortdir,
         obj: action.payload.obj,
+        count: action.payload.data.count,
         loading: false
       }
     default:

@@ -75,7 +75,7 @@ class SKUFilters extends React.Component {
       <Modal isOpen={this.state.modal} toggle={this.toggle}>
         <ModalHeader toggle={this.toggle}>Select SKU Filters to Add</ModalHeader>
         <ModalBody style={{'textAlign': 'center'}}>
-          <Form>
+         <Form>
             <FormGroup>
               {this.props.skus.skus.map(({_id, name}) => (
                 <CustomInput key={_id} type="checkbox" id={_id} label={name}
@@ -84,6 +84,7 @@ class SKUFilters extends React.Component {
               ))}
             </FormGroup>
           </Form>
+
         </ModalBody>
         <ModalFooter>  <Button color="dark" onClick={this.onAddFilters} block>
                 Add Selected SKU Filters

@@ -8,7 +8,8 @@ const initialState = {
   obj: {},
   sortby: 'name',
   sortdir: 'asc',
-  error: ''
+  error: '',
+  count: 0
 };
 
 export default function(state = initialState, action) {
@@ -16,13 +17,12 @@ export default function(state = initialState, action) {
     case GET_SKUS_BYPLINE:
       return {
         ...state,
-        skus: action.payload,
+        skus: action.payload.results,
         loading: false
       }
     case ADD_SKU:
       return {
-        ...state,
-        skus: [action.payload, state.skus]
+        ...state
       }
     case DELETE_SKU:
       return {
@@ -31,8 +31,7 @@ export default function(state = initialState, action) {
       }
     case UPDATE_SKU:
       return {
-        ...state,
-        skus: [action.payload, state.skus]
+        ...state
       }
     case SKUS_LOADING:
       return {
@@ -42,9 +41,11 @@ export default function(state = initialState, action) {
     case GET_SKUS:
       return {
         ...state,
-        skus: action.payload,
+        skus: action.payload.results,
+        count: action.payload.count,
         loading: false
       }
+
     case SKU_KW_SEARCH:{
         state.obj.keywords = action.payload;
         return {
@@ -78,7 +79,8 @@ export default function(state = initialState, action) {
     case SKU_SORT:
       return {
         ...state,
-        skus: action.payload.data,
+        skus: action.payload.data.results,
+        count: action.payload.data.count,
         sortby: action.payload.sortby,
         sortdir: action.payload.sortdir,
         obj: action.payload.obj,

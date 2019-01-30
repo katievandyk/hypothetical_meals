@@ -171,7 +171,7 @@ class SKUsEntry extends React.Component {
                   </tr>
                 </CSSTransition>
             ))}
-            </TransitionGroup>
+          </TransitionGroup>
           </tbody>
         </Table>
         <Modal isOpen={this.state.modal} toggle={this.toggle}>
