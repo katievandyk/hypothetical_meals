@@ -1,6 +1,6 @@
 const fs = require('fs');
 const Papa = require('papaparse');
-const mongoose = require('mongoose');
+const Helpers = require('./helpers');
 
 // Import Models
 const ProductLine = require('../models/ProductLine');
@@ -13,50 +13,9 @@ const ingredients_header = [ ing_fields.number, ing_fields.name, ing_fields.vend
 const pl_fields = {name: 'Name'};
 const product_lines_header = [ pl_fields.name ];
 
-function _isNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-}
 
-function _isPositiveInteger(str) {
-    var n = Math.floor(Number(str));
-    return n !== Infinity && String(n) === str && n >= 0;
-}
-
-function _is_upca_standard(code) {
-    var i;
-    var sum = 0;
-    var code_temp = code;
-    code /= 10;
-    for(i = 1; i < 12; i++) {
-        var digit = Math.floor(code % 10);
-        if (i == 11 && !(digit == 0 | digit == 1 | digit >= 6 && digit <= 9)) {
-            console.log("not compilant: " + digit);
-            return false;
-        }
-            
-        code /= 10;
-        sum += i%2 == 0 ? digit : digit*3;
-    }
-
-    var check_digit = (10-sum%10)%10;
-    if(check_digit != code_temp % 10) {
-        console.log("not compilant: " + check_digit + " " + code_temp % 10);
-        return false;
-    }
-
-    return true;
-};
-
-function checkFileHeaders(actual_header, expected_header) {
-    var is_same = (actual_header.length == expected_header.length) && actual_header.every(function(element, index) {
-        return element === expected_header[index]; 
-    });
-    if(!is_same) throw new Error(
-        `File header doesn't match expected header. Actual: ${actual_header}; Expected: ${expected_header}`);
-}
-
-module.exports.parsePLFile = parsePL = function() {
-    var file = fs.readFileSync("/Users/kguo/Downloads/productlines2.csv", 'utf8');
+module.exports.parsePLFile = parsePL = function(fileName) {
+    var file = fs.readFileSync(fileName, 'utf8');
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -72,14 +31,15 @@ module.exports.parsePLFile = parsePL = function() {
 
 function checkPLs(data) {
     if (data.errors.length != 0) throw data.errors;
-    checkFileHeaders(data.meta.fields, product_lines_header);
+    Helpers.checkFileHeaders(data.meta.fields, product_lines_header);
 
     let pl_data = data.data;
     checkPLFileDuplicates(pl_data);
     return Promise.all(pl_data.map(preprocessOnePL));
 }
 
-function checkPLFileDuplicates(pl_data) {
+// visible for testing
+module.exports.checkPLFileDuplicates = checkPLFileDuplicates = function(pl_data) {
     let i;
     let names = [];
     for(i = 0; i < pl_data.length; i++) {
@@ -90,7 +50,8 @@ function checkPLFileDuplicates(pl_data) {
     }
 }
 
-function preprocessOnePL(pl_entry) {
+// visible for testing
+module.exports.preprocessOnePL = preprocessOnePL = function(pl_entry) {
     return new Promise(function(accept, reject) {
         ProductLine
             .findOne({name: pl_entry[pl_fields.name]})
@@ -108,8 +69,8 @@ function preprocessOnePL(pl_entry) {
     });
 }
 
-module.exports.parseIngredientFile = parseIng = function() {
-    var file = fs.readFileSync("/Users/kguo/Downloads/ingredients2.csv", 'utf8');
+module.exports.parseIngredientFile = parseIng = function(fileName) {
+    var file = fs.readFileSync(fileName, 'utf8');
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -126,7 +87,7 @@ module.exports.parseIngredientFile = parseIng = function() {
 function uploadIngredients(data) {
     if (data.errors.length != 0) throw data.errors;
 
-    checkFileHeaders(data.meta.fields, ingredients_header);
+    Helpers.checkFileHeaders(data.meta.fields, ingredients_header);
 
     ing_data = data.data;
 
@@ -134,7 +95,8 @@ function uploadIngredients(data) {
     return Promise.all(ing_data.map(preprocessOneIngredient));
 }
 
-function checkIngredientFileDuplicates(ing_data) {
+// visible for testing
+module.exports.checkIngredientFileDuplicates = checkIngredientFileDuplicates = function(ing_data) {
     let i;
     let names = [];
     let numbers = [];
@@ -150,11 +112,12 @@ function checkIngredientFileDuplicates(ing_data) {
     }
 }
 
-function preprocessOneIngredient(ing_data) {
-    if(!_isPositiveInteger(ing_data[ing_fields.number])) 
+// visible for testing
+module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_data) {
+    if(!Helpers.isPositiveInteger(ing_data[ing_fields.number])) 
         throw new Error("Ingredient number is not a valid number: " + ing_data[ing_fields.number]);
     
-    if(!_isNumeric(ing_data[ing_fields.cost])) 
+    if(!Helpers.isNumeric(ing_data[ing_fields.cost])) 
         throw new Error("Ingredient cost is not a number: " + ing_data[ing_fields.cost]);
     if (parseFloat(ing_data[ing_fields.cost]) < 0) 
         throw new Error("Ingredient cost is not positive: " + ing_data[ing_fields.cost]);
@@ -195,8 +158,8 @@ function preprocessOneIngredient(ing_data) {
     });
 }
 
-module.exports.parseSkuFile = parseSku = function() {
-    var file = fs.readFileSync("/Users/kguo/Downloads/skus2.csv", 'utf8');
+module.exports.parseSkuFile = parseSku = function(fileName) {
+    var file = fs.readFileSync(fileName, 'utf8');
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -214,14 +177,15 @@ const skus_header =  [ sku_fields.number,sku_fields.name,sku_fields.case_upc,sku
 
 function uploadSKUs(data) {
     if (data.errors.length != 0) throw data.errors;
-    checkFileHeaders(data.meta.fields, skus_header);
+    Helpers.checkFileHeaders(data.meta.fields, skus_header);
 
     skus_data = data.data;
     checkSKUFileDuplicates(skus_data);
     return Promise.all(skus_data.map(checkOneSKU));
 }
 
-function checkSKUFileDuplicates(sku_data) {
+// visible for testing
+module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(sku_data) {
     let i;
     let numbers = [];
     let case_numbers = [];
@@ -238,27 +202,27 @@ function checkSKUFileDuplicates(sku_data) {
 }
 
 // TODO: handle required fields
-function checkOneSKU(sku_data) {
-    if(!_isPositiveInteger(sku_data[sku_fields.number])) 
+module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
+    if(!Helpers.isPositiveInteger(sku_data[sku_fields.number])) 
         throw new Error("SKU number is not a valid number: " + sku_data[sku_fields.number]);
     
     if(sku_data[sku_fields.name].length > 32) 
         throw new Error("SKU name more than 32 characters: " + sku_data[sku_fields.name]);
     
-    if(!_isPositiveInteger(sku_data[sku_fields.case_upc])) 
+    if(!Helpers.isPositiveInteger(sku_data[sku_fields.case_upc])) 
         throw new Error("SKU case# is not a valid number: " + sku_data[sku_fields.case_upc]);
-    if(!_is_upca_standard(parseInt(sku_data[sku_fields.case_upc]))) 
+    if(!Helpers.is_upca_standard(sku_data[sku_fields.case_upc])) 
         throw new Error("SKU case# is not UPC-A compliant: " + sku_data[sku_fields.case_upc]);
 
-    if(!_isPositiveInteger(sku_data[sku_fields.unit_upc])) 
+    if(!Helpers.isPositiveInteger(sku_data[sku_fields.unit_upc])) 
         throw new Error("SKU units# is not a valid number: " + sku_data[sku_fields.unit_upc]);
-    if(!_is_upca_standard(parseInt(sku_data[sku_fields.unit_upc]))) 
+    if(!Helpers.is_upca_standard(sku_data[sku_fields.unit_upc])) 
         throw new Error("SKU unit# is not UPC-A compliant: " + sku_data[sku_fields.unit_upc]);
 
     if(sku_data[sku_fields.unit_size].length == 0)
         throw new Error("SKU unit size required.");
 
-    if(!_isPositiveInteger(sku_data[sku_fields.count])) 
+    if(!Helpers.isPositiveInteger(sku_data[sku_fields.count])) 
         throw new Error("SKU counts per case is not a valid number: " + obj[k]);
 
     let pl = sku_data[sku_fields.pl_name];
@@ -308,8 +272,8 @@ function checkOneSKU(sku_data) {
     });
 }
 
-module.exports.parseForumula = parseFormula = function() {
-    var file = fs.readFileSync("/Users/kguo/Downloads/formulas2.csv", 'utf8');
+module.exports.parseForumula = parseFormula = function(fileName) {
+    var file = fs.readFileSync(fileName, 'utf8');
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -328,7 +292,7 @@ const formulas_header = [ formula_fields.sku_num, formula_fields.ing_num, formul
 
 function checkFormulas(data) {
     if (data.errors.length != 0) throw data.errors;
-    checkFileHeaders(data.meta.fields, formulas_header);
+    Helpers.checkFileHeaders(data.meta.fields, formulas_header);
 
     formula_data = data.data;
 
@@ -336,7 +300,8 @@ function checkFormulas(data) {
     return Promise.all(formula_data.map(checkOneForumla));
 }
 
-function checkFormulaFileDuplicates(formula_data) {
+// visible for testing
+module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = function(formula_data) {
     let i;
     let sku_to_ings = {};
     for(i = 0; i < formula_data.length; i++) {
@@ -346,7 +311,7 @@ function checkFormulaFileDuplicates(formula_data) {
             throw new Error(`Duplicate sku,ing entry in file: ` + 
             `${formula_data[i][formula_fields.sku_num]},${formula_data[i][formula_fields.ing_num]}`);
         if(sku_to_ings[formula_data[i][formula_fields.sku_num]]) {
-            sku_to_ing[formula_data[i]][formula_fields.sku_num].push(formula_data[i][formula_fields.ing_num]);
+            sku_to_ings[formula_data[i][formula_fields.sku_num]].push(formula_data[i][formula_fields.ing_num]);
         }
         else {
             sku_to_ings[formula_data[i][formula_fields.sku_num]] = [formula_data[i][formula_fields.ing_num]];
@@ -354,18 +319,18 @@ function checkFormulaFileDuplicates(formula_data) {
     }
 }
 
-function checkOneForumla(formula_data) {
-    if(!_isPositiveInteger(formula_data[formula_fields.sku_num])) 
+module.exports.checkOneForumla = checkOneForumla = function(formula_data) {
+    if(!Helpers.isPositiveInteger(formula_data[formula_fields.sku_num])) 
         throw new Error(
             "SKU number is not a valid number: " + formula_data[formula_fields.sku_num]);
     let sku = parseInt(formula_data[formula_fields.sku_num]);
 
-    if(!_isPositiveInteger(formula_data[formula_fields.ing_num])) 
+    if(!Helpers.isPositiveInteger(formula_data[formula_fields.ing_num])) 
         throw new Error(
             "Ingredient number is not a valid number: " + formula_data[formula_fields.ing_num]);
     let ing = parseInt(formula_data[formula_fields.ing_num]);
 
-    if(!_isNumeric(formula_data[formula_fields.quantity])) 
+    if(!Helpers.isNumeric(formula_data[formula_fields.quantity])) 
         throw new Error(
             "Ingredient quantity is not a number: " + formula_data[formula_fields.quantity]);
     if (parseFloat(formula_data[formula_fields.quantity]) < 0) 
@@ -396,6 +361,6 @@ function checkOneForumla(formula_data) {
             formula_data["ing_id"] = ingDoc._id;
             formula_data["sku_id"] = skuDoc._id;
             accept(formula_data);
-        })
+        }).catch(error => reject(error));
     });
 }

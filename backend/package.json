@@ -17,6 +17,7 @@
     "express": "^4.16.4",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.4.0",
+    "mocha": "^5.2.0",
     "mongoose": "^5.4.5",
     "morgan": "^1.9.1",
     "papaparse": "^4.6.3",

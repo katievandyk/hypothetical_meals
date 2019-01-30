@@ -8,7 +8,7 @@ var Uploader = require('../../bulk_import/upload');
 // @desc check if ingredients can be imported
 // @access public
 router.post('/check/ingredients', (req, res) => {
-    Parser.parseIngredientFile()
+    Parser.parseIngredientFile(req.body.file)
     .then(result => res.json(result))
     .catch(err => { 
         console.log(err);
@@ -30,7 +30,7 @@ router.post('/update/ingredients', (req, res) => {
 // @desc check if product lines can be imported
 // @access public
 router.post('/check/productlines', (req, res) => {
-    Parser.parsePLFile()
+    Parser.parsePLFile(req.body.file)
     .then(result => res.json(result))
     .catch(err => { 
         console.log(err);
@@ -52,7 +52,7 @@ router.post('/update/productlines', (req, res) => {
 // @desc check if skus can be imported
 // @access public
 router.post('/check/skus', (req, res) => {
-    Parser.parseSkuFile()
+    Parser.parseSkuFile(req.body.file)
     .then(result => res.json(result))
     .catch(err => { 
         console.log(err);
@@ -74,7 +74,7 @@ router.post('/update/skus', (req, res) => {
 // @desc check if formulas can be imported
 // @access public
 router.post('/check/formulas', (req, res) => {
-    Parser.parseForumula()
+    Parser.parseForumula(req.body.file)
     .then(result => res.json(result))
     .catch(err => { 
         console.log(err);
