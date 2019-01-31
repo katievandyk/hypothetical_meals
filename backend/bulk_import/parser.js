@@ -7,8 +7,8 @@ const ProductLine = require('../models/ProductLine');
 const SKU = require('../models/SKU');
 const Ingredient = require('../models/Ingredient');
 
-const ing_fields = {number: 'Ingr#', name: 'Name', vendor: 'Vendor Info', size: 'Size', cost: 'Cost', comment: 'Comment'};
-const ingredients_header = [ ing_fields.number, ing_fields.name, ing_fields.vendor, ing_fields.size, ing_fields.cost, ing_fields.comment ];
+module.exports.ing_fields = ing_fields = {number: 'Ingr#', name: 'Name', vendor: 'Vendor Info', size: 'Size', cost: 'Cost', comment: 'Comment'};
+module.exports.ing_fields = ingredients_header = [ ing_fields.number, ing_fields.name, ing_fields.vendor, ing_fields.size, ing_fields.cost, ing_fields.comment ];
 
 const pl_fields = {name: 'Name'};
 const product_lines_header = [ pl_fields.name ];

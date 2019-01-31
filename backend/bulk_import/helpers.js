@@ -10,7 +10,6 @@ module.exports.isPositiveInteger = function(str) {
 
 module.exports.is_upca_standard = function(code_str) {
     if(code_str.length != 12) {
-        console.log(code_str.length);
         return false;
     }
     let code = parseInt(code_str);
@@ -43,3 +42,87 @@ module.exports.checkFileHeaders = function(actual_header, expected_header) {
     if(!is_same) throw new Error(
         `File header doesn't match expected header. Actual: ${actual_header}; Expected: ${expected_header}`);
 }
+
+module.exports.getIngredientFilterResult = getIngredientFilterResult = function(req, res, callback) {
+    var skus = req.body.skus == null ? [] : req.body.skus;
+    SKU.aggregate(
+        [{ $match: {'_id': {$in: skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
+        { $unwind: "$ingredients_list" },
+        { $group: { _id: { ingredients: '$ingredients_list'} } },
+        { $replaceRoot: { newRoot: "$_id" } },
+        { $unwind: "$ingredients" },
+        { $replaceRoot: { newRoot: "$ingredients" } }
+        ]
+    ).then(result => {
+        var onlyIds = result.map(obj => obj._id);
+        var ingredientFindPromise;
+        if (req.body.skus != null && req.body.keywords != null) {
+            ingredientFindPromise = Ingredient.find({$text: {
+                $search: req.body.keywords}},
+                {score:{$meta: "textScore"}}, 
+                ).where({_id: {$in: onlyIds}});
+        }
+        else if (req.body.skus != null) {
+            ingredientFindPromise = Ingredient.find().where({_id: {$in: onlyIds}});
+        }
+        else if (req.body.keywords != null) {
+            ingredientFindPromise = Ingredient.find({$text: {
+                $search: req.body.keywords}},
+                {score:{$meta: "textScore"}});
+        }
+        else {
+            ingredientFindPromise = Ingredient.find();
+        }
+        callback(req, res, ingredientFindPromise)
+    }).catch(error => reject(error))
+}
+
+module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, callback) {
+    var skuFindPromise = SKU.find();
+
+    if (req.body.ingredients != null) {
+        skuFindPromise = skuFindPromise.find(
+            { 'ingredients_list._id': { $all: 
+                req.body.ingredients}});
+    }
+    if (req.body.product_lines != null) {
+        skuFindPromise = skuFindPromise.find(
+            { 'product_line': { $in: 
+                req.body.product_lines.map(
+                    function(el) { return mongoose.Types.ObjectId(el) }) }});
+    }
+    if (req.body.keywords != null) {
+        skuFindPromise = skuFindPromise.find(
+            {$text: {$search: req.body.keywords}},
+            {score:{$meta: "textScore"}});
+    }
+
+    skuFindPromise = skuFindPromise.populate('product_line').populate('ingredients_list._id')
+
+    callback(req, res, skuFindPromise)
+}
+
+module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise) {
+    // Paginate. If limit = -1, then gives all records
+    var currentPage = parseInt(req.params.pagenumber);
+    var limit = parseInt(req.params.limit);
+    if (limit != -1) {
+        findPromise = findPromise.skip((currentPage-1)*limit).limit(limit);
+    }
+
+    var sortOrder = req.params.asc === 'asc' ? 1 : -1;
+    var sortPromise;
+    if (req.params.field === 'score') {
+        sortPromise = findPromise.lean().sort(
+            {score: {$meta: "textScore"}});
+    }
+    else {
+        sortPromise = findPromise.lean().sort(
+            {[req.params.field] : sortOrder}).then(resultF => {res.json(resultF)});
+    }
+
+    sortPromise.then(resultF => {
+        res.json(resultF)})
+        .catch(err => res.status(404).json({success: false, message: err.message}));
+}
+

@@ -51,6 +51,9 @@ app.use('/api/skus', skus);
 const imports = require('./routes/api/bulk-import');
 app.use('/api/bulk-import', imports);
 
+const bulkexport = require('./routes/api/bulk-export');
+app.use('/api/bulk-export', bulkexport);
+
 const manufacturing= require('./routes/api/manufacturing');
 app.use('/api/manufacturing', manufacturing);
 
