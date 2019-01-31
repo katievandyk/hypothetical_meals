@@ -10,9 +10,11 @@ const Goal = require('../../models/Goal');
 // @desc get all goals for specific user
 // @access public
 router.get('/:user_email', (req, res) => {
-    console.log(req);
-    Goal.aggregate(
-        [ { $match: {'user_email': mongoose.Types.ObjectId(req.params.user_email) }}])
+    console.log(req.params.user_email);
+    Goal
+        .find({ 'user_email' : req.params.user_email})
+        .populate({ path: 'skus_list.sku'})
+        .lean()
         .then(goal => res.json(goal))
 });
 
