@@ -8,7 +8,7 @@ const ProductLine = require('../../models/ProductLine');
 
 // @route POST api/bulk-export/ingredients
 // @desc posts request for ingredients bulk export
-// request body fields:
+// request body fields (all optional):
 // - skus: Array of sku ids (String) to get ingredients for
 // - keywords: Array of words (String) to match entries on
 // @access public
@@ -33,7 +33,7 @@ function exportIngResponse(req, res, ingredientFindPromise) {
 
 // @route POST api/bulk-export/productlines
 // @desc posts request for ingredients bulk export
-// request body fields:
+// request body fields (all optional):
 // - skus: Array of sku ids (String) to get ingredients for
 // - keywords: Array of words (String) to match entries on
 // @access public
@@ -50,7 +50,7 @@ router.post('/productlines', (req, res) => {
 
 // @route POST api/bulk-export/skus
 // @desc posts request for skus bulk export
-// request body fields:
+// request body fields (all optional):
 // - skus: Array of sku ids (String) to get ingredients for
 // - keywords: Array of words (String) to match entries on
 // @access public
@@ -80,7 +80,7 @@ function postProcessSkuResult(result) {
 
 // @route POST api/bulk-export/formulas
 // @desc posts request for skus bulk export
-// request body fields:
+// request body fields (all optional):
 // - skus: Array of sku ids (String) to get ingredients for
 // - keywords: Array of words (String) to match entries on
 // @access public
