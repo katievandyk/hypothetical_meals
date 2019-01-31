@@ -56,7 +56,6 @@ module.exports.preprocessOnePL = preprocessOnePL = function(pl_entry) {
         ProductLine
             .findOne({name: pl_entry[pl_fields.name]})
             .then(result => {
-                console.log(result);
                 if(!result) {
                     pl_entry["status"] = "Store";
                     accept(pl_entry);
@@ -128,7 +127,6 @@ module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_
             Ingredient.findOne({number: ing_data[ing_fields.number]})])
             .then(result => {
                 let status = "Store";
-                console.log(result);
                 let name_result = result[0];
                 let number_result = result[1];
                 if(name_result) {
@@ -242,7 +240,6 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                 case_number_result = result[2];
                 let status = "Store";
 
-                console.log(number_result);
                 if(number_result) {
                     if(number_result.name == sku_data[sku_fields.name] &&
                         number_result.case_number == sku_data[sku_fields.case_upc] &&
