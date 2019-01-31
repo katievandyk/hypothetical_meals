@@ -1,7 +1,7 @@
 import React from 'react';
 import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { connect } from 'react-redux';
-import { getSKUsByPLine } from '../actions/skuActions';
+import { getSKUsByPLine } from '../../actions/skuActions';
 import PropTypes from 'prop-types';
 
 class GoalsSKUDropdown extends React.Component {
