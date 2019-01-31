@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button } from 'reactstrap';
 import AppNavbar from '../components/AppNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
@@ -19,6 +20,9 @@ import { Provider } from 'react-redux';
 import store from '../store';
 
 import { Container, Row, Col} from 'reactstrap';
+
+const html2canvas = require('html2canvas');
+const jsPDF = require('jspdf');
 
 class Manufacturing extends Component {
 
@@ -43,6 +47,20 @@ class Manufacturing extends Component {
     this.props.getGoalsIngQuantity(goal._id);
    }
 
+
+     exportPDF() {
+       const input = document.getElementById('toPDF')
+       html2canvas(input)
+            .then((canvas) => {
+                 var image = canvas.toDataURL("image/jpeg");
+                 var doc = new jsPDF('l', 'mm');
+                 var width = doc.internal.pageSize.getWidth();
+                 var height = doc.internal.pageSize.getHeight();
+                 doc.addImage(image, 'JPEG', 0, 0, width-20, height-10);
+                 doc.save('myPage.pdf'); //Download the rendered PDF.
+            });
+        }
+
    render() {
         return(
           <Provider store={store}>
@@ -63,7 +81,9 @@ class Manufacturing extends Component {
                 </Container>
                 <GoalsEntry/>
               </Container>
-              <Container className="mt-5">
+              </div>
+              <div>
+              <Container className="mt-5" id="toPDF">
                 <Container className="my-3">
                     <Row>
                         <Col> <h1>Manufacturing Calculator</h1> </Col>
@@ -71,12 +91,13 @@ class Manufacturing extends Component {
                    <Row>
                       <Col style={{'textAlign': 'right'}}> </Col>
                       <CalculatorDropdown goals={this.props.goals} calculatorCallback={this.calculatorCallback}/> &nbsp;
-                      <CalculatorExport goal={this.state.calcGoal}/>
+                      <CalculatorExport goal={this.state.calcGoal}/> &nbsp;
+                      <Button color="success" onClick={this.exportPDF}>PDF</Button>
                    </Row>
                 </Container>
                 <CalculatorEntry ingredients={this.props.goals.ing_quantities}/>
               </Container>
-            </div>
+              </div>
           </Provider>
       );
    }
