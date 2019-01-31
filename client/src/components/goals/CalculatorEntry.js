@@ -14,8 +14,8 @@ class CalculatorEntry extends React.Component {
             </tr>
           </thead>
           <tbody>
-           {this.props.ingredients.map(({_id, ingredient, quantity}) => (
-                <tr key={_id}>
+           {this.props.ingredients.map(({ingredient, quantity}) => (
+                <tr key={ingredient._id}>
                 {ingredient.map(({name}) => (
                     <td> {name} </td>
                 ))}

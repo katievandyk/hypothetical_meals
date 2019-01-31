@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
 import { getGoals } from '../actions/goalsActions';
-import { getSKUsIngQuantity  } from '../actions/skuActions';
+import { getGoalsIngQuantity  } from '../actions/goalsActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -31,13 +31,7 @@ class Manufacturing extends Component {
   }
 
   calculatorCallback = goal => {
-    var ids = [];
-    goal.skus_list.forEach(entry => ids.push(entry.sku._id));
-    const sku_ids = {
-        skus: ids
-    };
-    // get ingredients per sku t
-    this.props.getSKUsIngQuantity(sku_ids);
+    this.props.getGoalsIngQuantity(goal._id);
    }
 
    render() {
@@ -70,7 +64,7 @@ class Manufacturing extends Component {
                       <CalculatorDropdown goals={this.props.goals} calculatorCallback={this.calculatorCallback}/>
                    </Row>
                 </Container>
-                <CalculatorEntry ingredients={this.props.skus.ing_quantities}/>
+                <CalculatorEntry ingredients={this.props.goals.ing_quantities}/>
               </Container>
             </div>
           </Provider>
@@ -81,13 +75,11 @@ class Manufacturing extends Component {
 Manufacturing.propTypes = {
   getGoals: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
-  getSKUsIngQuantity: PropTypes.func.isRequired,
-  skus: PropTypes.object.isRequired,
+  getGoalsIngQuantity: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   goals: state.goals,
-  skus: state.skus
 });
 
-export default connect(mapStateToProps, { getGoals, getSKUsIngQuantity })(Manufacturing);
+export default connect(mapStateToProps, { getGoals, getGoalsIngQuantity })(Manufacturing);

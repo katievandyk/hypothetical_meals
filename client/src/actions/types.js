@@ -18,6 +18,8 @@ export const GET_GOALS = 'GET_GOALS';
 export const ADD_GOAL = 'ADD_GOAL';
 export const DELETE_GOAL = 'DELETE_GOAL';
 export const GOALS_LOADING = 'GOALS_LOADING';
+export const GOALS_INGQUANTITY = 'GOALS_INGQUANTITY';
+export const GOAL_EXPORT = 'GOAL_EXPORT';
 // Product Lines
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';
@@ -27,4 +29,3 @@ export const PLINES_LOADING = 'PLINES_LOADING';
 export const GET_SKUS_BYPLINE = 'GET_SKUS';
 export const SKUS_LOADING = 'SKUS_LOADING';
 export const GET_SKUS = 'GET_SKUS';
-export const SKUS_INGQUANTITY = 'SKUS_INGQUANTITY';

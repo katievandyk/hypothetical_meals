@@ -2,7 +2,6 @@ import { GET_SKUS_BYPLINE, SKUS_LOADING, GET_SKUS, SKUS_INGQUANTITY} from '../ac
 
 const initialState = {
   skus: [],
-  ing_quantities: [],
   loading: false
 };
 
@@ -23,12 +22,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         skus: action.payload,
-        loading: false
-      }
-    case SKUS_INGQUANTITY:
-      return {
-        ...state,
-        ing_quantities: action.payload,
         loading: false
       }
     default:
