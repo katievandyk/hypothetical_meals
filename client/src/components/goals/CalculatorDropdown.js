@@ -31,7 +31,7 @@ class CalculatorDropdown extends React.Component {
     return (
       <div>
         <ButtonDropdown isOpen={this.state.isOpen} toggle={this.toggle}>
-          <DropdownToggle caret>
+          <DropdownToggle color="success" caret>
             {this.state.selectGoal}
           </DropdownToggle>
           <DropdownMenu>

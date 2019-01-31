@@ -20,12 +20,22 @@ export const DELETE_GOAL = 'DELETE_GOAL';
 export const GOALS_LOADING = 'GOALS_LOADING';
 export const GOALS_INGQUANTITY = 'GOALS_INGQUANTITY';
 export const GOAL_EXPORT = 'GOAL_EXPORT';
+export const GOAL_CALCULATOREXPORT = 'GOAL_CALCULATOREXPORT';
 // Product Lines
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';
 export const DELETE_PLINE = 'DELETE_PLINE';
+export const UPDATE_PLINE = 'UPDATE_PLINE';
 export const PLINES_LOADING = 'PLINES_LOADING';
 // SKU's
 export const GET_SKUS_BYPLINE = 'GET_SKUS';
 export const SKUS_LOADING = 'SKUS_LOADING';
 export const GET_SKUS = 'GET_SKUS';
+export const ADD_SKU = 'ADD_SKU';
+export const DELETE_SKU = 'DELETE_SKU';
+export const UPDATE_SKU = 'UPDATE_SKU';
+export const SKU_KW_SEARCH = 'SKU_KW_SEARCH';
+export const SKU_ING_FILTER = 'SKU_ING_FILTER';
+export const SKU_PLINE_FILTER = 'SKU_PLINE_FILTER';
+export const SKU_SORT = 'SKU_SORT';
+export const SKU_ERROR = 'SKU_ERROR';

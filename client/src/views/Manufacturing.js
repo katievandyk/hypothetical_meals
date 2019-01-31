@@ -13,6 +13,7 @@ import CalculatorEntry from '../components/goals/CalculatorEntry';
 import CalculatorDropdown from '../components/goals/CalculatorDropdown';
 import GoalsCreateModal from '../components/goals/GoalsCreateModal';
 import GoalsExport from '../components/goals/GoalsExport';
+import CalculatorExport from '../components/goals/CalculatorExport';
 
 import { Provider } from 'react-redux';
 import store from '../store';
@@ -24,6 +25,9 @@ class Manufacturing extends Component {
   constructor(props) {
     super(props);
     this.calculatorCallback = this.calculatorCallback.bind(this);
+    this.state = {
+        calcGoal: ""
+    };
     }
 
   componentDidMount() {
@@ -31,6 +35,11 @@ class Manufacturing extends Component {
   }
 
   calculatorCallback = goal => {
+    const {goals} = this.props.goals
+    const selGoal = goals.find(g => g._id == goal._id )
+    this.setState({
+        calcGoal : selGoal
+    })
     this.props.getGoalsIngQuantity(goal._id);
    }
 
@@ -61,7 +70,8 @@ class Manufacturing extends Component {
                     </Row>
                    <Row>
                       <Col style={{'textAlign': 'right'}}> </Col>
-                      <CalculatorDropdown goals={this.props.goals} calculatorCallback={this.calculatorCallback}/>
+                      <CalculatorDropdown goals={this.props.goals} calculatorCallback={this.calculatorCallback}/> &nbsp;
+                      <CalculatorExport goal={this.state.calcGoal}/>
                    </Row>
                 </Container>
                 <CalculatorEntry ingredients={this.props.goals.ing_quantities}/>

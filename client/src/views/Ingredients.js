@@ -16,7 +16,7 @@ import { sortIngs } from '../actions/ingActions';
 
 import {
   Container, Row, Col,
-  Badge, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
+  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

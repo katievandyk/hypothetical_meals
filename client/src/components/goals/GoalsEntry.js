@@ -56,13 +56,16 @@ class GoalsEntry extends React.Component {
               ))}
               </tbody>
             </Table>
-             <Modal isOpen={this.state.sku_modal} toggle={this.sku_toggle}>
+             <Modal isOpen={this.state.sku_modal} toggle={this.sku_toggle} size="lg">
                       <ModalHeader toggle={this.sku_toggle}>SKU List for {this.state.curr_goal}</ModalHeader>
                       <ModalBody>
                         <Table>
                           <thead>
                             <tr>
-                              <th>Name</th>
+                              <th>SKU Name</th>
+                              <th>Number</th>
+                              <th>Size Per Unit</th>
+                              <th>Count Per Case</th>
                               <th>Quantity</th>
                             </tr>
                           </thead>
@@ -70,6 +73,9 @@ class GoalsEntry extends React.Component {
                         {this.state.curr_list.map(({_id, sku, quantity}) => (
                             <tr key={_id}>
                                 <td> {sku.name} </td>
+                                <td> {sku.number} </td>
+                                <td> {sku.unit_size} </td>
+                                <td> {sku.count_per_case} </td>
                                 <td> {quantity} </td>
                             </tr>
                           ))}

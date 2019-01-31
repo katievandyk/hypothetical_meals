@@ -34,7 +34,7 @@ class GoalsExport extends React.Component {
       <div>
         <ButtonDropdown isOpen={this.state.isOpen} toggle={this.toggle}>
           <DropdownToggle caret>
-            Export Goal
+            Export
           </DropdownToggle>
           <DropdownMenu>
              {goals.map(({_id, name}) => (
