@@ -36,7 +36,8 @@ class GoalsCreateForm extends React.Component {
       onSubmit = e => {
         const newGoal = {
           name: this.state.name,
-          skus_list: this.state.skus_list
+          skus_list: this.state.skus_list,
+          user_email: this.props.auth.user_email
         };
 
         this.props.addGoal(newGoal);
@@ -45,7 +46,7 @@ class GoalsCreateForm extends React.Component {
 
 
     onFormSave = e => {
-        this.props.addGoal({"name": this.state.name, "skus_list": this.state.skus_list})
+        this.props.addGoal({"name": this.state.name, "skus_list": this.state.skus_list, "user_email": this.props.auth.user_email})
     }
 
     onAdd = e => {
@@ -126,7 +127,8 @@ GoalsCreateForm.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  goals: state.goals
+  goals: state.goals,
+  auth: state.auth
 });
 
 

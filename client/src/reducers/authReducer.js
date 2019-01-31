@@ -6,6 +6,7 @@ import {
   const initialState = {
     isAuthenticated: false,
     isAdmin: false,
+    user_email: "",
     user: {},
     loading: false
   };
@@ -16,6 +17,7 @@ import {
           ...state,
           isAuthenticated: !isEmpty(action.payload),
           isAdmin: action.payload.isAdmin,
+          user_email: action.payload.email,
           user: action.payload
         };
       case USER_LOADING:
