@@ -22,6 +22,8 @@ import setAuthToken from "./utils/setAuthToken";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
 
 import PrivateRoute from "./components/private-route/PrivateRoute";
+import AdminRoute from "./components/private-route/AdminRoute";
+
 import Dashboard from "./components/dashboard/Dashboard";
 
 library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
@@ -57,7 +59,7 @@ class App extends Component {
                     <Switch>
                       <Route exact={true} path="/login" component={Login} />
                       <Route exact={true} path="/" component={Login} />
-                      <Route exact={true} path="/register" component={Register} />
+                      <AdminRoute exact={true} path="/register" component={Register} />
                       <PrivateRoute path="/ingredients" component={Ingredients} />
                       <PrivateRoute path="/manufacturing" component={Manufacturing} />
                       <PrivateRoute path="/productlines" component={ProductLines} />
