@@ -16,11 +16,14 @@ class ImportAssistant extends Component {
   }
 
   componentDidMount = () => {
+
+  }
+
+  update_state_ow = () => {
     if(this.props.import.check_res.Overwrite){
       this.setState({
-        new_overWrite: this.props.check_res.Overwrite
+        new_overWrite: this.props.import.check_res.Overwrite
       });
-      console.log('cmpdidmnt', this.state.new_overWrite);
     }
   }
 
@@ -31,6 +34,8 @@ class ImportAssistant extends Component {
     else{ //target not checked, remove from new_overWrite obj
       const orig_ow = this.props.import.check_res.Overwrite;
       const rem_obj = orig_ow[i];
+      const new_ow = this.props.import.check_res.Overwrite.splice(i, 1);
+      console.log(new_ow);
 
     }
 
@@ -83,37 +88,39 @@ class ImportAssistant extends Component {
           )}
 
           </div>
-          {Object.entries(res).slice(1,3).map(([name,value]) => (
+          {(Object.entries(res).filter(function(entry){
+            return (entry[0] == 'Ignore' || entry[0] == 'Store')
+          }).map(([name,value]) => (
             (value.length > 0) ?
             (<div key={name}>
-            <h4>{name}</h4>
-            <Table>
-              <thead>
-                <tr>
-                  {Object.keys(value[0]).splice(0,
-                    Object.keys(value[0]).length - 1).map((key) => (
-                    <th key={key}> {key}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {value.map((obj,i) => (
-                  <tr key={i}>
-                    {Object.entries(obj).splice(0, Object.entries(obj).length - 1).map(([key,value]) => (
-                      <td key={key}>{value}</td>
+                <h4>{name}</h4>
+                <Table>
+                  <thead>
+                    <tr>
+                      {Object.keys(value[0]).splice(0,
+                        Object.keys(value[0]).length - 1).map((key) => (
+                        <th key={key}> {key}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {value.map((obj,i) => (
+                      <tr key={i}>
+                        {Object.entries(obj).splice(0, Object.entries(obj).length - 1).map(([key,value]) => (
+                          <td key={key}>{value}</td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>):
-          (
-            <div key={name}>
-              <h4>{name}</h4>
-              None
-            </div>
-          )
-          ))}
+                  </tbody>
+                </Table>
+              </div>):
+            (
+              <div key={name}>
+                <h4>{name}</h4>
+                None
+              </div>
+            )
+          )))}
 
         </ModalBody>
         <ModalFooter>

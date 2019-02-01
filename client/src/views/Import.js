@@ -48,7 +48,9 @@ class Import extends Component {
         this.props.uploadCheck(newFileObj);
       }
 
-      this.modal_toggle();
+      if(this.props.import.error_msgs.length == 0){
+        this.modal_toggle();
+      }
     }
 
   }
