@@ -31,7 +31,7 @@ class ImportAssistant extends Component {
     else{ //target not checked, remove from new_overWrite obj
       const orig_ow = this.props.import.check_res.Overwrite;
       const rem_obj = orig_ow[i];
-      console.log("i", i);
+      
     }
 
   }
@@ -45,8 +45,8 @@ class ImportAssistant extends Component {
       ow_keys = Object.keys(res.Overwrite[0]);
     }
     return (
-      <Modal size="lg" isOpen={this.props.modal} toggle={this.toggle}>
-        <ModalHeader toggle={this.toggle}> Import Options and Overview </ModalHeader>
+      <Modal size="lg" isOpen={this.props.modal} toggle={this.props.toggle}>
+        <ModalHeader toggle={this.props.toggle}> Import Options and Overview </ModalHeader>
         <ModalBody>
           <div key="Overwrite">
           <h4>Overwrite</h4>

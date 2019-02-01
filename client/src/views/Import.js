@@ -34,20 +34,22 @@ class Import extends Component {
   }
 
   onUploadFile = (e) => {
-    let reader = new FileReader();
-    reader.readAsText(e.target.files[0]);
-    reader.onload = function () {
-      var fileContent = reader.result;
-	    console.log(fileContent);
-    }
-    reader.onloadend = (e) => {
-      const newFileObj = {file: reader.result};
-      console.log(newFileObj);
-      this.props.uploadCheck(newFileObj);
+    if(e.target.files.length > 0){
+      let reader = new FileReader();
+      var name = e.target.files[0].name;
+      reader.readAsText(e.target.files[0]);
+      reader.onload = function () {
+        var fileContent = reader.result;
+  	    console.log('filecontent',fileContent);
+      }
+      reader.onloadend = (function(name, reader, e) {
+        const newFileObj = {file: reader.result};
+        e.props.uploadCheck(newFileObj, name);
+      })(name, reader, this);
+
+      this.modal_toggle();
     }
 
-
-    this.modal_toggle();
   }
    render() {
         return(
