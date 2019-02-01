@@ -14,8 +14,7 @@ const pl_fields = {name: 'Name'};
 const product_lines_header = [ pl_fields.name ];
 
 
-module.exports.parsePLFile = parsePL = function(fileName) {
-    var file = fs.readFileSync(fileName, 'utf8').replace(/^\ufeff/, "");
+module.exports.parsePLFile = parsePL = function(file) {
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -68,8 +67,7 @@ module.exports.preprocessOnePL = preprocessOnePL = function(pl_entry) {
     });
 }
 
-module.exports.parseIngredientFile = parseIng = function(fileName) {
-    var file = fs.readFileSync(fileName, 'utf8').replace(/^\ufeff/, "");
+module.exports.parseIngredientFile = parseIng = function(file) {
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -155,8 +153,7 @@ module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_
     });
 }
 
-module.exports.parseSkuFile = parseSku = function(fileName) {
-    var file = fs.readFileSync(fileName, 'utf8').replace(/^\ufeff/, "");
+module.exports.parseSkuFile = parseSku = function(file) {
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -268,8 +265,7 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
     });
 }
 
-module.exports.parseForumula = parseFormula = function(fileName) {
-    var file = fs.readFileSync(fileName, 'utf8').replace(/^\ufeff/, "");
+module.exports.parseForumula = parseFormula = function(file) {
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
