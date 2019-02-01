@@ -3,13 +3,13 @@ const Schema = mongoose.Schema;
 
 const IngredientSchema = new Schema({
     _id: Schema.Types.ObjectId, 
-    name: {
-        type: String, 
+    number: {
+        type: Number,
         required: true,
         unique: true
     },
-    number: {
-        type: Number,
+    name: {
+        type: String, 
         required: true,
         unique: true
     },
