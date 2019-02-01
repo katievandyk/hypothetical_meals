@@ -38,15 +38,15 @@ class Import extends Component {
       let reader = new FileReader();
       var name = e.target.files[0].name;
       reader.readAsText(e.target.files[0]);
+      reader.file = e.target.files[0];
       reader.onload = function () {
         var fileContent = reader.result;
-  	    console.log('filecontent',fileContent);
       }
-      reader.onloadend = (function(name, reader, e) {
-        const newFileObj = {file: reader.result, file_name: name};
-        e.props.uploadCheck(newFileObj);
-      })(name, reader, this);
-
+      reader.onloadend = (e) => {
+        const newFileObj = {file: e.target.result, file_name: e.srcElement.file.name};
+        console.log(newFileObj);
+        this.props.uploadCheck(newFileObj);
+      }
 
       this.modal_toggle();
     }
