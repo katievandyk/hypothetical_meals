@@ -12,7 +12,6 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { addSKU, sortSKUs } from '../../actions/skuActions';
-import { getIngs } from '../../actions/ingActions';
 
 class SKUAddModal extends React.Component {
   state = {
