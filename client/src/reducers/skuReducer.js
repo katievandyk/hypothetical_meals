@@ -1,6 +1,6 @@
 import { GET_SKUS_BYPLINE, SKUS_LOADING, GET_SKUS,
 ADD_SKU, DELETE_SKU, UPDATE_SKU, SKU_KW_SEARCH,
-SKU_SORT, SKU_ING_FILTER, SKU_PLINE_FILTER, SKU_ERROR} from '../actions/types';
+SKU_SORT, SKU_ING_FILTER, SKU_PLINE_FILTER, SKU_ERROR, SKU_GROUP_BY_PL} from '../actions/types';
 
 const initialState = {
   skus: [],
@@ -48,13 +48,18 @@ export default function(state = initialState, action) {
         count: action.payload.count,
         loading: false
       }
-
+    case SKU_GROUP_BY_PL:{
+      state.obj.group_pl = action.payload;
+      return {
+        ...state,
+        obj: state.obj
+      }
+    }
     case SKU_KW_SEARCH:{
         state.obj.keywords = action.payload;
         return {
           ...state,
-          obj: state.obj,
-          error:false
+          obj: state.obj
         }
     }
     case SKU_ING_FILTER:{

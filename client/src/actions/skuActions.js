@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ADD_SKU, DELETE_SKU, UPDATE_SKU, SKU_KW_SEARCH,
   SKU_SORT, SKU_ING_FILTER, SKU_PLINE_FILTER, GET_SKUS, GET_SKUS_BYPLINE,
-   SKUS_LOADING, SKU_ERROR } from './types';
+   SKUS_LOADING, SKU_ERROR, SKU_GROUP_BY_PL } from './types';
 export const getSKUsByPLine = (pline) => dispatch =>  {
   dispatch(setSKUsLoading());
   axios.get('/api/skus/byproductlines/' + pline).then(res =>
@@ -62,6 +62,13 @@ export const searchSKUbyKW = keywords => dispatch => {
     payload: keywords
   });
 };
+
+export const groupByPL = state => dispatch => {
+  dispatch({
+    type: SKU_GROUP_BY_PL,
+    payload: state
+  });
+}
 
 export const sortSKUs = (field, asc, page, obj) => dispatch => {
   dispatch(setSKUsLoading());

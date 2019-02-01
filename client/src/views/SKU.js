@@ -13,7 +13,7 @@ import store from '../store';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { sortSKUs } from '../actions/skuActions';
+import { sortSKUs, groupByPL } from '../actions/skuActions';
 
 import {
   Container, Row, Col, Button,
@@ -26,7 +26,8 @@ class SKU extends Component {
 
   state = {
     dropdownOpen: false,
-    sortby: 'name-asc'
+    sortby: 'name-asc',
+    group_pl: false
   };
 
   toggle = () => {
@@ -44,6 +45,16 @@ class SKU extends Component {
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir,
        this.props.skus.page - 1, this.props.skus.obj);
   };
+
+  onGBPLClick = () => {
+    const boolstr = !this.state.group_pl ? 'True' : 'False';
+    this.setState({
+      group_pl: !this.state.group_pl
+    });
+    this.props.groupByPL(boolstr);
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir,
+       this.props.skus.page, this.props.skus.obj);
+  }
 
   sortClick = type => {
     this.setState({
@@ -108,6 +119,7 @@ class SKU extends Component {
      const results_start = (this.props.skus.page - 1)*10 + 1;
      const isPrevPage = (this.props.skus.page) > 1;
      const isNextPage = results < this.props.skus.count;
+     const groupByMsg = this.props.skus.obj && this.props.skus.obj.group_pl && this.props.skus.obj.group_pl === "True" ? 'Undo Group by Product Line': 'Group by Product Line';
      return(
        <Provider store={store}>
          <div>
@@ -118,7 +130,7 @@ class SKU extends Component {
            <Container className="mb-3">
              <Row>
                <Col> <h1>SKUs</h1> </Col>
-               <Col style={{'textAlign': 'right'}}> </Col>
+               <Col> <Button onClick={this.onGBPLClick}> {groupByMsg}</Button> </Col>
                <Col> <SKUsKeywordSearch/> </Col>
              </Row>
              <Row>
@@ -239,6 +251,7 @@ class SKU extends Component {
 
 SKU.propTypes = {
   sortSKUs: PropTypes.func.isRequired,
+  groupByPL: PropTypes.func.isRequired,
   skus: PropTypes.object.isRequired
 };
 
@@ -246,4 +259,4 @@ const mapStateToProps = state => ({
   skus: state.skus
 });
 
-export default connect(mapStateToProps, {sortSKUs})(SKU);
+export default connect(mapStateToProps, {sortSKUs, groupByPL})(SKU);
