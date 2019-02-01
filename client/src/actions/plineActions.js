@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { GET_PLINES, ADD_PLINE, DELETE_PLINE, UPDATE_PLINE,
-  PLINES_LOADING } from './types';
+  PLINES_LOADING} from './types';
 
-export const getPLines = () => dispatch =>  {
+export const getPLines = (page) => dispatch =>  {
   dispatch(setPLinesLoading());
-  axios.get('/api/productlines').then(res =>
+  axios.get(`/api/productlines/${page}/10`).then(res =>
     dispatch({
       type: GET_PLINES,
-      payload: res.data
+      payload: {data:res.data, page: page}
     })
   );
 };

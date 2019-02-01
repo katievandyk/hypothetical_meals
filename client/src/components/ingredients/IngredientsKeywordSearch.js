@@ -21,14 +21,14 @@ class IngredientsKeywordSearch extends React.Component {
       if('skus' in this.props.ing.obj){
         newObj.skus = this.props.ing.obj.skus
       }
-      this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, newObj);
+      this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, newObj);
     };
   }
 
   searchKW = () => {
     this.props.setIngsLoading();
     this.props.searchIngbyKW(this.state.keywords);
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.obj);
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.obj);
   }
   render() {
     return (
