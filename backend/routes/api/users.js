@@ -24,11 +24,11 @@ router.post("/register", (req, res) => {
   User.findOne({ email: req.body.email }).then(user => {
       if (user) {
         return res.status(400).json({ email: "Email already exists" });
-      } 
+      };
   const newUser = new User({
           name: req.body.name,
           email: req.body.email,
-          password: req.body.password
+          password: req.body.password,
         });
   // Hash password before saving in database
         bcrypt.genSalt(10, (err, salt) => {
@@ -51,20 +51,18 @@ router.post("/register", (req, res) => {
 router.post("/login", (req, res) => {
     // Form validation
   const { errors, isValid } = validateLoginInput(req.body);
-  console.log("gets here");
   // Check validation
-    if (!isValid) {
-      console.log("isn't valid");
-      return res.status(400).json(errors);
-    }
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
   const email = req.body.email;
-    const password = req.body.password;
+  const password = req.body.password;
   // Find user by email
-    User.findOne({ email }).then(user => {
+  User.findOne({ email }).then(user => {
       // Check if user exists
-      if (!user) {
-        return res.status(404).json({ emailnotfound: "Email not found" });
-      }
+    if (!user) {
+      return res.status(404).json({ emailnotfound: "Email not found" });
+    }
   // Check password
       bcrypt.compare(password, user.password).then(isMatch => {
         if (isMatch) {
@@ -73,7 +71,9 @@ router.post("/login", (req, res) => {
           // Create JWT Payload
           const payload = {
             id: user.id,
-            name: user.name
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin
           };
   // Sign token
           jwt.sign(

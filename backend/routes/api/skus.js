@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 // @access public
 router.post('/', (req, res) => {
     var numberResolved = req.body.number ? req.body.number : new Date().valueOf();
-    
+
     const newSKU = new SKU({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,

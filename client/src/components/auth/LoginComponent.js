@@ -14,6 +14,7 @@ class LoginComponent extends Component {
     super();
     this.state = {
       isLoggedIn: false,
+      isAdmin: false,
       email: "",
       password: "",
       errors: {}
@@ -23,7 +24,10 @@ class LoginComponent extends Component {
 componentDidMount() {
   // If logged in and user navigates to Login page, should redirect them to dashboard
   if (this.props.auth.isAuthenticated) {
-    this.setState({isLoggedIn: true})
+    this.setState({isLoggedIn: true});
+    if(this.props.auth.isAdmin) {
+      this.setState({isAdmin: true});
+    }
   }
 }
 componentWillReceiveProps(nextProps) {

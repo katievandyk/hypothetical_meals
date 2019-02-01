@@ -79,8 +79,11 @@ export const sortIngs = (field, asc, page, obj) => dispatch => {
 };
 
 export const filterBySKUs = (ids) => dispatch => {
-  dispatch({
-    type: ING_SKU_FILTER,
-    payload: ids
-  });
+  dispatch(setIngsLoading());
+  axios.post(`/api/ingredients/byskus`, ids).then(res =>
+    dispatch({
+      type: ING_SKU_FILTER,
+      payload: res.data
+    })
+  );
 };
