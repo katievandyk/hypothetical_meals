@@ -10,6 +10,8 @@ const initialState = {
   obj: {},
   sortby: 'name',
   sortdir: 'asc',
+  page: 1,
+  pagelimit: 10,
   count: 0
 };
 
@@ -79,6 +81,7 @@ export default function(state = initialState, action) {
         sortdir: action.payload.sortdir,
         obj: action.payload.obj,
         count: action.payload.data.count,
+        page: action.payload.page,
         loading: false
       }
     default:

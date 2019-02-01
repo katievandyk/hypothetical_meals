@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import { sortSKUs } from '../actions/skuActions';
 
 import {
-  Container, Row, Col,
+  Container, Row, Col, Button,
   ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
 } from 'reactstrap';
 
@@ -35,58 +35,68 @@ class SKU extends Component {
     });
   }
 
+  onNextPage = () => {
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir,
+       this.props.skus.page + 1, this.props.skus.obj);
+  };
+
+  onPrevPage = () => {
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir,
+       this.props.skus.page - 1, this.props.skus.obj);
+  };
+
   sortClick = type => {
     this.setState({
       sortby: type
     });
     switch(type) {
       case "name-asc":
-        this.props.sortSKUs('name', 'asc', this.props.skus.obj);
+        this.props.sortSKUs('name', 'asc', this.props.skus.page, this.props.skus.obj);
         break;
       case "name-desc":
-        this.props.sortSKUs('name', 'desc', this.props.skus.obj);
+        this.props.sortSKUs('name', 'desc', this.props.skus.page, this.props.skus.obj);
         break;
       case "number-asc":
-        this.props.sortSKUs('number', 'asc', this.props.skus.obj);
+        this.props.sortSKUs('number', 'asc', this.props.skus.page, this.props.skus.obj);
         break;
       case "number-desc":
-        this.props.sortSKUs('number', 'desc', this.props.skus.obj);
+        this.props.sortSKUs('number', 'desc', this.props.skus.page, this.props.skus.obj);
         break;
       case "case#-asc":
-        this.props.sortSKUs('case_number', 'asc', this.props.skus.obj);
+        this.props.sortSKUs('case_number', 'asc', this.props.skus.page, this.props.skus.obj);
         break;
       case "case#-desc":
-        this.props.sortSKUs('case_number', 'desc', this.props.skus.obj);
+        this.props.sortSKUs('case_number', 'desc', this.props.skus.page, this.props.skus.obj);
         break;
       case "unit#-asc":
-        this.props.sortSKUs('unit_number', 'asc', this.props.skus.obj);
+        this.props.sortSKUs('unit_number', 'asc', this.props.skus.page, this.props.skus.obj);
         break;
       case "unit#-desc":
-        this.props.sortSKUs('unit_number', 'desc', this.props.skus.obj);
+        this.props.sortSKUs('unit_number', 'desc', this.props.skus.page, this.props.skus.obj);
         break;
       case "unitsize-asc":
-        this.props.sortSKUs('unit_size', 'asc', this.props.skus.obj);
+        this.props.sortSKUs('unit_size', 'asc', this.props.skus.page, this.props.skus.obj);
         break;
       case "unitsize-desc":
-        this.props.sortSKUs('unit_size', 'desc', this.props.skus.obj);
+        this.props.sortSKUs('unit_size', 'desc', this.props.skus.page, this.props.skus.obj);
         break;
       case "count-asc":
-        this.props.sortSKUs('count_per_case', 'asc', this.props.skus.obj);
+        this.props.sortSKUs('count_per_case', 'asc', this.props.skus.page, this.props.skus.obj);
         break;
       case "count-desc":
-        this.props.sortSKUs('count_per_case', 'desc', this.props.skus.obj);
+        this.props.sortSKUs('count_per_case', 'desc', this.props.skus.page, this.props.skus.obj);
         break;
       case "productline-asc":
-        this.props.sortSKUs('product_line', 'asc', this.props.skus.obj);
+        this.props.sortSKUs('product_line', 'asc', this.props.skus.page, this.props.skus.obj);
         break;
       case "productline-desc":
-        this.props.sortSKUs('product_line', 'desc', this.props.skus.obj);
+        this.props.sortSKUs('product_line', 'desc', this.props.skus.page, this.props.skus.obj);
         break;
       case "ingredients-asc":
-        this.props.sortSKUs('ingredients_list', 'asc', this.props.skus.obj);
+        this.props.sortSKUs('ingredients_list', 'asc', this.props.skus.page, this.props.skus.obj);
         break;
       case "ingredients-desc":
-        this.props.sortSKUs('ingredients_list', 'desc', this.props.skus.obj);
+        this.props.sortSKUs('ingredients_list', 'desc', this.props.skus.page, this.props.skus.obj);
         break;
       default:
         break;
@@ -94,6 +104,10 @@ class SKU extends Component {
 
   }
    render() {
+     const results = Math.min(this.props.skus.page * this.props.skus.pagelimit, this.props.skus.count);
+     const results_start = (this.props.skus.page - 1)*10 + 1;
+     const isPrevPage = (this.props.skus.page) > 1;
+     const isNextPage = results < this.props.skus.count;
      return(
        <Provider store={store}>
          <div>
@@ -207,7 +221,15 @@ class SKU extends Component {
                </Col>
              </Row>
            </Container>
+             <em>Results: {results_start}-{results} of {this.props.skus.count} total</em>
              <SKUsEntry/>
+               <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
+                 Previous Page
+               </Button>
+               Current Page: {this.props.skus.page}
+               <Button onClick={this.onNextPage} disabled={!isNextPage}>
+                 Next Page
+               </Button>
            </Container>
          </div>
        </Provider>

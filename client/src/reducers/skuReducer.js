@@ -9,7 +9,9 @@ const initialState = {
   sortby: 'name',
   sortdir: 'asc',
   error: '',
-  count: 0
+  count: 0,
+  page: 1,
+  pagelimit: 10
 };
 
 export default function(state = initialState, action) {
@@ -18,7 +20,8 @@ export default function(state = initialState, action) {
       return {
         ...state,
         skus: action.payload.results,
-        loading: false
+        loading: false,
+        count: action.payload.count
       }
     case ADD_SKU:
       return {
@@ -84,7 +87,8 @@ export default function(state = initialState, action) {
         sortby: action.payload.sortby,
         sortdir: action.payload.sortdir,
         obj: action.payload.obj,
-        loading: false
+        loading: false,
+        page: action.payload.page
       }
     case SKU_ERROR:
       return {

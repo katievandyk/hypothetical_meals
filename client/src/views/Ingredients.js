@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import { sortIngs } from '../actions/ingActions';
 
 import {
-  Container, Row, Col,
+  Container, Row, Col, Button,
   ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
 } from 'reactstrap';
 
@@ -32,6 +32,15 @@ class Ingredients extends Component {
       dropdownOpen: !this.state.dropdownOpen
     });
   }
+  onNextPage = () => {
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
+       this.props.ing.page + 1, this.props.ing.obj);
+  };
+
+  onPrevPage = () => {
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
+       this.props.ing.page - 1, this.props.ing.obj);
+  };
 
   sortClick = type => {
     this.setState({
@@ -39,34 +48,34 @@ class Ingredients extends Component {
     });
     switch(type) {
       case "name-asc":
-        this.props.sortIngs('name', 'asc', this.props.ing.obj);
+        this.props.sortIngs('name', 'asc', this.props.ing.page, this.props.ing.obj);
         break;
       case "name-desc":
-        this.props.sortIngs('name', 'desc', this.props.ing.obj);
+        this.props.sortIngs('name', 'desc', this.props.ing.page, this.props.ing.obj);
         break;
       case "number-asc":
-        this.props.sortIngs('number', 'asc', this.props.ing.obj);
+        this.props.sortIngs('number', 'asc', this.props.ing.page, this.props.ing.obj);
         break;
       case "number-desc":
-        this.props.sortIngs('number', 'desc', this.props.ing.obj);
+        this.props.sortIngs('number', 'desc', this.props.ing.page, this.props.ing.obj);
         break;
       case "vendor-asc":
-        this.props.sortIngs('vendor_info', 'asc', this.props.ing.obj);
+        this.props.sortIngs('vendor_info', 'asc', this.props.ing.page, this.props.ing.obj);
         break;
       case "vendor-desc":
-        this.props.sortIngs('vendor_info', 'desc', this.props.ing.obj);
+        this.props.sortIngs('vendor_info', 'desc', this.props.ing.page, this.props.ing.obj);
         break;
       case "package-asc":
-        this.props.sortIngs('package_size', 'asc', this.props.ing.obj);
+        this.props.sortIngs('package_size', 'asc', this.props.ing.page, this.props.ing.obj);
         break;
       case "package-desc":
-        this.props.sortIngs('package_size', 'desc', this.props.ing.obj);
+        this.props.sortIngs('package_size', 'desc', this.props.ing.page, this.props.ing.obj);
         break;
       case "cost-asc":
-        this.props.sortIngs('cost_per_package', 'asc', this.props.ing.obj);
+        this.props.sortIngs('cost_per_package', 'asc', this.props.ing.page, this.props.ing.obj);
         break;
       case "cost-desc":
-        this.props.sortIngs('cost_per_package', 'desc', this.props.ing.obj);
+        this.props.sortIngs('cost_per_package', 'desc', this.props.ing.page, this.props.ing.obj);
         break;
       default:
         break;
@@ -75,6 +84,10 @@ class Ingredients extends Component {
   }
 
    render() {
+     const results = Math.min(this.props.ing.page * this.props.ing.pagelimit, this.props.ing.count);
+     const results_start = (this.props.ing.page - 1)*10 + 1;
+     const isPrevPage = (this.props.ing.page) > 1;
+     const isNextPage = results < this.props.ing.count;
         return(
           <Provider store={store}>
             <div>
@@ -163,7 +176,15 @@ class Ingredients extends Component {
                   </Col>
                 </Row>
               </Container>
+              <em>Results: {results_start}-{results} of {this.props.ing.count} total</em>
                 <IngredientsEntry/>
+                  <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
+                    Previous Page
+                  </Button>
+                  Current Page: {this.props.ing.page}
+                  <Button onClick={this.onNextPage} disabled={!isNextPage}>
+                    Next Page
+                  </Button>
               </Container>
             </div>
           </Provider>

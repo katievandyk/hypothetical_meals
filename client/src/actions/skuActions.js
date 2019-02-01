@@ -42,7 +42,7 @@ export const deleteSKU = id => dispatch => {
 
 export const getSKUs = () => dispatch => {
   dispatch(setSKUsLoading());
-  axios.post(`/api/skus/filter/sort/name/asc/1/-1`).then(res =>
+  axios.post(`/api/skus/filter/sort/name/asc/1/10`).then(res =>
     dispatch({
       type: GET_SKUS,
       payload: res.data
@@ -63,12 +63,12 @@ export const searchSKUbyKW = keywords => dispatch => {
   });
 };
 
-export const sortSKUs = (field, asc, obj) => dispatch => {
+export const sortSKUs = (field, asc, page, obj) => dispatch => {
   dispatch(setSKUsLoading());
-  axios.post(`/api/skus/filter/sort/${field}/${asc}/1/-1`, obj).then(res =>
+  axios.post(`/api/skus/filter/sort/${field}/${asc}/${page}/10`, obj).then(res =>
     dispatch({
       type: SKU_SORT,
-      payload: {data: res.data, sortby: field, sortdir: asc, obj: obj}
+      payload: {data: res.data, sortby: field, sortdir: asc, page: page, obj: obj}
     })
   ).catch(error =>{
     dispatch({

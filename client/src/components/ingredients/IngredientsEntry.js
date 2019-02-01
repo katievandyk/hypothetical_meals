@@ -97,7 +97,6 @@ class IngredientsEntry extends React.Component {
   render() {
     const { ings } = this.props.ing;
     const loading = this.props.ing.loading;
-
     if(loading){
       return (
         <div style={{'textAlign':'center'}}>
@@ -110,7 +109,6 @@ class IngredientsEntry extends React.Component {
     }
     return (
       <div>
-        Count: {this.props.ing.count}
         <Table responsive size="sm">
           <thead>
             <tr>
