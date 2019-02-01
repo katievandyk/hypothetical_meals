@@ -6,7 +6,8 @@
   "scripts": {
     "start": "concurrently \"cd backend && node server.js\" \"cd client && npm start\"",
     "install": "cd backend && npm install && cd ../client && npm install",
-    "deploy": "cd client && npm run build && cd ../backend && pm2 start server.js"
+    "deploy": "cd client && npm run build && cd ../backend && pm2 start server.js",
+    "test": "cd backend && npm test"
   },
   "repository": {
     "type": "git",
