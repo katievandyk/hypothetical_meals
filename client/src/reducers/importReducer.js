@@ -1,4 +1,4 @@
-import {UPLOAD_CHECK, UPLOAD_ERROR} from '../actions/types';
+import {UPLOAD_CHECK, UPLOAD_ERROR, IMPORT_OVERWRITES} from '../actions/types';
 
 const initialState = {
   success: true,
@@ -9,6 +9,7 @@ const initialState = {
 export default function(state = initialState, action) {
   switch(action.type) {
     case UPLOAD_CHECK:{
+      console.log(action.payload);
       return {
         ...state,
         success:true,
@@ -19,9 +20,14 @@ export default function(state = initialState, action) {
       return {
         ...state,
         success: false,
-        error_msgs: [...state.error_msgs, action.payload.message]
+        error_msgs: [...state.error_msgs, action.payload.data.message]
       }
     }
+    case IMPORT_OVERWRITES:
+      return {
+        ...state,
+        success:true
+      }
     default:
       return state;
   }

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {UPLOAD_CHECK, UPLOAD_ERROR} from './types';
+import {UPLOAD_CHECK, UPLOAD_ERROR, IMPORT_OVERWRITES} from './types';
 
 export const uploadCheck = (file) => dispatch =>  {
   axios.post(`/api/bulk-import/upload-check`, file).then(res =>
@@ -11,7 +11,11 @@ export const uploadCheck = (file) => dispatch =>  {
     console.log(error.response);
     dispatch({
       type: UPLOAD_ERROR,
-      payload: {success: error.response.data.success, message: error.response.data.message}
+      payload: error.response
     });
   });
+};
+
+export const importOverwrites = (new_overWrite, new_no_overWrite, type) => dispatch =>  {
+  console.log(new_overWrite, new_no_overWrite, type);
 };

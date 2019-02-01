@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 
 import {
-  Container, Row, Col,
-  FormGroup, Label, FormText, Card, CardHeader, CardBody,
-  CardTitle, CardText, CardFooter, Table, UncontrolledAlert
+  Row, Col, UncontrolledAlert
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
