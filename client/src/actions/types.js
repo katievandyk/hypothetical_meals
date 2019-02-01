@@ -39,3 +39,6 @@ export const SKU_ING_FILTER = 'SKU_ING_FILTER';
 export const SKU_PLINE_FILTER = 'SKU_PLINE_FILTER';
 export const SKU_SORT = 'SKU_SORT';
 export const SKU_ERROR = 'SKU_ERROR';
+// Export Actions
+export const EXPORT_SKUS = 'EXPORT_SKUS';
+export const EXPORT_PLINES = 'EXPORT_PLINES';

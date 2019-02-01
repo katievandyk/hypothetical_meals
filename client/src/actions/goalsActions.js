@@ -46,14 +46,14 @@ export const exportGoal = (goal) => dispatch => {
       FileDownload(res.data, goal.name + '.csv')
    });
     return {
-        type: GOAL_EXPORT
+        type: GOAL_CALCULATOREXPORT
     };
  };
 
  export const exportCalculator = (goal) => dispatch => {
    dispatch(setGoalsLoading());
      axios.get('/api/manufacturing/exportcalculator/' + goal._id).then(res => {
-       FileDownload(res.data, goal.name + '_calc.csv')
+       FileDownload(res.data, goal.name + '.csv')
     });
     return {
         type: GOAL_CALCULATOREXPORT

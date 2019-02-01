@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { GET_PLINES, ADD_PLINE, DELETE_PLINE, UPDATE_PLINE,
-  PLINES_LOADING } from './types';
+  PLINES_LOADING} from './types';
+
+const FileDownload = require('js-file-download');
 
 export const getPLines = () => dispatch =>  {
   dispatch(setPLinesLoading());

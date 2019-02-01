@@ -14,10 +14,12 @@ import store from '../store';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { sortSKUs } from '../actions/skuActions';
+import { exportSKUs } from '../actions/exportActions';
 
 import {
   Container, Row, Col,
-  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
+  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem,
+  Button
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -219,6 +221,7 @@ class SKU extends Component {
              </Row>
            </Container>
              <SKUsEntry/>
+             <Button onClick={() => { this.props.exportSKUs()}}>Export</Button>
            </Container>
          </div>
        </Provider>
@@ -228,6 +231,7 @@ class SKU extends Component {
 
 SKU.propTypes = {
   sortSKUs: PropTypes.func.isRequired,
+  exportSKUs: PropTypes.func.isRequired,
   skus: PropTypes.object.isRequired
 };
 
@@ -235,4 +239,4 @@ const mapStateToProps = state => ({
   skus: state.skus
 });
 
-export default connect(mapStateToProps, {sortSKUs})(SKU);
+export default connect(mapStateToProps, {sortSKUs, exportSKUs})(SKU);
