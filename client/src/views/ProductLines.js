@@ -37,11 +37,11 @@ class ProductLines extends Component {
                </Col>
                <Col style={{'textAlign': 'right'}}>
                  <PLinesAddModal/> &nbsp;
-                 <Button onClick={() => { this.props.exportPLines() }}>Export</Button>
                </Col>
              </Row>
            </Container>
              <PLinesEntry/>
+             <Button onClick={() => { this.props.exportPLines() }}>Export</Button>
            </Container>
          </div>
        </Provider>

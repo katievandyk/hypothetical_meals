@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { EXPORT_SKUS, EXPORT_PLINES } from './types';
+import { EXPORT_SKUS, EXPORT_PLINES, EXPORT_INGS, EXPORT_FORMULAS } from './types';
 
 const FileDownload = require('js-file-download');
 
@@ -26,6 +26,15 @@ export const exportPLines = () => dispatch => {
       FileDownload(res.data, 'ingredients.csv')
     });
     return {
-        type: EXPORT_PLINES
+        type: EXPORT_INGS
+    };
+  };
+
+ export const exportFormulas = (obj) => dispatch => {
+      axios.post('/api/bulk-export/formulas', obj).then(res => {
+      FileDownload(res.data, 'formulas.csv')
+    });
+    return {
+        type: EXPORT_FORMULAS
     };
   };

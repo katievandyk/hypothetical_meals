@@ -42,3 +42,5 @@ export const SKU_ERROR = 'SKU_ERROR';
 // Export Actions
 export const EXPORT_SKUS = 'EXPORT_SKUS';
 export const EXPORT_PLINES = 'EXPORT_PLINES';
+export const EXPORT_INGS = 'EXPORT_PLINES';
+export const EXPORT_FORMULAS = 'EXPORT_FORMULAS';
