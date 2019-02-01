@@ -50,12 +50,13 @@ class SKUAddModal extends React.Component {
       number: this.state.number,
       case_number: this.state.case_number,
       unit_number: this.state.unit_number,
+      unit_size: this.state.unit_size,
       product_line: this.state.product_line,
       count_per_case: this.state.count_per_case,
       ingredients_list: this.state.ingredients_list,
       comment: this.state.comment
     };
-
+    console.log(newSKU);
     this.props.addSKU(newSKU);
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.obj);
     this.toggle();

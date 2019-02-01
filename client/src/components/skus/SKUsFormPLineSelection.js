@@ -14,9 +14,7 @@ class SKUsFormPLineSelection extends React.Component {
   }
 
   onChange = (e) => {
-    const plines = this.props.plines.plines;
-    const newPLine = plines.filter( pline => pline._id == e.target.value);
-    this.props.onProductLineChange(newPLine);
+    this.props.onProductLineChange(e.target.value);
   }
 
   render() {
@@ -28,7 +26,8 @@ class SKUsFormPLineSelection extends React.Component {
           id="product_line"
           placeholder="Select the Product Line"
           onChange={this.onChange.bind(this)}
-          defaultValue={this.props.defaultValue == null ? '': this.props.defaultValue._id}>
+          defaultValue={this.props.defaultValue}>
+          <option>Select</option>
           {this.props.plines.plines.map(({_id, name }) => (
           <option key={_id} value={_id} name={name}>{name}</option>
         ))}
@@ -43,7 +42,7 @@ SKUsFormPLineSelection.propTypes = {
   getPLines: PropTypes.func.isRequired,
   plines: PropTypes.object.isRequired,
   onProductLineChange: PropTypes.func.isRequired,
-  defaultValue: PropTypes.object
+  defaultValue: PropTypes.string
 };
 
 const mapStateToProps = state => ({

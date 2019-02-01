@@ -110,6 +110,7 @@ class IngredientsEntry extends React.Component {
     }
     return (
       <div>
+        Count: {this.props.ing.count}
         <Table responsive size="sm">
           <thead>
             <tr>

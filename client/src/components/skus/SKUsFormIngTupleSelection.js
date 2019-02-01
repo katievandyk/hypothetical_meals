@@ -14,21 +14,24 @@ class SKUsFormIngTupleSelection extends React.Component {
 
   componentDidMount() {
     this.props.getIngs();
+    var tmpArray = [];
     if(this.props.defaultValue){
+      this.props.defaultValue.forEach(function (inglistitem) {
+        tmpArray = [...tmpArray, {_id: inglistitem._id._id, quantity: inglistitem.quantity}]
+      });
       this.setState({
-        ing_tuples: this.props.defaultValue
+        ing_tuples: tmpArray
       });
     }
   }
 
   onChangeIngredient = (index, e) => {
-    const ings = this.props.ing.ings;
-    const selIng = ings.filter( ing => ing._id == e.target.value);
     const newIngTuples = this.state.ing_tuples;
-    newIngTuples[index]._id = selIng[0];
+    newIngTuples[index]._id = e.target.value;
     this.setState({
       ing_tuples: newIngTuples
     });
+    console.log("onchangeing", this.state.ing_tuples);
     this.props.onIngListChange(this.state.ing_tuples);
     }
 
@@ -46,12 +49,12 @@ class SKUsFormIngTupleSelection extends React.Component {
   addIngTuple = () => {
     if(this.state.ing_tuples.length > 0) {
       this.setState({
-        ing_tuples: [...this.state.ing_tuples, {_id:{}, quantity:''}]
+        ing_tuples: [...this.state.ing_tuples, {_id:'', quantity:''}]
       });
     }
     else {
       this.setState({
-        ing_tuples: [{_id:{}, quantity:''}]
+        ing_tuples: [{_id:'', quantity:''}]
       });
     }
   }
@@ -61,8 +64,7 @@ class SKUsFormIngTupleSelection extends React.Component {
     this.setState({
       ing_tuples: reduced_tuples
     });
-
-    this.props.onIngListChange(this.state.ing_tuples);
+    this.props.onIngListChange(reduced_tuples);
   }
 
   render() {
@@ -84,7 +86,8 @@ class SKUsFormIngTupleSelection extends React.Component {
                 id="ingredient_name"
                 placeholder="Select the Ingredient"
                 onChange={this.onChangeIngredient.bind(this, index)}
-                defaultValue={_id._id}>
+                defaultValue={_id}>
+                <option value=''>Select Ingredient</option>
                 {this.props.ing.ings.map(({_id, name }) => (
                 <option key={_id} value={_id} name={name}>{name}</option>
               ))}

@@ -94,6 +94,7 @@ class SKUsEntry extends React.Component {
       comment: this.state.edit_comment
     };
 
+    console.log("editsubmit", editedSKU);
     this.props.updateSKU(editedSKU);
     this.props.getSKUs();
     this.toggle();
@@ -113,8 +114,9 @@ class SKUsEntry extends React.Component {
   };
 
   onIngListChange = (ing_list) => {
+    console.log(ing_list);
     this.setState({
-      ingredients_list: ing_list
+      edit_ingredients_list: ing_list
     });
   }
 
