@@ -1,7 +1,7 @@
 import React from 'react';
 import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { connect } from 'react-redux';
-import { getPLines } from '../actions/plineActions';
+import { getPLines } from '../../actions/plineActions';
 import PropTypes from 'prop-types';
 
 

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"cd backend && node server.js\" \"cd client && npm start\"",
-    "install": "cd backend && npm install && cd ../client && npm install"
+    "install": "cd backend && npm install && cd ../client && npm install",
+    "deploy": "cd client && npm run build && cd ../backend && pm2 start server.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,9 @@
   },
   "homepage": "https://github.com/katievandyk/hypothetical_meals#readme",
   "dependencies": {
-    "concurrently": "^4.1.0"
-  }
+    "concurrently": "^4.1.0",
+    "js-file-download": "^0.4.4",
+    "papaparse": "^4.6.3"
+  },
+  "devDependencies": {}
 }

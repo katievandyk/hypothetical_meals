@@ -1,14 +1,14 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css' // TODO change css file
-import GoalCreateEntry from '../components/GoalCreateEntry';
-import GoalsSKUDropdown from '../components/GoalsSKUDropdown';
-import GoalsProductLineDropdown from '../components/GoalsProductLineDropdown';
+import GoalCreateEntry from '../../components/goals/GoalCreateEntry';
+import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
+import GoalsProductLineDropdown from '../../components/goals/GoalsProductLineDropdown';
 
-import { addGoal }  from '../actions/goalsActions';
+import { addGoal }  from '../../actions/goalsActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { Table, Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Container, Table, Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 
 class GoalsCreateForm extends React.Component {
 
@@ -36,7 +36,8 @@ class GoalsCreateForm extends React.Component {
       onSubmit = e => {
         const newGoal = {
           name: this.state.name,
-          skus_list: this.state.skus_list
+          skus_list: this.state.skus_list,
+          user_email: this.props.auth.user_email
         };
 
         this.props.addGoal(newGoal);
@@ -45,7 +46,7 @@ class GoalsCreateForm extends React.Component {
 
 
     onFormSave = e => {
-        this.props.addGoal({"name": this.state.name, "skus_list": this.state.skus_list})
+        this.props.addGoal({"name": this.state.name, "skus_list": this.state.skus_list, "user_email": this.props.auth.user_email})
     }
 
     onAdd = e => {
@@ -83,7 +84,8 @@ class GoalsCreateForm extends React.Component {
             <Label for="goal_name">Manufacturing Goal Name</Label>
             <Input id="goal_name" value={this.state.name} onChange={e => this.setState({ name: e.target.value })}/>
         </FormGroup>
-        <Row>
+        <Label>Create SKU List</Label>
+        <FormGroup>
                  <Table>
                    <thead>
                      <tr>
@@ -100,15 +102,21 @@ class GoalsCreateForm extends React.Component {
                       ))}
                    </tbody>
                  </Table>
-        </Row>
-        <Row form className="my-3">
-                <Col md={3.5}><GoalsProductLineDropdown callbackFromParent={this.plineCallback}/></Col>
-                <Col md={2.5}><GoalsSKUDropdown pline={this.state.plineSel} callbackFromParent={this.skuCallback}/></Col>
+        </FormGroup>
+        <Row>
+                <Col md={4}><GoalsProductLineDropdown callbackFromParent={this.plineCallback}/></Col>
+                <Col md={3.5}><GoalsSKUDropdown pline={this.state.plineSel} callbackFromParent={this.skuCallback}/></Col>
                 <Col md={2}><Input value={this.state.quantity} placeholder="Qty." onChange={e => this.setState({ quantity: e.target.value })}/> </Col>
-                <Col><Button color="primary" onClick={this.onAdd}>Add</Button>{' '}</Col>
+                <Col><Button color="success" onClick={this.onAdd}>Add</Button>{' '}</Col>
         </Row>
-        <Button type="submit" color="primary">Save</Button>{' '}
-        <Button color="secondary" onClick={this.onCancel}>Clear</Button>
+        <Container className="my-3">
+            <Row>
+                <Col style={{'textAlign': 'right'}}>
+                   <Button type="submit"  color="success">Save</Button> &nbsp;
+                   <Button color="secondary" onClick={this.onCancel}>Clear</Button>
+                </Col>
+            </Row>
+        </Container>
       </Form>
     );
   }
@@ -119,7 +127,8 @@ GoalsCreateForm.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  goals: state.goals
+  goals: state.goals,
+  auth: state.auth
 });
 
 
