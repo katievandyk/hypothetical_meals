@@ -11,6 +11,8 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import SKUsFormPLineSelection from './SKUsFormPLineSelection'
+import SKUsFormIngTupleSelection from './SKUsFormIngTupleSelection'
 import { addSKU, sortSKUs } from '../../actions/skuActions';
 import { getIngs } from '../../actions/ingActions';
 
@@ -57,6 +59,18 @@ class SKUAddModal extends React.Component {
     this.props.addSKU(newSKU);
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.obj);
     this.toggle();
+  }
+
+  onIngListChange = (ing_list) => {
+    this.setState({
+      ingredients_list: ing_list
+    });
+  }
+
+  onProductLineChange = (prod_line) => {
+    this.setState({
+      product_line: prod_line
+    });
   }
 
   render() {
@@ -129,26 +143,8 @@ class SKUAddModal extends React.Component {
                   onChange={this.onChange}>
                 </Input>
             </FormGroup>
-            <FormGroup>
-              <Label for="unit_size">Product Line</Label>
-                <Input
-                  type="text"
-                  name="product_line"
-                  id="product_line"
-                  placeholder="Add the Product Line"
-                  onChange={this.onChange}>
-                </Input>
-            </FormGroup>
-            <FormGroup>
-              <Label for="ingredients">Ingredients</Label>
-                <Input
-                  type="text"
-                  name="ingredients"
-                  id="ingredients"
-                  placeholder="Add the Ingredients"
-                  onChange={this.onChange}>
-                </Input>
-            </FormGroup>
+            <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange}/>
+            <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange}/>
             <FormGroup>
               <Label for="comment">Comments</Label>
                 <Input

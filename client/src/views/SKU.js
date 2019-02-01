@@ -201,17 +201,6 @@ class SKU extends Component {
                        className={this.state.sortby === 'productline-desc'? "active" : ""}>
                        Product Line {' '}
                        <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
-                     <DropdownItem divider />
-                     <DropdownItem
-                       onClick={this.sortClick.bind(this, "ingredients-asc")}
-                       className={this.state.sortby === 'ingredients-asc'? "active" : ""}>
-                       Ingredients {' '}
-                       <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                     <DropdownItem
-                       onClick={this.sortClick.bind(this, "ingredients-desc")}
-                       className={this.state.sortby === 'ingredients-desc'? "active" : ""}>
-                        Ingredients {' '}
-                       <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                    </DropdownMenu>
                  </ButtonDropdown> {' '}
                  <SKUAddModal/>

@@ -22,6 +22,7 @@ export const addSKU = sku => dispatch => {
 };
 
 export const updateSKU = sku => dispatch => {
+  console.log(sku);
   axios.post(`/api/skus/update/${sku.id}`, sku).then(res =>
     dispatch({
       type: UPDATE_SKU,
