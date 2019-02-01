@@ -109,18 +109,8 @@ describe('Database Tests', function() {
                 "Cost": "2.31",
                 "Comment": ""};
             Parser.preprocessOneIngredient(data).then(result => {
-                expected_result = {
-                    "Name": "crackers",
-                    "Ingr#": "1548274308266",
-                    "Vendor Info": "Arizona Vendors",
-                    "Size": "7lbs",
-                    "Cost": "2.31",
-                    "Comment": "",
-                    "status": "Overwrite"};
-                assert.equal(expected_result.Name, result.Name);
-                assert.equal(expected_result.status, result.status);
-                done();
-            }).catch(done);
+                    assert.fail("Should give error");
+                }).catch(err => {done()});
         })
     })
 
