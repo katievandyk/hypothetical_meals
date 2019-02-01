@@ -59,7 +59,6 @@ router.post('/upload-check', (req, res) => {
 // @desc check if ingredients can be imported
 // @access public
 router.post('/upload/ingredients', (req, res) => {
-    console.log(req.body.data)
     Uploader.uploadIngredients(req.body.data)
     .then(result => {
         res.json(generateResultsSummary(req, result))
@@ -96,7 +95,7 @@ function generateResultsSummary(req, result) {
 // @access public
 router.post('/upload/productlines', (req, res) => {
     Uploader.uploadPLs(req.body.data)
-    .then(result => res.json(req,result))
+    .then(result => res.json(generateResultsSummary(req,result)))
     .catch(err => { 
         console.log(err);
         res.status(404).json({success: false, message: err.message})});

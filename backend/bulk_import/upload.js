@@ -156,7 +156,6 @@ function uploadOneSKUFormula(formula_entry) {
     formula_entry.result.forEach(tuple => new_list.push(
         {_id: mongoose.Types.ObjectId(tuple["ing_id"]), quantity: tuple[formula_fields.quantity]}))
 
-    console.log(new_list)
     return new Promise(function(accept, reject) {
         SKU.findOneAndUpdate({"_id": sku_id}, 
             { $set: {ingredients_list: new_list}})
