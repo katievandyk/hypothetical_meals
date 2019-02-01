@@ -69,28 +69,38 @@ class ImportAssistant extends Component {
                   <th>Overwrite?</th>
                 {ow_keys.filter(function(entry){
                   return !(entry === 'ing_id' ||  entry === 'sku_id'||
-                  entry ==='pl_id' || entry === 'status')
+                  entry ==='pl_id' || entry === 'status' || entry === 'to_overwrite')
                 }).map((key)=> (
                   <th key={key}>{key}</th>
                 ))}
 
                 </tr>
               </thead>
-              <tbody>
+
                 {ow.map((obj,i) => (
+                  <tbody key={i}>
                   <tr key={i}>
                     <td><CustomInput key={i} type="checkbox" id={i}
                     onChange={(e) => {this.onChange(e, i, obj)}}inline/></td>
                     {Object.entries(obj).filter(function(entry){
                       return !(entry[0] === 'ing_id' || entry[0] === 'sku_id'||
-                      entry[0] ==='pl_id' || entry[0] === 'status')
+                      entry[0] ==='pl_id' || entry[0] === 'status' || entry[0]==='to_overwrite')
                     }).map(([key,value]) => (
                       <td key={key}>{value}</td>
                     ))}
 
                   </tr>
+                  <tr style={{backgroundColor:'#d3d3d3'}}>
+                    <td>Current Entry</td>
+                    {Object.entries(obj.to_overwrite).filter(function(entry){
+                      return !(entry[0] === 'ing_id' || entry[0] === 'sku_id'||
+                      entry[0] ==='pl_id' || entry[0] === '__v' || entry[0]==='_id')
+                    }).map(([key,value]) => (
+                      <td key={key}>{value}</td>
+                    ))}
+                  </tr>
+                  </tbody>
                 ))}
-              </tbody>
             </Table>
           ): (
             <div>
