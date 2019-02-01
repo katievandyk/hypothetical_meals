@@ -19,20 +19,29 @@ function groupByStatus(res) {
 router.post('/upload-check', (req, res) => {
     let full_file_name = req.body.file_name
     let file_name = full_file_name.substring(full_file_name.lastIndexOf("/") + 1);
+    let file_type;
 
     ing_file_regex = /^ingredients(\S)*\.csv$/;
     sku_file_regex = /^skus(\S)*\.csv$/;
     pl_file_regex = /^product_lines(\S)*\.csv$/;
     formulas_file_regex = /^formulas(\S)*\.csv$/;
     let parsePromise;
-    if(ing_file_regex.test(file_name))
+    if(ing_file_regex.test(file_name)) {
         parsePromise = Parser.parseIngredientFile(req.body.file)
-    else if(sku_file_regex.test(file_name))
+        file_type = "ingredients"
+    }
+    else if(sku_file_regex.test(file_name)) {
         parsePromise = Parser.parseSkuFile(req.body.file)
-    else if(pl_file_regex.test(file_name))
+        file_type = "skus"
+    }
+    else if(pl_file_regex.test(file_name)) {
         parsePromise = Parser.parsePLFile(req.body.file)
-    else if(formulas_file_regex.test(file_name))
+        file_type = "product_lines"
+    }
+    else if(formulas_file_regex.test(file_name)) {
         parsePromise = Parser.parseForumula(req.body.file)
+        file_type = "formulas"
+    }
     else {
         res.status(404).json({
             success: false, 
@@ -48,6 +57,7 @@ router.post('/upload-check', (req, res) => {
             if (!(key in grouped))
                 grouped[key] = []
         })
+        grouped["file_type"] = file_type
         res.json(grouped)})
     .catch(err => { 
         console.log(err);
