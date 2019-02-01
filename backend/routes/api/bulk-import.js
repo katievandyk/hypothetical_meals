@@ -17,7 +17,7 @@ function groupByStatus(res) {
 // current files allowed: skus, ingredients, product lines, and formulas
 // @access public
 router.post('/upload-check', (req, res) => {
-    let full_file_name = req.body.file
+    let full_file_name = req.body.file_name
     let file_name = full_file_name.substring(full_file_name.lastIndexOf("/") + 1);
 
     ing_file_regex = /^ingredients(\S)*\.csv$/;
