@@ -221,7 +221,6 @@ class SKU extends Component {
              </Row>
            </Container>
              <SKUsEntry/>
-             <Button onClick={() => { this.props.exportSKUs()}}>Export</Button>
            </Container>
          </div>
        </Provider>

@@ -3,8 +3,8 @@ import { EXPORT_SKUS, EXPORT_PLINES } from './types';
 
 const FileDownload = require('js-file-download');
 
-export const exportSKUs = () => dispatch => {
-     axios.post('/api/bulk-export/skus').then(res => {
+export const exportSKUs = (obj) => dispatch => {
+     axios.post('/api/bulk-export/skus', obj).then(res => {
      FileDownload(res.data, 'skus.csv')
    });
    return {
@@ -20,3 +20,12 @@ export const exportPLines = () => dispatch => {
        type: EXPORT_PLINES
    };
  };
+
+ export const exportIngs = (obj) => dispatch => {
+      axios.post('/api/bulk-export/ingredients', obj).then(res => {
+      FileDownload(res.data, 'ingredients.csv')
+    });
+    return {
+        type: EXPORT_PLINES
+    };
+  };
