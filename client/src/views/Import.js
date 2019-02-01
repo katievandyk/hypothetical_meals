@@ -3,13 +3,22 @@ import AppNavbar from '../components/AppNavbar';
 
 import {
   Container, Row, Col,
-  FormGroup, Label, Input, FormText, Card, CardHeader, CardBody,
-  CardTitle, CardText, CardFooter, Table
+  FormGroup, Label, FormText, Card, CardHeader, CardBody,
+  CardTitle, CardText, CardFooter, Table, Alert, Input
 } from 'reactstrap';
+
+import store from '../store';
+import ImportAlerts from '../components/import/ImportAlerts'
+import ImportAssistant from '../components/import/ImportAssistant'
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { uploadCheck } from '../actions/importActions';
 
 class Import extends Component {
   state = {
-    dropdownOpen: false
+    dropdownOpen: false,
+    fileObj: {},
+    modal: false
   };
 
   toggle = () => {
@@ -18,13 +27,33 @@ class Import extends Component {
     });
   }
 
+  modal_toggle = () => {
+    this.setState({
+      modal: !this.state.modal
+    })
+  }
+
   onUploadFile = (e) => {
-    console.log(e.target.files);
+    let reader = new FileReader();
+    reader.readAsText(e.target.files[0]);
+    reader.onload = function () {
+      var fileContent = reader.result;
+	    console.log(fileContent);
+    }
+    reader.onloadend = (e) => {
+      const newFileObj = {file: reader.result};
+      console.log(newFileObj);
+      this.props.uploadCheck(newFileObj);
+    }
+
+
+    this.modal_toggle();
   }
    render() {
         return(
           <div>
             <AppNavbar />
+            <ImportAlerts/>
             <Container>
                 <Row>
                   <Col> <h1>Import</h1> </Col>
@@ -77,16 +106,25 @@ class Import extends Component {
                 </Row>
                 <FormGroup>
                 <Label for="import-file">File</Label>
-                <Input type="file" name="file"
-                  id="import-file" onChange={this.onUploadFile.bind(this)}/>
-                <FormText color="muted">
+                <Input type="file" name="file" accept=".csv"
+                  id="import-file" onChange={this.onUploadFile.bind(this)}/><FormText color="muted">
                   Upload a file.
                 </FormText>
               </FormGroup>
             </Container>
+            <ImportAssistant modal={this.state.modal} toggle={this.modal_toggle}/>
           </div>
         );
    }
 }
 
-export default Import;
+Import.propTypes = {
+  uploadCheck: PropTypes.func.isRequired,
+  import: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  import: state.import
+});
+
+export default connect(mapStateToProps, {uploadCheck})(Import);

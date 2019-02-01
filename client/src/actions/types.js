@@ -36,3 +36,10 @@ export const SKU_ING_FILTER = 'SKU_ING_FILTER';
 export const SKU_PLINE_FILTER = 'SKU_PLINE_FILTER';
 export const SKU_SORT = 'SKU_SORT';
 export const SKU_ERROR = 'SKU_ERROR';
+// Bulk Import
+export const UPLOAD_CHECK = 'UPLOAD_CHECK';
+export const UPLOAD_ERROR = 'UPLOAD_ERROR';
+export const UPLOAD_INGREDIENTS = 'UPLOAD_INGREDIENTS';
+export const UPLOAD_SKUS = 'UPLOAD_SKUS';
+export const UPLOAD_FORMULAS = 'UPLOAD_FORMULAS';
+export const UPLOAD_PRODUCT_LINES = 'UPLOAD_PRODUCT_LINES';

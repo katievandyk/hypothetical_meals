@@ -5,6 +5,7 @@ import authReducer from './authReducer';
 import errorReducer from './errorReducer';
 import plineReducer from './plineReducer';
 import skuReducer from './skuReducer';
+import importReducer from './importReducer';
 
 export default combineReducers({
   ing: ingReducer,
@@ -12,6 +13,6 @@ export default combineReducers({
   goals: goalsReducer,
   errors: errorReducer,
   plines: plineReducer,
-  skus: skuReducer
+  skus: skuReducer,
+  import: importReducer
 });
-
