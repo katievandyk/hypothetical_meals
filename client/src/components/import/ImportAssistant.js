@@ -31,7 +31,7 @@ class ImportAssistant extends Component {
     else{ //target not checked, remove from new_overWrite obj
       const orig_ow = this.props.import.check_res.Overwrite;
       const rem_obj = orig_ow[i];
-      
+
     }
 
   }
@@ -41,6 +41,9 @@ class ImportAssistant extends Component {
     //const ow_keys = Object.keys(res.Overwrite[0].result[0]);
     var ow = res.Overwrite ? res.Overwrite : [];
     var ow_keys = [];
+    if(res.length > 0){
+      this.componentDidMount();
+    }
     if(ow.length > 0){
       ow_keys = Object.keys(res.Overwrite[0]);
     }
@@ -50,28 +53,35 @@ class ImportAssistant extends Component {
         <ModalBody>
           <div key="Overwrite">
           <h4>Overwrite</h4>
-          <Table responsive size="sm">
-            <thead>
-              <tr>
-              {ow_keys.splice(0, ow_keys.length -1).map((key)=> (
-                <th key={key}>{key}</th>
-              ))}
-                <th>Overwrite?</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ow.map((obj,i) => (
-                <tr key={i}>
-                  {Object.entries(obj).splice(0, Object.entries(obj).length - 1).map(([key,value]) => (
-                    <td key={key}>{value}</td>
-                  ))}
-                  <td><CustomInput key={i} type="checkbox" id={i}
-                  defaultChecked="true"
-                  onChange={(e) => {this.onChange(e, i)}}inline/></td>
+          {ow.length > 0 ? (
+            <Table responsive size="sm">
+              <thead>
+                <tr>
+                {ow_keys.splice(0, ow_keys.length -2).map((key)=> (
+                  <th key={key}>{key}</th>
+                ))}
+                  <th>Overwrite?</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {ow.map((obj,i) => (
+                  <tr key={i}>
+                    {Object.entries(obj).splice(0, Object.entries(obj).length - 2).map(([key,value]) => (
+                      <td key={key}>{value}</td>
+                    ))}
+                    <td><CustomInput key={i} type="checkbox" id={i}
+                    defaultChecked="true"
+                    onChange={(e) => {this.onChange(e, i)}}inline/></td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          ): (
+            <div>
+              None
+              </div>
+          )}
+
           </div>
           {Object.entries(res).slice(1,3).map(([name,value]) => (
             (value.length > 0) ?

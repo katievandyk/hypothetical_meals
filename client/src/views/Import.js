@@ -43,9 +43,10 @@ class Import extends Component {
   	    console.log('filecontent',fileContent);
       }
       reader.onloadend = (function(name, reader, e) {
-        const newFileObj = {file: reader.result};
-        e.props.uploadCheck(newFileObj, name);
+        const newFileObj = {file: reader.result, file_name: name};
+        e.props.uploadCheck(newFileObj);
       })(name, reader, this);
+
 
       this.modal_toggle();
     }
