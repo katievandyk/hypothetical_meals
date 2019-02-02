@@ -16,6 +16,18 @@ export const uploadCheck = (file) => dispatch =>  {
   });
 };
 
-export const importOverwrites = (new_overWrite, new_no_overWrite, type) => dispatch =>  {
-  console.log(new_overWrite, new_no_overWrite, type);
+export const importOverwrites = (new_checkRes, type) => dispatch =>  {
+  const dataObj = {"data": new_checkRes};
+  axios.post(`/api/bulk-import/upload/${type}`, dataObj).then(res =>
+    dispatch({
+      type: IMPORT_OVERWRITES,
+      payload: res.data
+    })
+  ).catch(error =>{
+    console.log(error.response);
+    dispatch({
+      type: UPLOAD_ERROR,
+      payload: error.response
+    });
+  });
 };

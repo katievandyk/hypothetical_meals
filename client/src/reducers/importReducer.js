@@ -3,13 +3,13 @@ import {UPLOAD_CHECK, UPLOAD_ERROR, IMPORT_OVERWRITES} from '../actions/types';
 const initialState = {
   success: true,
   error_msgs: [],
-  check_res: {}
+  check_res: {},
+  import_res: {}
 };
 
 export default function(state = initialState, action) {
   switch(action.type) {
     case UPLOAD_CHECK:{
-      console.log(action.payload);
       return {
         ...state,
         success:true,
@@ -23,11 +23,13 @@ export default function(state = initialState, action) {
         error_msgs: [...state.error_msgs, action.payload.data.message]
       }
     }
-    case IMPORT_OVERWRITES:
+    case IMPORT_OVERWRITES:{
       return {
         ...state,
-        success:true
+        success:true,
+        import_res: action.payload
       }
+    }
     default:
       return state;
   }

@@ -16,9 +16,9 @@ class ImportAlerts extends Component {
       <Row>
       <Col></Col>
       <Col md={9}>
-      {errors.map((value) => (
-        <UncontrolledAlert key={value} color="danger">
-        <h4>Oops!</h4>
+      {errors.map((value, i) => (
+        <UncontrolledAlert key={i} color="danger">
+        <h4>ERROR</h4>
         {value}
         </UncontrolledAlert>
       ))}

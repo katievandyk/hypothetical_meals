@@ -7,7 +7,7 @@ import {
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { uploadCheck } from '../../actions/importActions';
+import { uploadCheck, importOverwrites } from '../../actions/importActions';
 
 class ImportAssistant extends Component {
   state = {
@@ -34,25 +34,77 @@ class ImportAssistant extends Component {
 
   submitImport = () => {
     const new_ow = this.state.new_overWrite;
-    const new_no_ow = this.props.import.check_res.Overwrite.filter(function(entry){
-      return (new_ow.indexOf(entry) === -1)
-    });
-  }
-
-  onCancel = () => {
     this.setState({
       new_overWrite: []
     });
+    const new_no_ow = this.props.import.check_res.Overwrite.filter(function(entry){
+      return (new_ow.indexOf(entry) === -1)
+    });
+    const new_checkRes = this.props.import.check_res;
+    new_checkRes.Overwrite = new_ow;
+    new_checkRes.NoOverwrite = new_no_ow;
+    const fileName = this.props.import.check_res.file_type;
+    if(fileName === 'product_lines'){
+      fileName = 'productlines';
+    }
+    this.props.importOverwrites(new_checkRes, fileName);
+    this.props.toggle();
+  }
+
+  onCancel = () => {
+
+  }
+
+  ow_oldEntry_helper = (oldEntry, file_headers, obj_headers) => {
+    var new_ow_arr = [];
+    var i;
+    for (i = 0; i < file_headers.length; i++) {
+      var newkv = ['', ''];
+      newkv[0] = file_headers[i];
+      newkv[1] = oldEntry[obj_headers[i]];
+      new_ow_arr = [...new_ow_arr, newkv];
+    }
+    return new_ow_arr;
+  }
+
+  asst_ow_helper = (obj, file_headers) => {
+    var new_ow_arr = [];
+    var i;
+    for (i = 0; i < file_headers.length; i++) {
+      var newkv = ['', ''];
+      newkv[0] = file_headers[i];
+      newkv[1] = obj[file_headers[i]];
+      new_ow_arr = [...new_ow_arr, newkv];
+    }
+    return new_ow_arr;
   }
 
   render(){
     const res = this.props.import.check_res;
-    console.log('res', res);
-    var ow = res.Overwrite ? res.Overwrite : [];
+    var file_type = '';
     var ow_keys = [];
-    if(res.length > 0){
-      this.componentDidMount();
+    var ow = [];
+    if(Object.keys(res).length > 0){
+      file_type = res.file_type;
+      ow = res.Overwrite;
     }
+
+    var file_headers = [];
+    var obj_headers = [];
+    if(file_type === 'ingredients'){
+      file_headers = ["Ingr#", "Name", "Vendor Info", "Size", "Cost", "Comment"];
+      obj_headers = ["number", "name", "vendor_info", "package_size", "cost_per_package", "comment"];
+    }
+    else if (file_type === 'skus') {
+      file_headers = ["SKU#","Name","Case UPC","Unit UPC","Unit size","Count per case","Product Line Name","Comment"];
+      obj_headers = ["number", "name", "case_number", "unit_number", "unit_size", "count_per_case", "product_line", "comment"];
+    }
+    else if (file_type === 'product_lines') {
+    }
+    else if (file_type === 'formulas') {
+      file_headers = ["SKU#", "Ingr#", "Quantity"];
+    }
+
     if(ow.length > 0){
       ow_keys = Object.keys(res.Overwrite[0]);
     }
@@ -63,45 +115,76 @@ class ImportAssistant extends Component {
           <div key="Overwrite">
           <h4>Overwrite</h4>
           {ow.length > 0 ? (
-            <Table responsive size="sm">
-              <thead>
-                <tr>
-                  <th>Overwrite?</th>
-                {ow_keys.filter(function(entry){
-                  return !(entry === 'ing_id' ||  entry === 'sku_id'||
-                  entry ==='pl_id' || entry === 'status' || entry === 'to_overwrite')
-                }).map((key)=> (
-                  <th key={key}>{key}</th>
-                ))}
-
-                </tr>
-              </thead>
-
-                {ow.map((obj,i) => (
-                  <tbody key={i}>
-                  <tr key={i}>
-                    <td><CustomInput key={i} type="checkbox" id={i}
-                    onChange={(e) => {this.onChange(e, i, obj)}}inline/></td>
-                    {Object.entries(obj).filter(function(entry){
-                      return !(entry[0] === 'ing_id' || entry[0] === 'sku_id'||
-                      entry[0] ==='pl_id' || entry[0] === 'status' || entry[0]==='to_overwrite')
-                    }).map(([key,value]) => (
-                      <td key={key}>{value}</td>
-                    ))}
+            file_type === 'formulas' ? (
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Overwrite?</th>
+                  {file_headers.map((key)=> (
+                    <th key={key}>{key}</th>
+                  ))}
 
                   </tr>
-                  <tr style={{backgroundColor:'#d3d3d3'}}>
-                    <td>Current Entry</td>
-                    {Object.entries(obj.to_overwrite).filter(function(entry){
-                      return !(entry[0] === 'ing_id' || entry[0] === 'sku_id'||
-                      entry[0] ==='pl_id' || entry[0] === '__v' || entry[0]==='_id')
-                    }).map(([key,value]) => (
-                      <td key={key}>{value}</td>
+                </thead>
+
+                  {ow.map((obj,i) => (
+                    <tbody key={i}>
+                    <tr key={i}>
+                      <td><CustomInput key={i} type="checkbox" id={i}
+                      onChange={(e) => {this.onChange(e, i, obj)}}inline/> Formula {i}</td>
+                    </tr>
+                    {obj.result.map((entry, i) => (
+                      <tr key={i}>
+                        <td></td>
+                        {this.asst_ow_helper(entry[0], file_headers, obj_headers).map(([key,value]) => (
+                            <td key={key}>{value}</td>
+                          ))}
+                      </tr>
                     ))}
+                    <tr style={{backgroundColor:'#d3d3d3'}}>
+                      <td>Current Entry</td>
+                      {this.asst_ow_helper(obj.result, file_headers, obj_headers).map(([key,value]) => (
+                        <td key={key}>{value}</td>
+                      ))}
+                    </tr>
+                    <tr><td></td></tr>
+                    </tbody>
+                  ))}
+              </Table>
+            ): (
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Overwrite?</th>
+                  {file_headers.map((key)=> (
+                    <th key={key}>{key}</th>
+                  ))}
+
                   </tr>
-                  </tbody>
-                ))}
-            </Table>
+                </thead>
+
+                  {ow.map((obj,i) => (
+                    <tbody key={i}>
+                    <tr key={i}>
+                      <td><CustomInput key={i} type="checkbox" id={i}
+                      onChange={(e) => {this.onChange(e, i, obj)}}inline/></td>
+                    {this.asst_ow_helper(obj, file_headers, obj_headers).map(([key,value]) => (
+                        <td key={key}>{value}</td>
+                      ))}
+
+                    </tr>
+                    <tr style={{backgroundColor:'#d3d3d3'}}>
+                      <td>Current Entry</td>
+                      {this.ow_oldEntry_helper(obj.to_overwrite, file_headers, obj_headers).map(([key,value]) => (
+                        <td key={key}>{value}</td>
+                      ))}
+                    </tr>
+                    </tbody>
+                  ))}
+              </Table>
+            )
+
+
           ): (
             <div>
               None
@@ -160,6 +243,7 @@ class ImportAssistant extends Component {
 
 ImportAssistant.propTypes = {
   uploadCheck: PropTypes.func.isRequired,
+  importOverwrites: PropTypes.func.isRequired,
   import: PropTypes.object.isRequired,
   modal: PropTypes.bool.isRequired,
   toggle:PropTypes.func.isRequired
@@ -169,4 +253,4 @@ const mapStateToProps = state => ({
   import: state.import
 });
 
-export default connect(mapStateToProps, {uploadCheck})(ImportAssistant);
+export default connect(mapStateToProps, {uploadCheck, importOverwrites})(ImportAssistant);
