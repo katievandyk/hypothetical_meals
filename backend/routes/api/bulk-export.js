@@ -16,7 +16,7 @@ router.post('/ingredients', (req, res) => {
     Helper.getIngredientFilterResult(req, res, exportIngResponse)
 });
 
-function exportIngResponse(req, res, ingredientFindPromise) {
+function exportIngResponse(req, res, ingredientFindPromise, ignorePromise) {
     let field_order = ["number", "name", "vendor_info", "package_size", "cost_per_package", "comment"]
     let header = "Ingr#,Name,Vendor Info,Size,Cost,Comment\r\n"
     ingredientFindPromise
@@ -58,7 +58,7 @@ router.post('/skus', (req, res) => {
     Helper.getSKUFilterResult(req, res, exportSKUResponse)
 });
 
-function exportSKUResponse(req, res, skuFindPromise) {
+function exportSKUResponse(req, res, skuFindPromise, ignorePromise) {
     let field_order = ["number", "name", "case_number", "unit_number", "unit_size", "count_per_case", "product_line_name", "comment"]
     let header = "SKU#,Name,Case UPC,Unit UPC,Unit size,Count per case,Product Line Name,Comment\r\n"
     skuFindPromise.lean()
@@ -88,7 +88,7 @@ router.post('/formulas', (req, res) => {
     Helper.getSKUFilterResult(req, res, exportFormulaResponse)
 });
 
-function exportFormulaResponse(req, res, skuFindPromise) {
+function exportFormulaResponse(req, res, skuFindPromise, ignorePromise) {
     skuFindPromise.then(result => {
         let nested_result = result.map(processSKUFormulaResult)
         let flattened = [].concat.apply([], nested_result);
@@ -99,12 +99,11 @@ function exportFormulaResponse(req, res, skuFindPromise) {
 }
 
 function processSKUFormulaResult(sku_entry) {
-    return sku_entry.ingredients_list.map(ing_entry => processForumaResult(sku_entry.number, ing_entry))
+    return sku_entry.ingredients_list.map(ing_entry => processForumlaResult(sku_entry.number, ing_entry))
 }
 
-function processForumaResult(sku_num, ingredient) {
+function processForumlaResult(sku_num, ingredient) {
     return {"SKU#": sku_num, "Ingr#": ingredient._id.number, "Quantity": ingredient.quantity}
 }
-
 
 module.exports = router;
