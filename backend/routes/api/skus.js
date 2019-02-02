@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Helper = require('../../bulk_import/helpers');
 
 // SKU Model
 const SKU = require('../../models/SKU');
@@ -131,71 +132,7 @@ router.get('/byingredients', (req, res) => {
 // - group_pl: if "True" then will return result grouped by pl
 // @access public
 router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
-    var skuFindPromise = SKU.find();
-    let skuCountPromise = SKU.find();
-
-    if (req.body.keywords != null) {
-        skuFindPromise = SKU.find(
-            {$text: {$search: req.body.keywords}},
-            {score:{$meta: "textScore"}});
-        skuCountPromise = SKU.find({$text: {$search: req.body.keywords}},
-            {score:{$meta: "textScore"}});
-    }
-    if (req.body.ingredients != null) {
-        skuFindPromise = skuFindPromise.find(
-            { 'ingredients_list._id': { $all: 
-                req.body.ingredients}});
-        skuCountPromise = skuCountPromise.find({ 'ingredients_list._id': { $all: 
-            req.body.ingredients}});
-    }
-    if (req.body.product_lines != null) {
-        skuFindPromise = skuFindPromise.find(
-            { 'product_line': { $in: 
-                req.body.product_lines.map(
-                    function(el) { return mongoose.Types.ObjectId(el) }) }});
-        skuCountPromise = skuCountPromise.find({ 'product_line': { $in: 
-            req.body.product_lines.map(
-                function(el) { return mongoose.Types.ObjectId(el) }) }});
-    }
-
-    var currentPage = parseInt(req.params.pagenumber);
-    var limit = parseInt(req.params.limit);
-    if (limit != -1) {
-        skuFindPromise = skuFindPromise.skip((currentPage-1)*limit).limit(limit)
-    }
-
-    skuFindPromise = skuFindPromise.populate("product_line").populate("ingredients_list._id");
-
-    var sortOrder = req.params.asc === 'asc' ? 1 : -1;
-    var skuSortPromise;
-    if (req.params.field === 'score') {
-        skuSortPromise = skuFindPromise.lean().sort(
-            {score: {$meta: "textScore"}});
-    }
-    else {
-        skuSortPromise = skuFindPromise.lean().sort(
-            {[req.params.field] : sortOrder});
-    }
-
-    Promise.all([skuCountPromise.count(), skuSortPromise])
-        .then(results => {
-            if (req.body.group_pl === "True")
-                results[1] = groupByProductLine(results[1]);
-            finalResult = {count: results[0], results: results[1]};
-            res.json(finalResult)})
-        .catch(err => res.status(404).json({success: false, message: err.message}))
+    Helper.getSKUFilterResult(req, res, Helper.sortAndLimit)
 });
-
-function groupByProductLine(results) {
-    let i;
-    let pl_to_skus = new Object();
-    for(i = 0; i < results.length; i++) {
-        pl_name = results[i].product_line.name
-        pl_name in pl_to_skus ? 
-            pl_to_skus[pl_name].push(results[i]) : pl_to_skus[pl_name] = [results[i]];
-    }
-    return pl_to_skus;
-}
-
 
 module.exports = router;
