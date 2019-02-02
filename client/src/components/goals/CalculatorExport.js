@@ -30,7 +30,7 @@ class CalculatorExport extends React.Component {
   render() {
     return (
       <div>
-        <Button color="secondary" onClick={this.export}>Export</Button>
+        <Button color="secondary" disabled={this.props.disableExport} onClick={this.export}>Export</Button>
       </div>
     );
   }
