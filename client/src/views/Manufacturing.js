@@ -30,7 +30,8 @@ class Manufacturing extends Component {
     this.calculatorCallback = this.calculatorCallback.bind(this);
     this.exportPDF = this.exportPDF.bind(this);
     this.state = {
-        calcGoal: ''
+        calcGoal: '',
+        disableExport: true
     };
     }
 
@@ -42,7 +43,8 @@ class Manufacturing extends Component {
     const {goals} = this.props.goals
     const selGoal = goals.find(g => g._id == goal._id )
     this.setState({
-        calcGoal : selGoal
+        calcGoal : selGoal,
+        disableExport: false
     })
     this.props.getGoalsIngQuantity(goal._id);
    }
@@ -86,8 +88,8 @@ class Manufacturing extends Component {
                    <Row>
                       <Col style={{'textAlign': 'right'}}> </Col>
                       <CalculatorDropdown goals={this.props.goals} calculatorCallback={this.calculatorCallback}/> &nbsp;
-                      <CalculatorExport goal={this.state.calcGoal}/> &nbsp;
-                      <Button color="success" onClick={this.exportPDF}>PDF</Button>
+                      <CalculatorExport disableExport={this.state.disableExport} goal={this.state.calcGoal}/> &nbsp;
+                      <Button disabled={this.state.disableExport} color="success" onClick={this.exportPDF}>PDF</Button>
                    </Row>
                 </Container>
                 <CalculatorEntry ingredients={this.props.goals.ing_quantities}/>
