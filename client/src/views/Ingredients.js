@@ -12,11 +12,12 @@ import store from '../store';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { sortIngs } from '../actions/ingActions';
+import { sortIngs, genIngDepReport } from '../actions/ingActions';
 
 import {
   Container, Row, Col, Button,
-  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
+  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem,
+  Modal, ModalBody, ModalHeader
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,7 +25,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class Ingredients extends Component {
   state = {
     dropdownOpen: false,
-    sortby: 'name-asc'
+    sortby: 'name-asc',
+    modal: false
   };
 
   toggle = () => {
@@ -41,6 +43,20 @@ class Ingredients extends Component {
     this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
        this.props.ing.page - 1, this.props.ing.obj);
   };
+
+  genReportClick = () => {
+    this.props.genIngDepReport(this.props.ing.obj);
+    this.setState({
+      modal: true
+    });
+    console.log(this.props.ing.report);
+  }
+
+  modal_toggle = () => {
+    this.setState({
+      modal: !this.state.modal
+    })
+  }
 
   sortClick = type => {
     this.setState({
@@ -185,6 +201,15 @@ class Ingredients extends Component {
                   <Button onClick={this.onNextPage} disabled={!isNextPage}>
                     Next Page
                   </Button>
+                  <div><Button onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button></div>
+                  <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
+                    <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
+                    <ModalBody style={{textAlign:'center'}}>
+                      Ingredients Dependency Report Generated! You can view or export it on the reports page
+                      <Button href="./reports">View Ingredients Dependency Report</Button>
+                    </ModalBody>
+                  </Modal>
+
               </Container>
             </div>
           </Provider>
@@ -192,6 +217,7 @@ class Ingredients extends Component {
    }
 }
 Ingredients.propTypes = {
+  genIngDepReport: PropTypes.func.isRequired,
   sortIngs: PropTypes.func.isRequired,
   ing: PropTypes.object.isRequired
 };
@@ -200,4 +226,4 @@ const mapStateToProps = state => ({
   ing: state.ing
 });
 
-export default connect(mapStateToProps, {sortIngs})(Ingredients);
+export default connect(mapStateToProps, {sortIngs, genIngDepReport})(Ingredients);

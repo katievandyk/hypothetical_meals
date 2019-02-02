@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { GET_INGS, ADD_ING, DELETE_ING, INGS_LOADING, UPDATE_ING,
-GET_ING_SKUS, ING_SKUS_LOADING, ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER} from './types';
+GET_ING_SKUS, ING_SKUS_LOADING, ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER,
+GEN_INGDEP_REPORT} from './types';
 
 export const getIngs = () => dispatch =>  {
   dispatch(setIngsLoading());
@@ -74,6 +75,15 @@ export const sortIngs = (field, asc, page, obj) => dispatch => {
     dispatch({
       type: ING_SORT,
       payload: {data: res.data, sortby: field, sortdir: asc, page: page, obj: obj}
+    })
+  );
+};
+
+export const genIngDepReport = (obj) => dispatch => {
+  axios.post(`/api/ingredients/filter/`, obj).then(res =>
+    dispatch({
+      type: GEN_INGDEP_REPORT,
+      payload: res.data
     })
   );
 };

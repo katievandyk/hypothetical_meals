@@ -1,6 +1,6 @@
 import {GET_INGS, ADD_ING, DELETE_ING, UPDATE_ING,
   GET_ING_SKUS, INGS_LOADING, ING_SKUS_LOADING,
-  ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER} from '../actions/types';
+  ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER, GEN_INGDEP_REPORT} from '../actions/types';
 
 const initialState = {
   ings: [],
@@ -12,7 +12,8 @@ const initialState = {
   sortdir: 'asc',
   page: 1,
   pagelimit: 10,
-  count: 0
+  count: 0,
+  report: []
 };
 
 export default function(state = initialState, action) {
@@ -84,6 +85,12 @@ export default function(state = initialState, action) {
         page: action.payload.page,
         loading: false
       }
+    case GEN_INGDEP_REPORT:{
+      return {
+        ...state,
+        report: action.payload
+      }
+    }
     default:
       return state;
   }
