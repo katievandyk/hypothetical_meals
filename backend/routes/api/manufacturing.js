@@ -6,6 +6,18 @@ const Papa = require('papaparse');
 // Goal Model
 const Goal = require('../../models/Goal');
 
+// @route GET api/manufacturing/:user_email
+// @desc get all goals for specific user
+// @access public
+router.get('/:user_email', (req, res) => {
+    console.log(req.params.user_email);
+    Goal
+        .find({ 'user_email' : req.params.user_email})
+        .populate({ path: 'skus_list.sku'})
+        .lean()
+        .then(goal => res.json(goal))
+});
+
 // @route GET api/manufacturing
 // @desc get all goals
 // @access public
@@ -21,14 +33,16 @@ router.get('/', (req, res) => {
 // @desc create a goal
 // @access public
 router.post('/', (req, res) => {
+    console.log(req.body);
     const newGoal = new Goal({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        skus_list: req.body.skus_list
+        skus_list: req.body.skus_list,
+        user_email: req.body.user_email
     });
 
     newGoal.save().then(goal => res.json(goal))
-        .catch(err => res.status(404).json({success: false, message: err.message}));
+        .catch(err => console.log(err.message));
 });
 
 // @route GET api/manufacturing/ingquantities/:id

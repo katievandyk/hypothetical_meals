@@ -3,8 +3,11 @@ const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
+const path = require ('path');
 
 const API_PORT = 3001;
+const PROD_PORT = 8080;
+
 
 const passport = require("passport");
 const users = require("./routes/api/users");
@@ -57,5 +60,22 @@ app.use('/api/bulk-export', bulkexport);
 const manufacturing= require('./routes/api/manufacturing');
 app.use('/api/manufacturing', manufacturing);
 
+var env = process.env.NODE_ENV || 'dev';
+
+if(env!=='dev') {
+  // Gives constant name to long directory home page.
+  const appPage = path.join(__dirname, '../client/build/index.html');
+
+  // Allows the use of files.
+  app.use(express.static('../client/build'));
+
+  // SERVES STATIC HOMEPAGE at '/' URL
+  app.get('*', function(req, res) {
+    res.sendFile(appPage)
+  })
+}
+
+
 // launch our backend into a port
+app.listen(PROD_PORT);
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));

@@ -7,13 +7,15 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input, ListGroup, ListGroupItem
  } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { getSKUs, deleteSKU, updateSKU } from '../../actions/skuActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import SKUsFormPLineSelection from './SKUsFormPLineSelection'
+import SKUsFormIngTupleSelection from './SKUsFormIngTupleSelection'
 import '../../styles.css'
 
 class SKUsEntry extends React.Component {
@@ -29,7 +31,9 @@ class SKUsEntry extends React.Component {
     edit_count_per_case: '',
     edit_ingredients_list: [],
     edit_comment: '',
-    ing_modal: false
+    ing_modal: false,
+    ing_tuples: [],
+    group_by_pl: false
   };
 
   toggle = () => {
@@ -38,21 +42,26 @@ class SKUsEntry extends React.Component {
     });
   }
 
-  /*ing_toggle = () => {
+  ing_toggle = () => {
     this.setState({
       ing_modal: !this.state.ing_modal
     });
-  }*/
+  }
 
   componentDidMount() {
     this.props.getSKUs();
+    if(this.props.skus.obj && this.props.skus.obj.group_pl && this.props.skus.obj.group_pl === "True"){
+      this.setState({
+        group_by_pl: true
+      });
+    }
   }
 
   onDeleteClick = id => {
     this.props.deleteSKU(id);
   };
 
-  onEditClick = (id, name, number, case_number, unit_number, unit_size, product_line, count_per_case,
+  onEditClick = (id, name, number, case_number, unit_number, unit_size, count_per_case, product_line,
   ingredients_list, comment) => {
     this.setState({
       modal: true,
@@ -91,16 +100,30 @@ class SKUsEntry extends React.Component {
       comment: this.state.edit_comment
     };
 
+    console.log("editsubmit", editedSKU);
     this.props.updateSKU(editedSKU);
     this.props.getSKUs();
     this.toggle();
   };
-/**
-  onIngListClick = id => {
+
+  onIngListClick = ingredients_list => {
+    this.setState({
+      ing_tuples: ingredients_list
+    });
     this.ing_toggle();
-    this.props.getIngSKUs(id);
   };
-  **/
+
+  onProductLineChange = (prod_line) => {
+    this.setState({
+      edit_product_line: prod_line
+    });
+  };
+
+  onIngListChange = (ing_list) => {
+    this.setState({
+      edit_ingredients_list: ing_list
+    });
+  }
 
   render() {
     const { skus } = this.props.skus;
@@ -116,152 +139,242 @@ class SKUsEntry extends React.Component {
 
       );
     }
-    return (
-      <div>
-        <Table responsive size="sm">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>#</th>
-              <th>Case #</th>
-              <th>Unit #</th>
-              <th>Unit Size</th>
-              <th>Count/Case</th>
-              <th>Product Line</th>
-              <th>Ingredients</th>
-              <th>Comments</th>
-              <th>Edit</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody is="transition-group" >
-            <TransitionGroup className="ingredients-table" component={null}>
-              {skus.map(({_id, name, number, case_number, unit_number, unit_size,
-                count_per_case, product_line, ingredients_list, comment }) => (
-                <CSSTransition key={_id} timeout={500} classNames="fade">
-                  <tr>
-                    <td> {name} </td>
-                    <td> {number} </td>
-                    <td> {case_number} </td>
-                    <td> {unit_number} </td>
-                    <td> {unit_size} </td>
-                    <td> {count_per_case}</td>
-                    <td> {/**{product_line}**/}</td>
-                    <td>
-                      {/*{ingredients_list}*/}
-                    </td>
-                    <td> {comment} </td>
-                    <td>
-                      <Button size="sm" color="link"
-                        onClick={this.onEditClick.bind(this,
-                          _id, name, number, case_number, unit_number, unit_size,
-                            count_per_case, product_line, ingredients_list, comment
-                        )}
-                        style={{'color':'black'}}>
-                        <FontAwesomeIcon icon = "edit"/>
-                      </Button>
-                    </td>
-                    <td >
-                      <Button size="sm" color="link"
-                        onClick={this.onDeleteClick.bind(this, _id)}
-                        style={{'color':'black'}}>
-                        <FontAwesomeIcon icon="trash"/>
-                      </Button>
-                    </td>
-                  </tr>
-                </CSSTransition>
-            ))}
-            </TransitionGroup>
-          </tbody>
-        </Table>
-        <Modal isOpen={this.state.modal} toggle={this.toggle}>
-          <ModalHeader toggle={this.toggle}> Edit Ingredient </ModalHeader>
-          <ModalBody>
-            <Form onSubmit={this.onEditSubmit}>
-              <FormGroup>
-                <Label for="edit_name">Name</Label>
-                  <Input
-                    type="text"
-                    name="edit_name"
-                    id="edit_name"
-                    onChange={this.onChange}
-                    defaultValue={this.state.edit_name}>
-                  </Input>
-              </FormGroup>
-              <FormGroup>
-                <Label for="edit_number">Number</Label>
-                  <Input
-                    type="text"
-                    name="edit_number"
-                    id="edit_number"
-                    placeholder="Add Ingredient Number"
-                    onChange={this.onChange}
-                    defaultValue={this.state.edit_number}>
-                  </Input>
-              </FormGroup>
-              <FormGroup>
-                <Label for="edit_vendor_info">Vendor's Info</Label>
-                  <Input
-                    type="textarea"
-                    name="edit_vendor_info"
-                    id="edit_vendor_info"
-                    placeholder="Add Vendor's Information"
-                    onChange={this.onChange}
-                    defaultValue={this.state.edit_vendor_info}>
-                  </Input>
-              </FormGroup>
-              <FormGroup>
-                <Label for="edit_package_size">Package Size</Label>
-                  <Input
-                    type="text"
-                    name="edit_package_size"
-                    id="edit_package_size"
-                    placeholder="Add the Package Size"
-                    onChange={this.onChange}
-                    defaultValue={this.state.edit_package_size}>
-                  </Input>
-              </FormGroup>
-              <FormGroup>
-                <Label for="edit_cost_per_package">Cost per Package</Label>
-                  <Input
-                    type="text"
-                    name="edit_cost_per_package"
-                    id="edit_cost_per_package"
-                    placeholder="Add the Cost Per Package"
-                    onChange={this.onChange}
-                    defaultValue={this.state.edit_cost_per_package}>
-                  </Input>
-              </FormGroup>
-              <FormGroup>
-                <Label for="edit_comment">Comments</Label>
-                  <Input
-                    type="textarea"
-                    name="edit_comment"
-                    id="edit_comment"
-                    placeholder="Add any comments on the ingredient"
-                    onChange={this.onChange}
-                    defaultValue={this.state.edit_comment}>
-                  </Input>
-              </FormGroup>
-              <Button color="dark" style={{ marginTop: '2rem' }} type="submit" block>
-                    Submit Ingredient Edits
-                  </Button>
-            </Form>
-          </ModalBody>
-        </Modal>
-        {/*<Modal isOpen={this.state.sku_modal} toggle={this.sku_toggle}>
-          <ModalHeader toggle={this.sku_toggle}>SKUs that use Ingredient: {this.props.ing.ing_skus.length}</ModalHeader>
-          <ModalBody>
-            <ListGroup>
-              {this.props.ing.ing_skus.map(({_id, name}) => (
-              <ListGroupItem key={_id}> <div>{name}</div> </ListGroupItem>
-              ))}
-            </ListGroup>
-          </ModalBody>
-        </Modal>*/}
+    else if (this.props.skus.obj && this.props.skus.obj.group_pl && this.props.skus.obj.group_pl === "True") {
+      return (
+        <div>
+          {Object.entries(skus).map(([key, value]) => (
+          <div>
+            <h3>{key}</h3>
+            <Table responsive size="sm">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>#</th>
+                  <th>Case UPC#</th>
+                  <th>Unit UPC#</th>
+                  <th>Unit Size</th>
+                  <th>Count/Case</th>
+                  <th>Product Line</th>
+                  <th>Ingredients</th>
+                  <th>Comments</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody is="transition-group" >
+                <TransitionGroup className="ingredients-table" component={null}>
+                  {value.map(({_id, name, number, case_number, unit_number, unit_size,
+                    count_per_case, product_line, ingredients_list, comment }) => (
+                    <CSSTransition key={_id} timeout={500} classNames="fade">
+                      <tr>
+                        <td> {name} </td>
+                        <td> {number} </td>
+                        <td> {case_number} </td>
+                        <td> {unit_number} </td>
+                        <td> {unit_size} </td>
+                        <td> {count_per_case}</td>
+                        <td> {product_line.name}</td>
+                        <td>
+                          <Button size="sm" color="link"
+                          onClick={this.onIngListClick.bind(this, ingredients_list)}
+                          style={{'color':'black'}}>
+                          <FontAwesomeIcon icon="list"/>
+                          </Button>
+                        </td>
+                        <td> {comment} </td>
+                        <td>
+                          <Button size="sm" color="link"
+                            onClick={this.onEditClick.bind(this,
+                              _id, name, number, case_number, unit_number, unit_size,
+                                count_per_case, product_line, ingredients_list, comment
+                            )}
+                            style={{'color':'black'}}>
+                            <FontAwesomeIcon icon = "edit"/>
+                          </Button>
+                        </td>
+                        <td >
+                          <Button size="sm" color="link"
+                            onClick={this.onDeleteClick.bind(this, _id)}
+                            style={{'color':'black'}}>
+                            <FontAwesomeIcon icon="trash"/>
+                          </Button>
+                        </td>
+                      </tr>
+                    </CSSTransition>
+                ))}
+              </TransitionGroup>
+              </tbody>
+            </Table>
+          </div>
+          ))}
         </div>
+      )
+    }
+    else {
+      return (
+        <div>
+          <Table responsive size="sm">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>#</th>
+                <th>Case UPC#</th>
+                <th>Unit UPC#</th>
+                <th>Unit Size</th>
+                <th>Count/Case</th>
+                <th>Product Line</th>
+                <th>Ingredients</th>
+                <th>Comments</th>
+                <th>Edit</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody is="transition-group" >
+              <TransitionGroup className="ingredients-table" component={null}>
+                {skus.map(({_id, name, number, case_number, unit_number, unit_size,
+                  count_per_case, product_line, ingredients_list, comment }) => (
+                  <CSSTransition key={_id} timeout={500} classNames="fade">
+                    <tr>
+                      <td> {name} </td>
+                      <td> {number} </td>
+                      <td> {case_number} </td>
+                      <td> {unit_number} </td>
+                      <td> {unit_size} </td>
+                      <td> {count_per_case}</td>
+                      <td> {product_line.name}</td>
+                      <td>
+                        <Button size="sm" color="link"
+                        onClick={this.onIngListClick.bind(this, ingredients_list)}
+                        style={{'color':'black'}}>
+                        <FontAwesomeIcon icon="list"/>
+                        </Button>
+                      </td>
+                      <td> {comment} </td>
+                      <td>
+                        <Button size="sm" color="link"
+                          onClick={this.onEditClick.bind(this,
+                            _id, name, number, case_number, unit_number, unit_size,
+                              count_per_case, product_line, ingredients_list, comment
+                          )}
+                          style={{'color':'black'}}>
+                          <FontAwesomeIcon icon = "edit"/>
+                        </Button>
+                      </td>
+                      <td >
+                        <Button size="sm" color="link"
+                          onClick={this.onDeleteClick.bind(this, _id)}
+                          style={{'color':'black'}}>
+                          <FontAwesomeIcon icon="trash"/>
+                        </Button>
+                      </td>
+                    </tr>
+                  </CSSTransition>
+              ))}
+            </TransitionGroup>
+            </tbody>
+          </Table>
+          <Modal isOpen={this.state.modal} toggle={this.toggle}>
+            <ModalHeader toggle={this.toggle}> Edit Ingredient </ModalHeader>
+            <ModalBody>
+              <Form onSubmit={this.onEditSubmit}>
+                <FormGroup>
+                  <Label for="edit_name">Name</Label>
+                    <Input
+                      type="text"
+                      name="edit_name"
+                      id="edit_name"
+                      onChange={this.onChange}
+                      defaultValue={this.state.edit_name}>
+                    </Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label for="edit_number">Number</Label>
+                    <Input
+                      type="text"
+                      name="edit_number"
+                      id="edit_number"
+                      placeholder="Add Ingredient Number"
+                      onChange={this.onChange}
+                      defaultValue={this.state.edit_number}>
+                    </Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label for="edit_case_number">Case UPC#</Label>
+                    <Input
+                      type="textarea"
+                      name="edit_case_number"
+                      id="edit_case_number"
+                      placeholder="Add Case UPC#"
+                      onChange={this.onChange}
+                      defaultValue={this.state.edit_case_number}>
+                    </Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label for="edit_unit_number">Unit UPC#</Label>
+                    <Input
+                      type="text"
+                      name="edit_unit_number"
+                      id="edit_unit_number"
+                      placeholder="Add the Unit UPC#"
+                      onChange={this.onChange}
+                      defaultValue={this.state.edit_unit_number}>
+                    </Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label for="edit_unit_size">Unit Size</Label>
+                    <Input
+                      type="text"
+                      name="edit_unit_size"
+                      id="edit_unit_size"
+                      placeholder="Add the Unit Size"
+                      onChange={this.onChange}
+                      defaultValue={this.state.edit_unit_size}>
+                    </Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label for="edit_count_per_case">Count per Case</Label>
+                    <Input
+                      type="text"
+                      name="edit_count_per_case"
+                      id="edit_count_per_case"
+                      placeholder="Add the Count per Case"
+                      onChange={this.onChange}
+                      defaultValue={this.state.edit_count_per_case}>
+                    </Input>
+                </FormGroup>
+                <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} defaultValue={this.state.edit_product_line}/>
+                <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list}/>
+                <FormGroup>
+                  <Label for="edit_comment">Comments</Label>
+                    <Input
+                      type="textarea"
+                      name="edit_comment"
+                      id="edit_comment"
+                      placeholder="Add any comments on the ingredient"
+                      onChange={this.onChange}
+                      defaultValue={this.state.edit_comment}>
+                    </Input>
+                </FormGroup>
+                <Button color="dark" style={{ marginTop: '2rem' }} type="submit" block>
+                      Submit SKU Edits
+                    </Button>
+              </Form>
+            </ModalBody>
+          </Modal>
+          {<Modal isOpen={this.state.ing_modal} toggle={this.ing_toggle}>
+            <ModalHeader toggle={this.ing_toggle}>Ingredients in this SKU:</ModalHeader>
+            <ModalBody>
+              <ListGroup>
+                {this.state.ing_tuples.map(({_id, quantity}) => (
+                <ListGroupItem key={_id._id}> <div>{_id.name}, Quantity: {quantity}</div> </ListGroupItem>
+                ))}
+              </ListGroup>
+            </ModalBody>
+          </Modal>}
+          </div>
 
-    );
+      );
+    }
   }
 }
 

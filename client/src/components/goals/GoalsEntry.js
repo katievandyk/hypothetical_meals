@@ -13,7 +13,7 @@ class GoalsEntry extends React.Component {
   };
 
   componentDidMount() {
-    this.props.getGoals();
+    this.props.getGoals(this.props.auth.user_email);
   }
 
   sku_toggle = () => {
@@ -95,7 +95,8 @@ GoalsEntry.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  goals: state.goals
+  goals: state.goals,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, { getGoals })(GoalsEntry);

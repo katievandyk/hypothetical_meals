@@ -129,27 +129,26 @@ module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_
                 let status = "Store";
                 let name_result = result[0];
                 let number_result = result[1];
-                if(name_result) {
-                    if(name_result.number == ing_data[ing_fields.number] && 
-                        (name_result.vendor_info == ing_data[ing_fields.vendor] || 
-                        !name_result.vendor_info && ing_data[ing_fields.vendor].length == 0) &&
-                        name_result.package_size == ing_data[ing_fields.size] &&
-                        name_result.cost_per_package == ing_data[ing_fields.cost] &&
-                        (name_result.comment == ing_data[ing_fields.comment] || 
-                        !name_result.comment && ing_data[ing_fields.comment].length == 0))
+                if(number_result) {
+                    if(number_result.number == ing_data[ing_fields.number] && 
+                        (number_result.vendor_info == ing_data[ing_fields.vendor] || 
+                        !number_result.vendor_info && ing_data[ing_fields.vendor].length == 0) &&
+                        number_result.package_size == ing_data[ing_fields.size] &&
+                        number_result.cost_per_package == ing_data[ing_fields.cost] &&
+                        (number_result.comment == ing_data[ing_fields.comment] || 
+                        !number_result.comment && ing_data[ing_fields.comment].length == 0))
                         status = "Ignore";
                      else {
                         status = "Overwrite";
-                        ing_data["ing_id"] = name_result._id;
+                        ing_data["ing_id"] = number_result._id;
                      }
                 }
-                else if(number_result) {
-                    status = "Overwrite";
-                    ing_data["ing_id"] = number_result._id;
+                else if(name_result) {
+                    reject(new Error(`Ambiguous Record: Primary key for record with "Name"=${ing_data[ing_fields.name]} cannot be updated because "Name" is a unique key.`))
                 }
                 if(name_result && number_result && name_result.name != number_result.name) 
-                    reject(new Error(`Record name: ${ing_data[ing_fields.name]} `+
-                    `and number ${ing_data[ing_fields.number]} conflicts with existing records in db`))
+                    reject(new Error(`Ambiguous Record: Record name: ${ing_data[ing_fields.name]} `+
+                    `and number ${ing_data[ing_fields.number]} conflicts with existing records in db.`))
                 ing_data["status"] = status;
                 accept(ing_data);
             })
@@ -256,8 +255,8 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                     }
                 }
                 else if(case_number_result) {
-                    status = "Overwrite";
-                    sku_data['sku_id'] = case_number_result._id;
+                    reject(new Error(`Ambiguous Record: Primary key for record with "Case UPC"=${sku_data[sku_fields.case_upc]} cannot be updated because "Case UPC" is a unique key.`))
+
                 }
 
                 if(number_result && case_number_result && number_result.case_number != case_number_result.case_number) 
@@ -293,14 +292,28 @@ function checkFormulas(data) {
 
     formula_data = data.data;
 
-    checkFormulaFileDuplicates(formula_data);
-    return Promise.all(formula_data.map(checkOneForumla));
+    skus_map = checkFormulaFileDuplicates(formula_data);
+
+    return Promise.all(
+        Object.keys(skus_map).map(
+            function(key) {
+                return Promise.all(
+                        skus_map[key].map(checkOneForumla)
+                        ).then(result => {
+                            return new Promise(function(accept, reject) {
+                                final_res = {sku_id: result[0].sku_id, result: result, status: "Overwrite"}
+                                accept(final_res)
+                            })
+                        })
+                    }))
+
 }
 
 // visible for testing
 module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = function(formula_data) {
     let i;
     let sku_to_ings = {};
+    let skus_map = {};
     for(i = 0; i < formula_data.length; i++) {
         if(sku_to_ings[formula_data[i][formula_fields.sku_num]] && 
             sku_to_ings[formula_data[i][formula_fields.sku_num]]
@@ -309,11 +322,14 @@ module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = functio
             `${formula_data[i][formula_fields.sku_num]},${formula_data[i][formula_fields.ing_num]}`);
         if(sku_to_ings[formula_data[i][formula_fields.sku_num]]) {
             sku_to_ings[formula_data[i][formula_fields.sku_num]].push(formula_data[i][formula_fields.ing_num]);
+            skus_map[formula_data[i][formula_fields.sku_num]].push(formula_data[i])
         }
         else {
             sku_to_ings[formula_data[i][formula_fields.sku_num]] = [formula_data[i][formula_fields.ing_num]];
+            skus_map[formula_data[i][formula_fields.sku_num]] = [(formula_data[i])]
         }
     }
+    return skus_map
 }
 
 module.exports.checkOneForumla = checkOneForumla = function(formula_data) {

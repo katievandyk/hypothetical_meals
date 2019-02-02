@@ -129,10 +129,22 @@ router.get('/byingredients', (req, res) => {
 // - ingredients: Array of ingredients ids (String) to search SKUs for
 // - product_lines: Array of product line ids (String) to find SKUs that are part of it
 // - keywords: Array of words (String) to match entries on
+// - group_pl: if "True" then will return result grouped by pl
 // @access public
 router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     Helper.getSKUFilterResult(req, res, Helper.sortAndLimit)
 });
+
+function groupByProductLine(results) {
+    let i;
+    let pl_to_skus = new Object();
+    for(i = 0; i < results.length; i++) {
+        pl_name = results[i].product_line.name
+        pl_name in pl_to_skus ? 
+            pl_to_skus[pl_name].push(results[i]) : pl_to_skus[pl_name] = [results[i]];
+    }
+    return pl_to_skus;
+}
 
 
 module.exports = router;
