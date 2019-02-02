@@ -34,27 +34,31 @@ class GoalsCreateForm extends React.Component {
       }
 
       onSubmit = e => {
-        const newGoal = {
-          name: this.state.name,
-          skus_list: this.state.skus_list,
-          user_email: this.props.auth.user_email
-        };
+            const newGoal = {
+              name: this.state.name,
+              skus_list: this.state.skus_list,
+              user_email: this.props.auth.user_email
+            };
 
-        this.props.addGoal(newGoal);
-        this.toggle();
+            this.props.addGoal(newGoal);
+            this.toggle();
       }
 
 
     onFormSave = e => {
-        this.props.addGoal({"name": this.state.name, "skus_list": this.state.skus_list, "user_email": this.props.auth.user_email})
+       this.props.addGoal({"name": this.state.name, "skus_list": this.state.skus_list, "user_email": this.props.auth.user_email})
     }
 
     onAdd = e => {
         var skus  = this.state.skus_list
-        skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
-        this.setState({
-            skus_list: skus
-        })
+        if(isNaN(this.state.quantity)) alert("Please enter a numeric quantity.")
+        else if(skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
+        else {
+            skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
+            this.setState({
+                skus_list: skus
+            })
+        }
     }
 
     onCancel  = e => {

@@ -13,6 +13,7 @@ class CalculatorEntry extends React.Component {
               <th title="Vendor">Vendor Info</th>
               <th title="Package Size">Package Size</th>
               <th title="Cost Per Package">Cost Per Package</th>
+              <th title="Number">Number</th>
               <th title="Quantity">Quantity</th>
             </tr>
           </thead>
@@ -24,7 +25,7 @@ class CalculatorEntry extends React.Component {
                     <td> {ingredient.package_size} </td>
                     <td> {ingredient.cost_per_package} </td>
                     <td> {ingredient.number} </td>
-                    <td> {ingredient.quantity} </td>
+                    <td> {quantity} </td>
                 </tr>
            ))}
           </tbody>
