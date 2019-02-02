@@ -179,6 +179,7 @@ class Ingredients extends Component {
               </Container>
               <em>Results: {results_start}-{results} of {this.props.ing.count} total</em>
                 <IngredientsEntry/>
+                <Row>
                   <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
                     Previous Page
                   </Button>
@@ -186,7 +187,9 @@ class Ingredients extends Component {
                   <Button onClick={this.onNextPage} disabled={!isNextPage}>
                     Next Page
                   </Button>
+                <Col style={{'textAlign': 'right'}}/>
                 <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export</Button>
+              </Row>
               </Container>
             </div>
           </Provider>

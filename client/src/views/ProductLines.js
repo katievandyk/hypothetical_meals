@@ -53,6 +53,7 @@ class ProductLines extends Component {
            </Container>
             <em>Results: {results_start}-{results} of {this.props.plines.count} total</em>
              <PLinesEntry/>
+             <Row>
              <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
                Previous Page
              </Button>
@@ -60,7 +61,9 @@ class ProductLines extends Component {
              <Button onClick={this.onNextPage} disabled={!isNextPage}>
                Next Page
              </Button>
+             <Col style={{'textAlign': 'right'}}/>
              <Button onClick={() => { this.props.exportPLines() }}>Export</Button>
+             </Row>
            </Container>
          </div>
        </Provider>
