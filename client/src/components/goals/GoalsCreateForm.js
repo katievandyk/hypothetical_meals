@@ -112,6 +112,7 @@ class GoalsCreateForm extends React.Component {
                 <Col md={3.5}><GoalsSKUDropdown pline={this.state.plineSel} callbackFromParent={this.skuCallback}/></Col>
                 <Col md={4}><Input value={this.state.quantity} placeholder="Qty." onChange={e => this.setState({ quantity: e.target.value })}/> </Col>
                 <Col><Button color="success" onClick={this.onAdd}>Add</Button>{' '}</Col>
+                <Col style={{'textAlign': 'left'}}/>
         </Row>
         <Container className="my-3">
             <Row>
