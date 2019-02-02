@@ -40,3 +40,8 @@ export const SKU_PLINE_FILTER = 'SKU_PLINE_FILTER';
 export const SKU_SORT = 'SKU_SORT';
 export const SKU_ERROR = 'SKU_ERROR';
 export const SKU_GROUP_BY_PL = "SKU_GROUP_BY_PL";
+// Export Actions
+export const EXPORT_SKUS = 'EXPORT_SKUS';
+export const EXPORT_PLINES = 'EXPORT_PLINES';
+export const EXPORT_INGS = 'EXPORT_INGS';
+export const EXPORT_FORMULAS = 'EXPORT_FORMULAS';

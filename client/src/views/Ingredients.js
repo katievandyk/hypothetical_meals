@@ -6,6 +6,7 @@ import IngredientsEntry from '../components/ingredients/IngredientsEntry';
 import SKUFilters from '../components/ingredients/SKUFilters'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
+import { exportIngs } from '../actions/exportActions';
 
 import { Provider } from 'react-redux';
 import store from '../store';
@@ -185,6 +186,7 @@ class Ingredients extends Component {
                   <Button onClick={this.onNextPage} disabled={!isNextPage}>
                     Next Page
                   </Button>
+                <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export</Button>
               </Container>
             </div>
           </Provider>
@@ -193,6 +195,7 @@ class Ingredients extends Component {
 }
 Ingredients.propTypes = {
   sortIngs: PropTypes.func.isRequired,
+  exportIngs: PropTypes.func.isRequired,
   ing: PropTypes.object.isRequired
 };
 
@@ -200,4 +203,4 @@ const mapStateToProps = state => ({
   ing: state.ing
 });
 
-export default connect(mapStateToProps, {sortIngs})(Ingredients);
+export default connect(mapStateToProps, {sortIngs, exportIngs })(Ingredients);

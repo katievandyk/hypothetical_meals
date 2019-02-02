@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
+const IngredientHelper = require('../../bulk_import/helpers');
 
 // Ingredient Model
 const Ingredient = require('../../models/Ingredient');
@@ -79,65 +80,7 @@ router.get('/search', (req, res) => {
 // note: sorting on keyword search result field=score. score sorting will only be descending.
 // @access public
 router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
-    var skus = req.body.skus == null ? [] : req.body.skus;
-    SKU.aggregate(
-        [{ $match: {'_id': {$in: skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
-        { $unwind: "$ingredients_list" },
-        { $group: { _id: { ingredients: '$ingredients_list'} } },
-        { $replaceRoot: { newRoot: "$_id" } },
-        { $unwind: "$ingredients" },
-        { $replaceRoot: { newRoot: "$ingredients" } }
-        ]
-    ).then(result => {
-        var onlyIds = result.map(obj => obj._id);
-        var ingredientFindPromise;
-        var ingredientCountPromise;
-        if (req.body.skus != null && req.body.keywords != null) {
-            ingredientFindPromise = Ingredient.find({$text: {
-                $search: req.body.keywords}},
-                {score:{$meta: "textScore"}}, 
-                ).where({_id: {$in: onlyIds}});
-        }
-        else if (req.body.skus != null) {
-            ingredientFindPromise = Ingredient.find().where({_id: {$in: onlyIds}});
-            ingredientCountPromise = Ingredient.find().where({_id: {$in: onlyIds}});
-        }
-        else if (req.body.keywords != null) {
-            ingredientFindPromise = Ingredient.find({$text: {
-                $search: req.body.keywords}},
-                {score:{$meta: "textScore"}});
-                ingredientCountPromise = Ingredient.find({$text: {
-                    $search: req.body.keywords}},
-                    {score:{$meta: "textScore"}});
-        }
-        else {
-            ingredientFindPromise = Ingredient.find();
-            ingredientCountPromise = Ingredient.find();
-        }
-
-        // Paginate. If limit = -1, then gives all records
-        var currentPage = parseInt(req.params.pagenumber);
-        var limit = parseInt(req.params.limit);
-        if (limit != -1) {
-            ingredientFindPromise = ingredientFindPromise.skip((currentPage-1)*limit).limit(limit);
-        }
-
-        var sortOrder = req.params.asc === 'asc' ? 1 : -1;
-        var sortPromise;
-        if (req.params.field === 'score') {
-            sortPromise = ingredientFindPromise.lean().sort(
-                {score: {$meta: "textScore"}});
-        }
-        else {
-            sortPromise = ingredientFindPromise.lean().sort(
-                {[req.params.field] : sortOrder});
-        }
-
-        Promise.all([ingredientCountPromise.count(), sortPromise]).then(results => {
-            finalResult = {count: results[0], results: results[1]};
-            res.json(finalResult)
-        })
-    }).catch(err => res.status(404).json({success: false, message: err.message}));
+    IngredientHelper.getIngredientFilterResult(req, res, IngredientHelper.sortAndLimit)
 });
 
 // @route GET api/ingredients/sort/:field/:asc

@@ -139,6 +139,7 @@ function createOneSKU(sku_entry) {
             unit_size: unit_size,
             count_per_case: count_per_case,
             product_line: mongoose.Types.ObjectId(pl_id),
+            ingredients_list: [],
             comment: comment
         }).save().then(sku => resolve(sku)).catch(error => reject(error));
     });
