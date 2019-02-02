@@ -48,6 +48,8 @@ class ImportAssistant extends Component {
       fileName = 'productlines';
     }
     this.props.importOverwrites(new_checkRes, fileName);
+    console.log('new_checkRes', new_checkRes);
+    //this.props.importOverwrites(this.props.import.check_res, 'ingredients');
     this.props.toggle();
   }
 
@@ -83,6 +85,7 @@ class ImportAssistant extends Component {
 
   render(){
     const res = this.props.import.check_res;
+    console.log(res);
     var file_type = '';
     var ow_keys = [];
     var ow = [];

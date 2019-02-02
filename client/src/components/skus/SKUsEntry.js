@@ -99,8 +99,6 @@ class SKUsEntry extends React.Component {
       ingredients_list: this.state.edit_ingredients_list,
       comment: this.state.edit_comment
     };
-
-    console.log("editsubmit", editedSKU);
     this.props.updateSKU(editedSKU);
     this.props.getSKUs();
     this.toggle();
@@ -143,7 +141,7 @@ class SKUsEntry extends React.Component {
       return (
         <div>
           {Object.entries(skus).map(([key, value]) => (
-          <div>
+          <div key={key}>
             <h3>{key}</h3>
             <Table responsive size="sm">
               <thead>

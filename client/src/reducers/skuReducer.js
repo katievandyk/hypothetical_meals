@@ -83,7 +83,7 @@ export default function(state = initialState, action) {
         obj: state.obj
       }
     }
-    case SKU_SORT:
+    case SKU_SORT:{
       return {
         ...state,
         skus: action.payload.data.results,
@@ -94,6 +94,7 @@ export default function(state = initialState, action) {
         loading: false,
         page: action.payload.page
       }
+    }
     case SKU_ERROR:
       return {
         ...state,

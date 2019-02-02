@@ -18,6 +18,8 @@ export const uploadCheck = (file) => dispatch =>  {
 
 export const importOverwrites = (new_checkRes, type) => dispatch =>  {
   const dataObj = {"data": new_checkRes};
+  console.log('dataObj', dataObj);
+  console.log('link', `/api/bulk-import/upload/`, type);
   axios.post(`/api/bulk-import/upload/${type}`, dataObj).then(res =>
     dispatch({
       type: IMPORT_OVERWRITES,
