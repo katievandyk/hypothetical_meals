@@ -5,12 +5,12 @@ import { ADD_SKU, DELETE_SKU, UPDATE_SKU, SKU_KW_SEARCH,
 
 export const getSKUsByPLine = (pline) => dispatch =>  {
   dispatch(setSKUsLoading());
-  axios.get('/api/skus/byproductlines/' + pline).then(res =>
+  axios.get('/api/skus/byproductlines/' + pline).then(res => {
     dispatch({
       type: GET_SKUS_BYPLINE,
       payload: res.data
     })
-  );
+  });
 };
 
 export const addSKU = sku => dispatch => {
@@ -23,7 +23,6 @@ export const addSKU = sku => dispatch => {
 };
 
 export const updateSKU = sku => dispatch => {
-  console.log(sku);
   axios.post(`/api/skus/update/${sku.id}`, sku).then(res =>
     dispatch({
       type: UPDATE_SKU,

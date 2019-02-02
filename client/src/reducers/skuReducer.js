@@ -19,9 +19,8 @@ export default function(state = initialState, action) {
     case GET_SKUS_BYPLINE:
       return {
         ...state,
-        skus: action.payload.results,
+        skus: action.payload,
         loading: false,
-        count: action.payload.count
       }
     case ADD_SKU:
       return {

@@ -28,7 +28,7 @@ export const DELETE_PLINE = 'DELETE_PLINE';
 export const UPDATE_PLINE = 'UPDATE_PLINE';
 export const PLINES_LOADING = 'PLINES_LOADING';
 // SKU's
-export const GET_SKUS_BYPLINE = 'GET_SKUS';
+export const GET_SKUS_BYPLINE = 'GET_SKUS_BYPLINE';
 export const SKUS_LOADING = 'SKUS_LOADING';
 export const GET_SKUS = 'GET_SKUS';
 export const ADD_SKU = 'ADD_SKU';

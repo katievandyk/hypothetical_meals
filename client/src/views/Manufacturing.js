@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button } from 'reactstrap';
 import AppNavbar from '../components/AppNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
@@ -7,6 +8,8 @@ import { getGoals } from '../actions/goalsActions';
 import { getGoalsIngQuantity  } from '../actions/goalsActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import 'jspdf-autotable';
+import * as jsPDF from 'jspdf';
 
 import GoalsEntry from '../components/goals/GoalsEntry';
 import CalculatorEntry from '../components/goals/CalculatorEntry';
@@ -25,8 +28,10 @@ class Manufacturing extends Component {
   constructor(props) {
     super(props);
     this.calculatorCallback = this.calculatorCallback.bind(this);
+    this.exportPDF = this.exportPDF.bind(this);
     this.state = {
-        calcGoal: ""
+        calcGoal: '',
+        disableExport: true
     };
     }
 
@@ -38,9 +43,19 @@ class Manufacturing extends Component {
     const {goals} = this.props.goals
     const selGoal = goals.find(g => g._id == goal._id )
     this.setState({
-        calcGoal : selGoal
+        calcGoal : selGoal,
+        disableExport: false
     })
     this.props.getGoalsIngQuantity(goal._id);
+   }
+
+   exportPDF = () => {
+     const input = document.getElementById("toPDF")
+     var doc = new jsPDF('l', 'pt');
+     doc.text(20, 40, this.state.calcGoal.name);
+     var res = doc.autoTableHtmlToJson(input);
+     doc.autoTable(res.columns, res.data, { margin: { top: 50, left: 20, right: 20, bottom: 0 }});
+     doc.save(this.state.calcGoal.name + '_calculator.pdf'); //Download the rendered PDF.
    }
 
    render() {
@@ -63,6 +78,8 @@ class Manufacturing extends Component {
                 </Container>
                 <GoalsEntry/>
               </Container>
+              </div>
+              <div>
               <Container className="mt-5">
                 <Container className="my-3">
                     <Row>
@@ -71,12 +88,13 @@ class Manufacturing extends Component {
                    <Row>
                       <Col style={{'textAlign': 'right'}}> </Col>
                       <CalculatorDropdown goals={this.props.goals} calculatorCallback={this.calculatorCallback}/> &nbsp;
-                      <CalculatorExport goal={this.state.calcGoal}/>
+                      <CalculatorExport disableExport={this.state.disableExport} goal={this.state.calcGoal}/> &nbsp;
+                      <Button disabled={this.state.disableExport} color="success" onClick={this.exportPDF}>PDF</Button>
                    </Row>
                 </Container>
                 <CalculatorEntry ingredients={this.props.goals.ing_quantities}/>
               </Container>
-            </div>
+              </div>
           </Provider>
       );
    }
