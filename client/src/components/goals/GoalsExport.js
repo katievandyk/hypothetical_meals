@@ -1,23 +1,19 @@
 import React from 'react';
-import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { exportGoal } from '../../actions/goalsActions';
 import { connect } from 'react-redux';
-import { getGoals } from '../actions/goalsActions';
 import PropTypes from 'prop-types';
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
 class GoalsExport extends React.Component {
   constructor(props) {
     super(props);
 
     this.toggle = this.toggle.bind(this);
+    this.export = this.export.bind(this);
     this.state = {
       isOpen: false
     };
   }
-
-  componentDidMount() {
-      this.props.getGoals();
-  }
-
 
   toggle() {
     this.setState({
@@ -25,17 +21,24 @@ class GoalsExport extends React.Component {
     });
   }
 
+  export(e) {
+    const { goals } = this.props.goals;
+    this.props.exportGoal(goals.find(goal => goal._id === e.currentTarget.id))
+  }
+
+
+
   render() {
     const { goals } = this.props.goals;
     return (
       <div>
         <ButtonDropdown isOpen={this.state.isOpen} toggle={this.toggle}>
           <DropdownToggle caret>
-            Export Goal
+            Export
           </DropdownToggle>
           <DropdownMenu>
              {goals.map(({_id, name}) => (
-                  <DropdownItem key={_id}>{name}</DropdownItem>
+                  <DropdownItem onClick={this.export} id={_id} key={_id}>{name}</DropdownItem>
               ))}
           </DropdownMenu>
         </ButtonDropdown>
@@ -45,12 +48,11 @@ class GoalsExport extends React.Component {
 }
 
 GoalsExport.propTypes = {
-  getGoals: PropTypes.func.isRequired,
-  goals: PropTypes.object.isRequired
+  exportGoal: PropTypes.func.isRequired,
+  goals: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  goals: state.goals
 });
 
-export default connect(mapStateToProps, { getGoals })(GoalsExport);
+export default connect(mapStateToProps, { exportGoal })(GoalsExport);

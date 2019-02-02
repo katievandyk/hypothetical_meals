@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 // @access public
 router.post('/', (req, res) => {
     var numberResolved = req.body.number ? req.body.number : new Date().valueOf();
-    
+
     const newSKU = new SKU({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
@@ -128,32 +128,43 @@ router.get('/byingredients', (req, res) => {
 // - ingredients: Array of ingredients ids (String) to search SKUs for
 // - product_lines: Array of product line ids (String) to find SKUs that are part of it
 // - keywords: Array of words (String) to match entries on
+// - group_pl: if "True" then will return result grouped by pl
 // @access public
 router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     var skuFindPromise = SKU.find();
+    let skuCountPromise = SKU.find();
 
+    if (req.body.keywords != null) {
+        skuFindPromise = SKU.find(
+            {$text: {$search: req.body.keywords}},
+            {score:{$meta: "textScore"}});
+        skuCountPromise = SKU.find({$text: {$search: req.body.keywords}},
+            {score:{$meta: "textScore"}});
+    }
     if (req.body.ingredients != null) {
         skuFindPromise = skuFindPromise.find(
             { 'ingredients_list._id': { $all: 
                 req.body.ingredients}});
+        skuCountPromise = skuCountPromise.find({ 'ingredients_list._id': { $all: 
+            req.body.ingredients}});
     }
     if (req.body.product_lines != null) {
         skuFindPromise = skuFindPromise.find(
             { 'product_line': { $in: 
                 req.body.product_lines.map(
                     function(el) { return mongoose.Types.ObjectId(el) }) }});
-    }
-    if (req.body.keywords != null) {
-        skuFindPromise = skuFindPromise.find(
-            {$text: {$search: req.body.keywords}},
-            {score:{$meta: "textScore"}});
+        skuCountPromise = skuCountPromise.find({ 'product_line': { $in: 
+            req.body.product_lines.map(
+                function(el) { return mongoose.Types.ObjectId(el) }) }});
     }
 
     var currentPage = parseInt(req.params.pagenumber);
     var limit = parseInt(req.params.limit);
     if (limit != -1) {
-        skuFindPromise = skuFindPromise.skip((currentPage-1)*limit).limit(limit);
+        skuFindPromise = skuFindPromise.skip((currentPage-1)*limit).limit(limit)
     }
+
+    skuFindPromise = skuFindPromise.populate("product_line").populate("ingredients_list._id");
 
     var sortOrder = req.params.asc === 'asc' ? 1 : -1;
     var skuSortPromise;
@@ -166,9 +177,25 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
             {[req.params.field] : sortOrder});
     }
 
-    skuSortPromise.then(sku => res.json(sku))
-    .catch(err => res.status(404).json({success: false, message: err.message}))
+    Promise.all([skuCountPromise.count(), skuSortPromise])
+        .then(results => {
+            if (req.body.group_pl === "True")
+                results[1] = groupByProductLine(results[1]);
+            finalResult = {count: results[0], results: results[1]};
+            res.json(finalResult)})
+        .catch(err => res.status(404).json({success: false, message: err.message}))
 });
+
+function groupByProductLine(results) {
+    let i;
+    let pl_to_skus = new Object();
+    for(i = 0; i < results.length; i++) {
+        pl_name = results[i].product_line.name
+        pl_name in pl_to_skus ? 
+            pl_to_skus[pl_name].push(results[i]) : pl_to_skus[pl_name] = [results[i]];
+    }
+    return pl_to_skus;
+}
 
 
 module.exports = router;

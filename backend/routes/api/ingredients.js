@@ -93,6 +93,7 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     ).then(result => {
         var onlyIds = result.map(obj => obj._id);
         var ingredientFindPromise;
+        var ingredientCountPromise;
         if (req.body.skus != null && req.body.keywords != null) {
             ingredientFindPromise = Ingredient.find({$text: {
                 $search: req.body.keywords}},
@@ -101,14 +102,19 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
         }
         else if (req.body.skus != null) {
             ingredientFindPromise = Ingredient.find().where({_id: {$in: onlyIds}});
+            ingredientCountPromise = Ingredient.find().where({_id: {$in: onlyIds}});
         }
         else if (req.body.keywords != null) {
             ingredientFindPromise = Ingredient.find({$text: {
                 $search: req.body.keywords}},
                 {score:{$meta: "textScore"}});
+                ingredientCountPromise = Ingredient.find({$text: {
+                    $search: req.body.keywords}},
+                    {score:{$meta: "textScore"}});
         }
         else {
             ingredientFindPromise = Ingredient.find();
+            ingredientCountPromise = Ingredient.find();
         }
 
         // Paginate. If limit = -1, then gives all records
@@ -126,11 +132,13 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
         }
         else {
             sortPromise = ingredientFindPromise.lean().sort(
-                {[req.params.field] : sortOrder}).then(resultF => {res.json(resultF)});
+                {[req.params.field] : sortOrder});
         }
 
-        
-        sortPromise.then(resultF => {res.json(resultF)});
+        Promise.all([ingredientCountPromise.count(), sortPromise]).then(results => {
+            finalResult = {count: results[0], results: results[1]};
+            res.json(finalResult)
+        })
     }).catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
@@ -195,7 +203,7 @@ router.get('/sort/:field/:asc', (req, res) => {
 // request body fields:
 // - skus: Array of SKU ids (Strings) to get ingredients for
 // @access public
-router.get('/byskus', (req, res) => {
+router.post('/byskus', (req, res) => {
     SKU.aggregate(
         [{ $match: {'_id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
         { $unwind: "$ingredients_list" },

@@ -2,7 +2,10 @@ import {GET_PLINES, ADD_PLINE, UPDATE_PLINE, DELETE_PLINE, PLINES_LOADING} from 
 
 const initialState = {
   plines: [],
-  loading: false
+  loading: false,
+  page: 1,
+  pagelimit:10,
+  count: 0
 };
 
 export default function(state = initialState, action) {
@@ -10,7 +13,9 @@ export default function(state = initialState, action) {
     case GET_PLINES:
       return {
         ...state,
-        plines: action.payload,
+        plines: action.payload.data.results,
+        count: action.payload.data.count,
+        page: action.payload.page,
         loading: false
       }
     case PLINES_LOADING:
@@ -26,7 +31,7 @@ export default function(state = initialState, action) {
     case DELETE_PLINE:
       return {
         ...state,
-        plines: state.ings.filter( pline => pline._id !== action.payload )
+        plines: state.plines.filter( pline => pline._id !== action.payload )
       }
     case UPDATE_PLINE:
       return {

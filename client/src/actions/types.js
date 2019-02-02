@@ -18,6 +18,9 @@ export const GET_GOALS = 'GET_GOALS';
 export const ADD_GOAL = 'ADD_GOAL';
 export const DELETE_GOAL = 'DELETE_GOAL';
 export const GOALS_LOADING = 'GOALS_LOADING';
+export const GOALS_INGQUANTITY = 'GOALS_INGQUANTITY';
+export const GOAL_EXPORT = 'GOAL_EXPORT';
+export const GOAL_CALCULATOREXPORT = 'GOAL_CALCULATOREXPORT';
 // Product Lines
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';
@@ -36,3 +39,4 @@ export const SKU_ING_FILTER = 'SKU_ING_FILTER';
 export const SKU_PLINE_FILTER = 'SKU_PLINE_FILTER';
 export const SKU_SORT = 'SKU_SORT';
 export const SKU_ERROR = 'SKU_ERROR';
+export const SKU_GROUP_BY_PL = "SKU_GROUP_BY_PL";

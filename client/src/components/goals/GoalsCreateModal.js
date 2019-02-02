@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css' // TODO change css file
-import GoalsCreateForm from '../components/GoalsCreateForm';
+import GoalsCreateForm from '../../components/goals/GoalsCreateForm';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 
 class GoalsCreateModal extends React.Component {
@@ -22,7 +22,7 @@ class GoalsCreateModal extends React.Component {
   render() {
     return (
       <div>
-        <Button onClick={this.toggle}>{this.props.buttonLabel}</Button>
+        <Button onClick={this.toggle} color="success" style={{'display': 'inline-block'}}>{this.props.buttonLabel}</Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>Create Goal</ModalHeader>
           <ModalBody>

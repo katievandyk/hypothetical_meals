@@ -5,3 +5,6 @@ backend/node_modules/*
 backend/configs.js
 node_modules/*
 .idea*
+client/build
+*.crt
+*.key
