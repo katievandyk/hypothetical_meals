@@ -52,7 +52,9 @@ class ImportAssistant extends Component {
   }
 
   onCancel = () => {
-
+    this.setState({
+      new_overWrite: []
+    });
   }
 
   ow_oldEntry_helper = (oldEntry, file_headers, obj_headers) => {
