@@ -4,9 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "test": "./node_modules/mocha/bin/mocha --exit"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +23,7 @@
     "papaparse": "^4.6.3",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
+    "pm2": "^3.2.9",
     "validator": "^10.11.0"
   },
   "devDependencies": {
