@@ -8,6 +8,8 @@ import { getGoals } from '../actions/goalsActions';
 import { getGoalsIngQuantity  } from '../actions/goalsActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import 'jspdf-autotable';
+import * as jsPDF from 'jspdf';
 
 import GoalsEntry from '../components/goals/GoalsEntry';
 import CalculatorEntry from '../components/goals/CalculatorEntry';
@@ -21,16 +23,14 @@ import store from '../store';
 
 import { Container, Row, Col} from 'reactstrap';
 
-const html2canvas = require('html2canvas');
-const jsPDF = require('jspdf');
-
 class Manufacturing extends Component {
 
   constructor(props) {
     super(props);
     this.calculatorCallback = this.calculatorCallback.bind(this);
+    this.exportPDF = this.exportPDF.bind(this);
     this.state = {
-        calcGoal: ""
+        calcGoal: ''
     };
     }
 
@@ -47,19 +47,14 @@ class Manufacturing extends Component {
     this.props.getGoalsIngQuantity(goal._id);
    }
 
-
-     exportPDF() {
-       const input = document.getElementById('toPDF')
-       html2canvas(input)
-            .then((canvas) => {
-                 var image = canvas.toDataURL("image/jpeg");
-                 var doc = new jsPDF('l', 'mm');
-                 var width = doc.internal.pageSize.getWidth();
-                 var height = doc.internal.pageSize.getHeight();
-                 doc.addImage(image, 'JPEG', 0, 0, width-20, height-10);
-                 doc.save('myPage.pdf'); //Download the rendered PDF.
-            });
-        }
+   exportPDF = () => {
+     const input = document.getElementById("toPDF")
+     var doc = new jsPDF('l', 'pt');
+     doc.text(20, 40, this.state.calcGoal.name);
+     var res = doc.autoTableHtmlToJson(input);
+     doc.autoTable(res.columns, res.data, { margin: { top: 50, left: 20, right: 20, bottom: 0 }});
+     doc.save(this.state.calcGoal.name + '_calculator.pdf'); //Download the rendered PDF.
+   }
 
    render() {
         return(
@@ -83,7 +78,7 @@ class Manufacturing extends Component {
               </Container>
               </div>
               <div>
-              <Container className="mt-5" id="toPDF">
+              <Container className="mt-5">
                 <Container className="my-3">
                     <Row>
                         <Col> <h1>Manufacturing Calculator</h1> </Col>
