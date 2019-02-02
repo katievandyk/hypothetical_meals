@@ -1,19 +1,20 @@
 import React from 'react';
-import { Table } from 'reactstrap';
+import { Button, Table } from 'reactstrap';
 
 class CalculatorEntry extends React.Component {
 
-
   render() {
     return (
-        <Table>
+        <div>
+        <Table id= "toPDF">
           <thead>
             <tr>
-              <th>Ingredient</th>
-              <th>Vendor Info</th>
-              <th>Package Size</th>
-              <th>Cost Per Package</th>
-              <th>Quantity</th>
+              <th title="Ingredient">Ingredient</th>
+              <th title="Vendor">Vendor Info</th>
+              <th title="Package Size">Package Size</th>
+              <th title="Cost Per Package">Cost Per Package</th>
+              <th title="Number">Number</th>
+              <th title="Quantity">Quantity</th>
             </tr>
           </thead>
           <tbody>
@@ -24,12 +25,12 @@ class CalculatorEntry extends React.Component {
                     <td> {ingredient.package_size} </td>
                     <td> {ingredient.cost_per_package} </td>
                     <td> {ingredient.number} </td>
-                    <td> {ingredient.quantity} </td>
+                    <td> {quantity} </td>
                 </tr>
            ))}
           </tbody>
         </Table>
-
+       </div>
     );
   }
 }

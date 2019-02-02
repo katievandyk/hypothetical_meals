@@ -1,9 +1,11 @@
 import axios from 'axios';
-import { GET_GOALS, ADD_GOAL, DELETE_GOAL, GOALS_LOADING } from './types';
+import { GET_GOALS, ADD_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_CALCULATOREXPORT, GOAL_EXPORT } from './types';
 
-export const getGoals = () => dispatch =>  {
+const FileDownload = require('js-file-download');
+
+export const getGoals = (user_email) => dispatch =>  {
   dispatch(setGoalsLoading());
-  axios.get('/api/manufacturing').then(res =>
+  axios.get('/api/manufacturing/' + user_email).then(res =>
     dispatch({
       type: GET_GOALS,
       payload: res.data
@@ -17,6 +19,17 @@ export const setGoalsLoading = () => {
   };
 };
 
+export const getGoalsIngQuantity = (goal) => dispatch =>  {
+  dispatch(setGoalsLoading());
+   axios.get('/api/manufacturing/ingquantities/' + goal).then(res =>
+    dispatch({
+      type: GOALS_INGQUANTITY,
+      payload: res.data
+    })
+  );
+};
+
+
 export const addGoal = (goal) => dispatch =>  {
   axios.post('/api/manufacturing', goal).then(res =>
     dispatch({
@@ -25,3 +38,24 @@ export const addGoal = (goal) => dispatch =>  {
     })
   );
 };
+
+
+export const exportGoal = (goal) => dispatch => {
+  dispatch(setGoalsLoading());
+    axios.get('/api/manufacturing/export/' + goal._id).then(res => {
+      FileDownload(res.data, goal.name + '.csv')
+   });
+    return {
+        type: GOAL_CALCULATOREXPORT
+    };
+ };
+
+ export const exportCalculator = (goal) => dispatch => {
+   dispatch(setGoalsLoading());
+     axios.get('/api/manufacturing/exportcalculator/' + goal._id).then(res => {
+       FileDownload(res.data, goal.name + '.csv')
+    });
+    return {
+        type: GOAL_CALCULATOREXPORT
+    };
+  };

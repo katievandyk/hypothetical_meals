@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { GET_INGS, ADD_ING, DELETE_ING, INGS_LOADING, UPDATE_ING,
-GET_ING_SKUS, ING_SKUS_LOADING, ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER } from './types';
+GET_ING_SKUS, ING_SKUS_LOADING, ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER} from './types';
 
 export const getIngs = () => dispatch =>  {
   dispatch(setIngsLoading());
-  axios.post(`/api/ingredients/filter/sort/name/asc/1/-1`).then(res =>
+  axios.post(`/api/ingredients/filter/sort/name/asc/1/10`).then(res =>
     dispatch({
       type: GET_INGS,
       payload: res.data
@@ -68,19 +68,19 @@ export const searchIngbyKW = keywords => dispatch => {
   });
 };
 
-export const sortIngs = (field, asc, obj) => dispatch => {
+export const sortIngs = (field, asc, page, obj) => dispatch => {
   dispatch(setIngsLoading());
-  axios.post(`/api/ingredients/filter/sort/${field}/${asc}/1/-1`, obj).then(res =>
+  axios.post(`/api/ingredients/filter/sort/${field}/${asc}/${page}/10`, obj).then(res =>
     dispatch({
       type: ING_SORT,
-      payload: {data: res.data, sortby: field, sortdir: asc, obj: obj}
+      payload: {data: res.data, sortby: field, sortdir: asc, page: page, obj: obj}
     })
   );
 };
 
 export const filterBySKUs = (ids) => dispatch => {
-  dispatch({
-    type: ING_SKU_FILTER,
-    payload: ids
-  });
+    dispatch({
+      type: ING_SKU_FILTER,
+      payload: ids
+    })
 };

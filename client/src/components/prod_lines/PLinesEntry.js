@@ -30,7 +30,7 @@ class PLinesEntry extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getPLines();
+    this.props.getPLines(1);
   }
 
   onDeleteClick = id => {
@@ -60,7 +60,7 @@ class PLinesEntry extends React.Component {
     };
 
     this.props.updatePLine(editedPLine);
-    this.props.getPLines();
+    this.props.getPLines(this.props.plines.page);
     this.toggle();
   };
 

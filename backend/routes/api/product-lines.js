@@ -15,6 +15,25 @@ router.get('/', (req, res) => {
         .then(productLine => res.json(productLine))
 });
 
+// @route GET api/productlines
+// @desc get all product lines
+// @access public
+router.get('/:pagenumber/:limit', (req, res) => {
+    PLFindPromise = ProductLine.find().lean();
+    PLCountPromise = ProductLine.find().lean();
+
+    var currentPage = parseInt(req.params.pagenumber);
+    var limit = parseInt(req.params.limit);
+    if (limit != -1) {
+        PLFindPromise = PLFindPromise.skip((currentPage-1)*limit).limit(limit)
+    }
+
+    Promise.all([PLCountPromise.count(), PLFindPromise])
+    .then(results => {
+        finalResult = {count: results[0], results: results[1]};
+        res.json(finalResult)})
+});
+
 // @route POST api/productlines
 // @desc create an product line
 // @access public

@@ -11,6 +11,8 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import SKUsFormPLineSelection from './SKUsFormPLineSelection'
+import SKUsFormIngTupleSelection from './SKUsFormIngTupleSelection'
 import { addSKU, sortSKUs } from '../../actions/skuActions';
 
 class SKUAddModal extends React.Component {
@@ -47,15 +49,28 @@ class SKUAddModal extends React.Component {
       number: this.state.number,
       case_number: this.state.case_number,
       unit_number: this.state.unit_number,
+      unit_size: this.state.unit_size,
       product_line: this.state.product_line,
       count_per_case: this.state.count_per_case,
       ingredients_list: this.state.ingredients_list,
       comment: this.state.comment
     };
-
+    console.log(newSKU);
     this.props.addSKU(newSKU);
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.obj);
     this.toggle();
+  }
+
+  onIngListChange = (ing_list) => {
+    this.setState({
+      ingredients_list: ing_list
+    });
+  }
+
+  onProductLineChange = (prod_line) => {
+    this.setState({
+      product_line: prod_line
+    });
   }
 
   render() {
@@ -128,26 +143,8 @@ class SKUAddModal extends React.Component {
                   onChange={this.onChange}>
                 </Input>
             </FormGroup>
-            <FormGroup>
-              <Label for="unit_size">Product Line</Label>
-                <Input
-                  type="text"
-                  name="product_line"
-                  id="product_line"
-                  placeholder="Add the Product Line"
-                  onChange={this.onChange}>
-                </Input>
-            </FormGroup>
-            <FormGroup>
-              <Label for="ingredients">Ingredients</Label>
-                <Input
-                  type="text"
-                  name="ingredients"
-                  id="ingredients"
-                  placeholder="Add the Ingredients"
-                  onChange={this.onChange}>
-                </Input>
-            </FormGroup>
+            <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange}/>
+            <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange}/>
             <FormGroup>
               <Label for="comment">Comments</Label>
                 <Input
