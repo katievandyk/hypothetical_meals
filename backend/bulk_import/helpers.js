@@ -156,3 +156,14 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
         })
 }
 
+function groupByProductLine(results) {
+    let i;
+    let pl_to_skus = new Object();
+    for(i = 0; i < results.length; i++) {
+        pl_name = results[i].product_line.name
+        pl_name in pl_to_skus ? 
+            pl_to_skus[pl_name].push(results[i]) : pl_to_skus[pl_name] = [results[i]];
+    }
+    return pl_to_skus;
+}
+

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs')
 
 var Parser = require('../../bulk_import/parser');
 var Uploader = require('../../bulk_import/upload');
@@ -19,6 +20,25 @@ function groupByStatus(res) {
 router.post('/upload-check', (req, res) => {
     let full_file_name = req.body.file_name
     let file_name = full_file_name.substring(full_file_name.lastIndexOf("/") + 1);
+    
+    bulkImport(file_name, req.body.file, res)
+
+})
+
+// @route POST api/bulk-import/upload-check
+// @desc check if the file can be uploaded
+// current files allowed: skus, ingredients, product lines, and formulas
+// @access public
+router.post('/upload-check/dev', (req, res) => {
+    let full_file_name = req.body.file_name
+    let file_name = full_file_name.substring(full_file_name.lastIndexOf("/") + 1);
+    let file = fs.readFileSync(full_file_name, 'utf8').replace(/^\ufeff/, "");
+    
+    bulkImport(file_name, file, res)
+
+})
+
+function bulkImport(file_name, file_body, res) {
     let file_type;
 
     ing_file_regex = /^ingredients(\S)*\.csv$/;
@@ -27,19 +47,19 @@ router.post('/upload-check', (req, res) => {
     formulas_file_regex = /^formulas(\S)*\.csv$/;
     let parsePromise;
     if(ing_file_regex.test(file_name)) {
-        parsePromise = Parser.parseIngredientFile(req.body.file)
+        parsePromise = Parser.parseIngredientFile(file_body)
         file_type = "ingredients"
     }
     else if(sku_file_regex.test(file_name)) {
-        parsePromise = Parser.parseSkuFile(req.body.file)
+        parsePromise = Parser.parseSkuFile(file_body)
         file_type = "skus"
     }
     else if(pl_file_regex.test(file_name)) {
-        parsePromise = Parser.parsePLFile(req.body.file)
+        parsePromise = Parser.parsePLFile(file_body)
         file_type = "product_lines"
     }
     else if(formulas_file_regex.test(file_name)) {
-        parsePromise = Parser.parseForumula(req.body.file)
+        parsePromise = Parser.parseForumula(file_body)
         file_type = "formulas"
     }
     else {
@@ -62,8 +82,7 @@ router.post('/upload-check', (req, res) => {
     .catch(err => { 
         console.log(err);
         res.status(404).json({success: false, message: err.message})});
-
-})
+}
 
 // @route POST api/bulk-import/update/ingredients
 // @desc check if ingredients can be imported
