@@ -34,8 +34,9 @@ function updateOneIngredient(ing_data) {
             cost_per_package: cost,
             comment: comment
         };
+
         Ingredient
-        .findByIdAndUpdate(ing_data["ing_id"], updateObj, {new: true})
+        .findByIdAndUpdate(ing_data.to_overwrite._id, updateObj, {new: true})
         .then(ingredient => resolve(ingredient))
         .catch(error => reject(error));
     });
@@ -114,7 +115,7 @@ function updateOneSKU(sku_entry) {
             comment: comment
         };
         SKU
-        .findByIdAndUpdate(sku_entry["sku_id"], updateObj, {new: true})
+        .findByIdAndUpdate(sku_entry.to_overwrite._id, updateObj, {new: true})
         .then(sku => resolve(sku)).catch(error => reject(error));
     });
 }
