@@ -134,5 +134,4 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     Helper.getSKUFilterResult(req, res, Helper.sortAndLimit)
 });
 
-
 module.exports = router;

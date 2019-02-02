@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 
 module.exports.isNumeric = function(n){
     return !isNaN(parseFloat(n)) && isFinite(n);
@@ -74,12 +75,17 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
             ingredientFindPromise = Ingredient.find();
         }
         callback(req, res, ingredientFindPromise)
-    }).catch(error => reject(error))
+    }).catch(err => res.status(404).json({success: false, message: err.message}));
 }
 
 module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, callback) {
     var skuFindPromise = SKU.find();
 
+    if (req.body.keywords != null) {
+        skuFindPromise = SKU.find(
+            {$text: {$search: req.body.keywords}},
+            {score:{$meta: "textScore"}});
+    }
     if (req.body.ingredients != null) {
         skuFindPromise = skuFindPromise.find(
             { 'ingredients_list._id': { $all: 
@@ -90,11 +96,6 @@ module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, call
             { 'product_line': { $in: 
                 req.body.product_lines.map(
                     function(el) { return mongoose.Types.ObjectId(el) }) }});
-    }
-    if (req.body.keywords != null) {
-        skuFindPromise = skuFindPromise.find(
-            {$text: {$search: req.body.keywords}},
-            {score:{$meta: "textScore"}});
     }
 
     skuFindPromise = skuFindPromise.populate('product_line').populate('ingredients_list._id')
