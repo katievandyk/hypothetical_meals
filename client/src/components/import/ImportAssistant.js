@@ -95,12 +95,13 @@ class ImportAssistant extends Component {
     return new_ow_arr;
   }
 
-  old_formulas_helper = (obj) => {
+  old_formulas_helper = (obj, sku_num) => {
     var prevEntries = [];
     if(obj.length > 0){
       for(var i = 0; i < obj.length; i++){
         if(obj[i]._id){
-          prevEntries = [prevEntries, obj[i]]
+          var newObj = {"SKU#": sku_num, "Ing#":obj[i]._id.number, "Quantity": obj[i].quantity}
+          prevEntries = [...prevEntries, newObj];
         }
       }
     }
@@ -110,8 +111,8 @@ class ImportAssistant extends Component {
         prevEntries.map((value, i) => (
       <tr key= {i} style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
         <td>Current Entry</td>
-        {Object.entries(value).map(([key,value])=> (
-          <td key={key}>{value}</td>
+        {Object.entries(value).map(([key,val])=> (
+          <td key={key}>{val}</td>
         ))}
       </tr>
       ))
@@ -154,10 +155,15 @@ class ImportAssistant extends Component {
       <Modal size="xl" isOpen={this.props.modal && this.props.import.success} toggle={this.props.toggle}>
         <ModalHeader toggle={this.props.toggle}> Import Options and Overview </ModalHeader>
         <ModalBody>
+          <div>Below is a summary of what will happen if the import proceeds. Please make the necessary
+          selections for what you would like to happen for conflicts and proceed to submit your import. </div>
           <div key="Overwrite">
           <h4>Overwrite</h4>
           {ow.length > 0 ? (
-            file_type === 'formulas' ? (
+            <div>
+            <div>These are the entries from your imported file that would overwrite existing entries. Check the box
+            next to the entries you would like to overwrite. The original entries are also displayed in grey below your imported entry.</div>
+          { file_type === 'formulas' ? (
               <Table responsive size="sm">
                 <thead>
                   <tr>
@@ -183,7 +189,7 @@ class ImportAssistant extends Component {
                           ))}
                       </tr>
                     ))}
-                    {this.old_formulas_helper(obj.to_overwrite)}
+                    {this.old_formulas_helper(obj.to_overwrite, obj.result[0][0]["SKU#"])}
                     <tr><td colSpan="4"></td></tr>
                     </tbody>
                   ))}
@@ -220,6 +226,8 @@ class ImportAssistant extends Component {
                   ))}
               </Table>
             )
+          }
+          </div>
 
 
           ): (
