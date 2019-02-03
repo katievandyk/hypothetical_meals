@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const IngredientHelper = require('../../bulk_import/helpers');
+const Papa = require('papaparse');
 
 // Ingredient Model
 const Ingredient = require('../../models/Ingredient');
@@ -93,40 +94,18 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
 // note: sorting on keyword search result field=score. score sorting will only be descending.
 // @access public
 router.post('/filter', (req, res) => {
-    var skus = req.body.skus == null ? [] : req.body.skus;
-    SKU.aggregate(
-        [{ $match: {'_id': {$in: skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
-        { $unwind: "$ingredients_list" },
-        { $group: { _id: { ingredients: '$ingredients_list'} } },
-        { $replaceRoot: { newRoot: "$_id" } },
-        { $unwind: "$ingredients" },
-        { $replaceRoot: { newRoot: "$ingredients" } }
-        ]
-    ).then(result => {
-        var onlyIds = result.map(obj => obj._id);
-        var ingredientFindPromise;
-        if (req.body.skus != null && req.body.keywords != null) {
-            ingredientFindPromise = Ingredient.find({$text: {
-                $search: req.body.keywords}},
-                {score:{$meta: "textScore"}}, 
-                ).where({_id: {$in: onlyIds}});
-        }
-        else if (req.body.skus != null) {
-            ingredientFindPromise = Ingredient.find().where({_id: {$in: onlyIds}});
-        }
-        else if (req.body.keywords != null) {
-            ingredientFindPromise = Ingredient.find({$text: {
-                $search: req.body.keywords}},
-                {score:{$meta: "textScore"}});
-        }
-        else {
-            ingredientFindPromise = Ingredient.find();
-        }
-        ingredientFindPromise.select("_id name").then(resultF => {
-            IngredientDepReport.findSKUsForIngredients(resultF)
-                .then(result => res.json(result))
-        })
-    }).catch(err => res.status(404).json({success: false, message: err.message}));
+    IngredientHelper.getIngredientFilterResult(req, res, IngredientHelper.ingredientDependencyReport)
+});
+
+// @route POST api/ingredients/filter/
+// @desc searches keywords in database
+// request body fields:
+// - skus: Array of sku ids (String) to get ingredients for
+// - keywords: Array of words (String) to match entries on
+// note: sorting on keyword search result field=score. score sorting will only be descending.
+// @access public
+router.post('/filter/report', (req, res) => {
+    IngredientHelper.getIngredientFilterResult(req, res, IngredientHelper.ingredientDependencyReportCsv)
 });
 
 // @route GET api/ingredients/sort/:field/:asc
