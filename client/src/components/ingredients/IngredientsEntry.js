@@ -119,8 +119,12 @@ class IngredientsEntry extends React.Component {
               <th>Cost/Package</th>
               <th>SKUs</th>
               <th>Comments</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              {this.props.auth.isAdmin &&
+                <th>Edit</th>
+              }
+              {this.props.auth.isAdmin &&
+                <th>Delete</th>
+              }
             </tr>
           </thead>
           <tbody is="transition-group" >
@@ -142,23 +146,28 @@ class IngredientsEntry extends React.Component {
                       </Button>
                     </td>
                     <td> {comment} </td>
-                    <td>
-                      <Button size="sm" color="link"
-                        onClick={this.onEditClick.bind(this,
-                          _id, name, number, vendor_info, package_size,
-                          cost_per_package, comment
-                        )}
-                        style={{'color':'black'}}>
-                        <FontAwesomeIcon icon = "edit"/>
-                      </Button>
-                    </td>
-                    <td >
-                      <Button size="sm" color="link"
-                        onClick={this.onDeleteClick.bind(this, _id)}
-                        style={{'color':'black'}}>
-                        <FontAwesomeIcon icon="trash"/>
-                      </Button>
-                    </td>
+                    {this.props.auth.isAdmin &&
+                      <td>
+                        <Button size="sm" color="link"
+                          onClick={this.onEditClick.bind(this,
+                            _id, name, number, vendor_info, package_size,
+                            cost_per_package, comment
+                          )}
+                          style={{'color':'black'}}>
+                          <FontAwesomeIcon icon = "edit"/>
+                        </Button>
+                      </td>
+                     }
+                    {this.props.auth.isAdmin &&
+                      <td >
+                        <Button size="sm" color="link"
+                          onClick={this.onDeleteClick.bind(this, _id)}
+                          style={{'color':'black'}}>
+                          <FontAwesomeIcon icon="trash"/>
+                        </Button>
+                      </td>
+                    }
+
                   </tr>
                 </CSSTransition>
             ))}
@@ -260,11 +269,13 @@ IngredientsEntry.propTypes = {
   getIngs: PropTypes.func.isRequired,
   deleteIng: PropTypes.func.isRequired,
   updateIng: PropTypes.func.isRequired,
-  ing: PropTypes.object.isRequired
+  ing: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
-  ing: state.ing
+  ing: state.ing,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, { getIngs, deleteIng, updateIng, getIngSKUs })(IngredientsEntry);

@@ -63,7 +63,7 @@ class SKU extends Component {
     });
     this.props.groupByPL(boolstr);
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir,
-       this.props.skus.page, this.props.pagelimit, this.props.skus.obj);
+       this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
   }
 
   sortClick = type => {
@@ -249,7 +249,7 @@ class SKU extends Component {
                        <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                    </DropdownMenu>
                  </ButtonDropdown> {' '}
-                 <SKUAddModal/>
+                 {this.props.auth.isAdmin && <SKUAddModal/>}
                </Col>
              </Row>
            </Container>
@@ -287,11 +287,13 @@ SKU.propTypes = {
   exportSKUs: PropTypes.func.isRequired,
   exportFormulas: PropTypes.func.isRequired,
   groupByPL: PropTypes.func.isRequired,
-  skus: PropTypes.object.isRequired
+  skus: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  skus: state.skus
+  skus: state.skus,
+  auth: state.auth
 });
 
 

@@ -222,7 +222,7 @@ class Ingredients extends Component {
                           <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                       </DropdownMenu>
                     </ButtonDropdown> {' '}
-                    <IngredientsAddModal/>
+                    {this.props.auth.isAdmin ? (<IngredientsAddModal/>): (<div></div>)}
                   </Col>
                 </Row>
               </Container>
@@ -265,11 +265,13 @@ Ingredients.propTypes = {
   genIngDepReport: PropTypes.func.isRequired,
   sortIngs: PropTypes.func.isRequired,
   exportIngs: PropTypes.func.isRequired,
-  ing: PropTypes.object.isRequired
+  ing: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  ing: state.ing
+  ing: state.ing,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, {sortIngs, exportIngs, genIngDepReport})(Ingredients);

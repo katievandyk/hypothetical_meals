@@ -47,15 +47,10 @@ class ProductLines extends Component {
      var isNextPage = false;
      if(this.props.plines.pagelimit === -1){
        results = this.props.plines.count;
-       console.log(results);
        results_start = 1;
      }
      else{
        results = Math.min(this.props.plines.page * this.props.plines.pagelimit, this.props.plines.count);
-       console.log(this.props.plines.page);
-       console.log(this.props.plines.pagelimit);
-       console.log(this.props.plines.count);
-       console.log(results);
        results_start = (this.props.plines.page - 1)*10 + 1;
        isPrevPage = (this.props.plines.page) > 1;
        isNextPage = results < this.props.plines.count;
@@ -76,7 +71,7 @@ class ProductLines extends Component {
                <Col>
                </Col>
                <Col style={{'textAlign': 'right'}}>
-                 <PLinesAddModal/> &nbsp;
+                 {this.props.auth.isAdmin && <PLinesAddModal/>}
                </Col>
              </Row>
            </Container>
@@ -111,7 +106,8 @@ class ProductLines extends Component {
 const mapStateToProps = state => ({
   getPLines: PropTypes.func.isRequired,
   exportPLines: PropTypes.func.isRequired,
-  plines: state.plines
+  plines: state.plines,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, {exportPLines, getPLines})(ProductLines);

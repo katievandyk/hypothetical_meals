@@ -40,7 +40,10 @@ export default function(state = initialState, action) {
         ...state,
         loading: true
       }
-    case GET_SKUS:
+    case GET_SKUS:{
+      if(state.obj.group_pl){
+        delete state.obj.group_pl
+      }
       return {
         ...state,
         skus: action.payload.results,
@@ -48,6 +51,7 @@ export default function(state = initialState, action) {
         loading: false,
         pagelimit: 10
       }
+    }
     case SKU_GROUP_BY_PL:{
       state.obj.group_pl = action.payload;
       return {
