@@ -224,13 +224,14 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
     return new Promise(function(accept, reject) {
         Promise.all([
             ProductLine.findOne({'name': pl}),
-            SKU.findOne({'number': sku_data[sku_fields.number]}),
+            SKU.findOne({'number': sku_data[sku_fields.number]}).populate("product_line"),
             SKU.findOne({'case_number': sku_data[sku_fields.case_upc]})
         ])
             .then(result => {
                 pl_result = result[0];
                 if(!pl_result) reject(new Error("Product line not found: " + pl));
                 sku_data['pl_id'] = pl_result._id;
+                sku_data['pl_name'] = pl_result.name
 
                 number_result = result[1];
                 case_number_result = result[2];
