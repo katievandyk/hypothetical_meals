@@ -14,7 +14,6 @@ import PropTypes from 'prop-types';
 import SKUsFormPLineSelection from './SKUsFormPLineSelection'
 import SKUsFormIngTupleSelection from './SKUsFormIngTupleSelection'
 import { addSKU, sortSKUs } from '../../actions/skuActions';
-import { getIngs } from '../../actions/ingActions';
 
 class SKUAddModal extends React.Component {
   state = {
