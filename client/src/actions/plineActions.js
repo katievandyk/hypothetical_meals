@@ -2,12 +2,12 @@ import axios from 'axios';
 import { GET_PLINES, ADD_PLINE, DELETE_PLINE, UPDATE_PLINE,
   PLINES_LOADING} from './types';
 
-export const getPLines = (page) => dispatch =>  {
+export const getPLines = (page, pagelimit) => dispatch =>  {
   dispatch(setPLinesLoading());
-  axios.get(`/api/productlines/${page}/10`).then(res =>
+  axios.get(`/api/productlines/${page}/${pagelimit}`).then(res =>
     dispatch({
       type: GET_PLINES,
-      payload: {data:res.data, page: page}
+      payload: {data:res.data, page: page, pagelimit: pagelimit}
     })
   );
 };

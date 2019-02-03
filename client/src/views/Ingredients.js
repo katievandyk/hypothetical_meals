@@ -29,7 +29,8 @@ class Ingredients extends Component {
     dropdownOpen: false,
     sortby: 'name-asc',
     modal: false,
-    navigate: false
+    navigate: false,
+    origLimit: 10
   };
 
   toggle = () => {
@@ -39,12 +40,12 @@ class Ingredients extends Component {
   }
   onNextPage = () => {
     this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
-       this.props.ing.page + 1, this.props.ing.obj);
+       this.props.ing.page + 1, this.props.ing.pagelimit, this.props.ing.obj);
   };
 
   onPrevPage = () => {
     this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
-       this.props.ing.page - 1, this.props.ing.obj);
+       this.props.ing.page - 1, this.props.ing.pagelimit, this.props.ing.obj);
   };
 
   genReportClick = () => {
@@ -52,7 +53,6 @@ class Ingredients extends Component {
     this.setState({
       modal: true
     });
-    console.log(this.props.ing.report);
   }
 
   modal_toggle = () => {
@@ -67,40 +67,50 @@ class Ingredients extends Component {
     })
   }
 
+  showAll = () => {
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
+       this.props.ing.page, -1, this.props.ing.obj);
+  }
+
+  haveLimit = () => {
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
+       this.props.ing.page, 10, this.props.ing.obj);
+  }
+
   sortClick = type => {
     this.setState({
       sortby: type
     });
     switch(type) {
       case "name-asc":
-        this.props.sortIngs('name', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('name', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "name-desc":
-        this.props.sortIngs('name', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('name', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "number-asc":
-        this.props.sortIngs('number', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('number', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "number-desc":
-        this.props.sortIngs('number', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('number', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "vendor-asc":
-        this.props.sortIngs('vendor_info', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('vendor_info', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "vendor-desc":
-        this.props.sortIngs('vendor_info', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('vendor_info', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "package-asc":
-        this.props.sortIngs('package_size', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('package_size', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "package-desc":
-        this.props.sortIngs('package_size', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('package_size', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "cost-asc":
-        this.props.sortIngs('cost_per_package', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('cost_per_package', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "cost-desc":
-        this.props.sortIngs('cost_per_package', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('cost_per_package', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       default:
         break;
@@ -109,10 +119,21 @@ class Ingredients extends Component {
   }
 
    render() {
-     const results = Math.min(this.props.ing.page * this.props.ing.pagelimit, this.props.ing.count);
-     const results_start = (this.props.ing.page - 1)*10 + 1;
-     const isPrevPage = (this.props.ing.page) > 1;
-     const isNextPage = results < this.props.ing.count;
+     var results = 0;
+     var results_start = 0;
+     var isPrevPage = false;
+     var isNextPage = false;
+     if(this.props.ing.pagelimit === -1){
+       results = this.props.ing.count;
+       results_start = 1;
+     }
+     else{
+       results = Math.min(this.props.ing.page * this.props.ing.pagelimit, this.props.ing.count);
+       results_start = (this.props.ing.page - 1)*10 + 1;
+       isPrevPage = (this.props.ing.page) > 1;
+       isNextPage = results < this.props.ing.count;
+     }
+
 
      if(this.state.navigate){
        return(<Redirect to="/reports" push={true} />);
@@ -205,7 +226,15 @@ class Ingredients extends Component {
                   </Col>
                 </Row>
               </Container>
-              <em>Results: {results_start}-{results} of {this.props.ing.count} total</em>
+              <Row><em>Results: {results_start}-{results} of {this.props.ing.count} total</em>
+              {this.props.ing.pagelimit === -1 ? (
+                <Button onClick={this.haveLimit} color="link" size="sm"> (Show 10 per page) </Button>
+              ):
+              (
+                <Button onClick={this.showAll} color="link" size="sm"> (Show all) </Button>
+              )}
+
+              </Row>
                 <IngredientsEntry/>
                 <Row>
                   <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}

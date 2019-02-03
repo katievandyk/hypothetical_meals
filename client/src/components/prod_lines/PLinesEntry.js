@@ -30,7 +30,7 @@ class PLinesEntry extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getPLines(1);
+    this.props.getPLines(1,this.props.plines.pagelimit);
   }
 
   onDeleteClick = id => {

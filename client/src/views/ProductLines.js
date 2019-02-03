@@ -18,19 +18,39 @@ import {
 } from 'reactstrap';
 
 class ProductLines extends Component {
-
+  state={
+    origLimit: 10
+  }
   onNextPage = () => {
-    this.props.getPLines(this.props.plines.page + 1);
+    this.props.getPLines(this.props.plines.page + 1, this.props.plines.pagelimit);
   };
 
   onPrevPage = () => {
-    this.props.getPLines(this.props.plines.page - 1);
+    this.props.getPLines(this.props.plines.page - 1, this.props.plines.pagelimit);
   };
+
+  showAll = () => {
+    this.props.getPLines(this.props.plines.page, -1);
+  }
+
+  haveLimit = () => {
+    this.props.getPLines(this.props.plines.page, 10);
+  }
    render() {
-     const results = Math.min(this.props.plines.page * this.props.plines.pagelimit, this.props.plines.count);
-     const results_start = (this.props.plines.page - 1)*10 + 1;
-     const isPrevPage = (this.props.plines.page) > 1;
-     const isNextPage = results < this.props.plines.count;
+     var results = 0;
+     var results_start = 0;
+     var isPrevPage = false;
+     var isNextPage = false;
+     if(this.props.plines.pagelimit === -1){
+       results = this.props.plines.count;
+       results_start = 1;
+     }
+     else{
+       results = Math.min(this.props.plines.page * this.props.plines.pagelimit, this.props.plines.count);
+       results_start = (this.props.plines.page - 1)*10 + 1;
+       isPrevPage = (this.props.plines.page) > 1;
+       isNextPage = results < this.props.plines.count;
+     }
      return(
        <Provider store={store}>
          <div>
@@ -51,8 +71,16 @@ class ProductLines extends Component {
                </Col>
              </Row>
            </Container>
+           <Row>
             <em>Results: {results_start}-{results} of {this.props.plines.count} total</em>
-             <PLinesEntry/>
+              {this.props.plines.pagelimit === -1 ? (
+                <Button onClick={this.haveLimit} color="link" size="sm"> (Show 10 per page) </Button>
+              ):
+              (
+                <Button onClick={this.showAll} color="link" size="sm"> (Show all) </Button>
+              )}
+         </Row>
+           <PLinesEntry/>
              <Row>
              <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
                Previous Page

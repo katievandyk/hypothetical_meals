@@ -45,7 +45,8 @@ export default function(state = initialState, action) {
         ...state,
         skus: action.payload.results,
         count: action.payload.count,
-        loading: false
+        loading: false,
+        pagelimit: 10
       }
     case SKU_GROUP_BY_PL:{
       state.obj.group_pl = action.payload;
@@ -92,6 +93,7 @@ export default function(state = initialState, action) {
         sortdir: action.payload.sortdir,
         obj: action.payload.obj,
         loading: false,
+        pagelimit: action.payload.pagelimit,
         page: action.payload.page
       }
     }

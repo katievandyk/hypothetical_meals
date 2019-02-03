@@ -16,6 +16,7 @@ export default function(state = initialState, action) {
         plines: action.payload.data.results,
         count: action.payload.data.count,
         page: action.payload.page,
+        pagelimit: action.payload.pagelimit,
         loading: false
       }
     case PLINES_LOADING:

@@ -45,14 +45,14 @@ class SKUFilters extends React.Component {
       sku_filters: newFilters
     });
     this.props.filterBySKUs(Object.keys(this.state.selected_skus));
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.obj);
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
     this.toggle();
   };
 
   onRemoveFilter = e => {
     delete this.state.sku_filters[e.target.id];
     this.props.filterBySKUs(Object.keys(this.state.sku_filters));
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.obj);
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
   };
 
   render() {

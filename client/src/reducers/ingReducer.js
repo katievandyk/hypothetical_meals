@@ -24,7 +24,8 @@ export default function(state = initialState, action) {
         ...state,
         ings: action.payload.results,
         count: action.payload.count,
-        loading: false
+        loading: false,
+        pagelimit: 10
       }}
     case ADD_ING:
       return {
@@ -75,7 +76,7 @@ export default function(state = initialState, action) {
         obj: state.obj
       }
     }
-    case ING_SORT:
+    case ING_SORT:{
       return {
         ...state,
         ings: action.payload.data.results,
@@ -84,8 +85,9 @@ export default function(state = initialState, action) {
         obj: action.payload.obj,
         count: action.payload.data.count,
         page: action.payload.page,
+        pagelimit: action.payload.pagelimit,
         loading: false
-      }
+      }}
     case GEN_INGDEP_REPORT:{
       return {
         ...state,
