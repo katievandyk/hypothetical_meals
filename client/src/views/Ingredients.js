@@ -226,7 +226,10 @@ class Ingredients extends Component {
                   </Col>
                 </Row>
               </Container>
-              <Row><em>Results: {results_start}-{results} of {this.props.ing.count} total</em>
+              <Row>
+              {this.props.ing.count === 0 ? (
+                <em>Results: 0 total</em>
+              ): (<em>Results: {results_start}-{results} of {this.props.ing.count} total</em>)}
               {this.props.ing.pagelimit === -1 ? (
                 <Button onClick={this.haveLimit} color="link" size="sm"> (Show 10 per page) </Button>
               ):

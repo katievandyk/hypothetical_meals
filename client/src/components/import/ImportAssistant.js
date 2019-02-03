@@ -272,7 +272,7 @@ class ImportAssistant extends Component {
           <Button onClick={this.onCancel} color="danger">Cancel</Button>
         </ModalFooter>
     </Modal>
-      <Modal isOpen={this.state.results_modal} toggle={this.results_modal_toggle}>
+      <Modal size="xl" isOpen={this.state.results_modal} toggle={this.results_modal_toggle}>
         <ModalHeader toggle={this.results_modal_toggle}>
           Import Results
         </ModalHeader>
@@ -291,16 +291,30 @@ class ImportAssistant extends Component {
                           ))}
                         </tr>
                       </thead>
-                      <tbody>
-                        {value.records.map((obj,i) => (
+                      {file_type === 'formulas'? (
+                        <tbody>
+                          {value.records.map((obj,i) => (
 
-                          <tr key={i}>
-                            {this.asst_ow_helper(obj.result[0][0], file_headers).map(([key,value]) => (
-                                <td key={key}>{value}</td>
-                              ))}
-                          </tr>
-                        ))}
-                      </tbody>
+                            <tr key={i}>
+                              {this.asst_ow_helper(obj.result[0][0], file_headers).map(([key,value]) => (
+                                  <td key={key}>{value}</td>
+                                ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      ): (
+                        <tbody>
+                          {value.records.map((obj,i) => (
+
+                            <tr key={i}>
+                              {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
+                                  <td key={key}>{value}</td>
+                                ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      )}
+
                     </Table>):(<div></div>)}
                   </div>):
                 (
