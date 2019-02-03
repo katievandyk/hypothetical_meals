@@ -105,10 +105,10 @@ class SKUsEntry extends React.Component {
   };
 
   onIngListClick = ingredients_list => {
-    var newIngTuples = []
+    var newIngTuples = [];
     for(var i = 0; i < ingredients_list.length; i++){
       if(ingredients_list[i]._id){
-        newIngTuples = [newIngTuples, ingredients_list[i]]
+        newIngTuples = [...newIngTuples, ingredients_list[i]];
       }
     }
     this.setState({
