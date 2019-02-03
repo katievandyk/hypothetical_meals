@@ -142,6 +142,7 @@ class ImportAssistant extends Component {
     }
     else if (file_type === 'product_lines') {
       file_headers = ["Name"];
+      obj_headers = ["name"];
     }
     else if (file_type === 'formulas') {
       file_headers = ["SKU#", "Ingr#", "Quantity"];
@@ -305,13 +306,24 @@ class ImportAssistant extends Component {
                         </tbody>
                       ): (
                         <tbody>
-                          {value.records.map((obj,i) => (
 
-                            <tr key={i}>
-                              {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
-                                  <td key={key}>{value}</td>
-                                ))}
-                            </tr>
+                          {value.records.map((obj,i) => (
+                            name === 'Store' ? (
+                              <tr key={i}>
+                                {this.asst_ow_helper(obj, obj_headers).map(([key,value]) => (
+
+                                    <td key={key}>{value}</td>
+                                  ))}
+                              </tr>
+                            ):(
+                              <tr key={i}>
+                                {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
+
+                                    <td key={key}>{value}</td>
+                                  ))}
+                              </tr>
+                            )
+
                           ))}
                         </tbody>
                       )}
