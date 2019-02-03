@@ -254,7 +254,10 @@ class SKU extends Component {
              </Row>
            </Container>
            <Row>
-             <em>Results: {results_start}-{results} of {this.props.skus.count} total</em>
+             {this.props.skus.count === 0 ? (
+               <em>Results: 0 total</em>
+             ): (<em>Results: {results_start}-{results} of {this.props.skus.count} total</em>)}
+
                {this.props.skus.pagelimit === -1 ? (
                  <Button onClick={this.haveLimit} color="link" size="sm"> (Show 10 per page) </Button>
                ):
