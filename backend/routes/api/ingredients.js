@@ -2,12 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const IngredientHelper = require('../../bulk_import/helpers');
+const Papa = require('papaparse');
 
 // Ingredient Model
 const Ingredient = require('../../models/Ingredient');
 
 // SKU Model
 const SKU = require('../../models/SKU');
+
+const IngredientDepReport = require('../../reports/ingredient-dep')
 
 // @route GET api/ingredients
 // @desc get all ingredients
@@ -81,6 +84,28 @@ router.get('/search', (req, res) => {
 // @access public
 router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     IngredientHelper.getIngredientFilterResult(req, res, IngredientHelper.sortAndLimit)
+});
+
+// @route POST api/ingredients/filter/
+// @desc searches keywords in database
+// request body fields:
+// - skus: Array of sku ids (String) to get ingredients for
+// - keywords: Array of words (String) to match entries on
+// note: sorting on keyword search result field=score. score sorting will only be descending.
+// @access public
+router.post('/filter', (req, res) => {
+    IngredientHelper.getIngredientFilterResult(req, res, IngredientHelper.ingredientDependencyReport)
+});
+
+// @route POST api/ingredients/filter/
+// @desc searches keywords in database
+// request body fields:
+// - skus: Array of sku ids (String) to get ingredients for
+// - keywords: Array of words (String) to match entries on
+// note: sorting on keyword search result field=score. score sorting will only be descending.
+// @access public
+router.post('/filter/report', (req, res) => {
+    IngredientHelper.getIngredientFilterResult(req, res, IngredientHelper.ingredientDependencyReportCsv)
 });
 
 // @route GET api/ingredients/sort/:field/:asc

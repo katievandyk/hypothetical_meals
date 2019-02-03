@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const IngredientDepReport = require('../reports/ingredient-dep')
+const Papa = require('papaparse');
 
 module.exports.isNumeric = function(n){
     return !isNaN(parseFloat(n)) && isFinite(n);
@@ -86,6 +88,25 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
         }
         callback(req, res, ingredientFindPromise, ingredientCountPromise)
     }).catch(err => res.status(404).json({success: false, message: err.message}));
+}
+
+module.exports.ingredientDependencyReport = ingredientDependencyReport = function(req, res, findPromise, ignorePromise) {
+    findPromise.select("_id name").then(resultF => {
+        IngredientDepReport.findSKUsForIngredients(resultF)
+            .then(result => res.json(result))
+    })
+}
+
+module.exports.ingredientDependencyReportCsv = ingredientDependencyReportCsv = function(req, res, findPromise, ignorePromise) {
+    findPromise.select("_id name").then(resultF => {
+        IngredientDepReport.findSKUsForIngredientsCsv(resultF)
+            .then(result => {
+                var merged = [].concat.apply([], result);
+                let csv = Papa.unparse(merged);
+                res.setHeader('Content-Type', 'text/csv')
+                res.status(200).send(csv)
+            })
+    })
 }
 
 module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, callback) {

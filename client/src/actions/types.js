@@ -9,6 +9,7 @@ export const ING_SKUS_LOADING = 'ING_SKUS_LOADING';
 export const ING_KW_SEARCH = 'ING_KW_SEARCH';
 export const ING_SKU_FILTER = 'ING_SKU_FILTER';
 export const ING_SORT = 'ING_SORT';
+export const GEN_INGDEP_REPORT = 'GEN_INGDEP_REPORT';
 //Login
 export const GET_ERRORS = "GET_ERRORS";
 export const USER_LOADING = "USER_LOADING";

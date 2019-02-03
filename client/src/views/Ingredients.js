@@ -13,11 +13,13 @@ import store from '../store';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { sortIngs } from '../actions/ingActions';
+import {Redirect} from 'react-router';
+import { sortIngs, genIngDepReport } from '../actions/ingActions';
 
 import {
   Container, Row, Col, Button,
-  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
+  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem,
+  Modal, ModalBody, ModalHeader
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,7 +27,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class Ingredients extends Component {
   state = {
     dropdownOpen: false,
-    sortby: 'name-asc'
+    sortby: 'name-asc',
+    modal: false,
+    navigate: false
   };
 
   toggle = () => {
@@ -42,6 +46,26 @@ class Ingredients extends Component {
     this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
        this.props.ing.page - 1, this.props.ing.obj);
   };
+
+  genReportClick = () => {
+    this.props.genIngDepReport(this.props.ing.obj);
+    this.setState({
+      modal: true
+    });
+    console.log(this.props.ing.report);
+  }
+
+  modal_toggle = () => {
+    this.setState({
+      modal: !this.state.modal
+    })
+  }
+
+  redirectReports = () => {
+    this.setState({
+      navigate: true
+    })
+  }
 
   sortClick = type => {
     this.setState({
@@ -89,6 +113,10 @@ class Ingredients extends Component {
      const results_start = (this.props.ing.page - 1)*10 + 1;
      const isPrevPage = (this.props.ing.page) > 1;
      const isNextPage = results < this.props.ing.count;
+
+     if(this.state.navigate){
+       return(<Redirect to="/reports" push={true} />);
+     }
         return(
           <Provider store={store}>
             <div>
@@ -179,6 +207,7 @@ class Ingredients extends Component {
               </Container>
               <em>Results: {results_start}-{results} of {this.props.ing.count} total</em>
                 <IngredientsEntry/>
+                <Row>
                   <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
                     Previous Page
                   </Button>
@@ -186,7 +215,17 @@ class Ingredients extends Component {
                   <Button onClick={this.onNextPage} disabled={!isNextPage}>
                     Next Page
                   </Button>
-                <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export</Button>
+                  <div><Button onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button></div>
+                  <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
+                    <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
+                    <ModalBody style={{textAlign:'center'}}>
+                      Ingredients Dependency Report Generated! You can view or export it on the reports page
+                      <Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button>
+                    </ModalBody>
+                  </Modal>
+                  <Col style={{'textAlign': 'right'}}/>
+                  <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export</Button>
+                  </Row>
               </Container>
             </div>
           </Provider>
@@ -194,6 +233,7 @@ class Ingredients extends Component {
    }
 }
 Ingredients.propTypes = {
+  genIngDepReport: PropTypes.func.isRequired,
   sortIngs: PropTypes.func.isRequired,
   exportIngs: PropTypes.func.isRequired,
   ing: PropTypes.object.isRequired
@@ -203,4 +243,4 @@ const mapStateToProps = state => ({
   ing: state.ing
 });
 
-export default connect(mapStateToProps, {sortIngs, exportIngs })(Ingredients);
+export default connect(mapStateToProps, {sortIngs, exportIngs, genIngDepReport})(Ingredients);
