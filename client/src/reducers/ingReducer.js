@@ -13,7 +13,8 @@ const initialState = {
   page: 1,
   pagelimit: 10,
   count: 0,
-  report: []
+  report: [],
+  report_obj: {}
 };
 
 export default function(state = initialState, action) {
@@ -88,7 +89,8 @@ export default function(state = initialState, action) {
     case GEN_INGDEP_REPORT:{
       return {
         ...state,
-        report: action.payload
+        report: action.payload.data,
+        report_obj: action.payload.obj
       }
     }
     default:

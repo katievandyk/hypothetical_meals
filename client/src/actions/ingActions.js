@@ -83,7 +83,7 @@ export const genIngDepReport = (obj) => dispatch => {
   axios.post(`/api/ingredients/filter/`, obj).then(res =>
     dispatch({
       type: GEN_INGDEP_REPORT,
-      payload: res.data
+      payload: {data: res.data, obj: obj}
     })
   );
 };

@@ -24,7 +24,6 @@ export default function(state = initialState, action) {
       }
     }
     case IMPORT_OVERWRITES:{
-      console.log(action.payload);
       return {
         ...state,
         success:true,

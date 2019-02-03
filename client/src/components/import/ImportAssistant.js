@@ -84,7 +84,6 @@ class ImportAssistant extends Component {
   }
 
   asst_ow_helper = (obj, file_headers) => {
-    console.log(obj);
     var new_ow_arr = [];
     var i;
     for (i = 0; i < file_headers.length; i++) {
@@ -124,7 +123,6 @@ class ImportAssistant extends Component {
   }
   render(){
     const res = this.props.import.check_res;
-    console.log(res);
     var file_type = '';
     var ow_keys = [];
     var ow = [];
@@ -302,7 +300,6 @@ class ImportAssistant extends Component {
                         {value.records.map((obj,i) => (
 
                           <tr key={i}>
-                            {console.log('value.records -> obj',obj)}
                             {this.asst_ow_helper(obj.result[0][0], file_headers).map(([key,value]) => (
                                 <td key={key}>{value}</td>
                               ))}
