@@ -141,6 +141,7 @@ class ImportAssistant extends Component {
       obj_headers = ["number", "name", "case_number", "unit_number", "unit_size", "count_per_case", "product_line", "comment"];
     }
     else if (file_type === 'product_lines') {
+      file_headers = ["Name"];
     }
     else if (file_type === 'formulas') {
       file_headers = ["SKU#", "Ingr#", "Quantity"];
