@@ -39,7 +39,7 @@ class PLinesAddModal extends React.Component {
     };
 
     this.props.addPLine(newPLine);
-    this.props.getPLines(1);
+    this.props.getPLines(1, this.props.plines.pagelimit);
     this.toggle();
   }
 

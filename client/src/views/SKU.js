@@ -39,12 +39,12 @@ class SKU extends Component {
 
   onNextPage = () => {
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir,
-       this.props.skus.page + 1, this.props.pagelimit, this.props.skus.obj);
+       this.props.skus.page + 1, this.props.skus.pagelimit, this.props.skus.obj);
   };
 
   onPrevPage = () => {
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir,
-       this.props.skus.page - 1, this.props.pagelimit, this.props.skus.obj);
+       this.props.skus.page - 1, this.props.skus.pagelimit, this.props.skus.obj);
   };
   showAll = () => {
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir,
@@ -134,6 +134,9 @@ class SKU extends Component {
        results_start = 1;
      }
      else{
+       console.log(this.props.skus.page);
+       console.log("pagelimit", this.props.skus.pagelimit);
+       console.log("count", this.props.skus.count);
        results = Math.min(this.props.skus.page * this.props.skus.pagelimit, this.props.skus.count);
        results_start = (this.props.skus.page - 1)*10 + 1;
        isPrevPage = (this.props.skus.page) > 1;
