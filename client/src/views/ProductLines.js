@@ -17,6 +17,8 @@ import {
   Container, Row, Col, Button
 } from 'reactstrap';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 class ProductLines extends Component {
   state={
     origLimit: 10
@@ -85,16 +87,20 @@ class ProductLines extends Component {
               )}
          </Row>
            <PLinesEntry/>
+             <Row >
+               <Col style={{'textAlign':'center'}}>
+               <Button color="link" onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
+                 <FontAwesomeIcon icon = "chevron-left"/>{' '}Prev
+               </Button>
+               Page: {this.props.plines.page}
+               <Button color="link" onClick={this.onNextPage} disabled={!isNextPage}>
+                 Next{' '}<FontAwesomeIcon icon = "chevron-right"/>
+               </Button>
+             </Col>
+             </Row>
              <Row>
-             <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
-               Previous Page
-             </Button>
-             Current Page: {this.props.plines.page}
-             <Button onClick={this.onNextPage} disabled={!isNextPage}>
-               Next Page
-             </Button>
              <Col style={{'textAlign': 'right'}}/>
-             <Button onClick={() => { this.props.exportPLines() }}>Export</Button>
+             <Button onClick={() => { this.props.exportPLines() }}>Export Product Lines</Button>
              </Row>
            </Container>
          </div>

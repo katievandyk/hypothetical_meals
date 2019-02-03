@@ -19,7 +19,7 @@ import { sortIngs, genIngDepReport } from '../actions/ingActions';
 import {
   Container, Row, Col, Button,
   ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem,
-  Modal, ModalBody, ModalHeader
+  Modal, ModalBody, ModalHeader, ModalFooter
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -236,24 +236,28 @@ class Ingredients extends Component {
 
               </Row>
                 <IngredientsEntry/>
+                <Row >
+                  <Col style={{'textAlign':'center'}}>
+                  <Button color="link" onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
+                    <FontAwesomeIcon icon = "chevron-left"/>{' '}Prev
+                  </Button>
+                  Page: {this.props.ing.page}
+                  <Button color="link" onClick={this.onNextPage} disabled={!isNextPage}>
+                    Next{' '}<FontAwesomeIcon icon = "chevron-right"/>
+                  </Button>
+                </Col>
+                </Row>
                 <Row>
-                  <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
-                    Previous Page
-                  </Button>
-                  Current Page: {this.props.ing.page}
-                  <Button onClick={this.onNextPage} disabled={!isNextPage}>
-                    Next Page
-                  </Button>
-                  <div><Button onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button></div>
-                  <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
-                    <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
-                    <ModalBody style={{textAlign:'center'}}>
-                      Ingredients Dependency Report Generated! You can view or export it on the reports page
-                      <Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button>
-                    </ModalBody>
-                  </Modal>
                   <Col style={{'textAlign': 'right'}}/>
-                  <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export</Button>
+                    <div style={{paddingRight:'10px'}}><Button color="success" onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button>{' '}</div>
+                    <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
+                      <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
+                      <ModalBody style={{textAlign:'center'}}>
+                        Ingredients Dependency Report Generated! <br></br>You can view or export it on the reports page
+                      </ModalBody>
+                      <ModalFooter><Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button></ModalFooter>
+                    </Modal>{' '}
+                  <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export Ingredients</Button>
                   </Row>
               </Container>
             </div>

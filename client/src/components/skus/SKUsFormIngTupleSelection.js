@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Form, FormGroup, Input, Label, Row, Col, Button
+FormGroup, Input, Label, Row, Col, Button
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
@@ -31,13 +31,11 @@ class SKUsFormIngTupleSelection extends React.Component {
     this.setState({
       ing_tuples: newIngTuples
     });
-    console.log("onchangeing", this.state.ing_tuples);
     this.props.onIngListChange(this.state.ing_tuples);
     }
 
 
   onChangeQuantity = (index, e) => {
-    const ings = this.props.ing.ings;
     const newIngTuples = this.state.ing_tuples;
     newIngTuples[index].quantity = e.target.value;
     this.setState({

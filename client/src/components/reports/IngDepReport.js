@@ -1,28 +1,13 @@
 import React from 'react';
 import {
-  Table, Button, Spinner,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  ListGroup,
-  ListGroupItem,
+  Table,
   Container
  } from 'reactstrap';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../../styles.css'
 
 class IngDepReport extends React.Component {
-
-  componentDidMount(){
-    console.log(this.props.ing.report);
-  }
 
   render() {
     const report = this.props.ing.report;

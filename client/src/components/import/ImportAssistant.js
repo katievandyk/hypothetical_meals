@@ -124,7 +124,6 @@ class ImportAssistant extends Component {
   render(){
     const res = this.props.import.check_res;
     var file_type = '';
-    var ow_keys = [];
     var ow = [];
     if(Object.keys(res).length > 0){
       file_type = res.file_type;
@@ -148,10 +147,6 @@ class ImportAssistant extends Component {
     }
 
     const import_res = this.props.import.import_res;
-
-    if(ow.length > 0){
-      ow_keys = Object.keys(res.Overwrite[0]);
-    }
     return (
       <div>
       <Modal size="xl" isOpen={this.props.modal} toggle={this.props.toggle}>

@@ -1,8 +1,7 @@
 import React from 'react';
 import {
-  Form, FormGroup, Input, Label
+  FormGroup, Input, Label
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getPLines } from '../../actions/plineActions';

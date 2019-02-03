@@ -264,13 +264,17 @@ class SKU extends Component {
           </Row>
            <SKUsEntry/>
              <Row>
-               <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
-                 Previous Page
-               </Button>
-               Current Page: {this.props.skus.page}
-               <Button onClick={this.onNextPage} disabled={!isNextPage}>
-                 Next Page
-               </Button>
+                 <Col style={{'textAlign':'center'}}>
+                 <Button color="link" onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
+                   <FontAwesomeIcon icon = "chevron-left"/>{' '}Prev
+                 </Button>
+                 Page: {this.props.skus.page}
+                 <Button color="link" onClick={this.onNextPage} disabled={!isNextPage}>
+                   Next{' '}<FontAwesomeIcon icon = "chevron-right"/>
+                 </Button>
+               </Col>
+               </Row>
+            <Row>
                <Col style={{'textAlign': 'right'}}/>
              <Button onClick={() =>  this.props.exportSKUs(this.props.skus.obj)}>Export SKUs</Button> &nbsp;
              <Button onClick={() =>  this.props.exportFormulas(this.props.skus.obj)}>Export Formulas</Button>
