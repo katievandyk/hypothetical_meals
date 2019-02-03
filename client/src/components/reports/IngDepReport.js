@@ -1,11 +1,13 @@
 import React from 'react';
 import {
   Table,
-  Container
+  Container, Row, Col,
+  Button
  } from 'reactstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import '../../styles.css'
+import { exportIngDepReport } from '../../actions/exportActions';
 
 class IngDepReport extends React.Component {
 
@@ -50,6 +52,10 @@ class IngDepReport extends React.Component {
             </div>
           ))
           ))}
+          <Row>
+             <Col style={{'textAlign': 'right'}}/>
+             <Button onClick={this.props.exportIngDepReport}>Export</Button>
+          </Row>
           </Container>
         </div>
       );
@@ -67,6 +73,7 @@ class IngDepReport extends React.Component {
 }
 
 IngDepReport.propTypes = {
+  exportIngDepReport: PropTypes.func.isRequired,
   ing: PropTypes.object.isRequired
 };
 
@@ -74,4 +81,4 @@ const mapStateToProps = (state) => ({
   ing: state.ing
 });
 
-export default connect(mapStateToProps)(IngDepReport);
+export default connect(mapStateToProps, { exportIngDepReport} )(IngDepReport);
