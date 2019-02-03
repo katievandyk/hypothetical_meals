@@ -298,12 +298,39 @@ function checkFormulas(data) {
                         skus_map[key].map(checkOneForumla)
                         ).then(result => {
                             return new Promise(function(accept, reject) {
-                                final_res = {sku_id: result[0][0].sku_id, result: result, status: "Overwrite", to_overwrite: result[0][1]}
+                                new_list = result
+                                old_list = result[0][1]
+                                status = checkResultOverlap(new_list, old_list) ? "Ignore" : "Overwrite";
+                                final_res = {sku_id: result[0][0].sku_id, result: result, status: status, to_overwrite: result[0][1]}
+                                console.log(final_res)
                                 accept(final_res)
                             })
                         })
                     }))
 
+}
+
+function checkResultOverlap(new_list, old_list) {
+    new_list_set = new Set();
+
+    console.log("\n")
+    
+    new_list.forEach(entry => {
+        new_list_set.add(entry[0]['Ingr#'])
+        console.log(entry[0]['Ingr#'])
+    })
+
+    console.log("\n")
+
+    old_list_set = new Set();
+    old_list.forEach(entry => {
+        old_list_set.add((entry._id.number).toString())
+        console.log((entry._id.number).toString())
+    })
+
+    if (new_list_set.size !== old_list_set.size) return false;
+    for (var a of new_list_set) if (!old_list_set.has(a)) return false;
+    return true;
 }
 
 // visible for testing
