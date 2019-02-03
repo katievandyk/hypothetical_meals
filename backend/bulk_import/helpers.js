@@ -103,6 +103,10 @@ module.exports.ingredientDependencyReportCsv = ingredientDependencyReportCsv = f
             .then(result => {
                 var merged = [].concat.apply([], result);
                 let csv = Papa.unparse(merged);
+                if (merged.length == 0) {
+                    header = "Ingredient Name,SKU Name,SKU#,Case UPC,Unit UPC,Unit size,Count per case\r\n"
+                    csv = header
+                }
                 res.setHeader('Content-Type', 'text/csv')
                 res.status(200).send(csv)
             })
