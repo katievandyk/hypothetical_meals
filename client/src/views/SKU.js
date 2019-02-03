@@ -134,9 +134,6 @@ class SKU extends Component {
        results_start = 1;
      }
      else{
-       console.log(this.props.skus.page);
-       console.log("pagelimit", this.props.skus.pagelimit);
-       console.log("count", this.props.skus.count);
        results = Math.min(this.props.skus.page * this.props.skus.pagelimit, this.props.skus.count);
        results_start = (this.props.skus.page - 1)*10 + 1;
        isPrevPage = (this.props.skus.page) > 1;

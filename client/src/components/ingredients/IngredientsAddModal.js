@@ -49,7 +49,7 @@ class IngredientsAddModal extends React.Component {
     };
 
     this.props.addIng(newIng);
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.obj);
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
     this.toggle();
   }
 
