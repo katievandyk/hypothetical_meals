@@ -12,6 +12,7 @@ import store from '../store';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import {Redirect} from 'react-router';
 import { sortIngs, genIngDepReport } from '../actions/ingActions';
 
 import {
@@ -26,7 +27,8 @@ class Ingredients extends Component {
   state = {
     dropdownOpen: false,
     sortby: 'name-asc',
-    modal: false
+    modal: false,
+    navigate: false
   };
 
   toggle = () => {
@@ -55,6 +57,12 @@ class Ingredients extends Component {
   modal_toggle = () => {
     this.setState({
       modal: !this.state.modal
+    })
+  }
+
+  redirectReports = () => {
+    this.setState({
+      navigate: true
     })
   }
 
@@ -104,6 +112,10 @@ class Ingredients extends Component {
      const results_start = (this.props.ing.page - 1)*10 + 1;
      const isPrevPage = (this.props.ing.page) > 1;
      const isNextPage = results < this.props.ing.count;
+
+     if(this.state.navigate){
+       return(<Redirect to="/reports" push={true} />);
+     }
         return(
           <Provider store={store}>
             <div>
@@ -206,7 +218,7 @@ class Ingredients extends Component {
                     <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
                     <ModalBody style={{textAlign:'center'}}>
                       Ingredients Dependency Report Generated! You can view or export it on the reports page
-                      <Button href="./reports">View Ingredients Dependency Report</Button>
+                      <Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button>
                     </ModalBody>
                   </Modal>
 
