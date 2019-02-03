@@ -13,7 +13,8 @@ export default function(state = initialState, action) {
       return {
         ...state,
         success:true,
-        check_res: action.payload
+        check_res: action.payload,
+        error_msgs: []
       }
     }
     case UPLOAD_ERROR:{
@@ -27,7 +28,8 @@ export default function(state = initialState, action) {
       return {
         ...state,
         success:true,
-        import_res: action.payload
+        import_res: action.payload,
+        error_msgs: []
       }
     }
     default:
