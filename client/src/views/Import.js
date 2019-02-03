@@ -42,7 +42,7 @@ class Import extends Component {
         this.props.uploadCheck(newFileObj);
       }
 
-      if(this.props.import.error_msgs.length === 0){
+      if(this.props.import.error_msgs.length === 0 || !this.props.import.success){
         this.modal_toggle();
       }
     }

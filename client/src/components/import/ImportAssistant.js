@@ -149,7 +149,7 @@ class ImportAssistant extends Component {
     const import_res = this.props.import.import_res;
     return (
       <div>
-      <Modal size="xl" isOpen={this.props.modal} toggle={this.props.toggle}>
+      <Modal size="xl" isOpen={this.props.modal && this.props.import.success} toggle={this.props.toggle}>
         <ModalHeader toggle={this.props.toggle}> Import Options and Overview </ModalHeader>
         <ModalBody>
           <div key="Overwrite">
