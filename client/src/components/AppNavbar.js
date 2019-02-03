@@ -40,7 +40,11 @@ class AppNavbar extends Component {
         <NavbarToggler onClick={this.toggle} />
         <Container className="">
         <Collapse className="justify-content-end" isOpen={this.state.isOpen} navbar>
+          {this.props.auth.isAuthenticated ? (
           <Nav className="navbar-expand-md" navbar>
+            {this.props.auth.isAdmin ? (<NavItem>
+              <NavLink tag={RRNavLink} to="/register" className="nav-link" activeClassName="active">Register</NavLink>
+            </NavItem>): (<div></div>)}
             <NavItem>
               <NavLink tag={RRNavLink} to="/ingredients" className="nav-link" activeClassName="active">Ingredients</NavLink>
             </NavItem>
@@ -62,7 +66,7 @@ class AppNavbar extends Component {
             <NavItem>
               <NavLink tag={RRNavLink} onClick={this.onLogoutClick} to="/login" className="nav-link" activeClassName="active">Sign Out</NavLink>
             </NavItem>
-          </Nav>
+          </Nav>): (<div></div>)}
         </Collapse>
         </Container>
       </Navbar>
