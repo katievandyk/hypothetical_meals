@@ -32,6 +32,11 @@ class Import extends Component {
     })
   }
 
+  onInputClick = e => {
+    e.target.value = '';
+  }
+  
+
   onUploadFile = (e) => {
     if(e.target.files.length > 0){
       let reader = new FileReader();
@@ -106,7 +111,7 @@ class Import extends Component {
                 <FormGroup>
                 <Label for="import-file">File</Label>
                 <Input type="file" name="file" accept=".csv"
-                  id="import-file" onChange={this.onUploadFile.bind(this)}/><FormText color="muted">
+                  id="import-file" onClick={this.onInputClick} onChange={this.onUploadFile.bind(this)}/><FormText color="muted">
                   Upload a file.
                 </FormText>
               </FormGroup>
