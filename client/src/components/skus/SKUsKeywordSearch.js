@@ -24,14 +24,14 @@ class SKUsKeywordSearch extends React.Component {
       if('product_lines' in this.props.skus.obj){
         newObj.product_lines = this.props.skus.obj.product_lines
       }
-      this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, newObj);
+      this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, newObj);
     };
   }
 
   searchKW = () => {
     this.props.setSKUsLoading();
     this.props.searchSKUbyKW(this.state.keywords);
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.obj);
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
   }
   render() {
     return (
