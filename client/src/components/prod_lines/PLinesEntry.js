@@ -30,7 +30,7 @@ class PLinesEntry extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getPLines(1);
+    this.props.getPLines(1,this.props.plines.pagelimit);
   }
 
   onDeleteClick = id => {
@@ -84,8 +84,12 @@ class PLinesEntry extends React.Component {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Edit</th>
-              <th>Delete</th>
+                {this.props.auth.isAdmin &&
+                  <th>Edit</th>
+                }
+                {this.props.auth.isAdmin &&
+                  <th>Delete</th>
+                }
             </tr>
           </thead>
           <tbody is="transition-group" >
@@ -94,22 +98,25 @@ class PLinesEntry extends React.Component {
                 <CSSTransition key={_id} timeout={500} classNames="fade">
                   <tr>
                     <td> {name} </td>
-                    <td>
-                      <Button size="sm" color="link"
-                        onClick={this.onEditClick.bind(this,
-                          _id, name
-                        )}
-                        style={{'color':'black'}}>
-                        <FontAwesomeIcon icon = "edit"/>
-                      </Button>
-                    </td>
-                    <td >
-                      <Button size="sm" sm="2"color="link"
-                        onClick={this.onDeleteClick.bind(this, _id)}
-                        style={{'color':'black'}}>
-                        <FontAwesomeIcon icon="trash"/>
-                      </Button>
-                    </td>
+                    {this.props.auth.isAdmin &&
+                      <td>
+                        <Button size="sm" color="link"
+                          onClick={this.onEditClick.bind(this,
+                            _id, name
+                          )}
+                          style={{'color':'black'}}>
+                          <FontAwesomeIcon icon = "edit"/>
+                        </Button>
+                      </td> }
+                    {this.props.auth.isAdmin &&
+                      <td >
+                        <Button size="sm" sm="2"color="link"
+                          onClick={this.onDeleteClick.bind(this, _id)}
+                          style={{'color':'black'}}>
+                          <FontAwesomeIcon icon="trash"/>
+                        </Button>
+                      </td>
+                    }
                   </tr>
                 </CSSTransition>
             ))}
@@ -146,11 +153,13 @@ PLinesEntry.propTypes = {
   getPLines: PropTypes.func.isRequired,
   deletePLine: PropTypes.func.isRequired,
   updatePLine: PropTypes.func.isRequired,
-  plines: PropTypes.object.isRequired
+  plines: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  plines: state.plines
+  plines: state.plines,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, { getPLines, deletePLine, updatePLine })(PLinesEntry);

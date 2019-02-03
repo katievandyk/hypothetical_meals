@@ -19,7 +19,7 @@ import { sortIngs, genIngDepReport } from '../actions/ingActions';
 import {
   Container, Row, Col, Button,
   ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem,
-  Modal, ModalBody, ModalHeader
+  Modal, ModalBody, ModalHeader, ModalFooter
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -29,7 +29,8 @@ class Ingredients extends Component {
     dropdownOpen: false,
     sortby: 'name-asc',
     modal: false,
-    navigate: false
+    navigate: false,
+    origLimit: 10
   };
 
   toggle = () => {
@@ -39,12 +40,12 @@ class Ingredients extends Component {
   }
   onNextPage = () => {
     this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
-       this.props.ing.page + 1, this.props.ing.obj);
+       this.props.ing.page + 1, this.props.ing.pagelimit, this.props.ing.obj);
   };
 
   onPrevPage = () => {
     this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
-       this.props.ing.page - 1, this.props.ing.obj);
+       this.props.ing.page - 1, this.props.ing.pagelimit, this.props.ing.obj);
   };
 
   genReportClick = () => {
@@ -52,7 +53,6 @@ class Ingredients extends Component {
     this.setState({
       modal: true
     });
-    console.log(this.props.ing.report);
   }
 
   modal_toggle = () => {
@@ -67,40 +67,50 @@ class Ingredients extends Component {
     })
   }
 
+  showAll = () => {
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
+       this.props.ing.page, -1, this.props.ing.obj);
+  }
+
+  haveLimit = () => {
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
+       this.props.ing.page, 10, this.props.ing.obj);
+  }
+
   sortClick = type => {
     this.setState({
       sortby: type
     });
     switch(type) {
       case "name-asc":
-        this.props.sortIngs('name', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('name', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "name-desc":
-        this.props.sortIngs('name', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('name', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "number-asc":
-        this.props.sortIngs('number', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('number', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "number-desc":
-        this.props.sortIngs('number', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('number', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "vendor-asc":
-        this.props.sortIngs('vendor_info', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('vendor_info', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "vendor-desc":
-        this.props.sortIngs('vendor_info', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('vendor_info', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "package-asc":
-        this.props.sortIngs('package_size', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('package_size', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "package-desc":
-        this.props.sortIngs('package_size', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('package_size', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "cost-asc":
-        this.props.sortIngs('cost_per_package', 'asc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('cost_per_package', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       case "cost-desc":
-        this.props.sortIngs('cost_per_package', 'desc', this.props.ing.page, this.props.ing.obj);
+        this.props.sortIngs('cost_per_package', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
         break;
       default:
         break;
@@ -109,10 +119,21 @@ class Ingredients extends Component {
   }
 
    render() {
-     const results = Math.min(this.props.ing.page * this.props.ing.pagelimit, this.props.ing.count);
-     const results_start = (this.props.ing.page - 1)*10 + 1;
-     const isPrevPage = (this.props.ing.page) > 1;
-     const isNextPage = results < this.props.ing.count;
+     var results = 0;
+     var results_start = 0;
+     var isPrevPage = false;
+     var isNextPage = false;
+     if(this.props.ing.pagelimit === -1){
+       results = this.props.ing.count;
+       results_start = 1;
+     }
+     else{
+       results = Math.min(this.props.ing.page * this.props.ing.pagelimit, this.props.ing.count);
+       results_start = (this.props.ing.page - 1)*10 + 1;
+       isPrevPage = (this.props.ing.page) > 1;
+       isNextPage = results < this.props.ing.count;
+     }
+
 
      if(this.state.navigate){
        return(<Redirect to="/reports" push={true} />);
@@ -201,30 +222,45 @@ class Ingredients extends Component {
                           <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
                       </DropdownMenu>
                     </ButtonDropdown> {' '}
-                    <IngredientsAddModal/>
+                    {this.props.auth.isAdmin ? (<IngredientsAddModal/>): (<div></div>)}
                   </Col>
                 </Row>
               </Container>
-              <em>Results: {results_start}-{results} of {this.props.ing.count} total</em>
+              <Row>
+              {this.props.ing.count === 0 ? (
+                <em>Results: 0 total</em>
+              ): (<em>Results: {results_start}-{results} of {this.props.ing.count} total</em>)}
+              {this.props.ing.pagelimit === -1 ? (
+                <Button onClick={this.haveLimit} color="link" size="sm"> (Show 10 per page) </Button>
+              ):
+              (
+                <Button onClick={this.showAll} color="link" size="sm"> (Show all) </Button>
+              )}
+
+              </Row>
                 <IngredientsEntry/>
+                <Row >
+                  <Col style={{'textAlign':'center'}}>
+                  <Button color="link" onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
+                    <FontAwesomeIcon icon = "chevron-left"/>{' '}Prev
+                  </Button>
+                  Page: {this.props.ing.page}
+                  <Button color="link" onClick={this.onNextPage} disabled={!isNextPage}>
+                    Next{' '}<FontAwesomeIcon icon = "chevron-right"/>
+                  </Button>
+                </Col>
+                </Row>
                 <Row>
-                  <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
-                    Previous Page
-                  </Button>
-                  Current Page: {this.props.ing.page}
-                  <Button onClick={this.onNextPage} disabled={!isNextPage}>
-                    Next Page
-                  </Button>
-                  <div><Button onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button></div>
-                  <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
-                    <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
-                    <ModalBody style={{textAlign:'center'}}>
-                      Ingredients Dependency Report Generated! You can view or export it on the reports page
-                      <Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button>
-                    </ModalBody>
-                  </Modal>
                   <Col style={{'textAlign': 'right'}}/>
-                  <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export</Button>
+                    <div style={{paddingRight:'10px'}}><Button color="success" onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button>{' '}</div>
+                    <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
+                      <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
+                      <ModalBody style={{textAlign:'center'}}>
+                        Ingredients Dependency Report Generated! <br></br>You can view or export it on the reports page
+                      </ModalBody>
+                      <ModalFooter><Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button></ModalFooter>
+                    </Modal>{' '}
+                  <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export Ingredients</Button>
                   </Row>
               </Container>
             </div>
@@ -236,11 +272,13 @@ Ingredients.propTypes = {
   genIngDepReport: PropTypes.func.isRequired,
   sortIngs: PropTypes.func.isRequired,
   exportIngs: PropTypes.func.isRequired,
-  ing: PropTypes.object.isRequired
+  ing: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  ing: state.ing
+  ing: state.ing,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, {sortIngs, exportIngs, genIngDepReport})(Ingredients);

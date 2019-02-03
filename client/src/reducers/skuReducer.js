@@ -40,13 +40,18 @@ export default function(state = initialState, action) {
         ...state,
         loading: true
       }
-    case GET_SKUS:
+    case GET_SKUS:{
+      if(state.obj.group_pl){
+        delete state.obj.group_pl
+      }
       return {
         ...state,
         skus: action.payload.results,
         count: action.payload.count,
-        loading: false
+        loading: false,
+        pagelimit: 10
       }
+    }
     case SKU_GROUP_BY_PL:{
       state.obj.group_pl = action.payload;
       return {
@@ -83,17 +88,23 @@ export default function(state = initialState, action) {
         obj: state.obj
       }
     }
-    case SKU_SORT:
+    case SKU_SORT:{
+      var sku_results = [];
+      if(action.payload.data.count > 0 && (action.payload.data.results.length > 0 || Object.keys(action.payload.data.results).length > 0)){
+        sku_results = action.payload.data.results;
+      }
       return {
         ...state,
-        skus: action.payload.data.results,
+        skus: sku_results,
         count: action.payload.data.count,
         sortby: action.payload.sortby,
         sortdir: action.payload.sortdir,
         obj: action.payload.obj,
         loading: false,
+        pagelimit: action.payload.pagelimit,
         page: action.payload.page
       }
+    }
     case SKU_ERROR:
       return {
         ...state,

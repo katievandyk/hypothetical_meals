@@ -69,12 +69,12 @@ export const searchIngbyKW = keywords => dispatch => {
   });
 };
 
-export const sortIngs = (field, asc, page, obj) => dispatch => {
+export const sortIngs = (field, asc, page, pagelimit, obj) => dispatch => {
   dispatch(setIngsLoading());
-  axios.post(`/api/ingredients/filter/sort/${field}/${asc}/${page}/10`, obj).then(res =>
+  axios.post(`/api/ingredients/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
     dispatch({
       type: ING_SORT,
-      payload: {data: res.data, sortby: field, sortdir: asc, page: page, obj: obj}
+      payload: {data: res.data, sortby: field, sortdir: asc, page: page, pagelimit: pagelimit, obj: obj}
     })
   );
 };
@@ -83,7 +83,7 @@ export const genIngDepReport = (obj) => dispatch => {
   axios.post(`/api/ingredients/filter/`, obj).then(res =>
     dispatch({
       type: GEN_INGDEP_REPORT,
-      payload: res.data
+      payload: {data: res.data, obj: obj}
     })
   );
 };

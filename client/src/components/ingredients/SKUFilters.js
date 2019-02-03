@@ -45,17 +45,21 @@ class SKUFilters extends React.Component {
       sku_filters: newFilters
     });
     this.props.filterBySKUs(Object.keys(this.state.selected_skus));
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.obj);
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
     this.toggle();
   };
 
   onRemoveFilter = e => {
     delete this.state.sku_filters[e.target.id];
     this.props.filterBySKUs(Object.keys(this.state.sku_filters));
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.obj);
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
   };
 
   render() {
+    var skus = [];
+    if(this.props.skus.skus.length > 0){
+      skus = this.props.skus.skus;
+    }
     const ids = this.state.sku_filters;
     return (
       <div>SKU Filters:  {'  '}
@@ -77,7 +81,7 @@ class SKUFilters extends React.Component {
         <ModalBody style={{'textAlign': 'center'}}>
          <Form>
             <FormGroup>
-              {this.props.skus.skus.map(({_id, name}) => (
+              {skus.map(({_id, name}) => (
                 <CustomInput key={_id} type="checkbox" id={_id} label={name}
                 defaultChecked={{_id} in this.state.sku_filters}
                 onChange={(e) => {this.onChange(e, _id, name)}}inline/>

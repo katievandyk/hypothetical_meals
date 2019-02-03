@@ -70,12 +70,12 @@ export const groupByPL = state => dispatch => {
   });
 }
 
-export const sortSKUs = (field, asc, page, obj) => dispatch => {
+export const sortSKUs = (field, asc, page, pagelimit, obj) => dispatch => {
   dispatch(setSKUsLoading());
-  axios.post(`/api/skus/filter/sort/${field}/${asc}/${page}/10`, obj).then(res =>
+  axios.post(`/api/skus/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
     dispatch({
       type: SKU_SORT,
-      payload: {data: res.data, sortby: field, sortdir: asc, page: page, obj: obj}
+      payload: {data: res.data, sortby: field, sortdir: asc, page: page, pagelimit: pagelimit, obj: obj}
     })
   ).catch(error =>{
     dispatch({

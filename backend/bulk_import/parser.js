@@ -14,8 +14,7 @@ const pl_fields = {name: 'Name'};
 const product_lines_header = [ pl_fields.name ];
 
 
-module.exports.parsePLFile = parsePL = function(fileName) {
-    var file = fs.readFileSync(fileName, 'utf8').replace(/^\ufeff/, "");
+module.exports.parsePLFile = parsePL = function(file) {
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -68,8 +67,7 @@ module.exports.preprocessOnePL = preprocessOnePL = function(pl_entry) {
     });
 }
 
-module.exports.parseIngredientFile = parseIng = function(fileName) {
-    var file = fs.readFileSync(fileName, 'utf8').replace(/^\ufeff/, "");
+module.exports.parseIngredientFile = parseIng = function(file) {
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -140,7 +138,7 @@ module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_
                         status = "Ignore";
                      else {
                         status = "Overwrite";
-                        ing_data["ing_id"] = number_result._id;
+                        ing_data["to_overwrite"] = number_result;
                      }
                 }
                 else if(name_result) {
@@ -155,8 +153,7 @@ module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_
     });
 }
 
-module.exports.parseSkuFile = parseSku = function(fileName) {
-    var file = fs.readFileSync(fileName, 'utf8').replace(/^\ufeff/, "");
+module.exports.parseSkuFile = parseSku = function(file) {
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -227,13 +224,14 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
     return new Promise(function(accept, reject) {
         Promise.all([
             ProductLine.findOne({'name': pl}),
-            SKU.findOne({'number': sku_data[sku_fields.number]}),
+            SKU.findOne({'number': sku_data[sku_fields.number]}).populate("product_line"),
             SKU.findOne({'case_number': sku_data[sku_fields.case_upc]})
         ])
             .then(result => {
                 pl_result = result[0];
                 if(!pl_result) reject(new Error("Product line not found: " + pl));
                 sku_data['pl_id'] = pl_result._id;
+                sku_data['pl_name'] = pl_result.name
 
                 number_result = result[1];
                 case_number_result = result[2];
@@ -251,7 +249,7 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                         status = "Ignore";
                     else {
                         status = "Overwrite";
-                        sku_data['sku_id'] = number_result._id;
+                        sku_data['to_overwrite'] = number_result;
                     }
                 }
                 else if(case_number_result) {
@@ -268,8 +266,7 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
     });
 }
 
-module.exports.parseForumula = parseFormula = function(fileName) {
-    var file = fs.readFileSync(fileName, 'utf8').replace(/^\ufeff/, "");
+module.exports.parseForumula = parseFormula = function(file) {
     return new Promise(function(resolve, reject) {
         return Papa.parse(file, {
             header: true,
@@ -301,7 +298,7 @@ function checkFormulas(data) {
                         skus_map[key].map(checkOneForumla)
                         ).then(result => {
                             return new Promise(function(accept, reject) {
-                                final_res = {sku_id: result[0].sku_id, result: result, status: "Overwrite"}
+                                final_res = {sku_id: result[0][0].sku_id, result: result, status: "Overwrite", to_overwrite: result[0][1]}
                                 accept(final_res)
                             })
                         })
@@ -351,7 +348,7 @@ module.exports.checkOneForumla = checkOneForumla = function(formula_data) {
             "Ingredient quantity is not a positive number: " + formula_data[k]);
 
     var skuPromise = new Promise(function(accept, reject) {
-        SKU.findOne({number: sku})
+        SKU.findOne({number: sku}).populate("ingredients_list._id").lean()
             .then(result => {
                 if(!result) reject(new Error("SKU number not found: " + sku));
                 else accept(result);
@@ -359,7 +356,7 @@ module.exports.checkOneForumla = checkOneForumla = function(formula_data) {
     });
 
     var ingPromise = new Promise(function(accept, reject) {
-        Ingredient.findOne({number: ing})
+        Ingredient.findOne({number: ing}).lean()
             .then(result => {
                 if(!result) reject(new Error("Ingredient number not found: " + ing));
                 else accept(result);
@@ -373,7 +370,7 @@ module.exports.checkOneForumla = checkOneForumla = function(formula_data) {
     
             formula_data["ing_id"] = ingDoc._id;
             formula_data["sku_id"] = skuDoc._id;
-            accept(formula_data);
+            accept([formula_data, skuDoc.ingredients_list]);
         }).catch(error => reject(error));
     });
 }

@@ -23,7 +23,7 @@ class PLineFilters extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getPLines();
+    this.props.getPLines(1, -1);
   }
 
   onChange = (e, _id, name) =>{
@@ -45,14 +45,14 @@ class PLineFilters extends React.Component {
       pline_filters: newFilters
     });
     this.props.filterByPLines(Object.keys(this.state.selected_plines));
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.obj);
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
     this.toggle();
   };
 
   onRemoveFilter = e => {
     delete this.state.pline_filters[e.target.id];
     this.props.filterByPLines(Object.keys(this.state.pline_filters));
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.obj);
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
   };
 
   render() {
