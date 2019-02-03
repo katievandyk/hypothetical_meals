@@ -34,27 +34,31 @@ class GoalsCreateForm extends React.Component {
       }
 
       onSubmit = e => {
-        const newGoal = {
-          name: this.state.name,
-          skus_list: this.state.skus_list,
-          user_email: this.props.auth.user_email
-        };
+            const newGoal = {
+              name: this.state.name,
+              skus_list: this.state.skus_list,
+              user_email: this.props.auth.user_email
+            };
 
-        this.props.addGoal(newGoal);
-        this.toggle();
+            this.props.addGoal(newGoal);
+            this.toggle();
       }
 
 
     onFormSave = e => {
-        this.props.addGoal({"name": this.state.name, "skus_list": this.state.skus_list, "user_email": this.props.auth.user_email})
+       this.props.addGoal({"name": this.state.name, "skus_list": this.state.skus_list, "user_email": this.props.auth.user_email})
     }
 
     onAdd = e => {
         var skus  = this.state.skus_list
-        skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
-        this.setState({
-            skus_list: skus
-        })
+        if(isNaN(this.state.quantity)) alert("Please enter a numeric quantity.")
+        else if(skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
+        else {
+            skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
+            this.setState({
+                skus_list: skus
+            })
+        }
     }
 
     onCancel  = e => {
@@ -106,8 +110,9 @@ class GoalsCreateForm extends React.Component {
         <Row>
                 <Col md={4}><GoalsProductLineDropdown callbackFromParent={this.plineCallback}/></Col>
                 <Col md={3.5}><GoalsSKUDropdown pline={this.state.plineSel} callbackFromParent={this.skuCallback}/></Col>
-                <Col md={2}><Input value={this.state.quantity} placeholder="Qty." onChange={e => this.setState({ quantity: e.target.value })}/> </Col>
+                <Col md={4}><Input value={this.state.quantity} placeholder="Qty." onChange={e => this.setState({ quantity: e.target.value })}/> </Col>
                 <Col><Button color="success" onClick={this.onAdd}>Add</Button>{' '}</Col>
+                <Col style={{'textAlign': 'left'}}/>
         </Row>
         <Container className="my-3">
             <Row>

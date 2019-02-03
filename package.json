@@ -23,6 +23,8 @@
   "dependencies": {
     "concurrently": "^4.1.0",
     "js-file-download": "^0.4.4",
+    "jspdf": "^1.5.3",
+    "jspdf-autotable": "^3.0.5",
     "papaparse": "^4.6.3"
   },
   "devDependencies": {}

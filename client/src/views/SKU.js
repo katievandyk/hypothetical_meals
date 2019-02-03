@@ -13,12 +13,12 @@ import store from '../store';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { exportSKUs, exportFormulas } from '../actions/exportActions';
 import { sortSKUs, groupByPL } from '../actions/skuActions';
 
 import {
   Container, Row, Col, Button,
-  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
-} from 'reactstrap';
+  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -235,6 +235,7 @@ class SKU extends Component {
            </Container>
              <em>Results: {results_start}-{results} of {this.props.skus.count} total</em>
              <SKUsEntry/>
+             <Row>
                <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
                  Previous Page
                </Button>
@@ -242,6 +243,10 @@ class SKU extends Component {
                <Button onClick={this.onNextPage} disabled={!isNextPage}>
                  Next Page
                </Button>
+               <Col style={{'textAlign': 'right'}}/>
+             <Button onClick={() =>  this.props.exportSKUs(this.props.skus.obj)}>Export SKUs</Button> &nbsp;
+             <Button onClick={() =>  this.props.exportFormulas(this.props.skus.obj)}>Export Formulas</Button>
+             </Row>
            </Container>
          </div>
        </Provider>
@@ -251,6 +256,8 @@ class SKU extends Component {
 
 SKU.propTypes = {
   sortSKUs: PropTypes.func.isRequired,
+  exportSKUs: PropTypes.func.isRequired,
+  exportFormulas: PropTypes.func.isRequired,
   groupByPL: PropTypes.func.isRequired,
   skus: PropTypes.object.isRequired
 };
@@ -259,4 +266,5 @@ const mapStateToProps = state => ({
   skus: state.skus
 });
 
-export default connect(mapStateToProps, {sortSKUs, groupByPL})(SKU);
+
+export default connect(mapStateToProps, {sortSKUs, groupByPL, exportSKUs, exportFormulas})(SKU);

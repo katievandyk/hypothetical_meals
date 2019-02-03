@@ -6,6 +6,7 @@ import IngredientsEntry from '../components/ingredients/IngredientsEntry';
 import SKUFilters from '../components/ingredients/SKUFilters'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
+import { exportIngs } from '../actions/exportActions';
 
 import { Provider } from 'react-redux';
 import store from '../store';
@@ -206,6 +207,7 @@ class Ingredients extends Component {
               </Container>
               <em>Results: {results_start}-{results} of {this.props.ing.count} total</em>
                 <IngredientsEntry/>
+                <Row>
                   <Button onClick={this.onPrevPage} disabled={!isPrevPage}> {' '}
                     Previous Page
                   </Button>
@@ -221,7 +223,9 @@ class Ingredients extends Component {
                       <Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button>
                     </ModalBody>
                   </Modal>
-
+                  <Col style={{'textAlign': 'right'}}/>
+                  <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export</Button>
+                  </Row>
               </Container>
             </div>
           </Provider>
@@ -231,6 +235,7 @@ class Ingredients extends Component {
 Ingredients.propTypes = {
   genIngDepReport: PropTypes.func.isRequired,
   sortIngs: PropTypes.func.isRequired,
+  exportIngs: PropTypes.func.isRequired,
   ing: PropTypes.object.isRequired
 };
 
@@ -238,4 +243,4 @@ const mapStateToProps = state => ({
   ing: state.ing
 });
 
-export default connect(mapStateToProps, {sortIngs, genIngDepReport})(Ingredients);
+export default connect(mapStateToProps, {sortIngs, exportIngs, genIngDepReport})(Ingredients);

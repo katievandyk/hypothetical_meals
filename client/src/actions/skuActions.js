@@ -2,14 +2,15 @@ import axios from 'axios';
 import { ADD_SKU, DELETE_SKU, UPDATE_SKU, SKU_KW_SEARCH,
   SKU_SORT, SKU_ING_FILTER, SKU_PLINE_FILTER, GET_SKUS, GET_SKUS_BYPLINE,
    SKUS_LOADING, SKU_ERROR, SKU_GROUP_BY_PL } from './types';
+
 export const getSKUsByPLine = (pline) => dispatch =>  {
   dispatch(setSKUsLoading());
-  axios.get('/api/skus/byproductlines/' + pline).then(res =>
+  axios.get('/api/skus/byproductlines/' + pline).then(res => {
     dispatch({
       type: GET_SKUS_BYPLINE,
       payload: res.data
     })
-  );
+  });
 };
 
 export const addSKU = sku => dispatch => {
@@ -22,7 +23,6 @@ export const addSKU = sku => dispatch => {
 };
 
 export const updateSKU = sku => dispatch => {
-  console.log(sku);
   axios.post(`/api/skus/update/${sku.id}`, sku).then(res =>
     dispatch({
       type: UPDATE_SKU,
