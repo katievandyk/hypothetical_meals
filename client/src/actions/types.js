@@ -46,6 +46,7 @@ export const EXPORT_SKUS = 'EXPORT_SKUS';
 export const EXPORT_PLINES = 'EXPORT_PLINES';
 export const EXPORT_INGS = 'EXPORT_INGS';
 export const EXPORT_FORMULAS = 'EXPORT_FORMULAS';
+export const EXPORT_INGDEP_REPORT = 'EXPORT_INGDEP_REPORT';
 // Bulk Import
 export const UPLOAD_CHECK = 'UPLOAD_CHECK';
 export const UPLOAD_ERROR = 'UPLOAD_ERROR';

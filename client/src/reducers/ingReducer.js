@@ -1,6 +1,6 @@
 import {GET_INGS, ADD_ING, DELETE_ING, UPDATE_ING,
   GET_ING_SKUS, INGS_LOADING, ING_SKUS_LOADING,
-  ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER, GEN_INGDEP_REPORT} from '../actions/types';
+  ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER, GEN_INGDEP_REPORT, EXPORT_INGDEP_REPORT} from '../actions/types';
 
 const initialState = {
   ings: [],
@@ -93,6 +93,12 @@ export default function(state = initialState, action) {
         ...state,
         report: action.payload.data,
         report_obj: action.payload.obj
+      }
+    }
+    case EXPORT_INGDEP_REPORT:{
+      return {
+        ...state,
+        loading: false
       }
     }
     default:

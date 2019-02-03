@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { EXPORT_SKUS, EXPORT_PLINES, EXPORT_INGS, EXPORT_FORMULAS } from './types';
+import { EXPORT_SKUS, EXPORT_PLINES, EXPORT_INGS, EXPORT_FORMULAS, EXPORT_INGDEP_REPORT } from './types';
 
 const FileDownload = require('js-file-download');
 
@@ -28,6 +28,15 @@ export const exportPLines = () => dispatch => {
     return {
         type: EXPORT_INGS
     };
+  };
+
+  export const exportIngDepReport = () => dispatch => {
+        axios.post('/api/ingredients/filter/report').then(res => {
+        FileDownload(res.data, 'ingredient_dep_report.csv')
+    });
+    return {
+        type: EXPORT_INGDEP_REPORT
+    }
   };
 
  export const exportFormulas = (obj) => dispatch => {
