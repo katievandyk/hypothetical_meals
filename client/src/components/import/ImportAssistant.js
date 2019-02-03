@@ -11,7 +11,8 @@ import { uploadCheck, importOverwrites } from '../../actions/importActions';
 
 class ImportAssistant extends Component {
   state = {
-    new_overWrite: []
+    new_overWrite: [],
+    results_modal: false
   }
 
   onChange = (e, i, obj) => {
@@ -35,7 +36,8 @@ class ImportAssistant extends Component {
   submitImport = () => {
     const new_ow = this.state.new_overWrite;
     this.setState({
-      new_overWrite: []
+      new_overWrite: [],
+      results_modal: true
     });
     const new_no_ow = this.props.import.check_res.Overwrite.filter(function(entry){
       return (new_ow.indexOf(entry) === -1)
@@ -43,20 +45,25 @@ class ImportAssistant extends Component {
     const new_checkRes = this.props.import.check_res;
     new_checkRes.Overwrite = new_ow;
     new_checkRes.NoOverwrite = new_no_ow;
-    const fileName = this.props.import.check_res.file_type;
+    var fileName = this.props.import.check_res.file_type;
     if(fileName === 'product_lines'){
       fileName = 'productlines';
     }
     this.props.importOverwrites(new_checkRes, fileName);
-    console.log('new_checkRes', new_checkRes);
-    //this.props.importOverwrites(this.props.import.check_res, 'ingredients');
     this.props.toggle();
+  }
+
+  results_modal_toggle = () => {
+    this.setState({
+      results_modal: !this.state.results_modal
+    })
   }
 
   onCancel = () => {
     this.setState({
       new_overWrite: []
     });
+    this.props.toggle();
   }
 
   ow_oldEntry_helper = (oldEntry, file_headers, obj_headers) => {
@@ -65,13 +72,19 @@ class ImportAssistant extends Component {
     for (i = 0; i < file_headers.length; i++) {
       var newkv = ['', ''];
       newkv[0] = file_headers[i];
-      newkv[1] = oldEntry[obj_headers[i]];
+      if(newkv[0] === 'Product Line Name'){
+        newkv[1] = oldEntry[obj_headers[i]].name;
+      }
+      else{
+        newkv[1] = oldEntry[obj_headers[i]];
+      }
       new_ow_arr = [...new_ow_arr, newkv];
     }
     return new_ow_arr;
   }
 
   asst_ow_helper = (obj, file_headers) => {
+    console.log(obj);
     var new_ow_arr = [];
     var i;
     for (i = 0; i < file_headers.length; i++) {
@@ -83,6 +96,32 @@ class ImportAssistant extends Component {
     return new_ow_arr;
   }
 
+  old_formulas_helper = (obj) => {
+    var prevEntries = [];
+    if(obj.length > 0){
+      for(var i = 0; i < obj.length; i++){
+        if(obj[i]._id){
+          prevEntries = [prevEntries, obj[i]]
+        }
+      }
+    }
+    //return newArr;
+    return(
+      prevEntries.length > 0 ? (
+        prevEntries.map((value, i) => (
+      <tr key= {i} style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
+        <td>Current Entry</td>
+        {Object.entries(value).map(([key,value])=> (
+          <td key={key}>{value}</td>
+        ))}
+      </tr>
+      ))
+      ):
+       (<tr style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
+       <td>Current Entry</td><td colSpan="3">No Previous Formula Entries Found</td>
+     </tr>)
+      );
+  }
   render(){
     const res = this.props.import.check_res;
     console.log(res);
@@ -110,10 +149,13 @@ class ImportAssistant extends Component {
       file_headers = ["SKU#", "Ingr#", "Quantity"];
     }
 
+    const import_res = this.props.import.import_res;
+
     if(ow.length > 0){
       ow_keys = Object.keys(res.Overwrite[0]);
     }
     return (
+      <div>
       <Modal size="xl" isOpen={this.props.modal} toggle={this.props.toggle}>
         <ModalHeader toggle={this.props.toggle}> Import Options and Overview </ModalHeader>
         <ModalBody>
@@ -141,18 +183,13 @@ class ImportAssistant extends Component {
                     {obj.result.map((entry, i) => (
                       <tr key={i}>
                         <td></td>
-                        {this.asst_ow_helper(entry[0], file_headers, obj_headers).map(([key,value]) => (
+                        {this.asst_ow_helper(entry[0], file_headers).map(([key,value]) => (
                             <td key={key}>{value}</td>
                           ))}
                       </tr>
                     ))}
-                    <tr style={{backgroundColor:'#d3d3d3'}}>
-                      <td>Current Entry</td>
-                      {this.asst_ow_helper(obj.result, file_headers, obj_headers).map(([key,value]) => (
-                        <td key={key}>{value}</td>
-                      ))}
-                    </tr>
-                    <tr><td></td></tr>
+                    {this.old_formulas_helper(obj.to_overwrite)}
+                    <tr><td colSpan="4"></td></tr>
                     </tbody>
                   ))}
               </Table>
@@ -178,7 +215,7 @@ class ImportAssistant extends Component {
                       ))}
 
                     </tr>
-                    <tr style={{backgroundColor:'#d3d3d3'}}>
+                    <tr style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
                       <td>Current Entry</td>
                       {this.ow_oldEntry_helper(obj.to_overwrite, file_headers, obj_headers).map(([key,value]) => (
                         <td key={key}>{value}</td>
@@ -208,7 +245,7 @@ class ImportAssistant extends Component {
                     <tr>
                       {Object.keys(value[0]).filter(function(entry){
                         return !(entry === 'ing_id' ||  entry === 'sku_id'||
-                        entry ==='pl_id' || entry === 'status')
+                        entry ==='pl_id' || entry === 'status' || entry === 'pl_name')
                       }).map((key) => (
                         <th key={key}> {key}</th>
                       ))}
@@ -219,7 +256,7 @@ class ImportAssistant extends Component {
                       <tr key={i}>
                         {Object.entries(obj).filter(function(entry){
                           return !(entry[0] === 'ing_id' || entry[0] === 'sku_id'||
-                          entry[0] ==='pl_id' || entry[0] === 'status')
+                          entry[0] ==='pl_id' || entry[0] === 'status' || entry[0] === 'pl_name')
                         }).map(([key,value]) => (
                           <td key={key}>{value}</td>
                         ))}
@@ -242,6 +279,50 @@ class ImportAssistant extends Component {
           <Button onClick={this.onCancel} color="danger">Cancel</Button>
         </ModalFooter>
     </Modal>
+      <Modal isOpen={this.state.results_modal} toggle={this.results_modal_toggle}>
+        <ModalHeader toggle={this.results_modal_toggle}>
+          Import Results
+        </ModalHeader>
+        <ModalBody>
+          {Object.keys(import_res).length > 0 ? (
+            <div>
+              {(Object.entries(import_res).map(([name,value]) => (
+                (Object.keys(value).length > 0) ?
+                (<div key={name}>
+                    <h4>{name}: {value.count} records</h4>
+                    {value.count > 0 ? (<Table responsive size="sm">
+                      <thead>
+                        <tr>
+                          {file_headers.map((key) => (
+                            <th key={key}> {key}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {value.records.map((obj,i) => (
+
+                          <tr key={i}>
+                            {console.log('value.records -> obj',obj)}
+                            {this.asst_ow_helper(obj.result[0][0], file_headers).map(([key,value]) => (
+                                <td key={key}>{value}</td>
+                              ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>):(<div></div>)}
+                  </div>):
+                (
+                  <div key={name}>
+                    <h4>{name}</h4>
+                    None
+                  </div>
+                )
+              )))}
+            </div>
+          ): (<div>Import Incomplete</div>)}
+        </ModalBody>
+      </Modal>
+    </div>
     );
   }
 }
