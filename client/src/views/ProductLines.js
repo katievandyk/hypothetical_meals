@@ -21,6 +21,10 @@ class ProductLines extends Component {
   state={
     origLimit: 10
   }
+  componentDidMount() {
+    this.props.getPLines(1, 10);
+  }
+
   onNextPage = () => {
     this.props.getPLines(this.props.plines.page + 1, this.props.plines.pagelimit);
   };
@@ -43,10 +47,15 @@ class ProductLines extends Component {
      var isNextPage = false;
      if(this.props.plines.pagelimit === -1){
        results = this.props.plines.count;
+       console.log(results);
        results_start = 1;
      }
      else{
        results = Math.min(this.props.plines.page * this.props.plines.pagelimit, this.props.plines.count);
+       console.log(this.props.plines.page);
+       console.log(this.props.plines.pagelimit);
+       console.log(this.props.plines.count);
+       console.log(results);
        results_start = (this.props.plines.page - 1)*10 + 1;
        isPrevPage = (this.props.plines.page) > 1;
        isNextPage = results < this.props.plines.count;
