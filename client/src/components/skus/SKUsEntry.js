@@ -353,7 +353,7 @@ class SKUsEntry extends React.Component {
                       defaultValue={this.state.edit_count_per_case}>
                     </Input>
                 </FormGroup>
-                <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} defaultValue={this.state.edit_product_line}/>
+                <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} defaultValue={this.state.edit_product_line._id}/>
                 <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list}/>
                 <FormGroup>
                   <Label for="edit_comment">Comments</Label>
