@@ -51,9 +51,6 @@ return (
             <h4>
               <b>Register</b> below
             </h4>
-            <p className="grey-text text-darken-1">
-              Already have an account?    <Link to="/login">Log in</Link>
-            </p>
             <FormGroup>
               <Label for="name">Name</Label>
               <Input onChange={this.onChange}
