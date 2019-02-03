@@ -2,17 +2,22 @@ import React, { Component } from 'react';
 
 import {
   Modal, ModalHeader, ModalBody, ModalFooter, Table, Button,
-  CustomInput
+  CustomInput, PopoverBody, Popover, PopoverHeader
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { uploadCheck, importOverwrites } from '../../actions/importActions';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 class ImportAssistant extends Component {
   state = {
     new_overWrite: [],
-    results_modal: false
+    results_modal: false,
+    popupOW: false,
+    popupIGNORE: false,
+    popupSTORE: false
   }
 
   onChange = (e, i, obj) => {
@@ -33,6 +38,34 @@ class ImportAssistant extends Component {
 
   }
 
+  popOWtoggle = () => {
+    this.setState({
+      popupOW: !this.state.popupOW
+    });
+  }
+
+  popSTOREtoggle = () => {
+    this.setState({
+      popupSTORE: !this.state.popupSTORE
+    });
+  }
+  popIGNOREtoggle = () => {
+    this.setState({
+      popupIGNORE: !this.state.popupIGNORE
+    });
+  }
+
+  popOverOpen = type => {
+    if(type ==='overwrite'){
+      return this.state.popupOW;
+    }
+    else if(type === 'store'){
+      return this.state.popupSTORE;
+    }
+    else if(type === 'ignore'){
+      return this.state.popupIGNORE;
+    }
+  }
   submitImport = () => {
     const new_ow = this.state.new_overWrite;
     this.setState({
@@ -153,16 +186,19 @@ class ImportAssistant extends Component {
     return (
       <div>
       <Modal size="xl" isOpen={this.props.modal && this.props.import.success} toggle={this.props.toggle}>
-        <ModalHeader toggle={this.props.toggle}> Import Options and Overview </ModalHeader>
+        <ModalHeader toggle={this.props.toggle}> Review and Submit Import </ModalHeader>
         <ModalBody>
-          <div>Below is a summary of what will happen if the import proceeds. Please make the necessary
-          selections for what you would like to happen for conflicts and proceed to submit your import. </div>
-          <div key="Overwrite">
-          <h4>Overwrite</h4>
+        <div key="Overwrite">
+          <h4>Overwrite <Button id="Overwrite" color="link" size="sm"type="button">
+          <FontAwesomeIcon icon="info-circle"/>
+        </Button><Popover placement="right" isOpen={this.state.popupOW} trigger="hover" target="Overwrite" id="Overwrite" toggle={this.popOWtoggle}>
+          <PopoverHeader>Overwrite</PopoverHeader>
+          <PopoverBody>These are entries from your import file that would overwrite existing entries
+          in the database if you import them. You can select whether or not you want to overwrite the
+        existing entry by checking the Overwrite? column. Below your imported entry is the current entry in grey.</PopoverBody>
+        </Popover></h4>
           {ow.length > 0 ? (
             <div>
-            <div>These are the entries from your imported file that would overwrite existing entries. Check the box
-            next to the entries you would like to overwrite. The original entries are also displayed in grey below your imported entry.</div>
           { file_type === 'formulas' ? (
               <Table responsive size="sm">
                 <thead>
@@ -242,7 +278,17 @@ class ImportAssistant extends Component {
           }).map(([name,value]) => (
             (value.length > 0) ?
             (<div key={name}>
-                <h4>{name}</h4>
+                <h4>{name} <Button id={name} color="link" size="sm"type="button">
+                <FontAwesomeIcon icon="info-circle"/>
+              </Button><Popover placement="right" trigger="hover"
+              isOpen={((name === 'Store') && this.state.popupSTORE)|| ((name==='Ignore') && this.state.popupIGNORE)}
+              target={name} toggle={(name === 'Store'? this.popSTOREtoggle: this.popIGNOREtoggle)}>
+                <PopoverHeader>{name}</PopoverHeader>
+                <PopoverBody>{name === 'Store'? (<div>These are entries from your file
+                     that will be stored in the database if you submit the import.</div>
+                 ):(<div>These are entries from your file that are duplicates to ones
+                      already existing in the database and will be ignored.</div>)}</PopoverBody>
+              </Popover></h4>
                 <Table>
                   <thead>
                     <tr>
@@ -270,7 +316,16 @@ class ImportAssistant extends Component {
               </div>):
             (
               <div key={name}>
-                <h4>{name}</h4>
+                <h4>{name} <Button id={name} color="link" size="sm"type="button">
+                <FontAwesomeIcon icon="info-circle"/>
+              </Button> <Popover placement="right" trigger="hover" isOpen={((name === 'Store') && this.state.popupSTORE)|| ((name==='Ignore') && this.state.popupIGNORE)}
+              target={name} toggle={name === 'Store'? this.popSTOREtoggle: this.popIGNOREtoggle}>
+                <PopoverHeader>{name}</PopoverHeader>
+                  <PopoverBody>{name === 'Store'? (<div>These are entries from your file
+                       that will be stored in the database if you submit the import.</div>
+                   ):(<div>These are entries from your file that are duplicates to ones
+                        already existing in the database and will be ignored.</div>)}</PopoverBody>
+              </Popover></h4>
                 None
               </div>
             )
