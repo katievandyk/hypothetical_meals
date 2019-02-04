@@ -6,7 +6,7 @@
   "scripts": {
     "start": "concurrently \"cd backend && node server.js\" \"cd client && npm start\"",
     "install": "cd backend && npm install && cd ../client && npm install",
-    "deploy": "cd client && npm run build && cd ../backend && NODE_ENV=production pm2 start server.js",
+    "deploy": "cd client && npm run build && cd ../backend && NODE_ENV=production pm2 -f start server.js",
     "test": "cd backend && npm test"
   },
   "repository": {
@@ -25,7 +25,8 @@
     "js-file-download": "^0.4.4",
     "jspdf": "^1.5.3",
     "jspdf-autotable": "^3.0.5",
-    "papaparse": "^4.6.3"
+    "papaparse": "^4.6.3",
+    "pm2": "^3.2.9"
   },
   "devDependencies": {}
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Table, Modal, ModalHeader, ModalBody, ListGroup, ListGroupItem } from 'reactstrap';
+import { Button, Table, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { connect } from 'react-redux';
 import { getGoals } from '../../actions/goalsActions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
