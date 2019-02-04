@@ -121,17 +121,21 @@ module.exports.checkIngredientFileDuplicates = checkIngredientFileDuplicates = f
     }
 }
 
+module.exports.ingredientFieldsCheck = ingredientFieldsCheck = function(name, number, size, cost) {
+    if(! (name && number && size && cost))
+        throw new Error("Ingredient name, number, package size, and cost are required.");
+    if(!Helpers.isPositiveInteger(number)) 
+        throw new Error("Ingredient number is not a valid number: " + number);
+
+    if(!Helpers.isNumeric(cost)) 
+        throw new Error("Ingredient cost is not a number: " + cost);
+    if (parseFloat(cost) < 0) 
+        throw new Error("Ingredient cost is not positive: " + cost);
+}
+
 // visible for testing
 module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_data) {
-    if(ing_data[ing_fields.name].length === 0 || ing_data[ing_fields.size].length === 0 || ing_data[ing_fields.cost].length === 0)
-        throw new Error("Ingredient name, package size, and cost are required.");
-    if(!Helpers.isPositiveInteger(ing_data[ing_fields.number])) 
-        throw new Error("Ingredient number is not a valid number: " + ing_data[ing_fields.number]);
-    
-    if(!Helpers.isNumeric(ing_data[ing_fields.cost])) 
-        throw new Error("Ingredient cost is not a number: " + ing_data[ing_fields.cost]);
-    if (parseFloat(ing_data[ing_fields.cost]) < 0) 
-        throw new Error("Ingredient cost is not positive: " + ing_data[ing_fields.cost]);
+    ingredientFieldsCheck(ing_data[ing_fields.name], ing_data[ing_fields.number], ing_data[ing_fields.size], ing_data[ing_fields.cost])
 
     return new Promise(function(accept, reject) {
         Promise.all([
@@ -192,9 +196,12 @@ function uploadSKUs(data) {
     return new Promise(function(accept, reject) {
         SKU.find().select("-_id number").sort({number: -1}).limit(1).then(accept).catch(reject)
     }).then(max_number => {
+        let start_num
         if(max_number.length === 0) 
-            max_number = 0
-        checkSKUFileDuplicates(max_number[0].number+1, skus_data);
+            start_num = 1
+        else 
+            start_num = max_number[0].number+1
+        checkSKUFileDuplicates(start_num, skus_data);
         return Promise.all(skus_data.map(checkOneSKU));
     })
 }
@@ -221,31 +228,31 @@ module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(max_nu
     }
 }
 
-// TODO: handle required fields
-module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
-    if(sku_data[sku_fields.name].length === 0 || sku_data[sku_fields.case_upc].length === 0 || sku_data[sku_fields.unit_upc].length === 0 || sku_data[sku_fields.unit_size].length === 0 || sku_data[sku_fields.count].length === 0 || sku_data[sku_fields.pl_name].length === 0)
+module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc, unit_upc, unit_size, count, pl_name) {
+    if(! (name && case_upc && unit_upc && unit_size && count &&  pl_name))
         throw new Error("SKU name, Case UPC#, Unit UPC#, Unit Size, Count per case, and Product Line fields are required.")
-    if(!Helpers.isPositiveInteger(sku_data[sku_fields.number])) 
-        throw new Error("SKU number is not a valid number: " + sku_data[sku_fields.number]);
-    
-    if(sku_data[sku_fields.name].length > 32) 
-        throw new Error("SKU name more than 32 characters: " + sku_data[sku_fields.name]);
-    
-    if(!Helpers.isPositiveInteger(sku_data[sku_fields.case_upc])) 
-        throw new Error("SKU case# is not a valid number: " + sku_data[sku_fields.case_upc]);
-    if(!Helpers.is_upca_standard(sku_data[sku_fields.case_upc])) 
-        throw new Error("SKU case# is not UPC-A compliant: " + sku_data[sku_fields.case_upc]);
+    if(!Helpers.isPositiveInteger(number)) 
+        throw new Error("SKU number is not a valid number: " + number);
 
-    if(!Helpers.isPositiveInteger(sku_data[sku_fields.unit_upc])) 
-        throw new Error("SKU units# is not a valid number: " + sku_data[sku_fields.unit_upc]);
-    if(!Helpers.is_upca_standard(sku_data[sku_fields.unit_upc])) 
-        throw new Error("SKU unit# is not UPC-A compliant: " + sku_data[sku_fields.unit_upc]);
+    if(name.length > 32) 
+        throw new Error("SKU name more than 32 characters: " + name);
 
-    if(sku_data[sku_fields.unit_size].length == 0)
-        throw new Error("SKU unit size required.");
+    if(!Helpers.isPositiveInteger(case_upc)) 
+        throw new Error("SKU case# is not a valid number: " + case_upc);
+    if(!Helpers.is_upca_standard(case_upc)) 
+        throw new Error("SKU case# is not UPC-A compliant: " + case_upc);
 
-    if(!Helpers.isPositiveInteger(sku_data[sku_fields.count])) 
-        throw new Error("SKU counts per case is not a valid number: " + obj[k]);
+    if(!Helpers.isPositiveInteger(unit_upc)) 
+        throw new Error("SKU units# is not a valid number: " + unit_upc);
+    if(!Helpers.is_upca_standard(unit_upc)) 
+        throw new Error("SKU unit# is not UPC-A compliant: " + unit_upc);
+
+    if(!Helpers.isPositiveInteger(count)) 
+        throw new Error("SKU counts per case is not a valid number: " + count);
+}
+
+module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
+    skuFieldsCheck(sku_data[sku_fields.name], sku_data[sku_fields.number], sku_data[sku_fields.case_upc], sku_data[sku_fields.unit_upc], sku_data[sku_fields.unit_size], sku_data[sku_fields.count], sku_data[sku_fields.pl_name])
 
     let pl = sku_data[sku_fields.pl_name];
 
