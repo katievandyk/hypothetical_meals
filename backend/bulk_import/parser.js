@@ -324,8 +324,10 @@ function checkResultOverlap(new_list, old_list) {
 
     old_list_set = new Set();
     old_list.forEach(entry => {
-        old_list_set.add((entry._id.number).toString())
-        console.log((entry._id.number).toString())
+        console.log(entry)
+        if(entry._id !== null)
+            old_list_set.add((entry._id.number).toString())
+        // console.log((entry._id.number).toString())
     })
 
     if (new_list_set.size !== old_list_set.size) return false;
