@@ -54,6 +54,11 @@ class IngFilters extends React.Component {
     this.props.filterByIngs(Object.keys(this.state.ing_filters));
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
   };
+  onXRemoveFilter = (e,id) => {
+    delete this.state.ing_filters[id];
+    this.props.filterByIngs(Object.keys(this.state.ing_filters));
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+  };
 
   render() {
     const ids = this.state.ing_filters;
@@ -67,7 +72,7 @@ class IngFilters extends React.Component {
         {Object.entries(ids).map(([key,value]) =>(
           <Badge id={key} style={{'marginLeft': '2px', 'marginRight': '2px'}} href="#" color="light"
             key={key} onClick={(e) => {this.onRemoveFilter(e)}}>
-            <FontAwesomeIcon icon = "times"/> {' '}
+            <FontAwesomeIcon href="#" onClick={(e) => {this.onXRemoveFilter(e, key)}} icon = "times"/> {' '}
             {value}
             </Badge>
         ))}
