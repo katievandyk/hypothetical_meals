@@ -97,7 +97,6 @@ export default function(state = initialState, action) {
       if(action.payload.data.count > 0 && (action.payload.data.results.length > 0 || Object.keys(action.payload.data.results).length > 0)){
         sku_results = action.payload.data.results;
       }
-      console.log(sku_results);
       return {
         ...state,
         skus: sku_results,
