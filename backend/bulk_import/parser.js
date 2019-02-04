@@ -88,16 +88,26 @@ function uploadIngredients(data) {
 
     ing_data = data.data;
 
-    checkIngredientFileDuplicates(ing_data);
-    return Promise.all(ing_data.map(preprocessOneIngredient));
+    return new Promise(function(accept, reject) {
+        Ingredient.find().select("-_id number").sort({number: -1}).limit(1).then(accept).catch(reject)
+    }).then(max_number => {
+        if(max_number.length === 0) 
+            max_number = 0
+        checkIngredientFileDuplicates(max_number[0].number+1, ing_data);
+        return Promise.all(ing_data.map(preprocessOneIngredient));
+    })
 }
 
 // visible for testing
-module.exports.checkIngredientFileDuplicates = checkIngredientFileDuplicates = function(ing_data) {
+module.exports.checkIngredientFileDuplicates = checkIngredientFileDuplicates = function(max_number, ing_data) {
     let i;
     let names = [];
     let numbers = [];
     for(i = 0; i < ing_data.length; i++) {
+        if(ing_data[i][ing_fields.number]==="") {
+            ing_data[i][ing_fields.number] = max_number
+            max_number = max_number+1
+        }
         if(numbers.includes(ing_data[i][ing_fields.number])) {
             throw new Error("Duplicate number in file: " + ing_data[i][ing_fields.number]);
         }
@@ -174,16 +184,29 @@ function uploadSKUs(data) {
     Helpers.checkFileHeaders(data.meta.fields, skus_header);
 
     skus_data = data.data;
-    checkSKUFileDuplicates(skus_data);
-    return Promise.all(skus_data.map(checkOneSKU));
+
+    return new Promise(function(accept, reject) {
+        SKU.find().select("-_id number").sort({number: -1}).limit(1).then(accept).catch(reject)
+    }).then(max_number => {
+        console.log(max_number)
+        if(max_number.length === 0) 
+            max_number = 0
+        checkSKUFileDuplicates(max_number[0].number+1, skus_data);
+        return Promise.all(skus_data.map(checkOneSKU));
+    })
 }
 
 // visible for testing
-module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(sku_data) {
+module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(max_number, sku_data) {
     let i;
     let numbers = [];
     let case_numbers = [];
     for(i = 0; i < sku_data.length; i++) {
+        if(sku_data[i][sku_fields.number]==="") {
+            sku_data[i][sku_fields.number] = max_number
+            max_number = max_number+1
+        }
+
         if(numbers.includes(sku_data[i][sku_fields.number])) {
             throw new Error("Duplicate number in file: " + sku_data[i][sku_fields.number]);
         }
@@ -302,7 +325,6 @@ function checkFormulas(data) {
                                 old_list = result[0][1]
                                 status = checkResultOverlap(new_list, old_list) ? "Ignore" : "Overwrite";
                                 final_res = {sku_id: result[0][0].sku_id, result: result, status: status, to_overwrite: result[0][1]}
-                                console.log(final_res)
                                 accept(final_res)
                             })
                         })
