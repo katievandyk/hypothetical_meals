@@ -29,6 +29,7 @@ class Manufacturing extends Component {
     super(props);
     this.calculatorCallback = this.calculatorCallback.bind(this);
     this.exportPDF = this.exportPDF.bind(this);
+    this.refresh = this.refresh.bind(this);
     this.state = {
         calcGoal: '',
         disableExport: true
@@ -58,6 +59,10 @@ class Manufacturing extends Component {
      doc.save(this.state.calcGoal.name + '_calculator.pdf'); //Download the rendered PDF.
    }
 
+   refresh = () => {
+       window.location.reload();
+   }
+
    render() {
         return(
           <Provider store={store}>
@@ -72,7 +77,7 @@ class Manufacturing extends Component {
                    </Row>
                    <Row>
                       <Col style={{'textAlign': 'right'}}> </Col>
-                      <GoalsCreateModal buttonLabel="Create Goal"/> &nbsp;
+                      <GoalsCreateModal refresh={this.refresh} buttonLabel="Create Goal"/> &nbsp;
                       <GoalsExport goals={this.props.goals}/>
                    </Row>
                 </Container>

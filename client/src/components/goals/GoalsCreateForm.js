@@ -2,22 +2,26 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import GoalCreateEntry from '../../components/goals/GoalCreateEntry';
 import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
-import GoalsProductLineDropdown from '../../components/goals/GoalsProductLineDropdown';
-import GoalsProductLineSearch from '../../components/goals/GoalsProductLineSearch';
+import GoalsSKUSearch from '../../components/goals/GoalsSKUSearch';
+import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
 
 import { addGoal }  from '../../actions/goalsActions';
 import { getSKUs, getSKUsByPLine } from '../../actions/skuActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { Container, Table, Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import {
+  InputGroup, InputGroupAddon, Input, Button,
+  Container, Table, Row, Col, Form, FormGroup, Label
+} from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 
 class GoalsCreateForm extends React.Component {
 
    constructor(props) {
        super(props);
        this.onAdd = this.onAdd.bind(this);
-       this.plineCallback = this.plineCallback.bind(this);
        this.skuCallback = this.skuCallback.bind(this);
        this.state = {
           name: '',
@@ -32,13 +36,9 @@ class GoalsCreateForm extends React.Component {
        this.props.getSKUs();
    }
 
-   toggle = () => {
-     this.setState({
-       modal: !this.state.modal
-     });
-   }
-
    onSubmit = e => {
+     if(this.state.name.length === 0) alert("Please enter a name for your goal.")
+     else {
          const newGoal = {
            name: this.state.name,
            skus_list: this.state.skus_list,
@@ -46,13 +46,14 @@ class GoalsCreateForm extends React.Component {
          };
 
          this.props.addGoal(newGoal);
-         this.toggle();
+         this.props.toggle();
+     }
    }
 
    onAdd = e => {
        var skus  = this.state.skus_list
-       if(isNaN(this.state.quantity)) alert("Please enter a numeric quantity.")
-       else if(skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
+       if(this.state.quantity.length === 0 || isNaN(this.state.quantity)) alert("Please enter a numeric quantity.")
+       else if(this.state.skuSel.length === 0 || skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
        else {
            skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
            this.setState({
@@ -66,17 +67,7 @@ class GoalsCreateForm extends React.Component {
            name: '',
            skus_list: []
        })
-       this.toggle();
-   }
-
-   plineCallback = (plines) => {
-           const ids = [];
-           plines.forEach(pline => ids.push(pline._id))
-           this.props.getSKUsByPLine(ids)
-       }
-
-   plineCallback2 = (ids) => {
-       this.props.getSKUsByPLine(ids)
+       this.props.toggle();
    }
 
    skuCallback = (dataFromChild) => {
@@ -87,7 +78,7 @@ class GoalsCreateForm extends React.Component {
 
    render() {
      return (
-       <Form onSubmit={this.onSubmit}>
+       <Form>
          <FormGroup>
              <Label for="goal_name">Manufacturing Goal Name</Label>
              <Input id="goal_name" value={this.state.name} onChange={e => this.setState({ name: e.target.value })}/>
@@ -112,22 +103,23 @@ class GoalsCreateForm extends React.Component {
                   </Table>
          </FormGroup>
          <Container>
-             <Row>
-                 <GoalsProductLineSearch callbackFromParent={this.plineCallback}/>
-                 <Col style={{'textAlign': 'left'}}/>
-                 <Col style={{'textAlign': 'right'}}/>
-                 <Col><GoalsSKUDropdown skus={this.props.skus} callbackFromParent={this.skuCallback}/></Col>
-                 <Col md={2}><Input value={this.state.quantity} placeholder="Qty." onChange={e => this.setState({ quantity: e.target.value })}/> </Col>
-                 <Col><Button color="success" onClick={this.onAdd}>Add</Button>{' '}</Col>
-             </Row>
-              <Row>
-                <GoalsProductLineDropdown callbackFromParent={this.plineCallback2}/>
+            <Row style={{ marginBottom: 6, marginTop: 20 }}>
+                <GoalsProductLineFilter/>
+                <Col style={{'textAlign': 'right'}}/>
+                <GoalsSKUSearch/>
+            </Row>
+            <Row>
+            <InputGroup>
+                <GoalsSKUDropdown skus={this.props.skus} callbackFromParent={this.skuCallback}/>
+                <Col md={2} style={{"padding-right": 0 }}><Input value={this.state.quantity} placeholder="Qty." onChange={e => this.setState({ quantity: e.target.value })}/></Col>
+                <InputGroupAddon addonType="append"><Button onClick={this.onAdd}>+</Button></InputGroupAddon>
+            </InputGroup>
             </Row>
          </Container>
          <Container className="my-3">
             <Row>
                  <Col style={{'textAlign': 'right'}}>
-                    <Button type="submit"  color="success">Save</Button> &nbsp;
+                    <Button onClick={this.onSubmit} color="success">Save</Button> &nbsp;
                     <Button color="secondary" onClick={this.onCancel}>Clear</Button>
                  </Col>
              </Row>
@@ -150,9 +142,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default connect(mapStateToProps, {getSKUsByPLine, getSKUs, addGoal})(GoalsCreateForm);
-
-/**
-            <Row>
-                <GoalsProductLineDropdown callbackFromParent={this.plineCallback}/>
-            </Row> **/
+export default connect(mapStateToProps, {getSKUs, addGoal})(GoalsCreateForm);

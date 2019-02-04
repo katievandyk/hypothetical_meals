@@ -65,17 +65,4 @@ router.post('/update/:id', (req, res) => {
         .then(() => res.json({success: true}))
         .catch(err => res.status(404).json({success: false, message: err.message}))});
 
-// @route GET api/productlines/search
-// @desc searches keywords in database
-// @access public
-router.post('/search', (req, res) => {
-    ProductLine.find({$text: {$search: req.body.keywords}},
-        {score:{$meta: "textScore"}})
-        .lean()
-        .sort({score: {$meta: "textScore"}})
-        .then(search_res => {
-            res.json({success: true, results: search_res});
-        })
-        .catch(err => res.status(404).json({success: false, message: err.message}))});
-
 module.exports = router;
