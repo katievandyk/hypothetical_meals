@@ -3,9 +3,12 @@ import { ADD_SKU, DELETE_SKU, UPDATE_SKU, SKU_KW_SEARCH,
   SKU_SORT, SKU_ING_FILTER, SKU_PLINE_FILTER, GET_SKUS, GET_SKUS_BYPLINE,
    SKUS_LOADING, SKU_ERROR, SKU_GROUP_BY_PL } from './types';
 
-export const getSKUsByPLine = (pline) => dispatch =>  {
+export const getSKUsByPLine = (plines) => dispatch =>  {
   dispatch(setSKUsLoading());
-  axios.get('/api/skus/byproductlines/' + pline).then(res => {
+  axios.post('/api/skus/byproductlines/',
+    {
+        "product_lines": plines
+    }).then(res => {
     dispatch({
       type: GET_SKUS_BYPLINE,
       payload: res.data

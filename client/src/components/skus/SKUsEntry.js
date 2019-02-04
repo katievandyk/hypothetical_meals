@@ -11,7 +11,7 @@ import {
  } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { getSKUs, deleteSKU, updateSKU } from '../../actions/skuActions';
+import { getSKUs, sortSKUs, deleteSKU, updateSKU } from '../../actions/skuActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SKUsFormPLineSelection from './SKUsFormPLineSelection'
@@ -49,7 +49,9 @@ class SKUsEntry extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getSKUs();
+    //this.props.getSKUs();
+    this.props.sortSKUs('name', 'asc', 1, 10, {});
+    console.log(this.props.skus.skus);
     if(this.props.skus.obj && this.props.skus.obj.group_pl && this.props.skus.obj.group_pl === "True"){
       this.setState({
         group_by_pl: true
@@ -130,6 +132,7 @@ class SKUsEntry extends React.Component {
   }
 
   render() {
+    console.log(this.props.skus.skus);
     const { skus } = this.props.skus;
     const loading = this.props.skus.loading;
     if(loading || skus === 0){
@@ -176,7 +179,8 @@ class SKUsEntry extends React.Component {
                         <td> {unit_number} </td>
                         <td> {unit_size} </td>
                         <td> {count_per_case}</td>
-                        <td> {product_line.name}</td>
+                        {product_line ? (<td> {product_line.name}</td>):(<td>{console.log(product_line)}</td>)}
+
                         <td>
                           <Button size="sm" color="link"
                           onClick={this.onIngListClick.bind(this, ingredients_list)}
@@ -248,7 +252,7 @@ class SKUsEntry extends React.Component {
                       <td> {unit_number} </td>
                       <td> {unit_size} </td>
                       <td> {count_per_case}</td>
-                      <td> {product_line.name}</td>
+                      {product_line ? (<td> {product_line.name}</td>):(<td>{console.log(product_line)}</td>)}
                       <td>
                         <Button size="sm" color="link"
                         onClick={this.onIngListClick.bind(this, ingredients_list)}
@@ -391,6 +395,7 @@ class SKUsEntry extends React.Component {
 
 SKUsEntry.propTypes = {
   getSKUs: PropTypes.func.isRequired,
+  sortSKUs: PropTypes.func.isRequired,
   deleteSKU: PropTypes.func.isRequired,
   updateSKU: PropTypes.func.isRequired,
   skus: PropTypes.object.isRequired,
@@ -402,4 +407,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getSKUs, deleteSKU, updateSKU })(SKUsEntry);
+export default connect(mapStateToProps, { getSKUs, sortSKUs, deleteSKU, updateSKU })(SKUsEntry);

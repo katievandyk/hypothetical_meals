@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getIngs } from '../../actions/ingActions';
+import { getIngs, sortIngs } from '../../actions/ingActions';
 import { sortSKUs, filterByIngs} from '../../actions/skuActions';
 
 class IngFilters extends React.Component {
@@ -23,7 +23,7 @@ class IngFilters extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getIngs();
+    this.props.sortIngs('name', 'asc', 1, -1, {});
   }
 
   onChange = (e, _id, name) =>{
@@ -105,6 +105,7 @@ IngFilters.propTypes = {
   skus: PropTypes.object.isRequired,
   ing: PropTypes.object.isRequired,
   getIngs: PropTypes.func.isRequired,
+  sortIngs: PropTypes.func.isRequired,
   sortSKUs: PropTypes.func.isRequired,
   filterByIngs: PropTypes.func.isRequired
 };
@@ -113,4 +114,4 @@ const mapStateToProps = state => ({
   skus: state.skus,
   ing: state.ing
 });
-export default connect(mapStateToProps, {getIngs, sortSKUs, filterByIngs})(IngFilters);
+export default connect(mapStateToProps, {getIngs, sortIngs, sortSKUs, filterByIngs})(IngFilters);

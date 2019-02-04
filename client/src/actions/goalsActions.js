@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_GOALS, ADD_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_CALCULATOREXPORT, GOAL_EXPORT } from './types';
+import { GET_GOALS, ADD_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_CALCULATOREXPORT, GOAL_EXPORT } from './types';
 
 const FileDownload = require('js-file-download');
 
@@ -46,7 +46,7 @@ export const exportGoal = (goal) => dispatch => {
       FileDownload(res.data, goal.name + '.csv')
    });
     return {
-        type: GOAL_CALCULATOREXPORT
+        type: GOAL_EXPORT
     };
  };
 

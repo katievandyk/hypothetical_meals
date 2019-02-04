@@ -54,9 +54,9 @@ class AppNavbar extends Component {
             <NavItem>
               <NavLink tag={RRNavLink} to="/sku" className="nav-link" activeClassName="active">SKUs</NavLink>
             </NavItem>
-            <NavItem>
+            {this.props.auth.isAdmin ? (<NavItem>
               <NavLink tag={RRNavLink} to="/import" className="nav-link" activeClassName="active">Import</NavLink>
-            </NavItem>
+            </NavItem>): (<div></div>)}
             <NavItem>
               <NavLink tag={RRNavLink} to="/manufacturing" className="nav-link" activeClassName="active">Manufacturing</NavLink>
             </NavItem>
