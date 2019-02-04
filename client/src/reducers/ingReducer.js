@@ -77,6 +77,10 @@ export default function(state = initialState, action) {
       }
     }
     case ING_SORT:{
+      var page_val = action.payload.page;
+      if(action.payload.pagelimit === -1){
+        page_val = 1;
+      }
       return {
         ...state,
         ings: action.payload.data.results,
@@ -84,7 +88,7 @@ export default function(state = initialState, action) {
         sortdir: action.payload.sortdir,
         obj: action.payload.obj,
         count: action.payload.data.count,
-        page: action.payload.page,
+        page: page_val,
         pagelimit: action.payload.pagelimit,
         loading: false
       }}

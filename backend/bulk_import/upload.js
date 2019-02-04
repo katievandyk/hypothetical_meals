@@ -148,6 +148,7 @@ function createOneSKU(sku_entry) {
 
 module.exports.uploadFormulas = uploadFormulas = function(formulas_data) {
     formulas = formulas_data.Overwrite
+    console.log(formulas)
     return Promise.all(formulas.map(uploadOneSKUFormula));
 }
 
@@ -155,8 +156,9 @@ function uploadOneSKUFormula(formula_entry) {
     sku_id = formula_entry.sku_id
     new_list = []
     
-    formula_entry.result.forEach(tuple => new_list.push(
-        {_id: mongoose.Types.ObjectId(tuple["ing_id"]), quantity: tuple[formula_fields.quantity]}))
+    formula_entry.result.forEach(tuple => {
+        new_list.push(
+        {_id: mongoose.Types.ObjectId(tuple[0]["ing_id"]), quantity: tuple[0].Quantity})})
 
     return new Promise(function(accept, reject) {
         SKU.findOneAndUpdate({"_id": sku_id}, 

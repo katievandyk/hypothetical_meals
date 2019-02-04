@@ -9,7 +9,7 @@ import { getPLines } from '../../actions/plineActions';
 class SKUsFormPLineSelection extends React.Component {
 
   componentDidMount() {
-    this.props.getPLines();
+    this.props.getPLines(1, -1);
   }
 
   onChange = (e) => {

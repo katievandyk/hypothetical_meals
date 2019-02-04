@@ -55,6 +55,12 @@ class PLineFilters extends React.Component {
     this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
   };
 
+  onXRemoveFilter = (e, id) => {
+    delete this.state.pline_filters[id];
+    this.props.filterByPLines(Object.keys(this.state.pline_filters));
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+  };
+
   render() {
     const ids = this.state.pline_filters;
     return (
@@ -67,7 +73,7 @@ class PLineFilters extends React.Component {
         {Object.entries(ids).map(([key,value]) =>(
           <Badge id={key} style={{'marginLeft': '2px', 'marginRight': '2px'}} href="#" color="light"
             key={key} onClick={(e) => {this.onRemoveFilter(e)}}>
-            <FontAwesomeIcon icon = "times"/> {' '}
+            <FontAwesomeIcon href="#" onClick={(e) => {this.onXRemoveFilter(e, key)}} icon = "times"/> {' '}
             {value}
             </Badge>
         ))}

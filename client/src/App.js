@@ -12,7 +12,7 @@ import { BrowserRouter, Route, Redirect, Switch} from "react-router-dom";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch, faEdit, faTrash, faList, faSortAlphaUp,
   faSortAlphaDown, faSortNumericUp, faSortNumericDown,
-  faTimes, faChevronLeft, faChevronRight}
+  faTimes, faChevronLeft, faChevronRight, faInfoCircle}
 from '@fortawesome/free-solid-svg-icons';
 
 import { Provider } from "react-redux";
@@ -28,7 +28,7 @@ import Dashboard from "./components/dashboard/Dashboard";
 
 library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
    faSortAlphaDown, faSortNumericUp, faSortNumericDown,
-   faTimes, faChevronLeft, faChevronRight
+   faTimes, faChevronLeft, faChevronRight, faInfoCircle
   );
 
 // Check for token to keep user logged in

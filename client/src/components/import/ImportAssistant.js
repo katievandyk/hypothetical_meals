@@ -2,17 +2,22 @@ import React, { Component } from 'react';
 
 import {
   Modal, ModalHeader, ModalBody, ModalFooter, Table, Button,
-  CustomInput
+  CustomInput, PopoverBody, Popover, PopoverHeader
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { uploadCheck, importOverwrites } from '../../actions/importActions';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 class ImportAssistant extends Component {
   state = {
     new_overWrite: [],
-    results_modal: false
+    results_modal: false,
+    popupOW: false,
+    popupIGNORE: false,
+    popupSTORE: false
   }
 
   onChange = (e, i, obj) => {
@@ -33,6 +38,34 @@ class ImportAssistant extends Component {
 
   }
 
+  popOWtoggle = () => {
+    this.setState({
+      popupOW: !this.state.popupOW
+    });
+  }
+
+  popSTOREtoggle = () => {
+    this.setState({
+      popupSTORE: !this.state.popupSTORE
+    });
+  }
+  popIGNOREtoggle = () => {
+    this.setState({
+      popupIGNORE: !this.state.popupIGNORE
+    });
+  }
+
+  popOverOpen = type => {
+    if(type ==='overwrite'){
+      return this.state.popupOW;
+    }
+    else if(type === 'store'){
+      return this.state.popupSTORE;
+    }
+    else if(type === 'ignore'){
+      return this.state.popupIGNORE;
+    }
+  }
   submitImport = () => {
     const new_ow = this.state.new_overWrite;
     this.setState({
@@ -123,7 +156,7 @@ class ImportAssistant extends Component {
       );
   }
   render(){
-    const res = this.props.import.check_res;
+    var res = this.props.import.check_res;
     var file_type = '';
     var ow = [];
     if(Object.keys(res).length > 0){
@@ -150,207 +183,268 @@ class ImportAssistant extends Component {
     }
 
     const import_res = this.props.import.import_res;
-    return (
-      <div>
-      <Modal size="xl" isOpen={this.props.modal && this.props.import.success} toggle={this.props.toggle}>
-        <ModalHeader toggle={this.props.toggle}> Import Options and Overview </ModalHeader>
-        <ModalBody>
-          <div>Below is a summary of what will happen if the import proceeds. Please make the necessary
-          selections for what you would like to happen for conflicts and proceed to submit your import. </div>
-          <div key="Overwrite">
-          <h4>Overwrite</h4>
-          {ow.length > 0 ? (
-            <div>
-            <div>These are the entries from your imported file that would overwrite existing entries. Check the box
-            next to the entries you would like to overwrite. The original entries are also displayed in grey below your imported entry.</div>
-          { file_type === 'formulas' ? (
-              <Table responsive size="sm">
-                <thead>
-                  <tr>
-                    <th>Overwrite?</th>
-                  {file_headers.map((key)=> (
-                    <th key={key}>{key}</th>
-                  ))}
-
-                  </tr>
-                </thead>
-
-                  {ow.map((obj,i) => (
-                    <tbody key={i}>
-                    <tr key={i}>
-                      <td><CustomInput key={i} type="checkbox" id={i}
-                      onChange={(e) => {this.onChange(e, i, obj)}}inline/> Formula {i}</td>
-                    </tr>
-                    {obj.result.map((entry, i) => (
-                      <tr key={i}>
-                        <td></td>
-                        {this.asst_ow_helper(entry[0], file_headers).map(([key,value]) => (
-                            <td key={key}>{value}</td>
-                          ))}
-                      </tr>
-                    ))}
-                    {this.old_formulas_helper(obj.to_overwrite, obj.result[0][0]["SKU#"])}
-                    <tr><td colSpan="4"></td></tr>
-                    </tbody>
-                  ))}
-              </Table>
-            ): (
-              <Table responsive size="sm">
-                <thead>
-                  <tr>
-                    <th>Overwrite?</th>
-                  {file_headers.map((key)=> (
-                    <th key={key}>{key}</th>
-                  ))}
-
-                  </tr>
-                </thead>
-
-                  {ow.map((obj,i) => (
-                    <tbody key={i}>
-                    <tr key={i}>
-                      <td><CustomInput key={i} type="checkbox" id={i}
-                      onChange={(e) => {this.onChange(e, i, obj)}}inline/></td>
-                    {this.asst_ow_helper(obj, file_headers, obj_headers).map(([key,value]) => (
-                        <td key={key}>{value}</td>
-                      ))}
-
-                    </tr>
-                    <tr style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
-                      <td>Current Entry</td>
-                      {this.ow_oldEntry_helper(obj.to_overwrite, file_headers, obj_headers).map(([key,value]) => (
-                        <td key={key}>{value}</td>
-                      ))}
-                    </tr>
-                    </tbody>
-                  ))}
-              </Table>
-            )
-          }
-          </div>
-
-
-          ): (
-            <div>
-              None
-              </div>
-          )}
-
-          </div>
-          {(Object.entries(res).filter(function(entry){
-            return (entry[0] === 'Ignore' || entry[0] === 'Store')
-          }).map(([name,value]) => (
-            (value.length > 0) ?
-            (<div key={name}>
-                <h4>{name}</h4>
-                <Table>
-                  <thead>
-                    <tr>
-                      {Object.keys(value[0]).filter(function(entry){
-                        return !(entry === 'ing_id' ||  entry === 'sku_id'||
-                        entry ==='pl_id' || entry === 'status' || entry === 'pl_name')
-                      }).map((key) => (
-                        <th key={key}> {key}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {value.map((obj,i) => (
-                      <tr key={i}>
-                        {Object.entries(obj).filter(function(entry){
-                          return !(entry[0] === 'ing_id' || entry[0] === 'sku_id'||
-                          entry[0] ==='pl_id' || entry[0] === 'status' || entry[0] === 'pl_name')
-                        }).map(([key,value]) => (
-                          <td key={key}>{value}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </div>):
-            (
-              <div key={name}>
-                <h4>{name}</h4>
-                None
-              </div>
-            )
-          )))}
-
-        </ModalBody>
-        <ModalFooter>
-          <Button onClick={this.submitImport}>Submit Import Decisions</Button>
-          <Button onClick={this.onCancel} color="danger">Cancel</Button>
-        </ModalFooter>
-    </Modal>
-      <Modal size="xl" isOpen={this.state.results_modal} toggle={this.results_modal_toggle}>
-        <ModalHeader toggle={this.results_modal_toggle}>
-          Import Results
-        </ModalHeader>
-        <ModalBody>
-          {Object.keys(import_res).length > 0 ? (
-            <div>
-              {(Object.entries(import_res).map(([name,value]) => (
-                (Object.keys(value).length > 0) ?
-                (<div key={name}>
-                    <h4>{name}: {value.count} records</h4>
-                    {value.count > 0 ? (<Table responsive size="sm">
+    if(this.props.import.success && !this.props.import.loading){
+      return (
+        <div>
+          <Modal size="xl" isOpen={this.props.modal && this.props.import.success} toggle={this.props.toggle}>
+            <ModalHeader toggle={this.props.toggle}> Review and Submit Import </ModalHeader>
+            <ModalBody>
+              <div key="Overwrite">
+              <h4>Overwrite
+                <Button id="Overwrite" color="link" size="sm"type="button">
+                  <FontAwesomeIcon icon="info-circle"/>
+                </Button>
+                <Popover placement="right" isOpen={this.state.popupOW} trigger="hover" target="Overwrite" id="Overwrite" toggle={this.popOWtoggle}>
+                  <PopoverHeader>Overwrite</PopoverHeader>
+                  <PopoverBody>These are entries from your import file that would overwrite existing entries
+                  in the database if you import them. You can select whether or not you want to overwrite the
+                  existing entry by checking the Overwrite? column. Below your imported entry is the current entry in grey.</PopoverBody>
+                </Popover>
+              </h4>
+              {ow.length > 0 ? (
+                <div>
+                  {file_type === 'formulas' ? (
+                    <Table responsive size="sm">
                       <thead>
                         <tr>
-                          {file_headers.map((key) => (
-                            <th key={key}> {key}</th>
+                          <th>Overwrite?</th>
+                          {file_headers.map((key)=> (
+                            <th key={key}>{key}</th>
                           ))}
                         </tr>
                       </thead>
-                      {file_type === 'formulas'? (
-                        <tbody>
-                          {value.records.map((obj,i) => (
-
+                        {ow.map((obj,i) => (
+                          <tbody key={i}>
                             <tr key={i}>
-                              {this.asst_ow_helper(obj.result[0][0], file_headers).map(([key,value]) => (
+                              <td><CustomInput key={i} type="checkbox" id={i}
+                              onChange={(e) => {this.onChange(e, i, obj)}}inline/> Formula {i}</td>
+                            </tr>
+                            {obj.result.map((entry, i) => (
+                              <tr key={i}>
+                                <td></td>
+                                {this.asst_ow_helper(entry[0], file_headers).map(([key,value]) => (
+                                    <td key={key}>{value}</td>
+                                  ))}
+                              </tr>
+                            ))}
+                            {this.old_formulas_helper(obj.to_overwrite, obj.result[0][0]["SKU#"])}
+                            <tr><td colSpan="4"></td></tr>
+                          </tbody>
+                        ))}
+                    </Table>
+                  ): (
+                    <Table responsive size="sm">
+                      <thead>
+                        <tr>
+                          <th>Overwrite?</th>
+                        {file_headers.map((key)=> (
+                          <th key={key}>{key}</th>
+                        ))}
+
+                        </tr>
+                      </thead>
+
+                        {ow.map((obj,i) => (
+                          <tbody key={i}>
+                          <tr key={i}>
+                            <td><CustomInput key={i} type="checkbox" id={i}
+                            onChange={(e) => {this.onChange(e, i, obj)}}inline/></td>
+                          {this.asst_ow_helper(obj, file_headers, obj_headers).map(([key,value]) => (
+                              <td key={key}>{value}</td>
+                            ))}
+
+                          </tr>
+                          <tr style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
+                            <td>Current Entry</td>
+                            {this.ow_oldEntry_helper(obj.to_overwrite, file_headers, obj_headers).map(([key,value]) => (
+                              <td key={key}>{value}</td>
+                            ))}
+                          </tr>
+                          </tbody>
+                        ))}
+                    </Table>
+                  )}
+                </div>
+              ): (
+                <div>
+                  None
+                  </div>
+              )}
+            </div>
+            {Object.entries(res).filter(function(entry){
+                return (entry[0] === 'Ignore' || entry[0] === 'Store')
+              }).map(([name,value]) => (
+                (value.length > 0) ?
+                  (
+                    <div key={name}>
+                      <h4>{name}
+                        <Button id={name} color="link" size="sm"type="button">
+                          <FontAwesomeIcon icon="info-circle"/>
+                        </Button>
+                        <Popover placement="right" trigger="hover"
+                          isOpen={((name === 'Store') && this.state.popupSTORE)|| ((name==='Ignore') && this.state.popupIGNORE)}
+                          target={name} toggle={(name === 'Store'? this.popSTOREtoggle: this.popIGNOREtoggle)}>
+                          <PopoverHeader>{name}</PopoverHeader>
+                          <PopoverBody>
+                            {name === 'Store'?
+                              (<div>These are entries from your file that will be stored in the database if you submit the import.</div>
+                              ):(<div>These are entries from your file that are duplicates to ones
+                                already existing in the database and will be ignored.
+                              </div>)}
+                          </PopoverBody>
+                        </Popover>
+                      </h4>
+                      {file_type === 'formulas' ? (
+                        <Table>
+                          <thead>
+                            <tr>
+                              <th>SKU#</th>
+                              <th>Ing#</th>
+                              <th>Quantity</th>
+                            </tr>
+                          </thead>
+                          {value.map((obj,i) => (
+                            <tbody key={i}>
+                              <tr key={i}><td colSpan="3"><div><em>Formula {i}</em></div></td></tr>
+                              {obj.result.map((entry, j) => (
+                                <tr key={j}>
+                                  {this.asst_ow_helper(entry[0], file_headers).map(([key,value]) => (
+                                      <td key={key}>{value}</td>
+                                    ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          ))}
+                        </Table>
+                      ):(
+                        <Table>
+                          <thead>
+                            <tr>
+                              {Object.keys(value[0]).filter(function(entry){
+                                return !(entry === 'ing_id' ||  entry === 'sku_id'||
+                                entry ==='pl_id' || entry === 'status' || entry === 'pl_name')
+                              }).map((key) => (
+                                <th key={key}> {key}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {value.map((obj,i) => (
+                              <tr key={i}>
+                                {Object.entries(obj).filter(function(entry){
+                                  return !(entry[0] === 'ing_id' || entry[0] === 'sku_id'||
+                                  entry[0] ==='pl_id' || entry[0] === 'status' || entry[0] === 'pl_name')
+                                }).map(([key,value]) => (
                                   <td key={key}>{value}</td>
                                 ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      ): (
-                        <tbody>
-
-                          {value.records.map((obj,i) => (
-                            name === 'Store' ? (
-                              <tr key={i}>
-                                {this.asst_ow_helper(obj, obj_headers).map(([key,value]) => (
-
-                                    <td key={key}>{value}</td>
-                                  ))}
                               </tr>
-                            ):(
-                              <tr key={i}>
-                                {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
-
-                                    <td key={key}>{value}</td>
-                                  ))}
-                              </tr>
-                            )
-
-                          ))}
-                        </tbody>
+                            ))}
+                          </tbody>
+                        </Table>
                       )}
+                    </div>
+                ):
+                  (
+                    <div key={name}>
+                      <h4>{name} <Button id={name} color="link" size="sm"type="button">
+                      <FontAwesomeIcon icon="info-circle"/>
+                    </Button>
+                      <Popover placement="right" trigger="hover" isOpen={((name === 'Store') && this.state.popupSTORE)|| ((name==='Ignore') && this.state.popupIGNORE)}
+                                        target={name} toggle={name === 'Store'? this.popSTOREtoggle: this.popIGNOREtoggle}>
+                                        <PopoverHeader>{name}</PopoverHeader>
+                                        <PopoverBody>{name === 'Store'? (<div>These are entries from your file
+                                             that will be stored in the database if you submit the import.</div>
+                                         ):(<div>These are entries from your file that are duplicates to ones
+                                              already existing in the database and will be ignored.</div>)}</PopoverBody>
+                      </Popover>
+                      </h4>
+                      None
+                    </div>
+                  )
+              ))}
 
-                    </Table>):(<div></div>)}
-                  </div>):
-                (
-                  <div key={name}>
-                    <h4>{name}</h4>
-                    None
-                  </div>
-                )
-              )))}
-            </div>
-          ): (<div>Import Incomplete</div>)}
-        </ModalBody>
-      </Modal>
-    </div>
-    );
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={this.submitImport}>Submit Import Decisions</Button>
+              <Button onClick={this.onCancel} color="danger">Cancel</Button>
+            </ModalFooter>
+          </Modal>
+          <Modal size="xl" isOpen={this.state.results_modal} toggle={this.results_modal_toggle}>
+            <ModalHeader toggle={this.results_modal_toggle}>
+              Import Results
+            </ModalHeader>
+            <ModalBody>
+              {Object.keys(import_res).length > 0 ? (
+                <div style={{color: 'green'}}>
+                  {(Object.entries(import_res).map(([name,value]) => (
+                    (Object.keys(value).length > 0) ?
+                    (<div key={name}>
+                        <h4>{name}: {value.count} records</h4>
+                        {value.count > 0 ? (<Table responsive size="sm">
+                          <thead>
+                            <tr>
+                              {file_headers.map((key) => (
+                                <th key={key}> {key}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          {file_type === 'formulas'? (
+                              value.records.map((obj,i) => (
+                                <tbody key={i}>
+                                <tr key={i}><td colSpan="3"><div><em>Formula {i}</em></div></td></tr>
+                                {obj.result.map((entry, j) => (
+                                <tr key={j}>
+                                  {this.asst_ow_helper(entry[0], file_headers).map(([key,value]) => (
+                                      <td key={key}>{value}</td>
+                                    ))}
+                                </tr>
+                              ))}
+                              </tbody>
+                            ))
+
+                          ): (
+                            <tbody>
+
+                              {value.records.map((obj,i) => (
+                                name === 'Store' ? (
+                                  <tr key={i}>
+                                    {this.asst_ow_helper(obj, obj_headers).map(([key,value]) => (
+
+                                        <td key={key}>{value}</td>
+                                      ))}
+                                  </tr>
+                                ):(
+                                  <tr key={i}>
+                                    {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
+
+                                        <td key={key}>{value}</td>
+                                      ))}
+                                  </tr>
+                                )
+
+                              ))}
+                            </tbody>
+                          )}
+
+                        </Table>):(<div></div>)}
+                      </div>):
+                    (
+                      <div key={name}>
+                        <h4>{name}</h4>
+                        None
+                      </div>
+                    )
+                  )))}
+                </div>
+              ): (<div>Import Incomplete</div>)}
+            </ModalBody>
+          </Modal>
+        </div>
+      );
+    }
+    else{
+      return(<div></div>);
+    }
   }
 }
 

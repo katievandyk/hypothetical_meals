@@ -35,7 +35,7 @@ class Import extends Component {
   onInputClick = e => {
     e.target.value = '';
   }
-  
+
 
   onUploadFile = (e) => {
     if(e.target.files.length > 0){
@@ -47,7 +47,7 @@ class Import extends Component {
         this.props.uploadCheck(newFileObj);
       }
 
-      if(this.props.import.error_msgs.length === 0 || !this.props.import.success){
+      if(this.props.import.error_msgs.length === 0 && this.props.import.success && !this.props.import.loading){
         this.modal_toggle();
       }
     }

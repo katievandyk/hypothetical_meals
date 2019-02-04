@@ -10,15 +10,20 @@ const initialState = {
 
 export default function(state = initialState, action) {
   switch(action.type) {
-    case GET_PLINES:
+    case GET_PLINES:{
+      var page_val = action.payload.page;
+      if(action.payload.pagelimit === -1){
+        page_val = 1;
+      }
       return {
         ...state,
         plines: action.payload.data.results,
         count: action.payload.data.count,
-        page: action.payload.page,
+        page: page_val,
         pagelimit: action.payload.pagelimit,
         loading: false
       }
+    }
     case PLINES_LOADING:
       return {
         ...state,

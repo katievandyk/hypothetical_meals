@@ -55,6 +55,12 @@ class SKUFilters extends React.Component {
     this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
   };
 
+  onXRemoveFilter = (e, id) => {
+    delete this.state.sku_filters[id];
+    this.props.filterBySKUs(Object.keys(this.state.sku_filters));
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
+  };
+
   render() {
     var skus = [];
     if(this.props.skus.skus.length > 0){
@@ -69,9 +75,9 @@ class SKUFilters extends React.Component {
         {' '}None
         </Badge>
         {Object.entries(ids).map(([key,value]) =>(
-          <Badge id={key} style={{'marginLeft': '2px', 'marginRight': '2px'}} href="#" color="light"
+          <Badge id={key} href="#" style={{'marginLeft': '2px', 'marginRight': '2px'}} color="light"
             key={key} onClick={(e) => {this.onRemoveFilter(e)}}>
-            <FontAwesomeIcon icon = "times"/> {' '}
+            <FontAwesomeIcon href="#" onClick={(e) => {this.onXRemoveFilter(e, key)}} icon = "times"/>{' '}
             {value}
             </Badge>
         ))}

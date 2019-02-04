@@ -1,7 +1,8 @@
 import axios from 'axios';
-import {UPLOAD_CHECK, UPLOAD_ERROR, IMPORT_OVERWRITES} from './types';
+import {UPLOAD_CHECK, UPLOAD_ERROR, IMPORT_OVERWRITES, SET_IMPORT_LOADING} from './types';
 
 export const uploadCheck = (file) => dispatch =>  {
+  dispatch(setImportLoading());
   axios.post(`/api/bulk-import/upload-check`, file).then(res =>
     dispatch({
       type: UPLOAD_CHECK,
@@ -16,7 +17,14 @@ export const uploadCheck = (file) => dispatch =>  {
   });
 };
 
+export const setImportLoading = () => {
+  return {
+    type: SET_IMPORT_LOADING
+  };
+};
+
 export const importOverwrites = (new_checkRes, type) => dispatch =>  {
+  dispatch(setImportLoading());
   const dataObj = {"data": new_checkRes};
   axios.post(`/api/bulk-import/upload/${type}`, dataObj).then(res =>
     dispatch({

@@ -89,6 +89,10 @@ export default function(state = initialState, action) {
       }
     }
     case SKU_SORT:{
+      var page_val = action.payload.page;
+      if(action.payload.pagelimit === -1){
+        page_val = 1;
+      }
       var sku_results = [];
       if(action.payload.data.count > 0 && (action.payload.data.results.length > 0 || Object.keys(action.payload.data.results).length > 0)){
         sku_results = action.payload.data.results;
@@ -102,7 +106,7 @@ export default function(state = initialState, action) {
         obj: action.payload.obj,
         loading: false,
         pagelimit: action.payload.pagelimit,
-        page: action.payload.page
+        page: page_val
       }
     }
     case SKU_ERROR:
