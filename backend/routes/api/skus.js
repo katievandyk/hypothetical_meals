@@ -66,6 +66,19 @@ router.post('/update/:id', (req, res) => {
         .then(() => res.json({success: true}))
         .catch(err => res.status(404).json({success: false, message: err.message}))});
 
+// @route GET api/skus/search
+// @desc searches keywords in database
+// @access public
+router.get('/search', (req, res) => {
+    SKU.find({$text: {$search: req.body.keywords}},
+        {score:{$meta: "textScore"}})
+        .lean()
+        .sort({score: {$meta: "textScore"}})
+        .then(search_res => {
+            res.json({success: true, results: search_res});
+        })
+        .catch(err => res.status(404).json({success: false, message: err.message}))});
+
 // @route GET api/skus/sort/:field/:asc
 // @desc gets a list of skus specified order for the field
 // @access public

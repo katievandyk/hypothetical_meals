@@ -10,6 +10,4 @@ const ProductLineSchema = new Schema({
     }
 });
 
-ProductLineSchema.index({'$**': 'text'});
-
 module.exports = ProductLine = mongoose.model('productLine', ProductLineSchema);
