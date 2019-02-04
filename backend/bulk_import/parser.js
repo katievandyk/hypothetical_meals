@@ -51,6 +51,8 @@ module.exports.checkPLFileDuplicates = checkPLFileDuplicates = function(pl_data)
 
 // visible for testing
 module.exports.preprocessOnePL = preprocessOnePL = function(pl_entry) {
+    if(pl_entry[pl_fields.name].length === 0)
+        throw new Error("Product line name is required.")
     return new Promise(function(accept, reject) {
         ProductLine
             .findOne({name: pl_entry[pl_fields.name]})
@@ -121,6 +123,8 @@ module.exports.checkIngredientFileDuplicates = checkIngredientFileDuplicates = f
 
 // visible for testing
 module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_data) {
+    if(ing_data[ing_fields.name].length === 0 || ing_data[ing_fields.size].length === 0 || ing_data[ing_fields.cost].length === 0)
+        throw new Error("Ingredient name, package size, and cost are required.");
     if(!Helpers.isPositiveInteger(ing_data[ing_fields.number])) 
         throw new Error("Ingredient number is not a valid number: " + ing_data[ing_fields.number]);
     
@@ -219,6 +223,8 @@ module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(max_nu
 
 // TODO: handle required fields
 module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
+    if(sku_data[sku_fields.name].length === 0 || sku_data[sku_fields.case_upc].length === 0 || sku_data[sku_fields.unit_upc].length === 0 || sku_data[sku_fields.unit_size].length === 0 || sku_data[sku_fields.count].length === 0 || sku_data[sku_fields.pl_name].length === 0)
+        throw new Error("SKU name, Case UPC#, Unit UPC#, Unit Size, Count per case, and Product Line fields are required.")
     if(!Helpers.isPositiveInteger(sku_data[sku_fields.number])) 
         throw new Error("SKU number is not a valid number: " + sku_data[sku_fields.number]);
     
@@ -381,6 +387,8 @@ module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = functio
 }
 
 module.exports.checkOneForumla = checkOneForumla = function(formula_data) {
+    if(formula_data[formula_fields.sku_num].length === 0 || formula_data[formula_fields.ing_num].length === 0 || formula_data[formula_fields.quantity] === 0) 
+        throw new Error("Formula SKU#, Ingredient number, and Quantity fields are required.")
     if(!Helpers.isPositiveInteger(formula_data[formula_fields.sku_num])) 
         throw new Error(
             "SKU number is not a valid number: " + formula_data[formula_fields.sku_num]);
