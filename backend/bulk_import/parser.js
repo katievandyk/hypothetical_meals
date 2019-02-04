@@ -188,7 +188,6 @@ function uploadSKUs(data) {
     return new Promise(function(accept, reject) {
         SKU.find().select("-_id number").sort({number: -1}).limit(1).then(accept).catch(reject)
     }).then(max_number => {
-        console.log(max_number)
         if(max_number.length === 0) 
             max_number = 0
         checkSKUFileDuplicates(max_number[0].number+1, skus_data);
@@ -334,26 +333,27 @@ function checkFormulas(data) {
 
 function checkResultOverlap(new_list, old_list) {
     new_list_set = new Set();
-
-    console.log("\n")
+    new_list_dict = {};
     
     new_list.forEach(entry => {
         new_list_set.add(entry[0]['Ingr#'])
-        console.log(entry[0]['Ingr#'])
+        new_list_dict[entry[0]['Ingr#']] = Number.parseFloat(entry[0]['Quantity'])
     })
-
-    console.log("\n")
 
     old_list_set = new Set();
+    old_list_dict = {};
     old_list.forEach(entry => {
-        console.log(entry)
         if(entry._id !== null)
             old_list_set.add((entry._id.number).toString())
-        // console.log((entry._id.number).toString())
+            old_list_dict[(entry._id.number).toString()] = entry.quantity
     })
 
-    if (new_list_set.size !== old_list_set.size) return false;
-    for (var a of new_list_set) if (!old_list_set.has(a)) return false;
+    return setsEqual(new_list_set, old_list_set, new_list_dict, old_list_dict)
+}
+
+function setsEqual(set1, set2, dict1, dict2) {
+    if (set1.size !== set2.size) return false;
+    for (var a of set1) if (!set2.has(a) || dict1[a] != dict2[a]) return false;
     return true;
 }
 
