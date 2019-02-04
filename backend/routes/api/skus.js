@@ -19,8 +19,8 @@ const ProductLine = require('../../models/ProductLine');
 router.get('/', (req, res) => {
     SKU
         .find({})
-        // .populate('product_line')
-        // .populate('ingredients_list._id')
+        .populate('product_line')
+        .populate('ingredients_list._id')
         .lean()
         .then(sku => res.json(sku))
 });
