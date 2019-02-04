@@ -130,7 +130,7 @@ module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, call
         skuFindPromise = skuFindPromise.find(
             { 'ingredients_list._id': { $all: 
                 req.body.ingredients}});
-        skuCountPromise = skuFindPromise.find(
+        skuCountPromise = skuCountPromise.find(
             { 'ingredients_list._id': { $all: 
                 req.body.ingredients}});
     }
@@ -139,7 +139,7 @@ module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, call
             { 'product_line': { $in: 
                 req.body.product_lines.map(
                     function(el) { return mongoose.Types.ObjectId(el) }) }});
-        skuCountPromise = skuFindPromise.find(
+        skuCountPromise = skuCountPromise.find(
             { 'product_line': { $in: 
                 req.body.product_lines.map(
                     function(el) { return mongoose.Types.ObjectId(el) }) }});
