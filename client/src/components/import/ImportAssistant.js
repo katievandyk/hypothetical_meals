@@ -180,6 +180,7 @@ class ImportAssistant extends Component {
     }
     else if (file_type === 'formulas') {
       file_headers = ["SKU#", "Ingr#", "Quantity"];
+      obj_headers = ["number", "name", "number"];
     }
 
     const import_res = this.props.import.import_res;
@@ -389,18 +390,30 @@ class ImportAssistant extends Component {
                             </tr>
                           </thead>
                           {file_type === 'formulas'? (
-                              value.records.map((obj,i) => (
-                                <tbody key={i}>
-                                <tr key={i}><td colSpan="3"><div><em>Formula {i}</em></div></td></tr>
-                                {obj.result.map((entry, j) => (
-                                <tr key={j}>
-                                  {this.asst_ow_helper(entry[0], file_headers).map(([key,value]) => (
-                                      <td key={key}>{value}</td>
-                                    ))}
-                                </tr>
-                              ))}
-                              </tbody>
-                            ))
+                            value.records.map((obj,i) => (
+                              <tbody key={i}>
+                              <tr><td colSpan="3"><div><em>Formula {i}</em></div></td></tr>
+                                {name === 'Overwrite'? (
+                                  obj.ing_list.map((entry, k) => (
+                                  <tr key={k}>
+                                  {this.asst_ow_helper(entry, file_headers).map(([key,value], i) => (
+                                    <td key={key}>{value}</td>
+                                  ))}
+                                  </tr>
+                                ))
+                                ): (
+                                  obj.result.map((entry, j) => (
+                                    <tr key={j}>
+                                      {this.asst_ow_helper(entry[0], file_headers).map(([key,value]) => (
+                                          <td key={key}>{value}</td>
+
+                                        ))}
+                                    </tr>
+                                ))
+                                )}
+
+                            </tbody>
+                          ))
 
                           ): (
                             <tbody>
