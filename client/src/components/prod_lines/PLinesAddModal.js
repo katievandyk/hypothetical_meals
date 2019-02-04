@@ -36,7 +36,6 @@ class PLinesAddModal extends React.Component {
 
   onSubmit = e => {
     e.preventDefault();
-
     const newPLine = {
       name: this.state.name
     };
@@ -79,13 +78,15 @@ class PLinesAddModal extends React.Component {
                 </Input>
                 <FormFeedback valid>
                 </FormFeedback>
-                <FormFeedback invalid>
+                <FormFeedback>
                   Please input a value.
                 </FormFeedback>
             </FormGroup>
-            <Button color="dark" style={{ marginTop: '2rem' }} type="submit" block>
+            <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.state.validate.nameState === 'has-danger' ? (''):('hidden')}>There are fields with errors. Please go back and fix these fields to submit.</p>
+            <Button color="dark" className={this.state.validate.nameState === 'has-danger'?('disabled'): ('')} type="submit" block>
                   Add Product Line
                 </Button>
+            </div>
           </Form>
         </ModalBody>
       </Modal>
