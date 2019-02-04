@@ -37,7 +37,7 @@ class Manufacturing extends Component {
     }
 
   componentDidMount() {
-      this.props.getGoals();
+      this.props.getGoals(this.props.auth.user_email);
   }
 
   calculatorCallback = goal => {
@@ -113,6 +113,7 @@ Manufacturing.propTypes = {
 
 const mapStateToProps = (state) => ({
   goals: state.goals,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, { getGoals, getGoalsIngQuantity })(Manufacturing);
