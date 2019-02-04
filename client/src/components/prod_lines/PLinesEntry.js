@@ -34,7 +34,7 @@ class PLinesEntry extends React.Component {
   }
 
   onDeleteClick = id => {
-    this.props.deleteIng(id);
+    this.props.deletePLine(id);
   };
 
   onEditClick = (id, name) => {

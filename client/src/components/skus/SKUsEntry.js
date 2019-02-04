@@ -49,9 +49,7 @@ class SKUsEntry extends React.Component {
   }
 
   componentDidMount() {
-    //this.props.getSKUs();
     this.props.sortSKUs('name', 'asc', 1, 10, {});
-    console.log(this.props.skus.skus);
     if(this.props.skus.obj && this.props.skus.obj.group_pl && this.props.skus.obj.group_pl === "True"){
       this.setState({
         group_by_pl: true
@@ -132,7 +130,6 @@ class SKUsEntry extends React.Component {
   }
 
   render() {
-    console.log(this.props.skus.skus);
     const { skus } = this.props.skus;
     const loading = this.props.skus.loading;
     if(loading || skus === 0){
@@ -179,7 +176,7 @@ class SKUsEntry extends React.Component {
                         <td> {unit_number} </td>
                         <td> {unit_size} </td>
                         <td> {count_per_case}</td>
-                        {product_line ? (<td> {product_line.name}</td>):(<td>{console.log(product_line)}</td>)}
+                        {product_line ? (<td> {product_line.name}</td>):(<td></td>)}
 
                         <td>
                           <Button size="sm" color="link"
@@ -252,7 +249,7 @@ class SKUsEntry extends React.Component {
                       <td> {unit_number} </td>
                       <td> {unit_size} </td>
                       <td> {count_per_case}</td>
-                      {product_line ? (<td> {product_line.name}</td>):(<td>{console.log(product_line)}</td>)}
+                      {product_line ? (<td> {product_line.name}</td>):(<td></td>)}
                       <td>
                         <Button size="sm" color="link"
                         onClick={this.onIngListClick.bind(this, ingredients_list)}
