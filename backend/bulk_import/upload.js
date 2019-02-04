@@ -155,14 +155,20 @@ module.exports.uploadFormulas = uploadFormulas = function(formulas_data) {
 function uploadOneSKUFormula(formula_entry) {
     sku_id = formula_entry.sku_id
     new_list = []
+    ing_list = []
     
     formula_entry.result.forEach(tuple => {
+        console.log(tuple)
+        ing_list.push(tuple[0])
         new_list.push(
         {_id: mongoose.Types.ObjectId(tuple[0]["ing_id"]), quantity: tuple[0].Quantity})})
 
     return new Promise(function(accept, reject) {
         SKU.findOneAndUpdate({"_id": sku_id}, 
             { $set: {ingredients_list: new_list}})
-            .then(result => accept(result)).catch(error => reject(error));
+            .then(result => {
+                new_res = {name: result.name, number: result.number, ing_list: ing_list}
+                accept(new_res)
+            }).catch(error => reject(error));
     });
 }
