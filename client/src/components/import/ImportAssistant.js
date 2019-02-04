@@ -343,7 +343,7 @@ class ImportAssistant extends Component {
         </ModalHeader>
         <ModalBody>
           {Object.keys(import_res).length > 0 ? (
-            <div>
+            <div style={{color: 'green'}}>
               {(Object.entries(import_res).map(([name,value]) => (
                 (Object.keys(value).length > 0) ?
                 (<div key={name}>
