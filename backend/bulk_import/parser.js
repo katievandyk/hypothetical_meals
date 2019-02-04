@@ -88,16 +88,26 @@ function uploadIngredients(data) {
 
     ing_data = data.data;
 
-    checkIngredientFileDuplicates(ing_data);
-    return Promise.all(ing_data.map(preprocessOneIngredient));
+    return new Promise(function(accept, reject) {
+        Ingredient.find().select("-_id number").sort({number: -1}).limit(1).then(accept).catch(reject)
+    }).then(max_number => {
+        if(max_number.length === 0) 
+            max_number = 0
+        checkIngredientFileDuplicates(max_number[0].number+1, ing_data);
+        return Promise.all(ing_data.map(preprocessOneIngredient));
+    })
 }
 
 // visible for testing
-module.exports.checkIngredientFileDuplicates = checkIngredientFileDuplicates = function(ing_data) {
+module.exports.checkIngredientFileDuplicates = checkIngredientFileDuplicates = function(max_number, ing_data) {
     let i;
     let names = [];
     let numbers = [];
     for(i = 0; i < ing_data.length; i++) {
+        if(ing_data[i][ing_fields.number]==="") {
+            ing_data[i][ing_fields.number] = max_number
+            max_number = max_number+1
+        }
         if(numbers.includes(ing_data[i][ing_fields.number])) {
             throw new Error("Duplicate number in file: " + ing_data[i][ing_fields.number]);
         }
@@ -174,16 +184,28 @@ function uploadSKUs(data) {
     Helpers.checkFileHeaders(data.meta.fields, skus_header);
 
     skus_data = data.data;
-    checkSKUFileDuplicates(skus_data);
-    return Promise.all(skus_data.map(checkOneSKU));
+
+    return new Promise(function(accept, reject) {
+        SKU.find().select("-_id number").sort({number: -1}).limit(1).then(accept).catch(reject)
+    }).then(max_number => {
+        if(max_number.length === 0) 
+            max_number = 0
+        checkSKUFileDuplicates(max_number[0].number+1, skus_data);
+        return Promise.all(skus_data.map(checkOneSKU));
+    })
 }
 
 // visible for testing
-module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(sku_data) {
+module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(max_number, sku_data) {
     let i;
     let numbers = [];
     let case_numbers = [];
     for(i = 0; i < sku_data.length; i++) {
+        if(sku_data[i][sku_fields.number]==="") {
+            sku_data[i][sku_fields.number] = max_number
+            max_number = max_number+1
+        }
+
         if(numbers.includes(sku_data[i][sku_fields.number])) {
             throw new Error("Duplicate number in file: " + sku_data[i][sku_fields.number]);
         }
@@ -302,7 +324,6 @@ function checkFormulas(data) {
                                 old_list = result[0][1]
                                 status = checkResultOverlap(new_list, old_list) ? "Ignore" : "Overwrite";
                                 final_res = {sku_id: result[0][0].sku_id, result: result, status: status, to_overwrite: result[0][1]}
-                                console.log(final_res)
                                 accept(final_res)
                             })
                         })
@@ -312,26 +333,27 @@ function checkFormulas(data) {
 
 function checkResultOverlap(new_list, old_list) {
     new_list_set = new Set();
-
-    console.log("\n")
+    new_list_dict = {};
     
     new_list.forEach(entry => {
         new_list_set.add(entry[0]['Ingr#'])
-        console.log(entry[0]['Ingr#'])
+        new_list_dict[entry[0]['Ingr#']] = Number.parseFloat(entry[0]['Quantity'])
     })
-
-    console.log("\n")
 
     old_list_set = new Set();
+    old_list_dict = {};
     old_list.forEach(entry => {
-        console.log(entry)
         if(entry._id !== null)
             old_list_set.add((entry._id.number).toString())
-        // console.log((entry._id.number).toString())
+            old_list_dict[(entry._id.number).toString()] = entry.quantity
     })
 
-    if (new_list_set.size !== old_list_set.size) return false;
-    for (var a of new_list_set) if (!old_list_set.has(a)) return false;
+    return setsEqual(new_list_set, old_list_set, new_list_dict, old_list_dict)
+}
+
+function setsEqual(set1, set2, dict1, dict2) {
+    if (set1.size !== set2.size) return false;
+    for (var a of set1) if (!set2.has(a) || dict1[a] != dict2[a]) return false;
     return true;
 }
 
