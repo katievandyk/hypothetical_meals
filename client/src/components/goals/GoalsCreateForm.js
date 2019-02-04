@@ -1,12 +1,11 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
-import GoalCreateEntry from '../../components/goals/GoalCreateEntry';
 import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
 import GoalsSKUSearch from '../../components/goals/GoalsSKUSearch';
 import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
 
 import { addGoal }  from '../../actions/goalsActions';
-import { getSKUs, getSKUsByPLine } from '../../actions/skuActions';
+import { getSKUs } from '../../actions/skuActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -14,8 +13,6 @@ import {
   InputGroup, InputGroupAddon, Input, Button,
   Container, Table, Row, Col, Form, FormGroup, Label
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 
 class GoalsCreateForm extends React.Component {
 
@@ -131,7 +128,6 @@ class GoalsCreateForm extends React.Component {
 
 GoalsCreateForm.propTypes = {
   addGoal: PropTypes.func.isRequired,
-  getSKUsByPLine: PropTypes.func.isRequired,
   skus: PropTypes.object.isRequired
 };
 

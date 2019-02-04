@@ -2,7 +2,7 @@ import React from 'react';
 import { exportCalculator } from '../../actions/goalsActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Button } from 'reactstrap';
 
 class CalculatorExport extends React.Component {
   constructor(props) {

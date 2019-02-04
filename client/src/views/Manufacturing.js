@@ -42,7 +42,7 @@ class Manufacturing extends Component {
 
   calculatorCallback = goal => {
     const {goals} = this.props.goals
-    const selGoal = goals.find(g => g._id == goal._id )
+    const selGoal = goals.find(g => g._id === goal._id )
     this.setState({
         calcGoal : selGoal,
         disableExport: false
