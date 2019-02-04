@@ -17,7 +17,9 @@ class SKUsFormIngTupleSelection extends React.Component {
     var tmpArray = [];
     if(this.props.defaultValue){
       this.props.defaultValue.forEach(function (inglistitem) {
-        tmpArray = [...tmpArray, {_id: inglistitem._id._id, quantity: inglistitem.quantity}]
+        if(inglistitem._id){
+          tmpArray = [...tmpArray, {_id: inglistitem._id._id, quantity: inglistitem.quantity}]
+        }
       });
       this.setState({
         ing_tuples: tmpArray
