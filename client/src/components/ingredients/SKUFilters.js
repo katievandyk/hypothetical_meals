@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getSKUs } from '../../actions/skuActions';
+import { getSKUs, sortSKUs } from '../../actions/skuActions';
 import { sortIngs, filterBySKUs } from '../../actions/ingActions';
 
 class SKUFilters extends React.Component {
@@ -23,7 +23,7 @@ class SKUFilters extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getSKUs();
+    this.props.sortSKUs('name', 'asc', 1, -1, {});
   }
 
   onChange = (e, _id, name) =>{
@@ -109,6 +109,7 @@ SKUFilters.propTypes = {
   skus: PropTypes.object.isRequired,
   ing: PropTypes.object.isRequired,
   getSKUs: PropTypes.func.isRequired,
+  sortSKUs: PropTypes.func.isRequired,
   sortIngs: PropTypes.func.isRequired,
   filterBySKUs: PropTypes.func.isRequired
 };
@@ -117,4 +118,4 @@ const mapStateToProps = state => ({
   skus: state.skus,
   ing: state.ing
 });
-export default connect(mapStateToProps, {getSKUs, sortIngs, filterBySKUs})(SKUFilters);
+export default connect(mapStateToProps, {getSKUs, sortSKUs, sortIngs, filterBySKUs})(SKUFilters);
