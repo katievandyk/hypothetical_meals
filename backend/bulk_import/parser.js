@@ -93,9 +93,12 @@ function uploadIngredients(data) {
     return new Promise(function(accept, reject) {
         Ingredient.find().select("-_id number").sort({number: -1}).limit(1).then(accept).catch(reject)
     }).then(max_number => {
+        let start_num
         if(max_number.length === 0) 
-            max_number = 0
-        checkIngredientFileDuplicates(max_number[0].number+1, ing_data);
+            start_num = 1
+        else 
+            start_num = max_number[0].number+1
+        checkIngredientFileDuplicates(start_num, ing_data);
         return Promise.all(ing_data.map(preprocessOneIngredient));
     })
 }
