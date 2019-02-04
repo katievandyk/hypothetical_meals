@@ -11,21 +11,25 @@ import PropTypes from 'prop-types';
 
 import {
   InputGroup, InputGroupAddon, Input, Button,
-  Container, Table, Row, Col, Form, FormGroup, Label
+  Container, Table, Row, Col, Form, FormGroup, Label, FormFeedback
 } from 'reactstrap';
 
 class GoalsCreateForm extends React.Component {
 
    constructor(props) {
        super(props);
-       this.onAdd = this.onAdd.bind(this);
+       this.onSubmit = this.onSubmit.bind(this);
+       this.onAddSKU = this.onAddSKU.bind(this);
        this.skuCallback = this.skuCallback.bind(this);
+       this.onNameChange = this.onNameChange.bind(this);
+       this.onNumberChange = this.onNumberChange.bind(this);
        this.state = {
           name: '',
           quantity: '',
-          plineSel: [],
           skuSel: '',
-          skus_list: []
+          skus_list: [],
+          validNum: '',
+          validName: '',
        };
     }
 
@@ -41,15 +45,15 @@ class GoalsCreateForm extends React.Component {
            skus_list: this.state.skus_list,
            user_email: this.props.auth.user_email
          };
-
          this.props.addGoal(newGoal);
          this.props.toggle();
      }
    }
 
-   onAdd = e => {
+   onAddSKU = e => {
+       const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
        var skus  = this.state.skus_list
-       if(this.state.quantity.length === 0 || isNaN(this.state.quantity)) alert("Please enter a numeric quantity.")
+       if(this.state.validNum === 'failure' || this.state.quantity.length === 0) alert("Please enter a valid numeric quantity.")
        else if(this.state.skuSel.length === 0 || skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
        else {
            skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
@@ -57,6 +61,29 @@ class GoalsCreateForm extends React.Component {
                skus_list: skus
            })
        }
+   }
+
+   onNumberChange = e => {
+        this.setState({ quantity: e.target.value })
+        const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
+        var valid = '';
+        if (numRex.test(e.target.value) && e.target.value.length > 0) {
+          valid = 'success'
+        } else {
+          valid = 'failure'
+        }
+        this.setState({ validNum: valid })
+   }
+
+   onNameChange = e => {
+        this.setState({ name: e.target.value })
+        var valid = '';
+        if (e.target.value.length > 0) {
+          valid = 'success'
+        } else {
+          valid = 'failure'
+        }
+        this.setState({ validName: valid })
    }
 
    onCancel  = e => {
@@ -78,7 +105,7 @@ class GoalsCreateForm extends React.Component {
        <Form>
          <FormGroup>
              <Label for="goal_name">Manufacturing Goal Name</Label>
-             <Input id="goal_name" value={this.state.name} onChange={e => this.setState({ name: e.target.value })}/>
+             <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.name} onChange={this.onNameChange}/>
          </FormGroup>
          <Label>Create SKU List</Label>
          <FormGroup>
@@ -108,8 +135,10 @@ class GoalsCreateForm extends React.Component {
             <Row>
             <InputGroup>
                 <GoalsSKUDropdown skus={this.props.skus} callbackFromParent={this.skuCallback}/>
-                <Col md={2} style={{"padding-right": 0 }}><Input value={this.state.quantity} placeholder="Qty." onChange={e => this.setState({ quantity: e.target.value })}/></Col>
-                <InputGroupAddon addonType="append"><Button onClick={this.onAdd}>+</Button></InputGroupAddon>
+                <Col md={2} style={{"padding-right": 0 }}>
+                    <Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/>
+                </Col>
+                <InputGroupAddon addonType="append"><Button onClick={this.onAddSKU}>+</Button></InputGroupAddon>
             </InputGroup>
             </Row>
          </Container>
