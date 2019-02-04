@@ -1,8 +1,5 @@
 import React from 'react';
 import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import { connect } from 'react-redux';
-import { getSKUsByPLine } from '../../actions/skuActions';
-import PropTypes from 'prop-types';
 
 class GoalsSKUDropdown extends React.Component {
   constructor(props) {
@@ -31,7 +28,7 @@ class GoalsSKUDropdown extends React.Component {
   render() {
     const { skus } = this.props.skus;
     return (
-      <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle} onClick={() => this.props.getSKUsByPLine(this.props.pline)}>
+      <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
         <DropdownToggle caret>
           {this.state.skuValue}
         </DropdownToggle>
@@ -45,13 +42,5 @@ class GoalsSKUDropdown extends React.Component {
   }
 }
 
-GoalsSKUDropdown.propTypes = {
-  getSKUsByPLine: PropTypes.func.isRequired,
-  skus: PropTypes.object.isRequired
-};
 
-const mapStateToProps = (state) => ({
-  skus: state.skus
-});
-
-export default connect(mapStateToProps, { getSKUsByPLine })(GoalsSKUDropdown);
+export default GoalsSKUDropdown;

@@ -94,11 +94,11 @@ router.get('/sort/:field/:asc', (req, res) => {
 // @route GET api/skus/byproductlines
 // @desc gets skus for (a) product line(s)
 // @access public
-router.get('/byproductlines/:product_lines', (req, res) => {
+router.post('/byproductlines', (req, res) => {
     SKU
         .find({
             'product_line': {
-                $in: req.params.product_lines
+                $in: req.body.product_lines
             }
         })
         .lean()

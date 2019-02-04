@@ -17,6 +17,7 @@ class GoalsCreateModal extends React.Component {
     this.setState({
       modal: !this.state.modal
     });
+    if(this.state.modal) this.props.refresh();
   }
 
   render() {
@@ -24,9 +25,9 @@ class GoalsCreateModal extends React.Component {
       <div>
         <Button onClick={this.toggle} color="success" style={{'display': 'inline-block'}}>{this.props.buttonLabel}</Button>
         <Modal size="lg" isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}>Create Goal</ModalHeader>
+          <ModalHeader>Create Goal</ModalHeader>
           <ModalBody>
-            <GoalsCreateForm/>
+            <GoalsCreateForm toggle={this.toggle}/>
           </ModalBody>
           <ModalFooter>
           </ModalFooter>
