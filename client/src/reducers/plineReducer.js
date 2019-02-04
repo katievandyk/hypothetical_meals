@@ -1,4 +1,4 @@
-import {GET_PLINES, ADD_PLINE, UPDATE_PLINE, DELETE_PLINE, PLINES_LOADING} from '../actions/types';
+import {GET_PLINES, ADD_PLINE, UPDATE_PLINE, DELETE_PLINE, PLINES_LOADING, SEARCH_PLINES} from '../actions/types';
 
 const initialState = {
   plines: [],
@@ -38,6 +38,15 @@ export default function(state = initialState, action) {
       return {
         ...state,
         plines: [action.payload, state.plines]
+      }
+    case SEARCH_PLINES:
+      var pline_results = [];
+      if( Object.keys(action.payload.results).length > 0){
+        pline_results = action.payload.results;
+      }
+      return {
+        ...state,
+        plines: pline_results
       }
     default:
       return state;

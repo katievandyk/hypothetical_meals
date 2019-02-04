@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { GET_PLINES, ADD_PLINE, DELETE_PLINE, UPDATE_PLINE,
-  PLINES_LOADING} from './types';
+  PLINES_LOADING, SEARCH_PLINES} from './types';
 
 export const getPLines = (page, pagelimit) => dispatch =>  {
   dispatch(setPLinesLoading());
@@ -41,6 +41,17 @@ export const deletePLine = id => dispatch => {
     dispatch({
       type: DELETE_PLINE,
       payload: id
+    })
+  );
+};
+
+export const searchPLines = keywords => dispatch => {
+  dispatch(setPLinesLoading());
+  setPLinesLoading();
+  axios.post(`/api/productlines/search`, keywords).then(res =>
+    dispatch({
+      type: SEARCH_PLINES,
+      payload: res.data
     })
   );
 };

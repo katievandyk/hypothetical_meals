@@ -28,6 +28,7 @@ export const ADD_PLINE = 'ADD_PLINE';
 export const DELETE_PLINE = 'DELETE_PLINE';
 export const UPDATE_PLINE = 'UPDATE_PLINE';
 export const PLINES_LOADING = 'PLINES_LOADING';
+export const SEARCH_PLINES = 'SEARCH_PLINES';
 // SKU's
 export const GET_SKUS_BYPLINE = 'GET_SKUS_BYPLINE';
 export const SKUS_LOADING = 'SKUS_LOADING';
