@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link, History, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
@@ -7,7 +7,6 @@ import classnames from "classnames";
 
 import {Form, FormGroup, Label, Input, Container,
 Row, Col, Button} from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class LoginComponent extends Component {
   constructor() {

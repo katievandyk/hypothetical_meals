@@ -95,7 +95,6 @@ export const groupByPL = state => dispatch => {
 }
 
 export const sortSKUs = (field, asc, page, pagelimit, obj) => dispatch => {
-  console.log('sortSKUS');
   dispatch(setSKUsLoading());
   axios.post(`/api/skus/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
     dispatch({

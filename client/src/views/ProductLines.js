@@ -80,7 +80,9 @@ class ProductLines extends Component {
              </Row>
            </Container>
            <Row>
-            <em>Results: {results_start}-{results} of {this.props.plines.count} total</em>
+             {this.props.plines.count === 0 ? (
+               <em>Results: 0 total</em>
+             ): (<em>Results: {results_start}-{results} of {this.props.plines.count} total</em>)}
               {this.props.plines.pagelimit === -1 ? (
                 <Button onClick={this.haveLimit} color="link" size="sm"> (Show 10 per page) </Button>
               ):

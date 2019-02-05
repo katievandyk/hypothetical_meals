@@ -7,7 +7,7 @@ import ProductLines from './views/ProductLines';
 import Reports from './views/Reports';
 import Import from './views/Import';
 import SKU from './views/SKU';
-import { BrowserRouter, Route, Redirect, Switch} from "react-router-dom";
+import { BrowserRouter, Route, Switch} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch, faEdit, faTrash, faList, faSortAlphaUp,
@@ -23,8 +23,6 @@ import { setCurrentUser, logoutUser } from "./actions/authActions";
 
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import AdminRoute from "./components/private-route/AdminRoute";
-
-import Dashboard from "./components/dashboard/Dashboard";
 
 library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
    faSortAlphaDown, faSortNumericUp, faSortNumericDown,
