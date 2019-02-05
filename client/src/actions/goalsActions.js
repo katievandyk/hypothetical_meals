@@ -12,7 +12,8 @@ export const getGoals = (user_email) => dispatch =>  {
     })
   ).catch(error =>{
     dispatch({
-      type: GOAL_ERROR
+      type: GOAL_ERROR,
+      payload: error.response
     })
   });
 };
