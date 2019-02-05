@@ -41,10 +41,10 @@ router.post('/', (req, res) => {
                     throw new Error("SKU ingredients list must contain id and quantity")
                 if(!Helper.isNumeric(tuple.quantity))
                     throw new Error("SKU ingredients list quantity must be a number.")
-                return;
             })
     } catch(err) {
         res.status(404).json({success: false, message: err.message})
+        return;
     }
 
     const newSKU = new SKU({
@@ -65,6 +65,7 @@ router.post('/', (req, res) => {
             {number: newSKU.number},
             {case_number: newSKU.case_number}
         ]}).then(results => {
+            error_thrown = false
             results.forEach(result => {
                 if(result._id != newSKU._id) {
                     if (result.number === newSKU.number) {
@@ -73,11 +74,12 @@ router.post('/', (req, res) => {
                     else {
                         res.status(404).json({success: false, message: "SKU Case UPC# is not unique."})
                     }
-                    return;
+                    error_thrown = true
                 }
             })
-            newSKU.save().then(sku => res.json(sku))
-            .catch(err => res.status(404).json({success: false, message: err.message}));
+            if(!error_thrown)
+                newSKU.save().then(sku => res.json(sku))
+                .catch(err => res.status(404).json({success: false, message: err.message}));
         })
 });
 
@@ -152,6 +154,7 @@ router.post('/update/:id', (req, res) => {
                 {number: updatedSku.number},
                 {case_number: updatedSku.case_number}
             ]}).then(results => {
+                error_thrown = false
                 results.forEach(result => {
                     console.log(result)
                     if(result._id.toString() != sku._id.toString()) {
@@ -161,13 +164,13 @@ router.post('/update/:id', (req, res) => {
                         else {
                             res.status(404).json({success: false, message: "SKU Case UPC# is not unique."})
                         }
-                        return;
+                        error_thrown = true
                     }
                 })
-                console.log(req.body)
 
-                SKU.findByIdAndUpdate(req.params.id, {$set:req.body})
-                .then(() => res.json({success: true}))
+                if(!error_thrown)
+                    SKU.findByIdAndUpdate(req.params.id, {$set:req.body})
+                    .then(() => res.json({success: true}))
             })
         })})
 

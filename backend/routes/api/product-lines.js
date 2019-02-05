@@ -39,8 +39,11 @@ router.get('/:pagenumber/:limit', (req, res) => {
 // @desc create an product line
 // @access public
 router.post('/', (req, res) => {
-    if(! (req.body.name))
+    if(! (req.body.name)) {
         res.status(404).json({success: false, message: "Product line name is required."})
+        return;
+    }
+        
     const newProductLine = new ProductLine({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name
@@ -54,7 +57,7 @@ router.post('/', (req, res) => {
             newProductLine.save().then(productLine => res.json(productLine))
             .catch(err => res.status(404).json({success: false, message: err.message}));
         }
-    }).catch(err => res.status(404).json({success: false, message: err.message}))
+    })
 });
 
 // @route DELETE api/productlines/:id
@@ -89,7 +92,5 @@ router.post('/update/:id', (req, res) => {
         }
     }).catch(err => res.status(404).json({success: false, message: err.message}))
 });
-
-    
 
 module.exports = router;
