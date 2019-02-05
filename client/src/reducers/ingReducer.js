@@ -1,5 +1,5 @@
 import {GET_INGS, ADD_ING, DELETE_ING, UPDATE_ING,
-  GET_ING_SKUS, INGS_LOADING, ING_SKUS_LOADING,
+  GET_ING_SKUS, INGS_LOADING, ING_SKUS_LOADING, ING_ERROR,
   ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER, GEN_INGDEP_REPORT, EXPORT_INGDEP_REPORT} from '../actions/types';
 
 const initialState = {
@@ -14,7 +14,8 @@ const initialState = {
   pagelimit: 10,
   count: 0,
   report: [],
-  report_obj: {}
+  report_obj: {},
+  error_msgs: []
 };
 
 export default function(state = initialState, action) {
@@ -102,6 +103,14 @@ export default function(state = initialState, action) {
     case EXPORT_INGDEP_REPORT:{
       return {
         ...state,
+        loading: false
+      }
+    }
+    case ING_ERROR:{
+      console.log(action.payload);
+      return {
+        ...state,
+        error_msgs: [...state.error_msgs, action.payload.data.message],
         loading: false
       }
     }

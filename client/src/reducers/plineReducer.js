@@ -1,11 +1,12 @@
-import {GET_PLINES, ADD_PLINE, UPDATE_PLINE, DELETE_PLINE, PLINES_LOADING} from '../actions/types';
+import {GET_PLINES, ADD_PLINE, UPDATE_PLINE, DELETE_PLINE, PLINES_LOADING, PLINE_ERROR} from '../actions/types';
 
 const initialState = {
   plines: [],
   loading: false,
   page: 1,
   pagelimit:10,
-  count: 0
+  count: 0,
+  error_msgs: []
 };
 
 export default function(state = initialState, action) {
@@ -39,6 +40,14 @@ export default function(state = initialState, action) {
         ...state,
         plines: [action.payload, state.plines]
       }
+     case PLINE_ERROR:{
+       console.log(action.payload);
+       return {
+         ...state,
+         error_msgs: [...state.error_msgs, action.payload.data.message],
+         loading: false
+       }
+     }
     default:
       return state;
   }
