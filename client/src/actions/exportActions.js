@@ -4,7 +4,7 @@ import { EXPORT_SKUS, EXPORT_PLINES, EXPORT_INGS, EXPORT_FORMULAS, EXPORT_INGDEP
 const FileDownload = require('js-file-download');
 
 export const exportSKUs = (obj) => dispatch => {
-     axios.post('/api/bulk-export/skus', obj).then(res => {
+   axios.post('/api/bulk-export/skus', obj).then(res => {
      FileDownload(res.data, 'skus_' + Date.now() + '.csv')
    });
    return {

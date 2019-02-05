@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
 import PLinesAddModal from '../components/prod_lines/PLinesAddModal';
 import PLinesEntry from '../components/prod_lines/PLinesEntry';
+import PLinesAlerts from '../components/prod_lines/PLinesAlerts';
 import { exportPLines } from '../actions/exportActions';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
@@ -62,6 +63,7 @@ class ProductLines extends Component {
          <div>
            <div>
              <AppNavbar />
+             <PLinesAlerts />
            </div>
            <Container>
            <Container className="mb-3">

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { GET_INGS, ADD_ING, DELETE_ING, INGS_LOADING, UPDATE_ING,
 GET_ING_SKUS, ING_SKUS_LOADING, ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER,
-GEN_INGDEP_REPORT} from './types';
+GEN_INGDEP_REPORT, ING_ERROR} from './types';
 
 export const getIngs = () => dispatch =>  {
   dispatch(setIngsLoading());
@@ -10,7 +10,12 @@ export const getIngs = () => dispatch =>  {
       type: GET_INGS,
       payload: res.data
     })
-  );
+  ).catch(error =>{
+    dispatch({
+      type: ING_ERROR,
+      payload: error.response
+    })
+  });
 };
 
 export const addIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
@@ -18,17 +23,26 @@ export const addIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
     dispatch({
       type: ADD_ING,
       payload: res.data
-    });
+    })
+  }).catch(error =>{
+    dispatch({
+      type: ING_ERROR,
+      payload: error.response
+    })
+  });
     dispatch(setIngsLoading());
     axios.post(`/api/ingredients/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
       dispatch({
         type: ING_SORT,
         payload: {data: res.data, sortby: field, sortdir: asc, page: page, pagelimit: pagelimit, obj: obj}
       })
-    );
-  }
-  );
-};
+    ).catch(error =>{
+         dispatch({
+           type: ING_ERROR,
+           payload: error.response
+         })
+       });
+  };
 
 export const updateIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
   axios.post(`/api/ingredients/update/${ing.id}`, ing).then(res => {
@@ -42,10 +56,14 @@ export const updateIng = (ing, field, asc, page, pagelimit, obj) => dispatch => 
           type: ING_SORT,
           payload: {data: res.data, sortby: field, sortdir: asc, page: page, pagelimit: pagelimit, obj: obj}
         })
-      );
+      ).catch(error =>{
+           dispatch({
+             type: ING_ERROR,
+             payload: error.response
+           })
+         });
     }
-  );
-};
+  )};
 
 export const deleteIng = id => dispatch => {
   axios.delete(`/api/ingredients/${id}`).then(res =>
@@ -53,7 +71,12 @@ export const deleteIng = id => dispatch => {
       type: DELETE_ING,
       payload: id
     })
-  );
+  ).catch(error =>{
+    dispatch({
+      type: ING_ERROR,
+      payload: error.response
+    })
+  });
 };
 
 export const getIngSKUs = id => dispatch => {
@@ -63,8 +86,14 @@ export const getIngSKUs = id => dispatch => {
       type: GET_ING_SKUS,
       payload: res.data
     })
-  );
+  ).catch(error =>{
+    dispatch({
+      type: ING_ERROR,
+      payload: error.response
+    })
+  });
 };
+
 
 export const setIngSKUsLoading = () => {
   return {
@@ -92,7 +121,12 @@ export const sortIngs = (field, asc, page, pagelimit, obj) => dispatch => {
       type: ING_SORT,
       payload: {data: res.data, sortby: field, sortdir: asc, page: page, pagelimit: pagelimit, obj: obj}
     })
-  );
+  ).catch(error =>{
+    dispatch({
+      type: ING_ERROR,
+      payload: error.response
+    })
+  });
 };
 
 export const genIngDepReport = (obj) => dispatch => {
@@ -101,7 +135,12 @@ export const genIngDepReport = (obj) => dispatch => {
       type: GEN_INGDEP_REPORT,
       payload: {data: res.data, obj: obj}
     })
-  );
+  ).catch(error =>{
+    dispatch({
+      type: ING_ERROR,
+      payload: error.response
+    })
+  });
 };
 
 export const filterBySKUs = (ids) => dispatch => {

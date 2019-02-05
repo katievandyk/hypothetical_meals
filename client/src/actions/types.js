@@ -10,6 +10,7 @@ export const ING_KW_SEARCH = 'ING_KW_SEARCH';
 export const ING_SKU_FILTER = 'ING_SKU_FILTER';
 export const ING_SORT = 'ING_SORT';
 export const GEN_INGDEP_REPORT = 'GEN_INGDEP_REPORT';
+export const ING_ERROR = 'ING_ERROR';
 //Login
 export const GET_ERRORS = "GET_ERRORS";
 export const USER_LOADING = "USER_LOADING";
@@ -22,12 +23,14 @@ export const GOALS_LOADING = 'GOALS_LOADING';
 export const GOALS_INGQUANTITY = 'GOALS_INGQUANTITY';
 export const GOAL_EXPORT = 'GOAL_EXPORT';
 export const GOAL_CALCULATOREXPORT = 'GOAL_CALCULATOREXPORT';
+export const GOAL_ERROR = 'GOAL_ERROR';
 // Product Lines
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';
 export const DELETE_PLINE = 'DELETE_PLINE';
 export const UPDATE_PLINE = 'UPDATE_PLINE';
 export const PLINES_LOADING = 'PLINES_LOADING';
+export const PLINE_ERROR = 'PLINE_ERROR';
 // SKU's
 export const GET_SKUS_BYPLINE = 'GET_SKUS_BYPLINE';
 export const SKUS_LOADING = 'SKUS_LOADING';
