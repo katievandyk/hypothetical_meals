@@ -104,7 +104,6 @@ class IngredientsEntry extends React.Component {
           <Spinner type="grow" color="success" />
           <Spinner type="grow" color="success" />
         </div>
-
       );
     }
     return (

@@ -6,6 +6,7 @@ import {
   ModalBody,
   Form,
   FormGroup,
+  FormFeedback,
   Label,
   Input, ListGroup, ListGroupItem
  } from 'reactstrap';
@@ -33,12 +34,14 @@ class SKUsEntry extends React.Component {
     edit_comment: '',
     ing_modal: false,
     ing_tuples: [],
-    group_by_pl: false
+    group_by_pl: false,
+    validate: {}
   };
 
   toggle = () => {
     this.setState({
-      modal: !this.state.modal
+      modal: !this.state.modal,
+      validate: {}
     });
   }
 
@@ -79,10 +82,78 @@ class SKUsEntry extends React.Component {
   };
 
   onChange = e => {
+    this.validate(e);
     this.setState({
       [e.target.name]: e.target.value
     });
   };
+
+  is_upca_standard = (code_str) => {
+      if(code_str.length != 12) {
+          return false;
+      }
+      let code = parseInt(code_str);
+      var i;
+      var sum = 0;
+      var code_temp = code;
+      code /= 10;
+      for(i = 1; i < 12; i++) {
+          var digit = Math.floor(code % 10);
+          if (i == 11 && !(digit == 0 | digit == 1 | digit >= 6 && digit <= 9)) {
+              return false;
+          }
+
+          code /= 10;
+          sum += i%2 == 0 ? digit : digit*3;
+      }
+
+      var check_digit = (10-sum%10)%10;
+      if(check_digit != code_temp % 10) {
+          return false;
+      }
+
+      return true;
+  };
+
+  validate = e => {
+    const field_type = e.target.name;
+    const { validate } = this.state
+    if (e.target.value.length > 0) {
+      if(field_type === 'edit_name' || field_type === 'edit_unit_size'){
+        validate[field_type] = 'has-success';
+      }
+      else if(field_type === 'edit_number' || field_type === 'edit_count_per_case'){
+        const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
+        if (numRex.test(e.target.value)) {
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid-num'
+        }
+      }
+      else if(field_type === 'edit_case_number' || field_type === 'edit_unit_number'){
+        if(this.is_upca_standard(e.target.value)){
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid-upca'
+        }
+      }
+    } else {
+      validate[e.target.name] = 'is-empty';
+    }
+    this.setState({ validate });
+  }
+
+  allValidated = () => {
+    const validate_kv = Object.entries(this.state.validate);
+    for(var i; i < validate_kv.length; i++){
+      if(validate_kv[i][1] !== 'has-success'){
+        return false;
+      }
+    }
+    return true;
+  }
 
   onEditSubmit = e => {
     e.preventDefault();
@@ -292,38 +363,67 @@ class SKUsEntry extends React.Component {
                 <FormGroup>
                   <Label for="edit_name">Name</Label>
                     <Input
+                      valid={ this.state.validate.edit_name === 'has-success' }
+                      invalid={ this.state.validate.edit_name === 'is-empty' }
                       type="text"
                       name="edit_name"
                       id="edit_name"
                       onChange={this.onChange}
                       defaultValue={this.state.edit_name}>
                     </Input>
+                    <FormFeedback>
+                      Please input a name.
+                    </FormFeedback>
                 </FormGroup>
                 <FormGroup>
                   <Label for="edit_number">Number</Label>
                     <Input
+                      valid={this.state.validate.edit_number === 'has-success' }
+                      invalid={this.state.validate.edit_number === 'is-empty' || this.state.validate.edit_number === 'not-valid-num'}
                       type="text"
                       name="edit_number"
                       id="edit_number"
-                      placeholder="Add Ingredient Number"
+                      placeholder="Add SKU Number"
                       onChange={this.onChange}
                       defaultValue={this.state.edit_number}>
                     </Input>
+                    {this.state.validate.edit_number === 'is-empty' ? (
+                      <FormFeedback>
+                        Please input a value.
+                      </FormFeedback>
+                    ):(
+                      <FormFeedback>
+                        Please input a valid number.
+                      </FormFeedback>
+                    )}
                 </FormGroup>
                 <FormGroup>
                   <Label for="edit_case_number">Case UPC#</Label>
                     <Input
-                      type="textarea"
+                      valid={this.state.validate.edit_case_number === 'has-success' }
+                      invalid={this.state.validate.edit_case_number === 'is-empty' || this.state.validate.edit_case_number === 'not-valid-upca'}
+                      type="text"
                       name="edit_case_number"
                       id="edit_case_number"
                       placeholder="Add Case UPC#"
                       onChange={this.onChange}
                       defaultValue={this.state.edit_case_number}>
                     </Input>
+                    {this.state.validate.edit_case_number === 'is-empty' ? (
+                      <FormFeedback>
+                        Please input a value.
+                      </FormFeedback>
+                    ):(
+                      <FormFeedback>
+                        Please input a valid UPC-A number.
+                      </FormFeedback>
+                    )}
                 </FormGroup>
                 <FormGroup>
                   <Label for="edit_unit_number">Unit UPC#</Label>
                     <Input
+                      valid={this.state.validate.edit_unit_number === 'has-success' }
+                      invalid={this.state.validate.edit_unit_number === 'is-empty' || this.state.validate.edit_unit_number === 'not-valid-upca'}
                       type="text"
                       name="edit_unit_number"
                       id="edit_unit_number"
@@ -331,10 +431,21 @@ class SKUsEntry extends React.Component {
                       onChange={this.onChange}
                       defaultValue={this.state.edit_unit_number}>
                     </Input>
+                    {this.state.validate.edit_unit_number === 'is-empty' ? (
+                      <FormFeedback>
+                        Please input a value.
+                      </FormFeedback>
+                    ):(
+                      <FormFeedback>
+                        Please input a valid UPC-A number.
+                      </FormFeedback>
+                    )}
                 </FormGroup>
                 <FormGroup>
                   <Label for="edit_unit_size">Unit Size</Label>
                     <Input
+                      valid={this.state.validate.edit_unit_size === 'has-success' }
+                      invalid={this.state.validate.edit_unit_size === 'is-empty'}
                       type="text"
                       name="edit_unit_size"
                       id="edit_unit_size"
@@ -342,10 +453,15 @@ class SKUsEntry extends React.Component {
                       onChange={this.onChange}
                       defaultValue={this.state.edit_unit_size}>
                     </Input>
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
                 </FormGroup>
                 <FormGroup>
                   <Label for="edit_count_per_case">Count per Case</Label>
                     <Input
+                      valid={this.state.validate.edit_count_per_case === 'has-success' }
+                      invalid={this.state.validate.edit_count_per_case === 'is-empty' || this.state.validate.edit_count_per_case === 'not-valid-num'}
                       type="text"
                       name="edit_count_per_case"
                       id="edit_count_per_case"
@@ -353,6 +469,15 @@ class SKUsEntry extends React.Component {
                       onChange={this.onChange}
                       defaultValue={this.state.edit_count_per_case}>
                     </Input>
+                    {this.state.validate.edit_count_per_case === 'is-empty' ? (
+                      <FormFeedback>
+                        Please input a value.
+                      </FormFeedback>
+                    ):(
+                      <FormFeedback>
+                        Please input a valid number.
+                      </FormFeedback>
+                    )}
                 </FormGroup>
                 <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} defaultValue={this.state.edit_product_line._id}/>
                 <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list}/>
