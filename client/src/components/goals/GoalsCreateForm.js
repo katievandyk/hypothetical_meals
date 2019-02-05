@@ -118,7 +118,7 @@ class GoalsCreateForm extends React.Component {
                     <tbody>
                        {this.state.skus_list.map(({sku, quantity}) => (
                            <tr key={sku._id}>
-                              <td> {sku.name} </td>
+                              <td> {sku.name}: {sku.unit_size} * {sku.count_per_case} </td>
                               <td> {quantity} </td>
                            </tr>
                        ))}
