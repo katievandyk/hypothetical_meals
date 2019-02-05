@@ -31,7 +31,12 @@ export const updateSKU = sku => dispatch => {
       type: UPDATE_SKU,
       payload: res.data
     })
-  );
+  ).catch(error =>{
+    dispatch({
+      type: SKU_ERROR,
+      payload: error.response
+    });
+  });;
 };
 
 export const deleteSKU = id => dispatch => {

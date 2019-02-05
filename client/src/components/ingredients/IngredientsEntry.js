@@ -85,7 +85,7 @@ class IngredientsEntry extends React.Component {
     };
 
     this.props.updateIng(editedIng);
-    this.props.getIngs();
+    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
     this.toggle();
   };
 

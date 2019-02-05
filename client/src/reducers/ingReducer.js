@@ -42,10 +42,11 @@ export default function(state = initialState, action) {
         ...state,
         loading: true
       }
-    case UPDATE_ING:
+    case UPDATE_ING:{
       return {
         ...state
       }
+    }
     case GET_ING_SKUS:
       return {
         ...state,

@@ -171,7 +171,7 @@ class SKUsEntry extends React.Component {
       comment: this.state.edit_comment
     };
     this.props.updateSKU(editedSKU);
-    this.props.getSKUs();
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
     this.toggle();
   };
 
