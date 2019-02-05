@@ -57,6 +57,7 @@ router.post('/', (req, res) => {
                     else {
                         res.status(404).json({success: false, message: "Ingredient number is not unique: " + check_ing.number})
                     }
+                    return;
                 }
             })
         })
@@ -104,6 +105,7 @@ router.post('/update/:id', (req, res) => {
             Parser.ingredientFieldsCheck(new_ing.name, new_ing.number, new_ing.package_size, new_ing.cost_per_package)
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
+            return;
         }
 
         Ingredient.find({
@@ -119,6 +121,7 @@ router.post('/update/:id', (req, res) => {
                         else {
                             res.status(404).json({success: false, message: "Updated number is not unique: " + check_ing.number})
                         }
+                        return;
                     }
                 })
                 Ingredient.findByIdAndUpdate(req.params.id, {$set:req.body}, {new: true})

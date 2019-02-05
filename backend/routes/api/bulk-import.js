@@ -77,6 +77,7 @@ function bulkImport(file_name, file_body, res) {
             if (!(key in grouped))
                 grouped[key] = []
         })
+        console.log(grouped)
         grouped["file_type"] = file_type
         res.json(grouped)})
     .catch(err => { 
