@@ -38,7 +38,8 @@ class GoalsCreateForm extends React.Component {
    }
 
    onSubmit = e => {
-     if(this.state.name.length === 0) alert("Please enter a name for your goal.")
+     var goals  = this.props.goals.goals
+     if(this.state.name.length === 0 || goals.find(elem => elem.name === this.state.name) != null) alert("Please enter a unique name for your goal.")
      else {
          const newGoal = {
            name: this.state.name,
@@ -75,9 +76,10 @@ class GoalsCreateForm extends React.Component {
    }
 
    onNameChange = e => {
+        var goals  = this.props.goals.goals
         this.setState({ name: e.target.value })
         var valid = '';
-        if (e.target.value.length > 0) {
+        if (e.target.value.length > 0 && goals.find(elem => elem.name === e.target.value) == null) {
           valid = 'success'
         } else {
           valid = 'failure'
@@ -156,12 +158,15 @@ class GoalsCreateForm extends React.Component {
 
 GoalsCreateForm.propTypes = {
   addGoal: PropTypes.func.isRequired,
-  skus: PropTypes.object.isRequired
+  skus: PropTypes.object.isRequired,
+  auth: PropTypes.object.auth,
+  goals: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   goals: state.goals,
   auth: state.auth,
+  goals: state.goals,
   skus: state.skus
 });
 
