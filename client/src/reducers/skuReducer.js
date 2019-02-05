@@ -11,7 +11,9 @@ const initialState = {
   error: '',
   count: 0,
   page: 1,
-  pagelimit: 10
+  pagelimit: 10,
+  error_msgs: []
+
 };
 
 export default function(state = initialState, action) {
@@ -31,10 +33,13 @@ export default function(state = initialState, action) {
         ...state,
         skus: state.skus.filter( sku => sku._id !== action.payload )
       }
-    case UPDATE_SKU:
+    case UPDATE_SKU:{
+      console.log("UPDATE_SKU");
       return {
-        ...state
+        ...state,
+        loading:true
       }
+    }
     case SKUS_LOADING:
       return {
         ...state,
@@ -98,7 +103,6 @@ export default function(state = initialState, action) {
       if(action.payload.data.count > 0 && (action.payload.data.results.length > 0 || Object.keys(action.payload.data.results).length > 0)){
         sku_results = action.payload.data.results;
       }
-      console.log(sku_results);
       return {
         ...state,
         skus: sku_results,
@@ -111,12 +115,13 @@ export default function(state = initialState, action) {
         page: page_val
       }
     }
-    case SKU_ERROR:
+    case SKU_ERROR:{
       return {
         ...state,
-        error: true,
+        error_msgs: [...state.error_msgs, action.payload.data.message],
         loading: false
       }
+    }
     default:
       return state;
   }

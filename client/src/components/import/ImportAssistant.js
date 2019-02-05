@@ -380,7 +380,7 @@ class ImportAssistant extends Component {
                   {(Object.entries(import_res).map(([name,value]) => (
                     (Object.keys(value).length > 0) ?
                     (<div key={name}>
-                        <h4>{name}: {value.count} records</h4>
+                        <h4>{name === 'NoOverwrite'? ('No Overwrite'):(name)}: {value.count} records</h4>
                         {value.count > 0 ? (<Table responsive size="sm">
                           <thead>
                             <tr>
@@ -427,12 +427,23 @@ class ImportAssistant extends Component {
                                       ))}
                                   </tr>
                                 ):(
-                                  <tr key={i}>
-                                    {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
+                                  name === 'Overwrite' ? (
+                                    <tr key={i}>
+                                      {this.ow_oldEntry_helper(obj, file_headers, obj_headers).map(([key,value]) => (
 
-                                        <td key={key}>{value}</td>
-                                      ))}
-                                  </tr>
+                                          <td key={key}>{value}</td>
+                                        ))}
+                                    </tr>
+                                  ):(
+                                    <tr key={i}>
+                                      {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
+
+                                          <td key={key}>{value}</td>
+                                        ))}
+                                    </tr>
+
+                                  )
+
                                 )
 
                               ))}

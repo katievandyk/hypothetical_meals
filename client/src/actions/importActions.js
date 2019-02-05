@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {UPLOAD_CHECK, UPLOAD_ERROR, IMPORT_OVERWRITES, SET_IMPORT_LOADING} from './types';
+import {UPLOAD_CHECK, UPLOAD_ERROR, IMPORT_OVERWRITES, RESET_IMPORT_STATE, SET_IMPORT_LOADING} from './types';
 
 export const uploadCheck = (file) => dispatch =>  {
   dispatch(setImportLoading());
@@ -20,6 +20,12 @@ export const uploadCheck = (file) => dispatch =>  {
 export const setImportLoading = () => {
   return {
     type: SET_IMPORT_LOADING
+  };
+};
+
+export const resetImportState = () => {
+  return {
+    type: RESET_IMPORT_STATE
   };
 };
 

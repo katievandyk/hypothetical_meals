@@ -3,6 +3,7 @@ import AppNavbar from '../components/AppNavbar';
 import SKUAddModal from '../components/skus/SKUAddModal';
 import SKUsKeywordSearch from '../components/skus/SKUsKeywordSearch';
 import SKUsEntry from '../components/skus/SKUsEntry';
+import SKUAlerts from '../components/skus/SKUAlerts';
 import IngFilters from '../components/skus/IngFilters';
 import PLineFilters from '../components/skus/PLineFilters';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -145,6 +146,7 @@ class SKU extends Component {
          <div>
            <div>
              <AppNavbar />
+             <SKUAlerts />
            </div>
            <Container>
            <Container className="mb-3">

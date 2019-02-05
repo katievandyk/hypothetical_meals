@@ -17,6 +17,7 @@ import CalculatorDropdown from '../components/goals/CalculatorDropdown';
 import GoalsCreateModal from '../components/goals/GoalsCreateModal';
 import GoalsExport from '../components/goals/GoalsExport';
 import CalculatorExport from '../components/goals/CalculatorExport';
+import GoalAlerts from '../components/goals/GoalAlerts';
 
 import { Provider } from 'react-redux';
 import store from '../store';
@@ -69,6 +70,7 @@ class Manufacturing extends Component {
             <div>
               <div>
                 <AppNavbar />
+                <GoalAlerts />
               </div>
               <Container>
                 <Container className="mb-3">

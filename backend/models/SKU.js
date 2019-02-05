@@ -13,12 +13,12 @@ const SKUSchema = new Schema({
         unique: true
     },
     case_number: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },
     unit_number: {
-        type: Number,
+        type: String,
         required: true
     },
     unit_size: {

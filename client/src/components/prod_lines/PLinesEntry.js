@@ -6,6 +6,7 @@ import {
   ModalBody,
   Form,
   FormGroup,
+  FormFeedback,
   Label,
   Input
  } from 'reactstrap';
@@ -20,12 +21,14 @@ class PLinesEntry extends React.Component {
   state = {
     modal: false,
     edit_id: '',
-    edit_name: ''
+    edit_name: '',
+    validate: {}
   };
 
   toggle = () => {
     this.setState({
-      modal: !this.state.modal
+      modal: !this.state.modal,
+      validate: {}
     });
   }
 
@@ -34,7 +37,7 @@ class PLinesEntry extends React.Component {
   }
 
   onDeleteClick = id => {
-    this.props.deleteIng(id);
+    this.props.deletePLine(id);
   };
 
   onEditClick = (id, name) => {
@@ -46,10 +49,21 @@ class PLinesEntry extends React.Component {
   };
 
   onChange = e => {
+    this.validateName(e);
     this.setState({
       [e.target.name]: e.target.value
     });
   };
+
+  validateName(e) {
+  const { validate } = this.state
+    if (e.target.value.length > 0) {
+      validate.nameState = 'has-success'
+    } else {
+      validate.nameState = 'has-danger'
+    }
+    this.setState({ validate })
+  }
 
   onEditSubmit = e => {
     e.preventDefault();
@@ -130,16 +144,24 @@ class PLinesEntry extends React.Component {
               <FormGroup>
                 <Label for="edit_name">Name</Label>
                   <Input
+                    valid={ this.state.validate.nameState === 'has-success' }
+                    invalid={ this.state.validate.nameState === 'has-danger' }
                     type="text"
                     name="edit_name"
                     id="edit_name"
                     onChange={this.onChange}
                     defaultValue={this.state.edit_name}>
                   </Input>
+                  <FormFeedback valid>
+                  </FormFeedback>
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
               </FormGroup>
-              <Button color="dark" style={{ marginTop: '2rem' }} type="submit" block>
+              <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.state.validate.nameState === 'has-danger' ? (''):('hidden')}>There are fields with errors. Please go back and fix these fields to submit.</p>
+              <Button color="dark" className={this.state.validate.nameState === 'has-danger'?('disabled'): ('')} type="submit" block>
                     Submit Product Line Edit
-                  </Button>
+                  </Button></div>
             </Form>
           </ModalBody>
         </Modal>

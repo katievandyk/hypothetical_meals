@@ -3,6 +3,7 @@ import AppNavbar from '../components/AppNavbar';
 import IngredientsAddModal from '../components/ingredients/IngredientsAddModal';
 import IngredientsKeywordSearch from '../components/ingredients/IngredientsKeywordSearch';
 import IngredientsEntry from '../components/ingredients/IngredientsEntry';
+import IngredientsAlerts from '../components/ingredients/IngredientsAlerts';
 import SKUFilters from '../components/ingredients/SKUFilters'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
@@ -143,6 +144,7 @@ class Ingredients extends Component {
             <div>
               <div>
                 <AppNavbar />
+                <IngredientsAlerts />
               </div>
               <Container>
               <Container className="mb-3">

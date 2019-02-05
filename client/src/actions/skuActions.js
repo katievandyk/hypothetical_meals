@@ -16,22 +16,43 @@ export const getSKUsByPLine = (plines) => dispatch =>  {
   });
 };
 
-export const addSKU = sku => dispatch => {
-  axios.post('/api/skus/', sku).then(res =>
+export const addSKU = (sku, field, asc, page, pagelimit, obj) => dispatch => {
+  axios.post('/api/skus/', sku).then(res =>{
     dispatch({
       type: ADD_SKU,
       payload: res.data
-    })
+    });
+    dispatch(setSKUsLoading());
+    axios.post(`/api/skus/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
+      dispatch({
+        type: SKU_SORT,
+        payload: {data: res.data, sortby: field, sortdir: asc, page: page, pagelimit: pagelimit, obj: obj}
+      })
+    );
+  }
   );
 };
 
-export const updateSKU = sku => dispatch => {
-  axios.post(`/api/skus/update/${sku.id}`, sku).then(res =>
+export const updateSKU = (sku, field, asc, page, pagelimit, obj) => dispatch => {
+  axios.post(`/api/skus/update/${sku.id}`, sku).then(res =>{
     dispatch({
       type: UPDATE_SKU,
       payload: res.data
-    })
-  );
+    });
+    dispatch(setSKUsLoading());
+    axios.post(`/api/skus/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
+      dispatch({
+        type: SKU_SORT,
+        payload: {data: res.data, sortby: field, sortdir: asc, page: page, pagelimit: pagelimit, obj: obj}
+      })
+    );
+
+  }).catch(error =>{
+    dispatch({
+      type: SKU_ERROR,
+      payload: error.response
+    });
+  });
 };
 
 export const deleteSKU = id => dispatch => {
@@ -74,6 +95,7 @@ export const groupByPL = state => dispatch => {
 }
 
 export const sortSKUs = (field, asc, page, pagelimit, obj) => dispatch => {
+  console.log('sortSKUS');
   dispatch(setSKUsLoading());
   axios.post(`/api/skus/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
     dispatch({

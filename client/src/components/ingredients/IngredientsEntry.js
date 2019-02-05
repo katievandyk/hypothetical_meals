@@ -5,7 +5,7 @@ import {
   ModalHeader,
   ModalBody,
   Form,
-  FormGroup,
+  FormGroup, FormFeedback,
   Label,
   Input,
   ListGroup,
@@ -13,7 +13,7 @@ import {
  } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { getIngs, deleteIng, updateIng, getIngSKUs } from '../../actions/ingActions';
+import { getIngs, sortIngs, deleteIng, updateIng, getIngSKUs } from '../../actions/ingActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../../styles.css'
@@ -28,12 +28,14 @@ class IngredientsEntry extends React.Component {
     edit_package_size: '',
     edit_cost_per_package: '',
     edit_comment: '',
-    sku_modal: false
+    sku_modal: false,
+    validate: {}
   };
 
   toggle = () => {
     this.setState({
-      modal: !this.state.modal
+      modal: !this.state.modal,
+      validate: {}
     });
   }
 
@@ -66,10 +68,51 @@ class IngredientsEntry extends React.Component {
   };
 
   onChange = e => {
+    this.validate(e);
     this.setState({
       [e.target.name]: e.target.value
     });
   };
+
+  allValidated = () => {
+    const validate_kv = Object.entries(this.state.validate);
+    for(var i = 0; i < validate_kv.length; i++){
+      if(validate_kv[i][1] !== 'has-success'){
+        return false;
+      }
+    }
+    return true;
+  }
+  validate = e => {
+    const field_type = e.target.name;
+    const { validate } = this.state
+    if (e.target.value.length > 0) {
+      if(field_type === 'edit_name' || field_type === 'edit_package_size'){
+        validate[field_type] = 'has-success';
+      }
+      else if(field_type === 'edit_number'){
+        const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
+        if (numRex.test(e.target.value)) {
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid-num'
+        }
+      }
+      else if(field_type === 'edit_cost_per_package'){
+        const numRex = /^[1-9]\d*(\.\d+)?$/mg
+        if (numRex.test(e.target.value)) {
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid'
+        }
+      }
+    } else if(field_type !== 'comment' && field_type !== 'vendor_info' && field_type !== 'number'){
+      validate[e.target.name] = 'is-empty';
+    }
+    this.setState({ validate });
+  }
 
   onEditSubmit = e => {
     e.preventDefault();
@@ -84,8 +127,7 @@ class IngredientsEntry extends React.Component {
       comment: this.state.edit_comment
     };
 
-    this.props.updateIng(editedIng);
-    this.props.getIngs();
+    this.props.updateIng(editedIng, this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
     this.toggle();
   };
 
@@ -104,7 +146,6 @@ class IngredientsEntry extends React.Component {
           <Spinner type="grow" color="success" />
           <Spinner type="grow" color="success" />
         </div>
-
       );
     }
     return (
@@ -181,16 +222,23 @@ class IngredientsEntry extends React.Component {
               <FormGroup>
                 <Label for="edit_name">Name</Label>
                   <Input
+                    valid={ this.state.validate.edit_name === 'has-success' }
+                    invalid={ this.state.validate.edit_name === 'is-empty' }
                     type="text"
                     name="edit_name"
                     id="edit_name"
                     onChange={this.onChange}
                     defaultValue={this.state.edit_name}>
                   </Input>
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
               </FormGroup>
               <FormGroup>
                 <Label for="edit_number">Number</Label>
                   <Input
+                    valid={this.state.validate.edit_number === 'has-success' }
+                    invalid={this.state.validate.edit_number === 'is-empty' || this.state.validate.edit_number === 'not-valid-num'}
                     type="text"
                     name="edit_number"
                     id="edit_number"
@@ -198,6 +246,15 @@ class IngredientsEntry extends React.Component {
                     onChange={this.onChange}
                     defaultValue={this.state.edit_number}>
                   </Input>
+                  {this.state.validate.edit_number === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid number.
+                    </FormFeedback>
+                  )}
               </FormGroup>
               <FormGroup>
                 <Label for="edit_vendor_info">Vendor's Info</Label>
@@ -213,6 +270,8 @@ class IngredientsEntry extends React.Component {
               <FormGroup>
                 <Label for="edit_package_size">Package Size</Label>
                   <Input
+                    valid={ this.state.validate.edit_package_size === 'has-success' }
+                    invalid={ this.state.validate.edit_package_size === 'is-empty' }
                     type="text"
                     name="edit_package_size"
                     id="edit_package_size"
@@ -220,10 +279,15 @@ class IngredientsEntry extends React.Component {
                     onChange={this.onChange}
                     defaultValue={this.state.edit_package_size}>
                   </Input>
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
               </FormGroup>
               <FormGroup>
                 <Label for="edit_cost_per_package">Cost per Package</Label>
                   <Input
+                    valid={this.state.validate.edit_cost_per_package === 'has-success' }
+                    invalid={this.state.validate.edit_cost_per_package === 'is-empty' || this.state.validate.edit_cost_per_package === 'not-valid'}
                     type="text"
                     name="edit_cost_per_package"
                     id="edit_cost_per_package"
@@ -231,6 +295,15 @@ class IngredientsEntry extends React.Component {
                     onChange={this.onChange}
                     defaultValue={this.state.edit_cost_per_package}>
                   </Input>
+                  {this.state.validate.edit_cost_per_package === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid cost value.
+                    </FormFeedback>
+                  )}
               </FormGroup>
               <FormGroup>
                 <Label for="edit_comment">Comments</Label>
@@ -243,9 +316,11 @@ class IngredientsEntry extends React.Component {
                     defaultValue={this.state.edit_comment}>
                   </Input>
               </FormGroup>
-              <Button color="dark" style={{ marginTop: '2rem' }} type="submit" block>
+              <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
+              <Button color="dark" className={this.allValidated() ? (''):('disabled')} type="submit" block>
                     Submit Ingredient Edits
                   </Button>
+                </div>
             </Form>
           </ModalBody>
         </Modal>
@@ -267,6 +342,7 @@ class IngredientsEntry extends React.Component {
 
 IngredientsEntry.propTypes = {
   getIngs: PropTypes.func.isRequired,
+  sortIngs: PropTypes.func.isRequired,
   deleteIng: PropTypes.func.isRequired,
   updateIng: PropTypes.func.isRequired,
   ing: PropTypes.object.isRequired,
@@ -278,4 +354,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getIngs, deleteIng, updateIng, getIngSKUs })(IngredientsEntry);
+export default connect(mapStateToProps, { getIngs, sortIngs, deleteIng, updateIng, getIngSKUs })(IngredientsEntry);
