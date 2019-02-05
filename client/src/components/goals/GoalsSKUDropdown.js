@@ -33,8 +33,8 @@ class GoalsSKUDropdown extends React.Component {
           {this.state.skuValue}
         </DropdownToggle>
         <DropdownMenu>
-             {skus.map(({_id, name }) => (
-                <DropdownItem key={_id} id={_id} onClick={this.changeValue}> {name} </DropdownItem>
+             {skus.map(({_id, name, unit_size, count_per_case }) => (
+                <DropdownItem key={_id} id={_id} onClick={this.changeValue}> {name}: {unit_size} * {count_per_case} </DropdownItem>
             ))}
         </DropdownMenu>
       </ButtonDropdown>

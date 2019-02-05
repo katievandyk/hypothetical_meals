@@ -62,20 +62,14 @@ class GoalsEntry extends React.Component {
                         <Table>
                           <thead>
                             <tr>
-                              <th>SKU Name</th>
-                              <th>Number</th>
-                              <th>Size Per Unit</th>
-                              <th>Count Per Case</th>
+                              <th>SKU</th>
                               <th>Quantity</th>
                             </tr>
                           </thead>
                           <tbody>
                         {this.state.curr_list.map(({_id, sku, quantity}) => (
                             <tr key={_id}>
-                                <td> {sku.name} </td>
-                                <td> {sku.number} </td>
-                                <td> {sku.unit_size} </td>
-                                <td> {sku.count_per_case} </td>
+                                <td> {sku.name}: {sku.unit_size} * {sku.count_per_case}</td>
                                 <td> {quantity} </td>
                             </tr>
                           ))}
