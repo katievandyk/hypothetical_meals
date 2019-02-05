@@ -11,7 +11,6 @@ const round = require('mongo-round');
 // @desc get all goals for specific user
 // @access public
 router.get('/:user_email', (req, res) => {
-    console.log(req.params.user_email);
     Goal
         .find({ 'user_email' : req.params.user_email})
         .populate({ path: 'skus_list.sku'})
@@ -23,7 +22,6 @@ router.get('/:user_email', (req, res) => {
 // @desc create a goal
 // @access public
 router.post('/', (req, res) => {
-    console.log(req.body);
     const newGoal = new Goal({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
