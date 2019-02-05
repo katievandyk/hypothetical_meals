@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"cd backend && node server.js\" \"cd client && npm start\"",
-    "install": "cd backend && npm install && cd ../client && npm install",
+    "install": "npm install && cd backend && npm install && cd ../client && npm install",
     "deploy": "cd client && npm run build && cd ../backend && NODE_ENV=production pm2 start server.js",
     "test": "cd backend && npm test"
   },
