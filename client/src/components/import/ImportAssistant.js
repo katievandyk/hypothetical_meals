@@ -427,12 +427,25 @@ class ImportAssistant extends Component {
                                       ))}
                                   </tr>
                                 ):(
-                                  <tr key={i}>
-                                    {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
+                                  name === 'Overwrite' ? (
+                                    <tr key={i}>
+                                      {console.log(obj)}
+                                      {this.ow_oldEntry_helper(obj, file_headers, obj_headers).map(([key,value]) => (
 
-                                        <td key={key}>{value}</td>
-                                      ))}
-                                  </tr>
+                                          <td key={key}>{value}</td>
+                                        ))}
+                                    </tr>
+                                  ):(
+                                    <tr key={i}>
+                                      {console.log(obj)}
+                                      {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
+
+                                          <td key={key}>{value}</td>
+                                        ))}
+                                    </tr>
+
+                                  )
+
                                 )
 
                               ))}

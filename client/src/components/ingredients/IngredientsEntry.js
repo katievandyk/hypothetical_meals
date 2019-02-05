@@ -13,7 +13,7 @@ import {
  } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { getIngs, deleteIng, updateIng, getIngSKUs } from '../../actions/ingActions';
+import { getIngs, sortIngs, deleteIng, updateIng, getIngSKUs } from '../../actions/ingActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../../styles.css'
@@ -73,7 +73,7 @@ class IngredientsEntry extends React.Component {
       [e.target.name]: e.target.value
     });
   };
-  
+
   allValidated = () => {
     const validate_kv = Object.entries(this.state.validate);
     for(var i = 0; i < validate_kv.length; i++){
@@ -343,6 +343,7 @@ class IngredientsEntry extends React.Component {
 
 IngredientsEntry.propTypes = {
   getIngs: PropTypes.func.isRequired,
+  sortIngs: PropTypes.func.isRequired,
   deleteIng: PropTypes.func.isRequired,
   updateIng: PropTypes.func.isRequired,
   ing: PropTypes.object.isRequired,
@@ -354,4 +355,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getIngs, deleteIng, updateIng, getIngSKUs })(IngredientsEntry);
+export default connect(mapStateToProps, { getIngs, sortIngs, deleteIng, updateIng, getIngSKUs })(IngredientsEntry);
