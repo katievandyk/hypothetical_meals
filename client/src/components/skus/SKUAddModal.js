@@ -96,7 +96,7 @@ class SKUAddModal extends React.Component {
           validate[field_type] = 'not-valid-upca'
         }
       }
-    } else {
+    } else if(field_type !== 'comment' && field_type !== 'number'){
       validate[e.target.name] = 'is-empty';
     }
     this.setState({ validate });
@@ -127,8 +127,7 @@ class SKUAddModal extends React.Component {
       comment: this.state.comment
     };
 
-    this.props.addSKU(newSKU);
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
+    this.props.addSKU(newSKU, this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
     this.toggle();
   }
 

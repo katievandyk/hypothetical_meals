@@ -139,7 +139,7 @@ class SKUsEntry extends React.Component {
           validate[field_type] = 'not-valid-upca'
         }
       }
-    } else {
+    } else if(field_type !== 'comment' && field_type !== 'number'){
       validate[e.target.name] = 'is-empty';
     }
     this.setState({ validate });
@@ -170,8 +170,7 @@ class SKUsEntry extends React.Component {
       ingredients_list: this.state.edit_ingredients_list,
       comment: this.state.edit_comment
     };
-    this.props.updateSKU(editedSKU);
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+    this.props.updateSKU(editedSKU,this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
     this.toggle();
   };
 

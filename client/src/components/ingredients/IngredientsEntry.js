@@ -108,7 +108,7 @@ class IngredientsEntry extends React.Component {
           validate[field_type] = 'not-valid'
         }
       }
-    } else {
+    } else if(field_type !== 'comment' && field_type !== 'vendor_info' && field_type !== 'number'){
       validate[e.target.name] = 'is-empty';
     }
     this.setState({ validate });
@@ -127,8 +127,7 @@ class IngredientsEntry extends React.Component {
       comment: this.state.edit_comment
     };
 
-    this.props.updateIng(editedIng);
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
+    this.props.updateIng(editedIng, this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
     this.toggle();
   };
 

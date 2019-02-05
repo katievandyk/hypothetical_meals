@@ -75,7 +75,7 @@ class IngredientsAddModal extends React.Component {
           validate[field_type] = 'not-valid'
         }
       }
-    } else {
+    } else if(field_type !== 'comment' && field_type !== 'vendor_info' && field_type !== 'number'){
       validate[e.target.name] = 'is-empty';
     }
     this.setState({ validate });
@@ -93,8 +93,7 @@ class IngredientsAddModal extends React.Component {
       comment: this.state.comment
     };
 
-    this.props.addIng(newIng);
-    this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
+    this.props.addIng(newIng,this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
     this.toggle();
   }
 
@@ -127,7 +126,7 @@ class IngredientsAddModal extends React.Component {
               <Label for="number">Number</Label>
                 <Input
                   valid={this.state.validate.number === 'has-success' }
-                  invalid={this.state.validate.number === 'is-empty' || this.state.validate.number === 'not-valid-num'}
+                  invalid={this.state.validate.number === 'not-valid-num'}
                   type="text"
                   name="number"
                   id="number"

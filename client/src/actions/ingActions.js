@@ -13,21 +13,37 @@ export const getIngs = () => dispatch =>  {
   );
 };
 
-export const addIng = ing => dispatch => {
-  axios.post('/api/ingredients', ing).then(res =>
+export const addIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
+  axios.post('/api/ingredients', ing).then(res => {
     dispatch({
       type: ADD_ING,
       payload: res.data
-    })
+    });
+    dispatch(setIngsLoading());
+    axios.post(`/api/ingredients/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
+      dispatch({
+        type: ING_SORT,
+        payload: {data: res.data, sortby: field, sortdir: asc, page: page, pagelimit: pagelimit, obj: obj}
+      })
+    );
+  }
   );
 };
 
-export const updateIng = ing => dispatch => {
-  axios.post(`/api/ingredients/update/${ing.id}`, ing).then(res =>
-    dispatch({
-      type: UPDATE_ING,
-      payload: res.data
-    })
+export const updateIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
+  axios.post(`/api/ingredients/update/${ing.id}`, ing).then(res => {
+      dispatch({
+        type: UPDATE_ING,
+        payload: res.data
+      });
+      dispatch(setIngsLoading());
+      axios.post(`/api/ingredients/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
+        dispatch({
+          type: ING_SORT,
+          payload: {data: res.data, sortby: field, sortdir: asc, page: page, pagelimit: pagelimit, obj: obj}
+        })
+      );
+    }
   );
 };
 

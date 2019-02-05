@@ -31,10 +31,10 @@ class SKUsFormIngTupleSelection extends React.Component {
     }
   }
 
-  allValid = () => {
+  allValid = (validState=this.state.validate) => {
+    console.log(validState);
     var isValid = true;
-    const validState = this.state.validate;
-    for(var i; i < validState.length; i++){
+    for(var i = 0; i < validState.length; i++){
       if(validState[i].ing !== 'has-success' ||
        validState[i].quantity !== 'has-success'){
          isValid = false;
@@ -113,7 +113,7 @@ class SKUsFormIngTupleSelection extends React.Component {
       ing_tuples: reduced_tuples,
       validate: reduced_val
     });
-    this.props.onIngListChange(reduced_tuples, this.allValid());
+    this.props.onIngListChange(reduced_tuples, this.allValid(reduced_val));
   }
 
   render() {
