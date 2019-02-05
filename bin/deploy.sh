@@ -27,7 +27,6 @@ sudo apt-get install software-properties-common
 sudo apt-get update
 sudo apt-get install python-certbot-nginx
 sudo systemctl reload nginx
-sudo certbot --nginx -d $1
 
 
 
