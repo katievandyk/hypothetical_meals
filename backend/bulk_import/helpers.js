@@ -171,8 +171,10 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
 
     Promise.all([countPromise.count(), sortPromise])
         .then(results => {
-            if (req.body.group_pl === "True")
+            if (req.body.group_pl === "True") {
                 results[1] = groupByProductLine(results[1]);
+            }
+                
             finalResult = {count: results[0], results: results[1]};
             res.json(finalResult)})
         .catch(err => {

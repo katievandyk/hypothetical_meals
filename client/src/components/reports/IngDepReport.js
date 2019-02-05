@@ -54,7 +54,7 @@ class IngDepReport extends React.Component {
           ))}
           <Row>
              <Col style={{'textAlign': 'right'}}/>
-             <Button onClick={this.props.exportIngDepReport}>Export</Button>
+             <Button onClick={() => this.props.exportIngDepReport(this.props.ing.report_obj)}>Export</Button>
           </Row>
           </Container>
         </div>

@@ -44,8 +44,7 @@ export default function(state = initialState, action) {
       }
     case UPDATE_ING:
       return {
-        ...state,
-        ings: [action.payload, state.ings]
+        ...state
       }
     case GET_ING_SKUS:
       return {

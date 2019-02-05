@@ -4,6 +4,7 @@ const router = express.Router();
 
 // Product Line Model
 const ProductLine = require('../../models/ProductLine');
+const SKU = require('../../models/SKU');
 
 // @route GET api/productlines
 // @desc get all product lines
@@ -38,6 +39,8 @@ router.get('/:pagenumber/:limit', (req, res) => {
 // @desc create an product line
 // @access public
 router.post('/', (req, res) => {
+    if(! (req.body.name))
+        res.status(404).json({success: false, message: "Product line name is required."})
     const newProductLine = new ProductLine({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name
@@ -51,10 +54,17 @@ router.post('/', (req, res) => {
 // @desc delete an product line
 // @access public
 router.delete('/:id', (req, res) => {
-    ProductLine.findById(req.params.id)
-        .then(productLine => productLine.remove().then(
-            () => res.json({success: true}))
-        ).catch(err => res.status(404).json({success: false, message: err.message}))
+    SKU.find({product_line: req.params.id}).then(result => {
+        if(result === null || result.length !== 0) {
+            res.status(404).json({success: false, message: "Product line cannot be deleted because one or more SKU(s) are associated with it."})
+        }
+        else {
+            ProductLine.findById(req.params.id)
+            .then(productLine => productLine.remove().then(
+                () => res.json({success: true}))
+            ).catch(err => res.status(404).json({success: false, message: err.message}))
+        }
+    })
 });
 
 // @route POST api/productlines/update/:id

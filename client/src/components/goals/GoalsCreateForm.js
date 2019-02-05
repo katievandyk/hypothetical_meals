@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 
 import {
   InputGroup, InputGroupAddon, Input, Button,
-  Container, Table, Row, Col, Form, FormGroup, Label, FormFeedback
+  Container, Table, Row, Col, Form, FormGroup, Label
 } from 'reactstrap';
 
 class GoalsCreateForm extends React.Component {
@@ -51,7 +51,6 @@ class GoalsCreateForm extends React.Component {
    }
 
    onAddSKU = e => {
-       const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
        var skus  = this.state.skus_list
        if(this.state.validNum === 'failure' || this.state.quantity.length === 0) alert("Please enter a valid numeric quantity.")
        else if(this.state.skuSel.length === 0 || skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
@@ -138,7 +137,7 @@ class GoalsCreateForm extends React.Component {
                 <Col md={2} style={{"padding-right": 0 }}>
                     <Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/>
                 </Col>
-                <InputGroupAddon addonType="append"><Button onClick={this.onAddSKU}>+</Button></InputGroupAddon>
+                <InputGroupAddon addonType="append"><Button onClick={this.onAddSKU}>Add SKU</Button></InputGroupAddon>
             </InputGroup>
             </Row>
          </Container>
