@@ -39,6 +39,7 @@ class Ingredients extends Component {
       dropdownOpen: !this.state.dropdownOpen
     });
   }
+
   onNextPage = () => {
     this.props.sortIngs(this.props.ing.sortby, this.props.ing.sortdir,
        this.props.ing.page + 1, this.props.ing.pagelimit, this.props.ing.obj);

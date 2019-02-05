@@ -18,7 +18,6 @@ export const getGoals = (user_email) => dispatch =>  {
   });
 };
 
-
 export const setGoalsLoading = () => {
   return {
     type: GOALS_LOADING

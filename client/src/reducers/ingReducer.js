@@ -1,6 +1,7 @@
 import {GET_INGS, ADD_ING, DELETE_ING, UPDATE_ING,
   GET_ING_SKUS, INGS_LOADING, ING_SKUS_LOADING, ING_ERROR,
-  ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER, GEN_INGDEP_REPORT, EXPORT_INGDEP_REPORT} from '../actions/types';
+  ING_KW_SEARCH, ING_SORT, ING_SKU_FILTER, GEN_INGDEP_REPORT,
+   EXPORT_INGDEP_REPORT} from '../actions/types';
 
 const initialState = {
   ings: [],
@@ -26,7 +27,8 @@ export default function(state = initialState, action) {
         ings: action.payload.results,
         count: action.payload.count,
         loading: false,
-        pagelimit: 10
+        pagelimit: 10,
+        error_msgs: []
       }}
     case ADD_ING:
       return {
@@ -91,7 +93,8 @@ export default function(state = initialState, action) {
         count: action.payload.data.count,
         page: page_val,
         pagelimit: action.payload.pagelimit,
-        loading: false
+        loading: false,
+        error_msgs: []
       }}
     case GEN_INGDEP_REPORT:{
       return {

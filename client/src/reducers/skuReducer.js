@@ -1,6 +1,7 @@
 import { GET_SKUS_BYPLINE, SKUS_LOADING, GET_SKUS,
 ADD_SKU, DELETE_SKU, UPDATE_SKU, SKU_KW_SEARCH,
-SKU_SORT, SKU_ING_FILTER, SKU_PLINE_FILTER, SKU_ERROR, SKU_GROUP_BY_PL} from '../actions/types';
+SKU_SORT, SKU_ING_FILTER, SKU_PLINE_FILTER, SKU_ERROR,
+SKU_GROUP_BY_PL} from '../actions/types';
 
 const initialState = {
   skus: [],
@@ -34,10 +35,8 @@ export default function(state = initialState, action) {
         skus: state.skus.filter( sku => sku._id !== action.payload )
       }
     case UPDATE_SKU:{
-      console.log("UPDATE_SKU");
       return {
-        ...state,
-        loading:true
+        ...state
       }
     }
     case SKUS_LOADING:
@@ -54,7 +53,8 @@ export default function(state = initialState, action) {
         skus: action.payload.results,
         count: action.payload.count,
         loading: false,
-        pagelimit: 10
+        pagelimit: 10,
+        error_msgs: []
       }
     }
     case SKU_GROUP_BY_PL:{
@@ -94,7 +94,6 @@ export default function(state = initialState, action) {
       }
     }
     case SKU_SORT:{
-      console.log(action.payload);
       var page_val = action.payload.page;
       if(action.payload.pagelimit === -1){
         page_val = 1;
@@ -112,7 +111,8 @@ export default function(state = initialState, action) {
         obj: action.payload.obj,
         loading: false,
         pagelimit: action.payload.pagelimit,
-        page: page_val
+        page: page_val,
+        error_msgs: []
       }
     }
     case SKU_ERROR:{

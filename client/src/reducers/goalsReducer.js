@@ -13,7 +13,8 @@ export default function(state = initialState, action) {
       return {
         ...state,
         goals: action.payload,
-        loading: false
+        loading: false,
+        error_msgs: []
       }
     case GOALS_LOADING:
       return {

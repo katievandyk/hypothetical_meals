@@ -23,13 +23,7 @@ export const addIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
     dispatch({
       type: ADD_ING,
       payload: res.data
-    })
-  }).catch(error =>{
-    dispatch({
-      type: ING_ERROR,
-      payload: error.response
-    })
-  });
+    });
     dispatch(setIngsLoading());
     axios.post(`/api/ingredients/filter/sort/${field}/${asc}/${page}/${pagelimit}`, obj).then(res =>
       dispatch({
@@ -42,7 +36,13 @@ export const addIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
            payload: error.response
          })
        });
-  };
+     }).catch(error =>{
+       dispatch({
+         type: ING_ERROR,
+         payload: error.response
+       })
+     });
+}
 
 export const updateIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
   axios.post(`/api/ingredients/update/${ing.id}`, ing).then(res => {
@@ -63,7 +63,12 @@ export const updateIng = (ing, field, asc, page, pagelimit, obj) => dispatch => 
            })
          });
     }
-  )};
+  ).catch(error =>{
+    dispatch({
+      type: ING_ERROR,
+      payload: error.response
+    })});
+}
 
 export const deleteIng = id => dispatch => {
   axios.delete(`/api/ingredients/${id}`).then(res =>
