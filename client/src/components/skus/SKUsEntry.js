@@ -123,7 +123,7 @@ class SKUsEntry extends React.Component {
         validate[field_type] = 'has-success';
       }
       else if(field_type === 'edit_number' || field_type === 'edit_count_per_case'){
-        const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
+        const numRex = /^[0-9]+$/mg
         if (numRex.test(e.target.value)) {
           validate[field_type] = 'has-success';
         }
