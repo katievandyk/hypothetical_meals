@@ -104,7 +104,7 @@ class SKUAddModal extends React.Component {
 
   allValidated = () => {
     const validate_kv = Object.entries(this.state.validate);
-    for(var i; i < validate_kv.length; i++){
+    for(var i = 0; i < validate_kv.length; i++){
       if(validate_kv[i][1] !== 'has-success'){
         return false;
       }
@@ -132,15 +132,38 @@ class SKUAddModal extends React.Component {
     this.toggle();
   }
 
-  onIngListChange = (ing_list) => {
+  onIngListChange = (ing_list, valid) => {
+    var val_obj = this.state.validate;
+    if(valid){
+      val_obj.ingredients_list = 'has-success'
+    }
+    else{
+      val_obj.ingredients_list = 'has-danger'
+    }
+    var newIngList = [];
+    for(var i = 0; i < ing_list.length; i ++){
+      if(ing_list[i]._id.length > 0 && ing_list[i].quantity.length > 0){
+        newIngList = [...newIngList, ing_list[i]];
+      }
+    }
+
     this.setState({
-      ingredients_list: ing_list
+      ingredients_list: newIngList,
+      validate: val_obj
     });
   }
 
-  onProductLineChange = (prod_line) => {
+  onProductLineChange = (prod_line, valid) => {
+    var val_obj = this.state.validate;
+    if(valid){
+      val_obj.product_line = 'has-success'
+    }
+    else{
+      val_obj.product_line = 'has-danger'
+    }
     this.setState({
-      product_line: prod_line
+      product_line: prod_line,
+      validate: val_obj
     });
   }
 
@@ -282,9 +305,11 @@ class SKUAddModal extends React.Component {
                   onChange={this.onChange}>
                 </Input>
             </FormGroup>
-            <Button color="dark" style={{ marginTop: '2rem' }} type="submit" block>
+            <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
+            <Button className={this.allValidated() ? (''):('disabled')} color="dark" type="submit" block>
                   Add SKU
                 </Button>
+              </div>
           </Form>
         </ModalBody>
       </Modal>

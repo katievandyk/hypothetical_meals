@@ -6,6 +6,7 @@ import {
   ModalBody,
   Form,
   FormGroup,
+  FormFeedback,
   Label,
   Input
 } from 'reactstrap';
@@ -39,11 +40,21 @@ class IngredientsAddModal extends React.Component {
     });
   };
 
+  allValidated = () => {
+    const validate_kv = Object.entries(this.state.validate);
+    for(var i = 0; i < validate_kv.length; i++){
+      if(validate_kv[i][1] !== 'has-success'){
+        return false;
+      }
+    }
+    return true;
+  }
+
   validate = e => {
     const field_type = e.target.name;
     const { validate } = this.state
     if (e.target.value.length > 0) {
-      if(field_type === 'name' || field_type === 'package_size' || field_type === 'vendor_info'){
+      if(field_type === 'name' || field_type === 'package_size'){
         validate[field_type] = 'has-success';
       }
       else if(field_type === 'number'){
@@ -100,22 +111,38 @@ class IngredientsAddModal extends React.Component {
             <FormGroup>
               <Label for="name">Name</Label>
                 <Input
+                  valid={ this.state.validate.name === 'has-success' }
+                  invalid={ this.state.validate.name === 'is-empty' }
                   type="text"
                   name="name"
                   id="name"
                   placeholder="Add Name of Ingredient"
                   onChange={this.onChange}>
                 </Input>
+                <FormFeedback>
+                  Please input a name.
+                </FormFeedback>
             </FormGroup>
             <FormGroup>
               <Label for="number">Number</Label>
                 <Input
+                  valid={this.state.validate.number === 'has-success' }
+                  invalid={this.state.validate.number === 'is-empty' || this.state.validate.number === 'not-valid-num'}
                   type="text"
                   name="number"
                   id="number"
                   placeholder="Add Ingredient Number"
                   onChange={this.onChange}>
                 </Input>
+                {this.state.validate.number === 'is-empty' ? (
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
+                ):(
+                  <FormFeedback>
+                    Please input a valid number.
+                  </FormFeedback>
+                )}
             </FormGroup>
             <FormGroup>
               <Label for="vendor_info">Vendor's Info</Label>
@@ -130,22 +157,38 @@ class IngredientsAddModal extends React.Component {
             <FormGroup>
               <Label for="package_size">Package Size</Label>
                 <Input
+                  valid={ this.state.validate.package_size === 'has-success' }
+                  invalid={ this.state.validate.package_size === 'is-empty' }
                   type="text"
                   name="package_size"
                   id="package_size"
                   placeholder="Add the Package Size"
                   onChange={this.onChange}>
                 </Input>
+                <FormFeedback>
+                  Please input a value.
+                </FormFeedback>
             </FormGroup>
             <FormGroup>
               <Label for="cost_per_package">Cost per Package</Label>
                 <Input
+                  valid={this.state.validate.cost_per_package === 'has-success' }
+                  invalid={this.state.validate.cost_per_package === 'is-empty' || this.state.validate.cost_per_package === 'not-valid'}
                   type="text"
                   name="cost_per_package"
                   id="cost_per_package"
                   placeholder="Add the Cost Per Package"
                   onChange={this.onChange}>
                 </Input>
+                {this.state.validate.cost_per_package === 'is-empty' ? (
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
+                ):(
+                  <FormFeedback>
+                    Please input a valid cost value.
+                  </FormFeedback>
+                )}
             </FormGroup>
             <FormGroup>
               <Label for="comment">Comments</Label>
@@ -157,9 +200,11 @@ class IngredientsAddModal extends React.Component {
                   onChange={this.onChange}>
                 </Input>
             </FormGroup>
-            <Button color="dark" style={{ marginTop: '2rem' }} type="submit" block>
+            <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
+            <Button color="dark" className={this.allValidated() ? (''):('disabled')} type="submit" block>
                   Add Ingredient
                 </Button>
+              </div>
           </Form>
         </ModalBody>
       </Modal>
