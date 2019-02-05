@@ -4,9 +4,8 @@ import { EXPORT_SKUS, EXPORT_PLINES, EXPORT_INGS, EXPORT_FORMULAS, EXPORT_INGDEP
 const FileDownload = require('js-file-download');
 
 export const exportSKUs = (obj) => dispatch => {
-    alert(Date.now())
      axios.post('/api/bulk-export/skus', obj).then(res => {
-     FileDownload(res.data, 'skus.csv')
+     FileDownload(res.data, 'skus_' + Date.now() + '.csv')
    });
    return {
        type: EXPORT_SKUS
@@ -15,7 +14,7 @@ export const exportSKUs = (obj) => dispatch => {
 
 export const exportPLines = () => dispatch => {
      axios.post('/api/bulk-export/productlines').then(res => {
-     FileDownload(res.data, 'product_lines.csv')
+     FileDownload(res.data, 'product_lines_' + Date.now() + '.csv')
    });
    return {
        type: EXPORT_PLINES
@@ -24,7 +23,7 @@ export const exportPLines = () => dispatch => {
 
  export const exportIngs = (obj) => dispatch => {
       axios.post('/api/bulk-export/ingredients', obj).then(res => {
-      FileDownload(res.data, 'ingredients.csv')
+      FileDownload(res.data, 'ingredients_' + Date.now() + '.csv')
     });
     return {
         type: EXPORT_INGS
@@ -33,7 +32,7 @@ export const exportPLines = () => dispatch => {
 
   export const exportIngDepReport = (obj) => dispatch => {
         axios.post('/api/ingredients/filter/report', obj).then(res => {
-        FileDownload(res.data, 'ingredient_dep_report.csv')
+        FileDownload(res.data, 'ingredient_dep_reports_' + Date.now() + '.csv')
     });
     return {
         type: EXPORT_INGDEP_REPORT
@@ -42,7 +41,7 @@ export const exportPLines = () => dispatch => {
 
  export const exportFormulas = (obj) => dispatch => {
       axios.post('/api/bulk-export/formulas', obj).then(res => {
-      FileDownload(res.data, 'formulas.csv')
+      FileDownload(res.data, 'formulas_' + Date.now() + '.csv')
     });
     return {
         type: EXPORT_FORMULAS
