@@ -11,7 +11,7 @@ import ImportAlerts from '../components/import/ImportAlerts'
 import ImportAssistant from '../components/import/ImportAssistant'
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { uploadCheck, importOverwrites } from '../actions/importActions';
+import { uploadCheck, resetImportState, importOverwrites } from '../actions/importActions';
 
 class Import extends Component {
   state = {
@@ -36,6 +36,10 @@ class Import extends Component {
     e.target.value = '';
   }
 
+  componentDidMount(){
+    this.props.resetImportState();
+  }
+
 
   onUploadFile = (e) => {
     if(e.target.files.length > 0){
@@ -47,7 +51,7 @@ class Import extends Component {
         this.props.uploadCheck(newFileObj);
       }
 
-      if(this.props.import.error_msgs.length === 0 && this.props.import.success && !this.props.import.loading){
+      if(this.props.import.success && !this.props.import.loading){
         this.modal_toggle();
       }
     }
@@ -124,6 +128,8 @@ class Import extends Component {
 
 Import.propTypes = {
   uploadCheck: PropTypes.func.isRequired,
+  importOverwrites: PropTypes.func.isRequired,
+  resetImportState: PropTypes.func.isRequired,
   import: PropTypes.object.isRequired
 };
 
@@ -131,4 +137,4 @@ const mapStateToProps = state => ({
   import: state.import
 });
 
-export default connect(mapStateToProps, {uploadCheck, importOverwrites})(Import);
+export default connect(mapStateToProps, {uploadCheck,resetImportState, importOverwrites})(Import);

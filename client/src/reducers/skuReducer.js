@@ -33,10 +33,13 @@ export default function(state = initialState, action) {
         ...state,
         skus: state.skus.filter( sku => sku._id !== action.payload )
       }
-    case UPDATE_SKU:
+    case UPDATE_SKU:{
+      console.log("UPDATE_SKU");
       return {
-        ...state
+        ...state,
+        loading:true
       }
+    }
     case SKUS_LOADING:
       return {
         ...state,
@@ -91,6 +94,7 @@ export default function(state = initialState, action) {
       }
     }
     case SKU_SORT:{
+      console.log(action.payload);
       var page_val = action.payload.page;
       if(action.payload.pagelimit === -1){
         page_val = 1;
@@ -112,7 +116,6 @@ export default function(state = initialState, action) {
       }
     }
     case SKU_ERROR:{
-      console.log(action.payload);
       return {
         ...state,
         error_msgs: [...state.error_msgs, action.payload.data.message],

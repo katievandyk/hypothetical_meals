@@ -5,6 +5,7 @@ const Papa = require('papaparse');
 
 // Goal Model
 const Goal = require('../../models/Goal');
+const round = require('mongo-round');
 
 // @route GET api/manufacturing/:user_email
 // @desc get all goals for specific user
@@ -88,7 +89,7 @@ router.get('/ingquantities/:id', (req, res) => {
                   as: 'ingredient'
               } },
           { $unwind: "$ingredient" },
-          { $project: { _id: 0, ingredient: 1, quantity: 1} },
+          { $project: { _id: 0, ingredient: 1, quantity: round('$quantity', 2)} },
         ]
     ).then(result => res.json(result))
     .catch(err => res.status(404).json({success: false, message: err.message}));

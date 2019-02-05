@@ -30,52 +30,63 @@ router.get('/', (req, res) => {
 // @desc create an sku
 // @access public
 router.post('/', (req, res) => {
-    var numberResolved = req.body.number ? req.body.number : new Date().valueOf();
-    try {
-        Parser.skuFieldsCheck(req.body.name, numberResolved, req.body.case_number, req.body.unit_number, req.body.unit_size, req.body.count_per_case, req.body.product_line)
-        if(req.body.ingredients_list && !Array.isArray(req.body.ingredients_list))
-            throw new Error("Ingredients list must be an array.")
-        if(req.body.ingredients_list)
-            req.body.ingredients_list.forEach(tuple => {
-                if(!(tuple._id && tuple.quantity))
-                    throw new Error("SKU ingredients list must contain id and quantity")
-                if(!Helper.isNumeric(tuple.quantity))
-                    throw new Error("SKU ingredients list quantity must be a number.")
-            })
-    } catch(err) {
-        res.status(404).json({success: false, message: err.message})
-    }
+    SKU.find().select("-_id number").sort({number: -1}).limit(1).then(max_number => {
+        let numberResolved
+        if(max_number.length === 0) 
+            numberResolved = 1
+        else 
+            numberResolved = max_number[0].number+1
+        try {
+            Parser.skuFieldsCheck(req.body.name, numberResolved, req.body.case_number, req.body.unit_number, req.body.unit_size, req.body.count_per_case, req.body.product_line)
+            if(req.body.ingredients_list && !Array.isArray(req.body.ingredients_list))
+                throw new Error("Ingredients list must be an array.")
+            if(req.body.ingredients_list)
+                req.body.ingredients_list.forEach(tuple => {
+                    if(!(tuple._id && tuple.quantity))
+                        throw new Error("SKU ingredients list must contain id and quantity")
+                    if(!Helper.isNumeric(tuple.quantity))
+                        throw new Error("SKU ingredients list quantity must be a number.")
+                })
+        } catch(err) {
+            console.log(err)
+            res.status(404).json({success: false, message: err.message})
+            return;
+        }
 
-    const newSKU = new SKU({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        number: numberResolved,
-        case_number: req.body.case_number,
-        unit_number: req.body.unit_number,
-        unit_size: req.body.unit_size,
-        product_line: mongoose.Types.ObjectId(req.body.product_line),
-        count_per_case: req.body.count_per_case,
-        ingredients_list: req.body.ingredients_list,
-        comment: req.body.comment
-    });
+        const newSKU = new SKU({
+            _id: new mongoose.Types.ObjectId(),
+            name: req.body.name,
+            number: numberResolved,
+            case_number: req.body.case_number,
+            unit_number: req.body.unit_number,
+            unit_size: req.body.unit_size,
+            product_line: mongoose.Types.ObjectId(req.body.product_line),
+            count_per_case: req.body.count_per_case,
+            ingredients_list: req.body.ingredients_list,
+            comment: req.body.comment
+        });
 
-    SKU.find({
-        $or: [
-            {number: newSKU.number},
-            {case_number: newSKU.case_number}
-        ]}).then(results => {
-            results.forEach(result => {
-                if(result._id != newSKU._id) {
-                    if (result.number === newSKU.number) {
-                        res.status(404).json({success: false, message: "SKU number is not unique."})
+        SKU.find({
+            $or: [
+                {number: newSKU.number},
+                {case_number: newSKU.case_number}
+            ]}).then(results => {
+                error_thrown = false
+                results.forEach(result => {
+                    if(result._id != newSKU._id) {
+                        if (result.number === newSKU.number) {
+                            res.status(404).json({success: false, message: "SKU number is not unique."})
+                        }
+                        else {
+                            res.status(404).json({success: false, message: "SKU Case UPC# is not unique."})
+                        }
+                        error_thrown = true
                     }
-                    else {
-                        res.status(404).json({success: false, message: "SKU Case UPC# is not unique."})
-                    }
-                }
+                })
+                if(!error_thrown)
+                    newSKU.save().then(sku => res.json(sku))
+                    .catch(err => res.status(404).json({success: false, message: err.message}));
             })
-            newSKU.save().then(sku => res.json(sku))
-            .catch(err => res.status(404).json({success: false, message: err.message}));
         })
 });
 
@@ -109,31 +120,40 @@ router.delete('/:id', (req, res) => {
 router.post('/update/:id', (req, res) => {
     SKU.findById(req.params.id).lean().then(sku => {
         old_pl = sku.product_line.toString()
+        ing_list = req.body.ingredients_list.map(function(ing) {
+            return {
+                "_id": ing._id.toString(),
+                "quantity": ing.quantity.toString()
+            }
+        })
         const updatedSku = {
             name: req.body.name !== null ? req.body.name : sku.name,
             number: req.body.number !== null ? req.body.number : sku.number,
             case_number: req.body.case_number !== null ? req.body.case_number : sku.case_number,
             unit_number: req.body.unit_number !== null ? req.body.unit_number : sku.unit_number,
             unit_size: req.body.unit_size !== null ? req.body.unit_size : sku.unit_size,
-            product_line: req.body.product_line != null ? req.body.product_line : old_pl,
+            product_line: req.body.product_line != null ? req.body.product_line : sku.product_line,
             count_per_case: req.body.count_per_case !== null ? req.body.count_per_case : sku.count_per_case,
             ingredients_list: req.body.ingredients_list != null ? req.body.ingredients_list : sku.ingredients_list,
             comment: req.body.comment !== null ? req.body.comment : sku.comment,
         };
-        
+
         try {
-            Parser.skuFieldsCheck(updatedSku.name, updatedSku.number, updatedSku.case_number, updatedSku.unit_number, updatedSku.unit_size, updatedSku.count_per_case, updatedSku.product_line)
+            Parser.skuFieldsCheck(updatedSku.name, updatedSku.number.toString(), updatedSku.case_number.toString(), updatedSku.unit_number.toString(), updatedSku.unit_size, updatedSku.count_per_case, updatedSku.product_line)
             if(req.body.ingredients_list !== null && !Array.isArray(req.body.ingredients_list))
                 throw new Error("Ingredients list must be an array.")
             if(req.body.ingredients_list)
                 req.body.ingredients_list.forEach(tuple => {
-                    if(!(tuple._id && tuple.quantity))
+                    if(!(tuple._id && tuple.quantity)) {
                         throw new Error("SKU ingredients list must contain id and quantity")
-                    if(!Helper.isNumeric(tuple.quantity))
+                    }
+                    if(!Helper.isNumeric(tuple.quantity)) {
                         throw new Error("SKU ingredients list quantity must be a number.")
+                    }
             })
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
+            return;
         }
 
         SKU.find({
@@ -141,6 +161,7 @@ router.post('/update/:id', (req, res) => {
                 {number: updatedSku.number},
                 {case_number: updatedSku.case_number}
             ]}).then(results => {
+                error_thrown = false
                 results.forEach(result => {
                     if(result._id.toString() != sku._id.toString()) {
                         if (result.number === updatedSku.number) {
@@ -149,11 +170,13 @@ router.post('/update/:id', (req, res) => {
                         else {
                             res.status(404).json({success: false, message: "SKU Case UPC# is not unique."})
                         }
+                        error_thrown = true
                     }
                 })
-                SKU.findByIdAndUpdate(req.params.id, {$set:req.body})
-                .then(() => res.json({success: true}))
-                .catch(err => res.status(404).json({success: false, message: err.message}))
+
+                if(!error_thrown)
+                    SKU.findByIdAndUpdate(req.params.id, {$set:req.body})
+                    .then(() => res.json({success: true}))
             })
         })})
 

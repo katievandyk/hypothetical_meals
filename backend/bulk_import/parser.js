@@ -126,7 +126,8 @@ module.exports.checkIngredientFileDuplicates = checkIngredientFileDuplicates = f
 
 module.exports.ingredientFieldsCheck = ingredientFieldsCheck = function(name, number, size, cost) {
     if(! (name && number && size && cost))
-        throw new Error("Ingredient name, number, package size, and cost are required.");
+        throw new Error(`Ingredient name, number, package size, and cost are required. Got: ${name},${number},${size},${cost}`);
+    
     if(!Helpers.isPositiveInteger(number)) 
         throw new Error("Ingredient number is not a valid number: " + number);
 
@@ -233,7 +234,8 @@ module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(max_nu
 
 module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc, unit_upc, unit_size, count, pl_name) {
     if(! (name && case_upc && unit_upc && unit_size && count &&  pl_name))
-        throw new Error("SKU name, Case UPC#, Unit UPC#, Unit Size, Count per case, and Product Line fields are required.")
+        throw new Error(`SKU name, Case UPC#, Unit UPC#, Unit Size, Count per case, and Product Line fields are required. 
+        Got: ${name},${case_upc},${unit_upc},${unit_size},${count},${pl_name}`)
     if(!Helpers.isPositiveInteger(number)) 
         throw new Error("SKU number is not a valid number: " + number);
 

@@ -26,43 +26,51 @@ router.get('/', (req, res) => {
 // @desc create an ingredient
 // @access public
 router.post('/', (req, res) => {
-    var numberResolved = req.body.number ? req.body.number : new Date().valueOf();
+    Ingredient.find().select("-_id number").sort({number: -1}).limit(1).then(max_number => {
+        let numberResolved
+        if(max_number.length === 0) 
+            numberResolved = 1
+        else 
+            numberResolved = max_number[0].number+1
 
-    try {
-        Parser.ingredientFieldsCheck(req.body.name, numberResolved, req.body.package_size, req.body.cost_per_package)
-    } catch(err) {
-        res.status(404).json({success: false, message: err.message})
-    }
-    
-    const newIngredient = new Ingredient({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        number: numberResolved,
-        vendor_info: req.body.vendor_info,
-        package_size: req.body.package_size,
-        cost_per_package: req.body.cost_per_package,
-        comment: req.body.comment
-    });
+        try {
+            Parser.ingredientFieldsCheck(req.body.name, numberResolved, req.body.package_size, req.body.cost_per_package)
+        } catch(err) {
+            res.status(404).json({success: false, message: err.message})
+        }
+        
+        const newIngredient = new Ingredient({
+            _id: new mongoose.Types.ObjectId(),
+            name: req.body.name,
+            number: numberResolved,
+            vendor_info: req.body.vendor_info,
+            package_size: req.body.package_size,
+            cost_per_package: req.body.cost_per_package,
+            comment: req.body.comment
+        });
 
-    Ingredient.find({
-        $or: [
-            {name: newIngredient.name},
-            {number: newIngredient.number},
-        ]}).then(ings => {
-            ings.forEach(check_ing => {
-                if (check_ing._id.toString() !== newIngredient._id.toString()) {
-                    if(check_ing.name === newIngredient.name) {
-                        res.status(404).json({success: false, message: "Ingredient name is not unique: " + check_ing.name})
+        Ingredient.find({
+            $or: [
+                {name: newIngredient.name},
+                {number: newIngredient.number},
+            ]}).then(ings => {
+                error_thrown = false
+                ings.forEach(check_ing => {
+                    if (check_ing._id.toString() !== newIngredient._id.toString()) {
+                        if(check_ing.name === newIngredient.name) {
+                            res.status(404).json({success: false, message: "Ingredient name is not unique: " + check_ing.name})
+                        }
+                        else {
+                            res.status(404).json({success: false, message: "Ingredient number is not unique: " + check_ing.number})
+                        }
+                        error_thrown = true
                     }
-                    else {
-                        res.status(404).json({success: false, message: "Ingredient number is not unique: " + check_ing.number})
-                    }
-                }
+                })
+                if(!error_thrown)
+                    newIngredient.save().then(ingredient => res.json(ingredient))
+                    .catch(err => res.status(404).json({success: false, message: err.message}));
             })
         })
-
-    newIngredient.save().then(ingredient => res.json(ingredient))
-        .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
 // @route DELETE api/ingredients/:id
@@ -104,6 +112,7 @@ router.post('/update/:id', (req, res) => {
             Parser.ingredientFieldsCheck(new_ing.name, new_ing.number, new_ing.package_size, new_ing.cost_per_package)
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
+            return;
         }
 
         Ingredient.find({
@@ -111,6 +120,7 @@ router.post('/update/:id', (req, res) => {
                 {name: new_ing.name},
                 {number: new_ing.number},
             ]}).then(ings => {
+                error_thrown = false
                 ings.forEach(check_ing => {
                     if (check_ing._id.toString() !== ing._id.toString()) {
                         if(check_ing.name === new_ing.name) {
@@ -119,11 +129,13 @@ router.post('/update/:id', (req, res) => {
                         else {
                             res.status(404).json({success: false, message: "Updated number is not unique: " + check_ing.number})
                         }
+                        error_thrown = true
                     }
                 })
-                Ingredient.findByIdAndUpdate(req.params.id, {$set:req.body}, {new: true})
-                .then(() => res.json({success: true}))
-                .catch(err => res.status(404).json({success: false, message: err.message}))});
+                if(!error_thrown)
+                    Ingredient.findByIdAndUpdate(req.params.id, {$set:req.body}, {new: true})
+                    .then(() => res.json({success: true}))
+                    .catch(err => res.status(404).json({success: false, message: err.message}))});
             })
     })
     
