@@ -12,6 +12,7 @@ const Ingredient = require('../../models/Ingredient');
 
 // Product Line Model
 const ProductLine = require('../../models/ProductLine');
+const Goal = require('../../models/Goal');
 
 // @route GET api/skus
 // @desc get all SKUs
@@ -82,10 +83,24 @@ router.post('/', (req, res) => {
 // @desc delete an sku
 // @access public
 router.delete('/:id', (req, res) => {
-    SKU.findById(req.params.id)
-        .then(sku => sku.remove().then(
-            () => res.json({success: true}))
-        ).catch(err => res.status(404).json({success: false, message: err.message}))
+    Goal.find({"skus_list.sku" : req.params.id}).lean()
+    .then(goal_matches => {
+        Promise.all(goal_matches.map(function(goal) {
+            return new Promise(function(accept, reject) {
+                new_list = goal.skus_list.filter(function( obj ) {
+                    return obj.sku.toString() !== req.params.id;
+                });
+                Goal.findByIdAndUpdate(goal._id, {skus_list: new_list}).then(accept).catch(reject)
+            })
+        })).then(results => {
+            res.json({success: true})
+            SKU.findById(req.params.id)
+            .then(sku => sku.remove().then(
+                () => res.json({success: true}))
+            ).catch(err => res.status(404).json({success: false, message: err.message}))
+        }).catch(err => res.status(404).json({success: false, message: err.message}))
+    })
+    
 });
 
 // @route POST api/skus/update/:id
