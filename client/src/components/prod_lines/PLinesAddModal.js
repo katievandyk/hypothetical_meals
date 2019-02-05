@@ -74,7 +74,7 @@ class PLinesAddModal extends React.Component {
                   type="text"
                   name="name"
                   id="name"
-                  placeholder="Add Name of SKU"
+                  placeholder="Add Name of Product Line"
                   onChange={this.onChange}>
                 </Input>
                 <FormFeedback valid>
