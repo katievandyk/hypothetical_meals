@@ -12,7 +12,8 @@ export const getIngs = () => dispatch =>  {
     })
   ).catch(error =>{
     dispatch({
-      type: ING_ERROR
+      type: ING_ERROR,
+      payload: error.response
     })
   });
 };
@@ -25,7 +26,8 @@ export const addIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
     })
   }).catch(error =>{
     dispatch({
-      type: ING_ERROR
+      type: ING_ERROR,
+      payload: error.response
     })
   });
     dispatch(setIngsLoading());
@@ -36,7 +38,8 @@ export const addIng = (ing, field, asc, page, pagelimit, obj) => dispatch => {
       })
     ).catch(error =>{
          dispatch({
-           type: ING_ERROR
+           type: ING_ERROR,
+           payload: error.response
          })
        });
   };
@@ -55,7 +58,8 @@ export const updateIng = (ing, field, asc, page, pagelimit, obj) => dispatch => 
         })
       ).catch(error =>{
            dispatch({
-             type: ING_ERROR
+             type: ING_ERROR,
+             payload: error.response
            })
          });
     }
@@ -69,7 +73,8 @@ export const deleteIng = id => dispatch => {
     })
   ).catch(error =>{
     dispatch({
-      type: ING_ERROR
+      type: ING_ERROR,
+      payload: error.response
     })
   });
 };
@@ -83,7 +88,8 @@ export const getIngSKUs = id => dispatch => {
     })
   ).catch(error =>{
     dispatch({
-      type: ING_ERROR
+      type: ING_ERROR,
+      payload: error.response
     })
   });
 };
@@ -117,7 +123,8 @@ export const sortIngs = (field, asc, page, pagelimit, obj) => dispatch => {
     })
   ).catch(error =>{
     dispatch({
-      type: ING_ERROR
+      type: ING_ERROR,
+      payload: error.response
     })
   });
 };
@@ -130,7 +137,8 @@ export const genIngDepReport = (obj) => dispatch => {
     })
   ).catch(error =>{
     dispatch({
-      type: ING_ERROR
+      type: ING_ERROR,
+      payload: error.response
     })
   });
 };

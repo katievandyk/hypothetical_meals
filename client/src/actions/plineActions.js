@@ -11,7 +11,8 @@ export const getPLines = (page, pagelimit) => dispatch =>  {
     })
   ).catch(error =>{
     dispatch({
-      type: PLINE_ERROR
+      type: PLINE_ERROR,
+      payload: error.response
     })
   });
 };
@@ -31,7 +32,8 @@ export const addPLine = pline => dispatch => {
     })
   ).catch(error =>{
     dispatch({
-      type: PLINE_ERROR
+      type: PLINE_ERROR,
+      payload: error.response
     })
   });
 };
@@ -44,7 +46,8 @@ export const updatePLine = pline => dispatch => {
     })
   ).catch(error =>{
     dispatch({
-      type: PLINE_ERROR
+      type: PLINE_ERROR,
+      payload: error.response
     })
   });
 };
@@ -58,7 +61,8 @@ export const deletePLine = id => dispatch => {
     })
   ).catch(error =>{
     dispatch({
-      type: PLINE_ERROR
+      type: PLINE_ERROR,
+      payload: error.response
     })
   });
 };
