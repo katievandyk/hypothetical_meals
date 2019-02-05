@@ -1,9 +1,10 @@
-import {GET_GOALS, ADD_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_EXPORT, GOAL_CALCULATOREXPORT} from '../actions/types';
+import {GET_GOALS, ADD_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_EXPORT, GOAL_CALCULATOREXPORT, GOAL_ERROR} from '../actions/types';
 
 const initialState = {
    goals: [],
    ing_quantities: [],
-   loading: false
+   loading: false,
+   error_msgs: []
 };
 
 export default function(state = initialState, action) {
@@ -40,6 +41,14 @@ export default function(state = initialState, action) {
          ...state,
          loading: false
        }
+    case GOAL_ERROR:{
+      console.log(action.payload);
+      return {
+        ...state,
+        error_msgs: [...state.error_msgs, action.payload.data.message],
+        loading: false
+      }
+    }
     default:
       return state;
   }
