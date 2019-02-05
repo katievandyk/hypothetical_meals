@@ -33,6 +33,8 @@ router.post('/', (req, res) => {
         else 
             numberResolved = max_number[0].number+1
 
+        numberResolved = req.body.number ? req.body.number : numberResolved
+
         try {
             Parser.ingredientFieldsCheck(req.body.name, numberResolved, req.body.package_size, req.body.cost_per_package)
         } catch(err) {
