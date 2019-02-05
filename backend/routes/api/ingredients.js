@@ -49,6 +49,7 @@ router.post('/', (req, res) => {
             {name: newIngredient.name},
             {number: newIngredient.number},
         ]}).then(ings => {
+            error_thrown = false
             ings.forEach(check_ing => {
                 if (check_ing._id.toString() !== newIngredient._id.toString()) {
                     if(check_ing.name === newIngredient.name) {
@@ -57,12 +58,15 @@ router.post('/', (req, res) => {
                     else {
                         res.status(404).json({success: false, message: "Ingredient number is not unique: " + check_ing.number})
                     }
+                    error_thrown = true
                 }
             })
+            if(!error_thrown)
+                newIngredient.save().then(ingredient => res.json(ingredient))
+                .catch(err => res.status(404).json({success: false, message: err.message}));
         })
 
-    newIngredient.save().then(ingredient => res.json(ingredient))
-        .catch(err => res.status(404).json({success: false, message: err.message}));
+    
 });
 
 // @route DELETE api/ingredients/:id
@@ -104,6 +108,7 @@ router.post('/update/:id', (req, res) => {
             Parser.ingredientFieldsCheck(new_ing.name, new_ing.number, new_ing.package_size, new_ing.cost_per_package)
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
+            return;
         }
 
         Ingredient.find({
@@ -111,6 +116,7 @@ router.post('/update/:id', (req, res) => {
                 {name: new_ing.name},
                 {number: new_ing.number},
             ]}).then(ings => {
+                error_thrown = false
                 ings.forEach(check_ing => {
                     if (check_ing._id.toString() !== ing._id.toString()) {
                         if(check_ing.name === new_ing.name) {
@@ -119,11 +125,13 @@ router.post('/update/:id', (req, res) => {
                         else {
                             res.status(404).json({success: false, message: "Updated number is not unique: " + check_ing.number})
                         }
+                        error_thrown = true
                     }
                 })
-                Ingredient.findByIdAndUpdate(req.params.id, {$set:req.body}, {new: true})
-                .then(() => res.json({success: true}))
-                .catch(err => res.status(404).json({success: false, message: err.message}))});
+                if(!error_thrown)
+                    Ingredient.findByIdAndUpdate(req.params.id, {$set:req.body}, {new: true})
+                    .then(() => res.json({success: true}))
+                    .catch(err => res.status(404).json({success: false, message: err.message}))});
             })
     })
     
