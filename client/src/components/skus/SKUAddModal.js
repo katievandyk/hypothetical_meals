@@ -46,7 +46,7 @@ class SKUAddModal extends React.Component {
   };
 
   is_upca_standard = (code_str) => {
-      if(code_str.length != 12) {
+      if(code_str.length !== 12) {
           return false;
       }
       let code = parseInt(code_str);
@@ -56,16 +56,16 @@ class SKUAddModal extends React.Component {
       code /= 10;
       for(i = 1; i < 12; i++) {
           var digit = Math.floor(code % 10);
-          if (i == 11 && !(digit == 0 | digit == 1 | digit >= 6 && digit <= 9)) {
+          if (i === 11 && !(digit === 0 | digit === 1 | digit >= 6 && digit <= 9)) {
               return false;
           }
 
           code /= 10;
-          sum += i%2 == 0 ? digit : digit*3;
+          sum += i%2 === 0 ? digit : digit*3;
       }
 
       var check_digit = (10-sum%10)%10;
-      if(check_digit != code_temp % 10) {
+      if(check_digit !== code_temp % 10) {
           return false;
       }
 
