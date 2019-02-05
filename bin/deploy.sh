@@ -22,7 +22,7 @@ echo "server {
                 try_files \$uri \$uri/ =404;
 	            proxy_pass http://localhost:8080;
         }
-}" > /etc/nginx/sites-available/default
+}" | sudo tee -a /etc/nginx/sites-available/default
 sudo apt-get install software-properties-common
 sudo apt-get update
 sudo apt-get install python-certbot-nginx
