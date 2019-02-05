@@ -1,4 +1,4 @@
-import {UPLOAD_CHECK, UPLOAD_ERROR, IMPORT_OVERWRITES, SET_IMPORT_LOADING} from '../actions/types';
+import {UPLOAD_CHECK, UPLOAD_ERROR, RESET_IMPORT_STATE, IMPORT_OVERWRITES, SET_IMPORT_LOADING} from '../actions/types';
 
 const initialState = {
   success: true,
@@ -41,6 +41,9 @@ export default function(state = initialState, action) {
         ...state,
         loading: true
       }
+    }
+    case RESET_IMPORT_STATE:{
+      return initialState;
     }
     default:
       return state;
