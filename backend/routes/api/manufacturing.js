@@ -19,17 +19,6 @@ router.get('/:user_email', (req, res) => {
         .then(goal => res.json(goal))
 });
 
-// @route GET api/manufacturing
-// @desc get all goals
-// @access public
-router.get('/', (req, res) => {
-    Goal
-        .find()
-        .populate({ path: 'skus_list.sku'})
-        .lean()
-        .then(goal => res.json(goal))
-});
-
 // @route POST api/manufacturing
 // @desc create a goal
 // @access public
