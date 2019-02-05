@@ -36,6 +36,8 @@ router.post('/', (req, res) => {
             numberResolved = 1
         else 
             numberResolved = max_number[0].number+1
+
+        numberResolved = req.body.number ? req.body.number : numberResolved
         try {
             Parser.skuFieldsCheck(req.body.name, numberResolved, req.body.case_number, req.body.unit_number, req.body.unit_size, req.body.count_per_case, req.body.product_line)
             if(req.body.ingredients_list && !Array.isArray(req.body.ingredients_list))
