@@ -11,7 +11,9 @@ const initialState = {
   error: '',
   count: 0,
   page: 1,
-  pagelimit: 10
+  pagelimit: 10,
+  error_msgs: []
+
 };
 
 export default function(state = initialState, action) {
@@ -109,12 +111,14 @@ export default function(state = initialState, action) {
         page: page_val
       }
     }
-    case SKU_ERROR:
+    case SKU_ERROR:{
+      console.log(action.payload);
       return {
         ...state,
-        error: true,
+        error_msgs: [...state.error_msgs, action.payload.data.message],
         loading: false
       }
+    }
     default:
       return state;
   }

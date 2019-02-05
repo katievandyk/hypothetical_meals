@@ -21,20 +21,54 @@ class IngredientsAddModal extends React.Component {
     vendor_info: '',
     package_size: '',
     cost_per_package: '',
-    comment: ''
+    comment: '',
+    validate: {}
   };
 
   toggle = () => {
     this.setState({
-      modal: !this.state.modal
+      modal: !this.state.modal,
+      validate: {}
     });
   }
 
   onChange = e => {
+    this.validate(e);
     this.setState({
       [e.target.name]: e.target.value
     });
   };
+
+  validate = e => {
+    const field_type = e.target.name;
+    const { validate } = this.state
+    if (e.target.value.length > 0) {
+      if(field_type === 'name' || field_type === 'package_size' || field_type === 'vendor_info'){
+        validate[field_type] = 'has-success';
+      }
+      else if(field_type === 'number'){
+        const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
+        if (numRex.test(e.target.value)) {
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid-num'
+        }
+      }
+      else if(field_type === 'cost_per_package'){
+        const numRex = /^[1-9]\d*(\.\d+)?$/mg
+        if (numRex.test(e.target.value)) {
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid'
+        }
+      }
+    } else {
+      validate[e.target.name] = 'is-empty';
+    }
+    this.setState({ validate });
+  }
 
   onSubmit = e => {
     e.preventDefault();
