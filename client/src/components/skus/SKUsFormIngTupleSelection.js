@@ -21,7 +21,7 @@ class SKUsFormIngTupleSelection extends React.Component {
       this.props.defaultValue.forEach(function (inglistitem) {
         if(inglistitem._id){
           tmpArray = [...tmpArray, {_id: inglistitem._id._id, quantity: inglistitem.quantity}]
-          tmpVal = [...tmpVal, {ing:'', quantity: ''}];
+          tmpVal = [...tmpVal, {ing:'has-success', quantity: 'has-success'}];
         }
       });
       this.setState({
@@ -32,11 +32,10 @@ class SKUsFormIngTupleSelection extends React.Component {
   }
 
   allValid = (validState=this.state.validate) => {
-    console.log(validState);
     var isValid = true;
     for(var i = 0; i < validState.length; i++){
-      if(validState[i].ing !== 'has-success' ||
-       validState[i].quantity !== 'has-success'){
+      if((validState[i].ing !== 'has-success' && validState[i].ing !== '') ||
+       (validState[i].quantity !== 'has-success' && validState[i].quantity !== '')){
          isValid = false;
        }
     }
@@ -45,13 +44,24 @@ class SKUsFormIngTupleSelection extends React.Component {
 
   onChangeIngredient = (index, e) => {
     const newIngTuples = this.state.ing_tuples;
-    newIngTuples[index]._id = e.target.value;
     var newVal = this.state.validate;
     if(this.state.validate[index].quantity.length < 1) {
       newVal[index].quantity = 'not-valid';
     }
     if(e.target.value.length > 0){
-      newVal[index].ing = 'has-success';
+      var ingNotPresent = true;
+      for(var i = 0; i < newIngTuples.length; i ++){
+        if(newIngTuples[i]._id === e.target.value){
+          ingNotPresent = false;
+        }
+      }
+      if(ingNotPresent){
+        newIngTuples[index]._id = e.target.value;
+        newVal[index].ing = 'has-success';
+      }
+      else{
+        newVal[index].ing = 'already-selected'
+      }
       this.setState({
         ing_tuples: newIngTuples,
         validate: newVal
@@ -131,7 +141,7 @@ class SKUsFormIngTupleSelection extends React.Component {
             <FormGroup>
               <Input
                 valid={this.state.validate[index].ing === 'has-success'}
-                invalid={this.state.validate[index].ing === 'not-selected'}
+                invalid={this.state.validate[index].ing === 'not-selected' || this.state.validate[index].ing === 'already-selected'}
                 type="select"
                 name="ingredient_name"
                 id="ingredient_name"
@@ -143,9 +153,15 @@ class SKUsFormIngTupleSelection extends React.Component {
                 <option key={_id} value={_id} name={name}>{name}</option>
               ))}
               </Input>
-              <FormFeedback>
-                Please select a valid ingredient from the dropdown.
-              </FormFeedback>
+              {this.state.validate[index].ing === 'not-selected' ? (
+                <FormFeedback>
+                  Please select a valid ingredient from the dropdown.
+                </FormFeedback>
+              ):(
+                <FormFeedback>
+                  This ingredient has already been added. Please select a different ingredient from the dropdown.
+                </FormFeedback>
+              )}
             </FormGroup>
           </Col>
           <Col md={4}>

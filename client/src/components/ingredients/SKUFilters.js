@@ -26,10 +26,10 @@ class SKUFilters extends React.Component {
     this.props.sortSKUs('name', 'asc', 1, -1, {});
   }
 
-  onChange = (e, _id, name, number) =>{
+  onChange = (e, _id, name, unit_size, count_per_case) =>{
     if(e.target.checked){
       const newSelected = this.state.selected_skus;
-      newSelected[_id] = name+"("+number+")";
+      newSelected[_id] = name+": " + unit_size + " * " + count_per_case;
       this.setState({
         selected_skus: newSelected
       });
@@ -87,10 +87,10 @@ class SKUFilters extends React.Component {
         <ModalBody style={{'textAlign': 'center'}}>
          <Form>
             <FormGroup>
-              {skus.map(({_id, name, number}) => (
-                <CustomInput key={_id} type="checkbox" id={_id} label={name+"("+number+")"}
+              {skus.map(({_id, name, count_per_case, unit_size}) => (
+                <CustomInput key={_id} type="checkbox" id={_id} label={name+": " + unit_size + " * " + count_per_case}
                 defaultChecked={{_id} in this.state.sku_filters}
-                onChange={(e) => {this.onChange(e, _id, name, number)}}inline/>
+                onChange={(e) => {this.onChange(e, _id, name, unit_size, count_per_case)}}/>
               ))}
             </FormGroup>
           </Form>

@@ -328,8 +328,8 @@ class IngredientsEntry extends React.Component {
           <ModalHeader toggle={this.sku_toggle}>SKUs that use Ingredient: {this.props.ing.ing_skus.length}</ModalHeader>
           <ModalBody>
             <ListGroup>
-              {this.props.ing.ing_skus.map(({_id, name}) => (
-              <ListGroupItem key={_id}> <div>{name}</div> </ListGroupItem>
+              {this.props.ing.ing_skus.map(({_id, name, unit_size, count_per_case}) => (
+              <ListGroupItem key={_id}> <div>{name + ": " + unit_size + " * " + count_per_case}</div> </ListGroupItem>
               ))}
             </ListGroup>
           </ModalBody>
