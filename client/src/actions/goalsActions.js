@@ -33,7 +33,8 @@ export const getGoalsIngQuantity = (goal) => dispatch =>  {
     })
   ).catch(error =>{
     dispatch({
-      type: GOAL_ERROR
+      type: GOAL_ERROR,
+      payload: error.response
     })
   });
 };
@@ -47,7 +48,8 @@ export const addGoal = (goal) => dispatch =>  {
     })
   ).catch(error =>{
     dispatch({
-      type: GOAL_ERROR
+      type: GOAL_ERROR,
+      payload: error.response
     })
   });
 };
