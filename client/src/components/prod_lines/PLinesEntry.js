@@ -73,8 +73,7 @@ class PLinesEntry extends React.Component {
       name: this.state.edit_name
     };
 
-    this.props.updatePLine(editedPLine);
-    this.props.getPLines(this.props.plines.page, this.props.plines.pagelimit);
+    this.props.updatePLine(editedPLine, this.props.plines.page, this.props.plines.pagelimit);
     this.toggle();
   };
 
