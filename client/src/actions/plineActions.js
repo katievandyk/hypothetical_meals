@@ -46,7 +46,7 @@ export const addPLine = (pline, page, pagelimit) => dispatch => {
     dispatch({
       type: PLINE_ERROR,
       payload: error.response
-    })
+    });
   });
 };
 
@@ -73,7 +73,7 @@ export const updatePLine = (pline, page, pagelimit) => dispatch => {
     dispatch({
       type: PLINE_ERROR,
       payload: error.response
-    })
+    });
   });
 };
 

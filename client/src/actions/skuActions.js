@@ -31,7 +31,12 @@ export const addSKU = (sku, field, asc, page, pagelimit, obj) => dispatch => {
       })
     );
   }
-  );
+  ).catch(error =>{
+    dispatch({
+      type: SKU_ERROR,
+      payload: error.response
+    });
+  });
 };
 
 export const updateSKU = (sku, field, asc, page, pagelimit, obj) => dispatch => {
