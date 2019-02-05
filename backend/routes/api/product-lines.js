@@ -55,14 +55,15 @@ router.post('/', (req, res) => {
 // @access public
 router.delete('/:id', (req, res) => {
     SKU.find({product_line: req.params.id}).then(result => {
-        console.log(result)
         if(result === null || result.length !== 0) {
             res.status(404).json({success: false, message: "Product line cannot be deleted because one or more SKU(s) are associated with it."})
         }
-        ProductLine.findById(req.params.id)
-        .then(productLine => productLine.remove().then(
-            () => res.json({success: true}))
-        ).catch(err => res.status(404).json({success: false, message: err.message}))
+        else {
+            ProductLine.findById(req.params.id)
+            .then(productLine => productLine.remove().then(
+                () => res.json({success: true}))
+            ).catch(err => res.status(404).json({success: false, message: err.message}))
+        }
     })
 });
 
