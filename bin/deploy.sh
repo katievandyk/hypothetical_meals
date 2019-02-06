@@ -19,7 +19,6 @@ echo "server {
         index index.html index.htm index.nginx-debian.html;
         server_name $1;
         location / {
-                try_files \$uri \$uri/ =404;
 	            proxy_pass http://localhost:8080;
         }
 }" | sudo tee -a /etc/nginx/sites-available/default
