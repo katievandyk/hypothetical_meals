@@ -65,6 +65,7 @@ class App extends Component {
                       <PrivateRoute path="/productlines" component={ProductLines} />
                       <AdminRoute path="/import" component={Import} />
                       <PrivateRoute path="/reports" component={Reports} />
+                      <Route path="api/*" component={Login} />
                     </Switch>
 
                   </div>
