@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
 import { getGoals } from '../actions/goalsActions';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import GoalsEntry from '../components/goals/GoalsEntry';
@@ -58,6 +59,12 @@ class Manufacturing extends Component {
       );
    }
 }
+
+GoalsEntry.propTypes = {
+  getGoals: PropTypes.func.isRequired,
+  goals: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
+};
 
 const mapStateToProps = (state) => ({
   goals: state.goals,
