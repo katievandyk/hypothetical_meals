@@ -1,4 +1,4 @@
-import {GET_GOALS, ADD_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_EXPORT, GOAL_CALCULATOREXPORT, GOAL_ERROR} from '../actions/types';
+import {GET_GOALS, ADD_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_EXPORT, GOAL_CALCULATOREXPORT, GOAL_ERROR} from '../actions/types';
 
 const initialState = {
    goals: [],
@@ -25,6 +25,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         goals: [...state.goals, action.payload]
+      }
+    case DELETE_GOAL:
+      return {
+        ...state,
+        goals: state.goals.filter( goal => goal._id !== action.payload )
       }
     case GOALS_INGQUANTITY:
       return {

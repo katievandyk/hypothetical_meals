@@ -108,6 +108,7 @@ class GoalsCreateForm extends React.Component {
              <Label for="goal_name">Manufacturing Goal Name</Label>
              <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.name} onChange={this.onNameChange}/>
          </FormGroup>
+
          <Label>Create SKU List</Label>
          <FormGroup>
                   <Table>
@@ -166,7 +167,6 @@ GoalsCreateForm.propTypes = {
 const mapStateToProps = state => ({
   goals: state.goals,
   auth: state.auth,
-  goals: state.goals,
   skus: state.skus
 });
 

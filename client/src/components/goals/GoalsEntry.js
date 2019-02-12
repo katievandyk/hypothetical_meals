@@ -3,7 +3,6 @@ import { Button, Table, Modal, ModalHeader, ModalBody, ModalFooter } from 'react
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CalculatorEntry from './CalculatorEntry';
-import CalculatorDropdown from './CalculatorDropdown';
 import CalculatorExport from './CalculatorExport';
 
 import 'jspdf-autotable';
@@ -12,7 +11,7 @@ import * as jsPDF from 'jspdf';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getGoals } from '../../actions/goalsActions';
-import { getGoalsIngQuantity  } from '../../actions/goalsActions';
+import { getGoalsIngQuantity,  deleteGoal } from '../../actions/goalsActions';
 
 class GoalsEntry extends React.Component {
     constructor(props) {
@@ -71,6 +70,10 @@ class GoalsEntry extends React.Component {
     this.calculator_toggle();
    }
 
+  onDeleteClick = goal_id => {
+    this.props.deleteGoal(goal_id);
+   }
+
   render() {
     const { goals } = this.props.goals;
     return (
@@ -109,6 +112,7 @@ class GoalsEntry extends React.Component {
                       </td>
                       <td>
                         <Button size="sm" color="link"
+                        onClick={this.onDeleteClick.bind(this, _id)}
                         style={{'color':'black'}}>
                         <FontAwesomeIcon icon="trash"/>
                         </Button>
@@ -158,6 +162,7 @@ GoalsEntry.propTypes = {
   getGoals: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
   getGoalsIngQuantity: PropTypes.func.isRequired,
+  deleteGoal: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -165,4 +170,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getGoals, getGoalsIngQuantity })(GoalsEntry);
+export default connect(mapStateToProps, { getGoals, deleteGoal, getGoalsIngQuantity })(GoalsEntry);

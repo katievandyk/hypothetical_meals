@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import { Button } from 'reactstrap';
 import AppNavbar from '../components/AppNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
 import { getGoals } from '../actions/goalsActions';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import GoalsEntry from '../components/goals/GoalsEntry';
