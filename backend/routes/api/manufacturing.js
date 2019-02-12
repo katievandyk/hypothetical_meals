@@ -33,6 +33,16 @@ router.post('/', (req, res) => {
         .catch(err => console.log(err.message));
 });
 
+// @route DELETE api/manufacturing/:id
+// @desc delete a goal
+// @access public
+router.delete('/:id', (req, res) => {
+   Goal.findById(req.params.id)
+        .then(goal => goal.remove().then(
+            () => res.json({success: true}))
+        ).catch(err => res.status(404).json({success: false, message: err.message}))
+});
+
 // @route GET api/manufacturing/ingquantities/:id
 // @desc get quantities of all ingredients needed for manufacturing goal
 // @access public

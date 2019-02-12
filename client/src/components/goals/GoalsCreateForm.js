@@ -13,6 +13,7 @@ import {
   InputGroup, InputGroupAddon, Input, Button,
   Container, Table, Row, Col, Form, FormGroup, Label
 } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class GoalsCreateForm extends React.Component {
 
@@ -101,6 +102,14 @@ class GoalsCreateForm extends React.Component {
           });
    }
 
+  onDeleteClick = sku => {
+       var skus  = this.state.skus_list
+       skus.splice(skus.indexOf(sku), 1)
+       this.setState({
+            skus_list: skus
+          });
+   }
+
    render() {
      return (
        <Form>
@@ -108,6 +117,7 @@ class GoalsCreateForm extends React.Component {
              <Label for="goal_name">Manufacturing Goal Name</Label>
              <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.name} onChange={this.onNameChange}/>
          </FormGroup>
+
          <Label>Create SKU List</Label>
          <FormGroup>
                   <Table>
@@ -122,6 +132,13 @@ class GoalsCreateForm extends React.Component {
                            <tr key={sku._id}>
                               <td> {sku.name}: {sku.unit_size} * {sku.count_per_case} </td>
                               <td> {quantity} </td>
+                              <td>
+                                <Button size="sm" color="link"
+                                onClick={this.onDeleteClick.bind(this, sku)}
+                                style={{'color':'black'}}>
+                                <FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "times"/>
+                                </Button>
+                              </td>
                            </tr>
                        ))}
                     </tbody>
@@ -166,7 +183,6 @@ GoalsCreateForm.propTypes = {
 const mapStateToProps = state => ({
   goals: state.goals,
   auth: state.auth,
-  goals: state.goals,
   skus: state.skus
 });
 

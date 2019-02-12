@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_GOALS, ADD_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR } from './types';
+import { GET_GOALS, ADD_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR } from './types';
 
 const FileDownload = require('js-file-download');
 
@@ -26,7 +26,7 @@ export const setGoalsLoading = () => {
 
 export const getGoalsIngQuantity = (goal) => dispatch =>  {
   dispatch(setGoalsLoading());
-   axios.get('/api/manufacturing/ingquantities/' + goal).then(res =>
+   axios.get(`/api/manufacturing/ingquantities/${goal}`).then(res =>
     dispatch({
       type: GOALS_INGQUANTITY,
       payload: res.data
@@ -41,7 +41,7 @@ export const getGoalsIngQuantity = (goal) => dispatch =>  {
 
 
 export const addGoal = (goal) => dispatch =>  {
-  axios.post('/api/manufacturing', goal).then(res =>
+  axios.post(`/api/manufacturing`, goal).then(res =>
     dispatch({
       type: ADD_GOAL,
       payload: res.data
@@ -54,10 +54,9 @@ export const addGoal = (goal) => dispatch =>  {
   });
 };
 
-
 export const exportGoal = (goal) => dispatch => {
   dispatch(setGoalsLoading());
-    axios.get('/api/manufacturing/export/' + goal._id).then(res => {
+    axios.get(`/api/manufacturing/export/${goal._id}`).then(res => {
       FileDownload(res.data, goal.name + '.csv')
    });
     return {
@@ -65,9 +64,23 @@ export const exportGoal = (goal) => dispatch => {
     };
  };
 
+export const deleteGoal = (goal_id) => dispatch => {
+  axios.delete(`/api/manufacturing/${goal_id}`).then(res =>
+    dispatch({
+      type: DELETE_GOAL,
+      payload: goal_id
+    })
+  ).catch(error =>{
+    dispatch({
+      type: GOAL_ERROR,
+      payload: error.response
+    })
+  });
+ };
+
  export const exportCalculator = (goal) => dispatch => {
    dispatch(setGoalsLoading());
-     axios.get('/api/manufacturing/exportcalculator/' + goal._id).then(res => {
+     axios.get(`/api/manufacturing/exportcalculator/${goal._id}`).then(res => {
        FileDownload(res.data, goal.name + '_calc.csv')
     });
     return {
