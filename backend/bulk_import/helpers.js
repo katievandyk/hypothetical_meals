@@ -90,6 +90,33 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
     }).catch(err => res.status(404).json({success: false, message: err.message}));
 }
 
+module.exports.getFormulasFilterResult = getFormulasFilterResult = function(req, res, callback) {
+    var formulasFindPromise = Formula.find();
+    let formulasCountPromise = Formula.find();
+
+    if (req.body.keywords != null) {
+        formulasFindPromise = Formula.find(
+            {$text: {$search: req.body.keywords}},
+            {score:{$meta: "textScore"}});
+
+        formulasCountPromise= Formula.find(
+            {$text: {$search: req.body.keywords}},
+            {score:{$meta: "textScore"}});
+    }
+    if (req.body.ingredients != null) {
+        formulasFindPromise = formulasFindPromise.find(
+            { 'ingredients_list._id': { $all: 
+                req.body.ingredients}});
+        formulasCountPromise = formulasCountPromise.find(
+            { 'ingredients_list._id': { $all: 
+                req.body.ingredients}});
+    }
+
+    formulasFindPromise = formulasFindPromise.populate('ingredients_list._id')
+
+    callback(req, res, formulasFindPromise, formulasCountPromise)
+}
+
 module.exports.ingredientDependencyReport = ingredientDependencyReport = function(req, res, findPromise, ignorePromise) {
     findPromise.select("_id name").then(resultF => {
         IngredientDepReport.findSKUsForIngredients(resultF)

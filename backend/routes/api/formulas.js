@@ -114,4 +114,17 @@ router.post('/update/:id', (req, res) => {
             })
         })})
 
+// @route POST api/formulas/filter/sort/:field/:asc/:pagenumber/:limit
+// @desc gets formulas with many filters
+// request param fields:
+// - pagenumber: current page number
+// - limit: number of records / page. -1 if want all records.
+// request body fields:
+// - ingredients: Array of ingredients ids (String) to search SKUs for
+// - keywords: Array of words (String) to match entries on
+// @access public
+router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
+    Helper.getFormulasFilterResult(req, res, Helper.sortAndLimit)
+});
+
 module.exports = router;
