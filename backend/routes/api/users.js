@@ -21,13 +21,13 @@ router.post("/register", (req, res) => {
       console.log(`is not valid`)
       return res.status(400).json(errors);
     }
-  User.findOne({ email: req.body.email }).then(user => {
+  User.findOne({ username: req.body.username }).then(user => {
       if (user) {
-        return res.status(400).json({ email: "Email already exists" });
+        return res.status(400).json({ username: "Username already exists" });
       };
   const newUser = new User({
           name: req.body.name,
-          email: req.body.email,
+          username: req.body.username,
           password: req.body.password
         });
   // Hash password before saving in database
@@ -55,13 +55,13 @@ router.post("/login", (req, res) => {
   if (!isValid) {
     return res.status(400).json(errors);
   }
-  const email = req.body.email;
+  const username = req.body.username;
   const password = req.body.password;
-  // Find user by email
-  User.findOne({ email }).then(user => {
+  // Find user by username
+  User.findOne({ username }).then(user => {
       // Check if user exists
     if (!user) {
-      return res.status(404).json({ emailnotfound: "Email not found" });
+      return res.status(404).json({ usernamenotfound: "Username not found" });
     }
   // Check password
       bcrypt.compare(password, user.password).then(isMatch => {
@@ -72,7 +72,7 @@ router.post("/login", (req, res) => {
           const payload = {
             id: user.id,
             name: user.name,
-            email: user.email,
+            username: user.username,
             isAdmin: user.isAdmin
           };
   // Sign token
@@ -98,6 +98,24 @@ router.post("/login", (req, res) => {
       });
     });
   });
+
+  router.post("/makeAdmin", (req, res) => {
+      // Form validation
+
+    User.findOne({ username: req.body.username }).then(user => {
+        if (!user) {
+          return res.status(400).json({ username: "Username does not exist" });
+        }
+        if(user.isAdmin) {
+          return res.status(400).json({ username: "User is already an admin"});
+        }
+        User.findOne({ username: req.body.username }, function (err, doc){
+          doc.isAdmin = true;
+          doc.save().then(updatedUser => res.json(updatedUser))
+          .catch(err => console.log(err.message));
+        });
+      });
+    });
 
   module.exports = router;
   

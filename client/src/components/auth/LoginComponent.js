@@ -14,7 +14,7 @@ class LoginComponent extends Component {
     this.state = {
       isLoggedIn: false,
       isAdmin: false,
-      email: "",
+      username: "",
       password: "",
       errors: {}
     };
@@ -45,7 +45,7 @@ onChange = e => {
 onSubmit = e => {
     e.preventDefault();
 const userData = {
-      email: this.state.email,
+      username: this.state.username,
       password: this.state.password
     };
 this.props.loginUser(userData); // since we handle the redirect within our component, we don't need to pass in this.props.history as a parameter
@@ -65,18 +65,18 @@ return (
             <b>Login</b> below
           </h4>
           <FormGroup>
-            <Label for="email">Email</Label>
+            <Label for="username">Username</Label>
             <Input onChange={this.onChange}
-            value={this.state.email}
-            error={errors.email}
-            id="email"
-            type="email"
+            value={this.state.username}
+            error={errors.username}
+            id="username"
+            type="username"
             className={classnames("", {
-              invalid: errors.email || errors.emailnotfound
+              invalid: errors.username || errors.usernamenotfound
             })}></Input>
             <span style={{'color': 'red'}}>
-              {errors.email}
-              {errors.emailnotfound}
+              {errors.username}
+              {errors.username}
             </span>
           </FormGroup>
           <FormGroup>

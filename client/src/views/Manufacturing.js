@@ -38,7 +38,7 @@ class Manufacturing extends Component {
     }
 
   componentDidMount() {
-      this.props.getGoals(this.props.auth.user_email);
+      this.props.getGoals(this.props.auth.user_username);
   }
 
   calculatorCallback = goal => {

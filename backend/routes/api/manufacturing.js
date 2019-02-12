@@ -7,12 +7,12 @@ const Papa = require('papaparse');
 const Goal = require('../../models/Goal');
 const round = require('mongo-round');
 
-// @route GET api/manufacturing/:user_email
+// @route GET api/manufacturing/:user_username
 // @desc get all goals for specific user
 // @access public
-router.get('/:user_email', (req, res) => {
+router.get('/:user_username', (req, res) => {
     Goal
-        .find({ 'user_email' : req.params.user_email})
+        .find({ 'user_username' : req.params.user_username})
         .populate({ path: 'skus_list.sku'})
         .lean()
         .then(goal => res.json(goal))
@@ -26,7 +26,7 @@ router.post('/', (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         skus_list: req.body.skus_list,
-        user_email: req.body.user_email
+        user_username: req.body.user_username
     });
 
     newGoal.save().then(goal => res.json(goal))
