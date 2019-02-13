@@ -30,12 +30,14 @@ class GoalsEntry extends React.Component {
         edit_modal: false,
         edit_id: '',
         edit_name: '',
+        edit_date: '',
         edit_skus_list: [],
         skulist_modal: false,
         quantity: '',
         skuSel: '',
         validNum: '',
         validName: '',
+        validDate: ''
       };
     }
 
@@ -95,12 +97,15 @@ class GoalsEntry extends React.Component {
     this.props.deleteGoal(goal_id);
    }
 
-  onEditClick = (_id, name, skus_list) => {
+  onEditClick = (_id, name, date, skus_list) => {
     this.setState({
       edit_id: _id,
       edit_modal: true,
       edit_name: name,
-      edit_skus_list: skus_list
+      edit_date: date,
+      edit_skus_list: skus_list,
+      validDate: 'success',
+      validName: 'success'
     });
   };
 
@@ -139,6 +144,19 @@ class GoalsEntry extends React.Component {
         this.setState({ validName: valid })
    }
 
+   onDateChange = e => {
+        var currentTime = new Date();
+        var enteredDate = new Date(e.target.value)
+        this.setState({ edit_date: e.target.value })
+        var valid = '';
+        if (enteredDate >= currentTime) {
+          valid = 'success'
+        } else {
+          valid = 'failure'
+        }
+        this.setState({ validDate: valid })
+   }
+
    skuCallback = (dataFromChild) => {
        this.setState({
             skuSel: dataFromChild
@@ -157,6 +175,7 @@ class GoalsEntry extends React.Component {
     const editedGoal = {
       id: this.state.edit_id,
       name: this.state.edit_name,
+      deadline: this.state.edit_date,
       skus_list: this.state.edit_skus_list,
     };
 
@@ -180,13 +199,14 @@ class GoalsEntry extends React.Component {
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Deadline</th>
                   <th>SKU List</th>
                   <th>Edit</th>
                   <th>Delete</th>
                 </tr>
               </thead>
               <tbody>
-                {goals.map(({ _id, name, skus_list}) => (
+                {goals.map(({ _id, name, deadline, skus_list}) => (
                     <tr key={_id}>
                       <td>
                         <Button color="link"
@@ -194,6 +214,9 @@ class GoalsEntry extends React.Component {
                         style={{'color':'black'}}>
                         {name}
                         </Button>
+                      </td>
+                      <td>
+                        {new Date(deadline).toUTCString().split(" 0")[0]}
                       </td>
                       <td>
                         <Button size="sm" color="link"
@@ -204,7 +227,7 @@ class GoalsEntry extends React.Component {
                       </td>
                       <td>
                         <Button size="sm" color="link"
-                        onClick={e => this.onEditClick(_id, name, skus_list)}
+                        onClick={e => this.onEditClick(_id, name, deadline, skus_list)}
                         style={{'color':'black'}}>
                         <FontAwesomeIcon icon="edit"/>
                         </Button>
@@ -256,10 +279,14 @@ class GoalsEntry extends React.Component {
           <ModalBody>
                <Form>
                  <FormGroup>
-                     <Label for="goal_name">Manufacturing Goal Name</Label>
+                     <Label for="goal_name">Edit Manufacturing Goal Name</Label>
                      <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.edit_name} onChange={this.onNameChange}/>
                  </FormGroup>
-                 <Label>Create SKU List</Label>
+                 <FormGroup>
+                      <Label>Edit Manufacturing Goal Deadline</Label>
+                      <Input valid={this.state.validDate === 'success'} invalid={this.state.validDate === 'failure'} value={this.state.edit_date} onChange={this.onDateChange} type="date" />
+                 </FormGroup>
+                 <Label>Edit SKU List</Label>
                  <FormGroup>
                           <Table>
                             <thead>

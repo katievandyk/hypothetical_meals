@@ -58,7 +58,7 @@ class AppNavbar extends Component {
               <NavLink tag={RRNavLink} to="/import" className="nav-link" activeClassName="active">Import</NavLink>
             </NavItem>): (<div></div>)}
             <NavItem>
-              <NavLink tag={RRNavLink} to="/manufacturing" className="nav-link" activeClassName="active">Manufacturing</NavLink>
+              <NavLink tag={RRNavLink} to="/manufacturinggoals" className="nav-link" activeClassName="active">Manufacturing</NavLink>
             </NavItem>
             <NavItem>
               <NavLink tag={RRNavLink} to="/reports" className="nav-link" activeClassName="active">Reports</NavLink>
