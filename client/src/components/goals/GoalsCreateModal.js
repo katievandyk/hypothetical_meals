@@ -52,6 +52,7 @@ class GoalsCreateModal extends React.Component {
    onSubmit = e => {
      var goals  = this.props.goals.goals
      if(this.state.name.length === 0 || goals.find(elem => elem.name === this.state.name) != null) alert("Please enter a unique name for your goal.")
+     else if(this.state.validDate !== 'success') alert("Please enter a valid date.")
      else {
          const newGoal = {
            name: this.state.name,
