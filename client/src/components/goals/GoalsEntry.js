@@ -145,7 +145,7 @@ class GoalsEntry extends React.Component {
           });
    }
 
-  onDeleteClick = sku => {
+  onDeleteClickSKU = sku => {
        var skus  = this.state.edit_skus_list
        skus.splice(skus.indexOf(sku), 1)
        this.setState({
@@ -275,7 +275,7 @@ class GoalsEntry extends React.Component {
                                       <td> {quantity} </td>
                                       <td>
                                         <Button size="sm" color="link"
-                                        onClick={this.onDeleteClick.bind(this, sku)}
+                                        onClick={this.onDeleteClickSKU.bind(this, sku)}
                                         style={{'color':'black'}}>
                                         <FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "times"/>
                                         </Button>
