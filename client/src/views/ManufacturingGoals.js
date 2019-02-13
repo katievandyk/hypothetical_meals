@@ -17,7 +17,7 @@ import store from '../store';
 
 import { Container, Row, Col} from 'reactstrap';
 
-class Manufacturing extends Component {
+class ManufacturingGoals extends Component {
 
   constructor(props) {
     super(props);
@@ -60,10 +60,10 @@ class Manufacturing extends Component {
    }
 }
 
-GoalsEntry.propTypes = {
-  getGoals: PropTypes.func,
-  goals: PropTypes.object,
-  auth: PropTypes.object
+ManufacturingGoals.propTypes = {
+  getGoals: PropTypes.func.isRequired,
+  goals: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -71,4 +71,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getGoals })(Manufacturing);
+export default connect(mapStateToProps, { getGoals })(ManufacturingGoals);
