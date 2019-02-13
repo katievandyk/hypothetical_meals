@@ -102,7 +102,7 @@ class GoalsCreateModal extends React.Component {
            name: '',
            skus_list: []
        })
-       this.props.toggle();
+       this.toggle();
    }
 
    skuCallback = (dataFromChild) => {

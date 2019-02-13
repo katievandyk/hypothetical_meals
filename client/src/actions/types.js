@@ -18,6 +18,7 @@ export const SET_CURRENT_USER = "SET_CURRENT_USER";
 // Goal
 export const GET_GOALS = 'GET_GOALS';
 export const ADD_GOAL = 'ADD_GOAL';
+export const UPDATE_GOAL = 'UPDATE_GOAL';
 export const DELETE_GOAL = 'DELETE_GOAL';
 export const GOALS_LOADING = 'GOALS_LOADING';
 export const GOALS_INGQUANTITY = 'GOALS_INGQUANTITY';

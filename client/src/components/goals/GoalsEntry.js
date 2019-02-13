@@ -1,17 +1,22 @@
 import React from 'react';
-import { Button, Table, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import {  Col, Row, Input,
+          Modal, ModalHeader, ModalBody, ModalFooter,
+          Button, Table, Form, FormGroup, Label } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CalculatorEntry from './CalculatorEntry';
 import CalculatorExport from './CalculatorExport';
+import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
+import GoalsSKUSearch from '../../components/goals/GoalsSKUSearch';
+import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
 
 import 'jspdf-autotable';
 import * as jsPDF from 'jspdf';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getGoals } from '../../actions/goalsActions';
-import { getGoalsIngQuantity,  deleteGoal } from '../../actions/goalsActions';
+import { getGoals, updateGoal, getGoalsIngQuantity, deleteGoal } from '../../actions/goalsActions';
+import { getSKUs } from '../../actions/skuActions';
 
 class GoalsEntry extends React.Component {
     constructor(props) {
@@ -22,16 +27,32 @@ class GoalsEntry extends React.Component {
         calculator_modal: false,
         curr_list: [],
         curr_goal: {},
+        edit_modal: false,
+        edit_id: '',
+        edit_name: '',
+        edit_skus_list: [],
+        skulist_modal: false,
+        quantity: '',
+        skuSel: '',
+        validNum: '',
+        validName: '',
       };
     }
 
   componentDidMount() {
     this.props.getGoals(this.props.auth.user_email);
+    this.props.getSKUs();
   }
 
   sku_toggle = () => {
       this.setState({
         sku_modal: !this.state.sku_modal,
+      });
+  }
+
+  edit_toggle = () => {
+      this.setState({
+        edit_modal: !this.state.edit_modal,
       });
   }
 
@@ -74,6 +95,83 @@ class GoalsEntry extends React.Component {
     this.props.deleteGoal(goal_id);
    }
 
+  onEditClick = (_id, name, skus_list) => {
+    this.setState({
+      edit_id: _id,
+      edit_modal: true,
+      edit_name: name,
+      edit_skus_list: skus_list
+    });
+  };
+
+   onAddSKU = e => {
+       var skus  = this.state.edit_skus_list
+       if(this.state.validNum === 'failure' || this.state.quantity.length === 0) alert("Please enter a valid numeric quantity.")
+       else if(this.state.skuSel.length === 0 || skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
+       else {
+           skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
+           this.setState({ edit_skus_list: skus })
+           this.skulist_toggle()
+       }
+   }
+
+   onNumberChange = e => {
+        this.setState({ quantity: e.target.value })
+        const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
+        var valid = '';
+        if (numRex.test(e.target.value) && e.target.value.length > 0) {
+          valid = 'success'
+        } else {
+          valid = 'failure'
+        }
+        this.setState({ validNum: valid })
+   }
+
+   onNameChange = e => {
+        var goals  = this.props.goals.goals
+        this.setState({ edit_name: e.target.value })
+        var valid = '';
+        if (e.target.value.length > 0 && goals.find(elem => elem.name === e.target.value && elem._id !== this.state.edit_id) == null) {
+          valid = 'success'
+        } else {
+          valid = 'failure'
+        }
+        this.setState({ validName: valid })
+   }
+
+   skuCallback = (dataFromChild) => {
+       this.setState({
+            skuSel: dataFromChild
+          });
+   }
+
+  onDeleteClickSKU = sku => {
+       var skus  = this.state.edit_skus_list
+       skus.splice(skus.indexOf(sku), 1)
+       this.setState({
+            edit_skus_list: skus
+          });
+   }
+
+  edit_submit = () => {
+    const editedGoal = {
+      id: this.state.edit_id,
+      name: this.state.edit_name,
+      skus_list: this.state.edit_skus_list,
+    };
+
+    this.props.updateGoal(editedGoal, this.props.user_email);
+    this.edit_toggle();
+  }
+
+  skulist_toggle = () => {
+     this.setState({
+       skulist_modal: !this.state.skulist_modal,
+       quantity: '',
+       validNum: ''
+     });
+  }
+
   render() {
     const { goals } = this.props.goals;
     return (
@@ -106,6 +204,7 @@ class GoalsEntry extends React.Component {
                       </td>
                       <td>
                         <Button size="sm" color="link"
+                        onClick={e => this.onEditClick(_id, name, skus_list)}
                         style={{'color':'black'}}>
                         <FontAwesomeIcon icon="edit"/>
                         </Button>
@@ -152,6 +251,78 @@ class GoalsEntry extends React.Component {
                           <Button disabled={this.state.disableExport} color="success" onClick={this.exportPDF}>PDF</Button>
                       </ModalFooter>
            </Modal>
+        <Modal size="lg" isOpen={this.state.edit_modal} toggle={this.edit_toggle}>
+          <ModalHeader>Edit Goal</ModalHeader>
+          <ModalBody>
+               <Form>
+                 <FormGroup>
+                     <Label for="goal_name">Manufacturing Goal Name</Label>
+                     <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.edit_name} onChange={this.onNameChange}/>
+                 </FormGroup>
+                 <Label>Create SKU List</Label>
+                 <FormGroup>
+                          <Table>
+                            <thead>
+                              <tr>
+                                <th>SKU</th>
+                                <th>Quantity</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                               {this.state.edit_skus_list.map(({sku, quantity}) => (
+                                   <tr key={sku._id}>
+                                      <td> {sku.name}: {sku.unit_size} * {sku.count_per_case} </td>
+                                      <td> {quantity} </td>
+                                      <td>
+                                        <Button size="sm" color="link"
+                                        onClick={this.onDeleteClickSKU.bind(this, sku)}
+                                        style={{'color':'black'}}>
+                                        <FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "times"/>
+                                        </Button>
+                                      </td>
+                                   </tr>
+                               ))}
+                            </tbody>
+                          </Table>
+                 </FormGroup>
+                 <FormGroup>
+                    <Col style={{'textAlign':'center'}}>
+                        <Button onClick={this.skulist_toggle}>Add SKU, Quantity Tuple </Button>
+                    </Col>
+                 </FormGroup>
+               </Form>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={this.edit_submit} color="success">Save</Button> &nbsp;
+            <Button color="secondary" onClick={this.edit_toggle}>Clear</Button>
+          </ModalFooter>
+        </Modal>
+        <Modal isOpen={this.state.skulist_modal} size="lg">
+             <ModalHeader>Add a SKU, Quantity Tuple</ModalHeader>
+               <ModalBody>
+                <Form>
+                    <FormGroup>
+                        <Label><h5>1. Select a SKU.</h5></Label>
+                        <Row>
+                            <Col md={6}><GoalsProductLineFilter/></Col>
+                            <Col style={{'textAlign': 'right'}}/>
+                            <Col md={4}> <GoalsSKUSearch/> </Col>
+                        </Row>
+                    </FormGroup>
+                    <FormGroup>
+                        <GoalsSKUDropdown skus_list={this.state.edit_skus_list} skus={this.props.skus} callbackFromParent={this.skuCallback}/>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label><h5>2. Select a quantity.</h5></Label>
+                        <Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/>
+                    </FormGroup>
+                </Form>
+             </ModalBody>
+             <ModalFooter>
+                <Button onClick={this.onAddSKU}>Save</Button>
+                <Button onClick={this.skulist_toggle}>Cancel</Button>
+             </ModalFooter>
+        </Modal>
        </div>
 
     );
@@ -161,13 +332,17 @@ class GoalsEntry extends React.Component {
 GoalsEntry.propTypes = {
   getGoals: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
+  skus: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
   getGoalsIngQuantity: PropTypes.func.isRequired,
-  deleteGoal: PropTypes.func.isRequired
+  deleteGoal: PropTypes.func.isRequired,
+  updateGoal: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
   goals: state.goals,
-  auth: state.auth
+  auth: state.auth,
+  skus: state.skus
 });
 
-export default connect(mapStateToProps, { getGoals, deleteGoal, getGoalsIngQuantity })(GoalsEntry);
+export default connect(mapStateToProps, { getSKUs, getGoals, updateGoal, deleteGoal, getGoalsIngQuantity })(GoalsEntry);

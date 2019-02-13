@@ -43,6 +43,23 @@ router.delete('/:id', (req, res) => {
         ).catch(err => res.status(404).json({success: false, message: err.message}))
 });
 
+// @route POST api/manufacturing/update/:id
+// @desc updates a goal
+// @access public
+router.post('/update/:id', (req, res) => {
+    Goal.findOne({name: req.body.name}).then(goal => {
+        if(goal !== null && req.params.id != goal._id) {
+            res.status(404).json({success: false, message: "Goal name is not unique: " + req.body.name})
+        }
+        else {
+            Goal.findByIdAndUpdate(req.params.id, {$set:req.body})
+            .then(() => res.json({success: true}))
+            .catch(err => res.status(404).json({success: false, message: err.message}))
+        }
+    }).catch(err => res.status(404).json({success: false, message: err.message}))
+});
+
+
 // @route GET api/manufacturing/ingquantities/:id
 // @desc get quantities of all ingredients needed for manufacturing goal
 // @access public
