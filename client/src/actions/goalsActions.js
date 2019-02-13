@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_GOALS, ADD_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR } from './types';
+import { GET_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR } from './types';
 
 const FileDownload = require('js-file-download');
 
@@ -53,6 +53,32 @@ export const addGoal = (goal) => dispatch =>  {
     })
   });
 };
+
+export const updateGoal = (goal, user_email) => dispatch => {
+  axios.post(`/api/manufacturing/update/${goal.id}`, goal).then(res => {
+      dispatch({
+        type: UPDATE_GOAL,
+        payload: res.data
+      });
+      dispatch(setGoalsLoading());
+      axios.get(`/api/manufacturing/${user_email}`).then(res =>
+        dispatch({
+          type: GET_GOALS,
+          payload: res.data
+        })
+      ).catch(error =>{
+           dispatch({
+             type: GOAL_ERROR,
+             payload: error.response
+           })
+         });
+    }
+  ).catch(error =>{
+    dispatch({
+      type: GOAL_ERROR,
+      payload: error.response
+    })});
+}
 
 export const exportGoal = (goal) => dispatch => {
   dispatch(setGoalsLoading());

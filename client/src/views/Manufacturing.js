@@ -48,11 +48,11 @@ class Manufacturing extends Component {
                    <Row>
                       <Col> Click on a goal to view its ingredients. </Col>
                       <Col style={{'textAlign': 'right'}}> </Col>
-                      <GoalsCreateModal refresh={this.refresh} buttonLabel="Create Goal"/> &nbsp;
+                      <GoalsCreateModal onEditCallback={this.edit} refresh={this.refresh} buttonLabel="Create Goal"/> &nbsp;
                       <GoalsExport goals={this.props.goals}/>
                    </Row>
                 </Container>
-                <GoalsEntry/>
+                <GoalsEntry user_email={this.props.auth.user_email} />
               </Container>
               </div>
           </Provider>
@@ -61,9 +61,9 @@ class Manufacturing extends Component {
 }
 
 GoalsEntry.propTypes = {
-  getGoals: PropTypes.func.isRequired,
-  goals: PropTypes.object.isRequired,
-  auth: PropTypes.object.isRequired
+  getGoals: PropTypes.func,
+  goals: PropTypes.object,
+  auth: PropTypes.object
 };
 
 const mapStateToProps = (state) => ({

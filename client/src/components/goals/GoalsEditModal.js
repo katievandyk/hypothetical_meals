@@ -18,17 +18,14 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
-class GoalsCreateModal extends React.Component {
+class GoalsEditModal extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      modal: false,
       skulist_modal: false,
-      name: '',
       quantity: '',
       skuSel: '',
-      skus_list: [],
       validNum: '',
       validName: '',
     };
@@ -48,11 +45,11 @@ class GoalsCreateModal extends React.Component {
 
    onSubmit = e => {
      var goals  = this.props.goals.goals
-     if(this.state.name.length === 0 || goals.find(elem => elem.name === this.state.name) != null) alert("Please enter a unique name for your goal.")
+     if(this.props.name.length === 0 || goals.find(elem => elem.name === this.props.name) != null) alert("Please enter a unique name for your goal.")
      else {
          const newGoal = {
-           name: this.state.name,
-           skus_list: this.state.skus_list,
+           name: this.props.name,
+           skus_list: this.props.skus_list,
            user_email: this.props.auth.user_email
          };
          this.props.addGoal(newGoal);
@@ -61,14 +58,12 @@ class GoalsCreateModal extends React.Component {
    }
 
    onAddSKU = e => {
-       var skus  = this.state.skus_list
+       var skus  = this.props.skus_list
        if(this.state.validNum === 'failure' || this.state.quantity.length === 0) alert("Please enter a valid numeric quantity.")
        else if(this.state.skuSel.length === 0 || skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
        else {
            skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
-           this.setState({
-               skus_list: skus
-           })
+           this.props.skus_list = skus
            this.skulist_toggle()
        }
    }
@@ -98,11 +93,9 @@ class GoalsCreateModal extends React.Component {
    }
 
    onCancel  = e => {
-       this.setState({
-           name: '',
-           skus_list: []
-       })
-       this.toggle();
+       this.props.name = ''
+       this.props.skus_list = ''
+       this.props.toggle();
    }
 
    skuCallback = (dataFromChild) => {
@@ -120,10 +113,7 @@ class GoalsCreateModal extends React.Component {
    }
 
   toggle() {
-    this.setState({
-      modal: !this.state.modal
-    });
-    if(this.state.modal) this.props.refresh();
+    this.props.modal = !this.props.modal
   }
 
   skulist_toggle() {
@@ -138,13 +128,13 @@ class GoalsCreateModal extends React.Component {
     return (
       <div>
         <Button onClick={this.toggle} color="success" style={{'display': 'inline-block'}}>{this.props.buttonLabel}</Button>
-        <Modal size="lg" isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+        <Modal size="lg" isOpen={this.props.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader>Create Goal</ModalHeader>
           <ModalBody>
                <Form>
                  <FormGroup>
                      <Label for="goal_name">Manufacturing Goal Name</Label>
-                     <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.name} onChange={this.onNameChange}/>
+                     <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.props.name} onChange={this.onNameChange}/>
                  </FormGroup>
                  <Label>Create SKU List</Label>
                  <FormGroup>
@@ -156,7 +146,7 @@ class GoalsCreateModal extends React.Component {
                               </tr>
                             </thead>
                             <tbody>
-                               {this.state.skus_list.map(({sku, quantity}) => (
+                               {this.props.skus_list.map(({sku, quantity}) => (
                                    <tr key={sku._id}>
                                       <td> {sku.name}: {sku.unit_size} * {sku.count_per_case} </td>
                                       <td> {quantity} </td>
@@ -197,7 +187,7 @@ class GoalsCreateModal extends React.Component {
                         </Row>
                     </FormGroup>
                     <FormGroup>
-                        <GoalsSKUDropdown skus_list={this.state.skus_list} skus={this.props.skus} callbackFromParent={this.skuCallback}/>
+                        <GoalsSKUDropdown skus_list={this.props.skus_list} skus={this.props.skus} callbackFromParent={this.skuCallback}/>
                     </FormGroup>
                     <FormGroup>
                         <Label><h5>2. Select a quantity.</h5></Label>
@@ -215,7 +205,7 @@ class GoalsCreateModal extends React.Component {
   }
   }
 
-    GoalsCreateModal.propTypes = {
+    GoalsEditModal.propTypes = {
       addGoal: PropTypes.func.isRequired,
       skus: PropTypes.object.isRequired,
       auth: PropTypes.object.auth,
@@ -229,4 +219,4 @@ class GoalsCreateModal extends React.Component {
     });
 
 
-    export default connect(mapStateToProps, {getSKUs, addGoal})(GoalsCreateModal);
+    export default connect(mapStateToProps, {getSKUs, addGoal})(GoalsEditModal);
