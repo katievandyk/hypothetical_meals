@@ -172,7 +172,7 @@ module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, call
                     function(el) { return mongoose.Types.ObjectId(el) }) }});
     }
 
-    skuFindPromise = skuFindPromise.populate('product_line').populate('ingredients_list._id')
+    skuFindPromise = skuFindPromise.populate('product_line').populate('formula').populate('manufacturing_lines._id')
 
     callback(req, res, skuFindPromise, skuCountPromise)
 }

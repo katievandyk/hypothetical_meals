@@ -232,10 +232,10 @@ module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(max_nu
     }
 }
 
-module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc, unit_upc, unit_size, count, pl_name) {
-    if(! (name && case_upc && unit_upc && unit_size && count &&  pl_name))
-        throw new Error(`SKU name, Case UPC#, Unit UPC#, Unit Size, Count per case, and Product Line fields are required. 
-        Got: ${name},${case_upc},${unit_upc},${unit_size},${count},${pl_name}`)
+module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc, unit_upc, unit_size, count, pl_name, formula, formula_sf, manufacturing_rate) {
+    if(! (name && case_upc && unit_upc && unit_size && count &&  pl_name && formula && manufacturing_rate))
+        throw new Error(`SKU name, Case UPC#, Unit UPC#, Unit Size, Count per case, Product Line, Formula, and Manufacturing Rate fields are required. 
+        Got: ${name},${case_upc},${unit_upc},${unit_size},${count},${pl_name},${formula},${manufacturing_rate}`)
     if(!Helpers.isPositiveInteger(number)) 
         throw new Error("SKU number is not a valid number: " + number);
 
@@ -254,6 +254,20 @@ module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc
 
     if(!Helpers.isPositiveInteger(count)) 
         throw new Error("SKU counts per case is not a valid number: " + count);
+
+    if(!Helpers.isNumeric(formula_sf)) 
+        throw new Error(
+            "Formula scale factor is not a number: " + formula_sf);
+    if (parseFloat(formula_sf) < 0) 
+        throw new Error(
+            "Formula scale factor is not a positive number: " + formula_sf);
+
+    if(!Helpers.isNumeric(manufacturing_rate)) 
+        throw new Error(
+            "Manufacturing rate is not a number: " + manufacturing_rate);
+    if (parseFloat(manufacturing_rate) < 0) 
+        throw new Error(
+                "Manufacturing rate is not a positive number: " + manufacturing_rate);
 }
 
 module.exports.checkOneSKU = checkOneSKU = function(sku_data) {

@@ -127,4 +127,21 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     Helper.getFormulasFilterResult(req, res, Helper.sortAndLimit)
 });
 
+// @route DELETE api/formulas/:id
+// @desc delete a formula
+// @access public
+router.delete('/:id', (req, res) => {
+    SKU.find({formula: req.params.id}).then(result => {
+        if(result === null || result.length !== 0) {
+            res.status(404).json({success: false, message: "Formula cannot be deleted because one or more SKU(s) are associated with it."})
+        }
+        else {
+            Formula.findById(req.params.id)
+            .then(formula => formula.remove().then(
+                () => res.json({success: true}))
+            ).catch(err => res.status(404).json({success: false, message: err.message}))
+        }
+    })
+});
+
 module.exports = router;

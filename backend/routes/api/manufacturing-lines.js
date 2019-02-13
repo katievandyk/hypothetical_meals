@@ -54,7 +54,9 @@ router.post('/', (req, res) => {
     })
 });
 
-
+// @route POST api/manufacturinglines/update/:id
+// @desc updates a manufacturing line
+// @access public
 router.post('/update/:id', (req, res) => {
     ManufacturingLine.findById(req.params.id).then(ml => {
         new_ml = {
@@ -85,5 +87,27 @@ router.post('/update/:id', (req, res) => {
         })
     })
 })
+
+// @route DELETE api/manufacturinglines/:id
+// @desc delete a manufacturing line
+// deletes all occurances of the manufacturing line in all sku
+// @access public
+router.delete('/:id', (req, res) => {
+    SKU.find({"manufacturing_lines._id": req.params.id}).lean().then(sku_matches => {
+        Promise.all(sku_matches.map(function(sku) {
+            return new Promise(function(accept, reject) {
+                new_list = sku.manufacturing_lines.filter(function( obj ) {
+                    return obj._id.toString() !== req.params.id;
+                });
+                SKU.findByIdAndUpdate(sku._id, {manufacturing_lines: new_list}).then(accept).catch(reject)
+            })
+        })).then(results => {
+            ManufacturingLine.findById(req.params.id)
+                .then(ml => ml.remove().then(
+                    () => res.json({success: true}))
+                ).catch(err => res.status(404).json({success: false, message: err.message}))
+        }).catch(err => res.status(404).json({success: false, message: err.message}))
+    })
+});
 
 module.exports = router;

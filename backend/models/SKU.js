@@ -33,14 +33,14 @@ const SKUSchema = new Schema({
     formula: { type: Schema.Types.ObjectId, ref: 'formula' },
     formula_scale_factor: {
         type: Number,
-        require: true
+        required: true
     },
     manufacturing_lines: [{
         _id: { type: Schema.Types.ObjectId, ref: 'manufacturingline' }
     }],
     manufacturing_rate: {
         type: Number,
-        require: true
+        required: true
     },
     comment: {
         type: String,
