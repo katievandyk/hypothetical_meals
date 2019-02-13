@@ -15,7 +15,11 @@ const GoalSchema = new Schema({
     user_email: {
         type: String,
         required: true
-    }
+    },
+    deadline: {
+        type: Date,
+        required: true
+    },
 });
 
 module.exports = Goal = mongoose.model('goal', GoalSchema);

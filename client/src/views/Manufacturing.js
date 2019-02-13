@@ -48,7 +48,7 @@ class Manufacturing extends Component {
                    <Row>
                       <Col> Click on a goal to view its ingredients. </Col>
                       <Col style={{'textAlign': 'right'}}> </Col>
-                      <GoalsCreateModal onEditCallback={this.edit} refresh={this.refresh} buttonLabel="Create Goal"/> &nbsp;
+                      <GoalsCreateModal refresh={this.refresh} buttonLabel="Create Goal"/> &nbsp;
                       <GoalsExport goals={this.props.goals}/>
                    </Row>
                 </Container>

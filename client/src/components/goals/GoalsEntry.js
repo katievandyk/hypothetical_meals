@@ -180,13 +180,14 @@ class GoalsEntry extends React.Component {
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Deadline</th>
                   <th>SKU List</th>
                   <th>Edit</th>
                   <th>Delete</th>
                 </tr>
               </thead>
               <tbody>
-                {goals.map(({ _id, name, skus_list}) => (
+                {goals.map(({ _id, name, deadline, skus_list}) => (
                     <tr key={_id}>
                       <td>
                         <Button color="link"
@@ -194,6 +195,9 @@ class GoalsEntry extends React.Component {
                         style={{'color':'black'}}>
                         {name}
                         </Button>
+                      </td>
+                      <td>
+                        {new Date(deadline).toDateString()}
                       </td>
                       <td>
                         <Button size="sm" color="link"
