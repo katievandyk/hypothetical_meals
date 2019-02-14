@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getIngs, sortIngs } from '../../actions/ingActions';
-import { sortSKUs, filterByIngs} from '../../actions/skuActions';
+import { sortFormulas, filterByIngs} from '../../actions/formulaActions';
 
 class IngFilters extends React.Component {
   state={
@@ -45,19 +45,19 @@ class IngFilters extends React.Component {
       ing_filters: newFilters
     });
     this.props.filterByIngs(Object.keys(this.state.selected_ings));
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+    this.props.sortFormulas(this.props.formulas.sortby, this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit, this.props.formulas.obj);
     this.toggle();
   };
 
   onRemoveFilter = e => {
     delete this.state.ing_filters[e.target.id];
     this.props.filterByIngs(Object.keys(this.state.ing_filters));
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+    this.props.sortFormulas(this.props.formulas.sortby, this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit, this.props.formulas.obj);
   };
   onXRemoveFilter = (e,id) => {
     delete this.state.ing_filters[id];
     this.props.filterByIngs(Object.keys(this.state.ing_filters));
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+    this.props.sortFormulas(this.props.formulas.sortby, this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit, this.props.formulas.obj);
   };
 
   render() {
@@ -102,16 +102,16 @@ class IngFilters extends React.Component {
 }
 
 IngFilters.propTypes = {
-  skus: PropTypes.object.isRequired,
+  formulas: PropTypes.object.isRequired,
   ing: PropTypes.object.isRequired,
   getIngs: PropTypes.func.isRequired,
   sortIngs: PropTypes.func.isRequired,
-  sortSKUs: PropTypes.func.isRequired,
+  sortFormulas: PropTypes.func.isRequired,
   filterByIngs: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  skus: state.skus,
+  formulas: state.formulas,
   ing: state.ing
 });
-export default connect(mapStateToProps, {getIngs, sortIngs, sortSKUs, filterByIngs})(IngFilters);
+export default connect(mapStateToProps, {getIngs, sortIngs, sortFormulas, filterByIngs})(IngFilters);

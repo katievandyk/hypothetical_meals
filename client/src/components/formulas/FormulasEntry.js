@@ -23,6 +23,7 @@ class FormulasEntry extends React.Component {
     modal: false,
     edit_id: '',
     edit_name: '',
+    edit_number: '',
     edit_comment: '',
     edit_ingredients_list: [],
     validate: {}
@@ -226,7 +227,7 @@ class FormulasEntry extends React.Component {
               <Label for="edit_number">Number</Label>
                 <Input
                   valid={this.state.validate.edit_number === 'has-success' }
-                  invalid={this.state.validate.edit_number === 'is-empty' || this.state.validate.edit_number === 'not-valid-num'}
+                  invalid={this.state.validate.edit_number === 'not-valid-num'}
                   type="text"
                   name="edit_number"
                   id="edit_number"
@@ -234,15 +235,9 @@ class FormulasEntry extends React.Component {
                   onChange={this.onChange}
                   defaultValue={this.state.edit_number}>
                 </Input>
-                {this.state.validate.edit_number === 'is-empty' ? (
-                  <FormFeedback>
-                    Please input a value.
-                  </FormFeedback>
-                ):(
                   <FormFeedback>
                     Please input a valid number.
                   </FormFeedback>
-                )}
             </FormGroup>
             <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list}/>
             <FormGroup>

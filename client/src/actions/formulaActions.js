@@ -1,11 +1,25 @@
 import axios from 'axios';
 import { SORT_FORMULAS, ADD_FORMULA, DELETE_FORMULA, UPDATE_FORMULA,
-  FORMULAS_LOADING, FORMULA_ERROR} from './types';
+  FORMULAS_LOADING, FORMULA_ERROR, FORMULA_KW_SEARCH, FORMULA_ING_FILTER} from './types';
 
 export const setFormulasLoading = () => {
   return {
     type: FORMULAS_LOADING
   };
+};
+
+export const searchFormulasByKW = keywords => dispatch => {
+  dispatch({
+    type: FORMULA_KW_SEARCH,
+    payload: keywords
+  });
+};
+
+export const filterByIngs = (ids) => dispatch => {
+  dispatch({
+    type: FORMULA_ING_FILTER,
+    payload: ids
+  });
 };
 
 export const sortFormulas = (field, asc, page, pagelimit, obj) => dispatch => {

@@ -82,7 +82,7 @@ class PLineFilters extends React.Component {
         + Add Filter</Badge>
       <Modal isOpen={this.state.modal} toggle={this.toggle}>
         <ModalHeader toggle={this.toggle}>Select Product Line Filters to Add</ModalHeader>
-        <ModalBody style={{'textAlign': 'center'}}>
+        <ModalBody>
           <Form>
             <FormGroup>
               {this.props.plines.plines.map(({_id, name}) => (

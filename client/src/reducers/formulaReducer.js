@@ -1,4 +1,5 @@
-import {SORT_FORMULAS, ADD_FORMULA, UPDATE_FORMULA, DELETE_FORMULA, FORMULAS_LOADING, FORMULA_ERROR} from '../actions/types';
+import {SORT_FORMULAS, ADD_FORMULA, UPDATE_FORMULA, DELETE_FORMULA,
+  FORMULAS_LOADING, FORMULA_ERROR, FORMULA_KW_SEARCH, FORMULA_ING_FILTER} from '../actions/types';
 
 const initialState = {
   formulas: [],
@@ -49,6 +50,24 @@ export default function(state = initialState, action) {
          ...state,
          error_msgs: [...state.error_msgs, action.payload.data.message],
          loading: false
+       }
+     }
+     case FORMULA_KW_SEARCH:{
+         state.obj.keywords = action.payload;
+         return {
+           ...state,
+           obj: state.obj
+         }
+     }
+     case FORMULA_ING_FILTER:{
+       if(action.payload.length !== 0)
+         state.obj.ingredients = action.payload;
+       else {
+         delete state.obj.ingredients;
+       }
+       return {
+         ...state,
+         obj: state.obj
        }
      }
     default:

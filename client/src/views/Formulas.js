@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
-import PLinesAddModal from '../components/prod_lines/PLinesAddModal';
+import FormulasAddModal from '../components/formulas/FormulasAddModal';
 import FormulasEntry from '../components/formulas/FormulasEntry';
 import PLinesAlerts from '../components/prod_lines/PLinesAlerts';
-import { exportPLines } from '../actions/exportActions';
+import FormulasKeywordSearch from '../components/formulas/FormulasKeywordSearch';
+import IngFilters from '../components/formulas/IngFilters'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
@@ -75,12 +76,14 @@ class Formulas extends Component {
              <Row>
                <Col> <h1>Formulas</h1> </Col>
                <Col> </Col>
+               <Col> <FormulasKeywordSearch/> </Col>
              </Row>
              <Row>
                <Col>
+                 <IngFilters/>
                </Col>
                <Col style={{'textAlign': 'right'}}>
-                 {/*this.props.auth.isAdmin && <PLinesAddModal/>*/}
+                 {this.props.auth.isAdmin && <FormulasAddModal/>}
                </Col>
              </Row>
            </Container>
