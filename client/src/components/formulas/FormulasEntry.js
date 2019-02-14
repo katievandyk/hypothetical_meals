@@ -133,6 +133,32 @@ class FormulasEntry extends React.Component {
     });
   }
 
+  getSortIcon = (field) =>{
+    if(this.props.formulas.sortby === field && this.props.formulas.sortdir === 'desc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-down"/>
+    }
+    else if(this.props.formulas.sortby === field && this.props.formulas.sortdir === 'asc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-up"/>
+    }
+    else{
+      return <FontAwesomeIcon icon = "sort"/>
+    }
+  }
+
+  sortCol = (field, e) => {
+    if(this.props.formulas.sortby === field){
+      if(this.props.formulas.sortdir === 'asc'){
+        this.props.sortFormulas(field, 'desc', 1, this.props.formulas.pagelimit, this.props.formulas.obj);
+      }
+      else{
+        this.props.sortFormulas(field, 'asc', 1, this.props.formulas.pagelimit, this.props.formulas.obj);
+      }
+    }
+    else{
+      this.props.sortFormulas(field, 'asc', 1, this.props.formulas.pagelimit, this.props.formulas.obj);
+    }
+  }
+
   render() {
     const {formulas} = this.props.formulas;
     const loading = this.props.formulas.loading;
@@ -152,8 +178,12 @@ class FormulasEntry extends React.Component {
         <Table responsive size="sm">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Number</th>
+              <th style={{cursor:'pointer'}} onClick={this.sortCol.bind(this, 'name')}>Name{' '}
+                {this.getSortIcon('name')}
+              </th>
+              <th style={{cursor:'pointer'}} onClick={this.sortCol.bind(this, 'number')}>Number{' '}
+                {this.getSortIcon('number')}
+              </th>
               <th>Ingredients List</th>
               <th>Comment</th>
                 {this.props.auth.isAdmin &&

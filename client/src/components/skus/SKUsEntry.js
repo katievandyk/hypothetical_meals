@@ -221,6 +221,32 @@ class SKUsEntry extends React.Component {
     });
   }
 
+  getSortIcon = (field) =>{
+    if(this.props.skus.sortby === field && this.props.skus.sortdir === 'desc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-down"/>
+    }
+    else if(this.props.skus.sortby === field && this.props.skus.sortdir === 'asc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-up"/>
+    }
+    else{
+      return <FontAwesomeIcon icon = "sort"/>
+    }
+  }
+
+  sortCol = (field, e) => {
+    if(this.props.skus.sortby === field){
+      if(this.props.skus.sortdir === 'asc'){
+        this.props.sortSKUs(field, 'desc', 1, this.props.skus.pagelimit, this.props.skus.obj);
+      }
+      else{
+        this.props.sortSKUs(field, 'asc', 1, this.props.skus.pagelimit, this.props.skus.obj);
+      }
+    }
+    else{
+      this.props.sortSKUs(field, 'asc', 1, this.props.skus.pagelimit, this.props.skus.obj);
+    }
+  }
+
   render() {
     const { skus } = this.props.skus;
     const loading = this.props.skus.loading;
@@ -243,13 +269,41 @@ class SKUsEntry extends React.Component {
             <Table responsive size="sm">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>#</th>
-                  <th>Case UPC#</th>
-                  <th>Unit UPC#</th>
-                  <th>Unit Size</th>
-                  <th>Count/Case</th>
-                  <th>Product Line</th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'name')}>
+                    Name{' '}
+                    {this.getSortIcon('name')}
+                  </th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'number')}>
+                    SKU#{' '}
+                      {this.getSortIcon('number')}
+                  </th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'case_number')}>
+                    Case UPC#{' '}
+                      {this.getSortIcon('case_number')}
+                  </th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'unit_number')}>
+                    Unit UPC#{' '}
+                      {this.getSortIcon('unit_number')}
+                  </th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'unit_size')}>
+                    Unit Size{' '}
+                      {this.getSortIcon('unit_size')}
+                  </th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'count_per_case')}>
+                    Count/Case{' '}
+                      {this.getSortIcon('count_per_case')}
+                  </th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'product_line')}>
+                    Product Line{' '}
+                      {this.getSortIcon('product_line')}
+                  </th>
                   <th>Ingredients</th>
                   <th>Comments</th>
                   {this.props.auth.isAdmin && <th>Edit</th>}
@@ -316,13 +370,41 @@ class SKUsEntry extends React.Component {
           <Table responsive size="sm">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>#</th>
-                <th>Case UPC#</th>
-                <th>Unit UPC#</th>
-                <th>Unit Size</th>
-                <th>Count/Case</th>
-                <th>Product Line</th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'name')}>
+                  Name{' '}
+                  {this.getSortIcon('name')}
+                </th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'number')}>
+                  SKU#{' '}
+                    {this.getSortIcon('number')}
+                </th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'case_number')}>
+                  Case UPC#{' '}
+                    {this.getSortIcon('case_number')}
+                </th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'unit_number')}>
+                  Unit UPC#{' '}
+                    {this.getSortIcon('unit_number')}
+                </th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'unit_size')}>
+                  Unit Size{' '}
+                    {this.getSortIcon('unit_size')}
+                </th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'count_per_case')}>
+                  Count/Case{' '}
+                    {this.getSortIcon('count_per_case')}
+                </th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'product_line')}>
+                  Product Line{' '}
+                    {this.getSortIcon('product_line')}
+                </th>
                 <th>Ingredients</th>
                 <th>Comments</th>
                 {this.props.auth.isAdmin && <th>Edit</th> }

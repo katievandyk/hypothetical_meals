@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
 import FormulasAddModal from '../components/formulas/FormulasAddModal';
 import FormulasEntry from '../components/formulas/FormulasEntry';
-import PLinesAlerts from '../components/prod_lines/PLinesAlerts';
+import FormulaAlerts from '../components/formulas/FormulaAlerts';
 import FormulasKeywordSearch from '../components/formulas/FormulasKeywordSearch';
 import IngFilters from '../components/formulas/IngFilters'
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -69,7 +69,7 @@ class Formulas extends Component {
          <div>
            <div>
              <AppNavbar />
-             {/*<PLinesAlerts />*/}
+             <FormulaAlerts />
            </div>
            <Container>
            <Container className="mb-3">

@@ -136,6 +136,32 @@ class IngredientsEntry extends React.Component {
     this.props.getIngSKUs(id);
   };
 
+  getSortIcon = (field) =>{
+    if(this.props.ing.sortby === field && this.props.ing.sortdir === 'desc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-down"/>
+    }
+    else if(this.props.ing.sortby === field && this.props.ing.sortdir === 'asc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-up"/>
+    }
+    else{
+      return <FontAwesomeIcon icon = "sort"/>
+    }
+  }
+
+  sortCol = (field, e) => {
+    if(this.props.ing.sortby === field){
+      if(this.props.ing.sortdir === 'asc'){
+        this.props.sortIngs(field, 'desc', 1, this.props.ing.pagelimit, this.props.ing.obj);
+      }
+      else{
+        this.props.sortIngs(field, 'asc', 1, this.props.ing.pagelimit, this.props.ing.obj);
+      }
+    }
+    else{
+      this.props.sortIngs(field, 'asc', 1, this.props.ing.pagelimit, this.props.ing.obj);
+    }
+  }
+
   render() {
     const { ings } = this.props.ing;
     const loading = this.props.ing.loading;
@@ -153,11 +179,31 @@ class IngredientsEntry extends React.Component {
         <Table responsive size="sm">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Ingr#</th>
-              <th>Vendor's Info</th>
-              <th>Package Size</th>
-              <th>Cost/Package</th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'name')}>
+                Name{' '}
+                {this.getSortIcon('name')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'number')}>
+                Ingr#{' '}
+                  {this.getSortIcon('number')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'vendor_info')}>
+                Vendor's Info{' '}
+                  {this.getSortIcon('vendor_info')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'package_size')}>
+                Package Size{' '}
+                  {this.getSortIcon('package_size')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'cost_per_package')}>
+                Cost/Package{' '}
+                  {this.getSortIcon('cost_per_package')}
+              </th>
               <th>SKUs</th>
               <th>Comments</th>
               {this.props.auth.isAdmin &&

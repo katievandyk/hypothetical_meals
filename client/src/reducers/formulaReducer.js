@@ -7,7 +7,7 @@ const initialState = {
   page: 1,
   pagelimit:10,
   count: 0,
-  error_msgs: [],
+  error_msg: '',
   obj: {},
   sortby: 'name',
   sortdir: 'asc'
@@ -20,10 +20,12 @@ export default function(state = initialState, action) {
         ...state,
         formulas: action.payload.data.results,
         count: action.payload.data.count,
+        sortby: action.payload.sortby,
+        sortdir: action.payload.sortdir,
         page: action.payload.page,
         pagelimit: action.payload.pagelimit,
         loading: false,
-        error_msgs: []
+        error_msg: ''
       }
     case FORMULAS_LOADING:
       return {
@@ -48,7 +50,7 @@ export default function(state = initialState, action) {
      case FORMULA_ERROR:{
        return {
          ...state,
-         error_msgs: [...state.error_msgs, action.payload.data.message],
+         error_msg: action.payload.data.message,
          loading: false
        }
      }

@@ -2,7 +2,7 @@ import {UPLOAD_CHECK, UPLOAD_ERROR, RESET_IMPORT_STATE, IMPORT_OVERWRITES, SET_I
 
 const initialState = {
   success: true,
-  error_msgs: [],
+  error_msg: '',
   check_res: {},
   import_res: {},
   loading: false
@@ -15,7 +15,7 @@ export default function(state = initialState, action) {
         ...state,
         success:true,
         check_res: action.payload,
-        error_msgs: [],
+        error_msg: '',
         loading: false
       }
     }
@@ -23,7 +23,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         success: false,
-        error_msgs: [...state.error_msgs, action.payload.data.message],
+        error_msg: action.payload.data.message,
         loading: false
       }
     }
@@ -32,7 +32,7 @@ export default function(state = initialState, action) {
         ...state,
         success:true,
         import_res: action.payload,
-        error_msgs: [],
+        error_msg: '',
         loading: false
       }
     }

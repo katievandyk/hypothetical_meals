@@ -13,7 +13,9 @@ import { BrowserRouter, Route, Switch} from "react-router-dom";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch, faEdit, faTrash, faList, faSortAlphaUp,
   faSortAlphaDown, faSortNumericUp, faSortNumericDown,
-  faTimes, faChevronLeft, faChevronRight, faInfoCircle}
+  faTimes, faChevronLeft, faChevronRight, faInfoCircle,
+  faSort, faSortUp, faSortDown
+}
 from '@fortawesome/free-solid-svg-icons';
 
 import { Provider } from "react-redux";
@@ -27,7 +29,8 @@ import AdminRoute from "./components/private-route/AdminRoute";
 
 library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
    faSortAlphaDown, faSortNumericUp, faSortNumericDown,
-   faTimes, faChevronLeft, faChevronRight, faInfoCircle
+   faTimes, faChevronLeft, faChevronRight, faInfoCircle,
+   faSort, faSortUp, faSortDown
   );
 
 // Check for token to keep user logged in

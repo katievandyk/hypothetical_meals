@@ -13,7 +13,7 @@ const initialState = {
   count: 0,
   page: 1,
   pagelimit: 10,
-  error_msgs: []
+  error_msg: ''
 
 };
 
@@ -54,7 +54,7 @@ export default function(state = initialState, action) {
         count: action.payload.count,
         loading: false,
         pagelimit: 10,
-        error_msgs: []
+        error_msgs: ''
       }
     }
     case SKU_GROUP_BY_PL:{
@@ -112,13 +112,13 @@ export default function(state = initialState, action) {
         loading: false,
         pagelimit: action.payload.pagelimit,
         page: page_val,
-        error_msgs: []
+        error_msg: ''
       }
     }
     case SKU_ERROR:{
       return {
         ...state,
-        error_msgs: [...state.error_msgs, action.payload.data.message],
+        error_msg: action.payload.data.message,
         loading: false
       }
     }
