@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 
 const ManufacturingLine = require('../../models/ManufacturingLine');
+const Parser = require('../../bulk_import/parser')
 
 // @route GET api/manufacturinglines
 // @desc get all manufacturing lines
@@ -13,15 +14,6 @@ router.get('/', (req, res) => {
         .lean()
         .then(mLs => res.json(mLs))
 });
-
-function checkManufacturingLine(obj) {
-    if(!(obj.name) || !(obj.shortname)) 
-        throw new Error(`Manufacturing line name and shortname required. Got: ${obj.name},${obj.shortname}`)
-    if(obj.name.length > 32) 
-        throw new Error(`Manufacturing line name must be less than 32 characters. Got length ${obj.name.length} for: ${obj.name}`)
-    if(obj.shortname.length > 5)
-        throw new Error(`Manufacturing line shortname must be less than 5 characters. Got length ${obj.shortname.length} for ${obj.shortname}`)
-}
 
 // @route POST api/manufacturinglines
 // @desc create a manufacturing line
@@ -35,7 +27,7 @@ router.post('/', (req, res) => {
     };
 
     try {
-        checkManufacturingLine(mLObj);
+        Parser.checkManufacturingLine(mLObj.name, mLObj.shortname);
     } catch(error) {
         res.status(404).json({success: false, message: error.message})
         return;
@@ -69,7 +61,7 @@ router.post('/update/:id', (req, res) => {
         }
 
         try {
-            checkManufacturingLine(new_ml)
+            Parser.checkManufacturingLine(new_ml.name, new_ml.shortname)
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
             return;

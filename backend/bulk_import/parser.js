@@ -6,6 +6,7 @@ const Helpers = require('./helpers');
 const ProductLine = require('../models/ProductLine');
 const SKU = require('../models/SKU');
 const Ingredient = require('../models/Ingredient');
+const ManufacturingLine = require('../models/ManufacturingLine');
 
 module.exports.ing_fields = ing_fields = {number: 'Ingr#', name: 'Name', vendor: 'Vendor Info', size: 'Size', cost: 'Cost', comment: 'Comment'};
 module.exports.ing_fields = ingredients_header = [ ing_fields.number, ing_fields.name, ing_fields.vendor, ing_fields.size, ing_fields.cost, ing_fields.comment ];
@@ -64,6 +65,77 @@ module.exports.preprocessOnePL = preprocessOnePL = function(pl_entry) {
                 else {
                     pl_entry['status'] = "Ignore";
                      accept(pl_entry);
+                }
+            })
+    });
+}
+
+module.exports.ml_fields = ml_fields = {name: 'Name', shortname: 'ML Shortname', comment: 'Comment'};
+module.exports.ml_header = ml_header = [ml_fields.name, ml_fields.shortname, ml_fields.comment ];
+
+module.exports.parseMLFile = parseMLFile = function(file) {
+    return new Promise(function(resolve, reject) {
+        return Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true, 
+            delimiter: ",",
+            complete: resolve, 
+            error: reject
+        });
+    }).then(function(data) {
+        return checkMLs(data);
+    })
+}
+
+function checkMLs(data) {
+    if (data.errors.length != 0) throw data.errors;
+    Helpers.checkFileHeaders(data.meta.fields, ml_header);
+
+    let ml_data = data.data;
+    checkMLFileDuplicates(ml_data);
+    return Promise.all(ml_data.map(preprocessOneML));
+}
+
+module.exports.checkMLFileDuplicates = checkMLFileDuplicates = function(ml_data) {
+    let i;
+    let shortnames = [];
+    for(i = 0; i < ml_data.length; i++) {
+        if(shortnames.includes(ml_data[i][ml_fields.shortname])) {
+            throw new Error("Duplicate shortname in file: " + ml_data[i][ml_fields.shortname]);
+        }
+        shortnames.push(ml_data[i][ml_fields.shortname]);
+    }
+}
+
+ module.exports.checkManufacturingLine = checkManufacturingLine = function(name, shortname) {
+    if(!(name) || !(shortname)) 
+        throw new Error(`Manufacturing line name and shortname required. Got: ${name},${shortname}`)
+    if(name.length > 32) 
+        throw new Error(`Manufacturing line name must be less than 32 characters. Got length ${name.length} for: ${name}`)
+    if(shortname.length > 5)
+        throw new Error(`Manufacturing line shortname must be less than 5 characters. Got length ${shortname.length} for ${shortname}`)
+}
+
+// visible for testing
+module.exports.preprocessOneML = preprocessOneML = function(ml_entry) {
+    checkManufacturingLine(ml_entry[ml_fields.name], ml_entry[ml_fields.shortname])
+
+    return new Promise(function(accept, reject) {
+        ManufacturingLine
+            .findOne({shortname: ml_entry[ml_fields.shortname]})
+            .then(result => {
+                if(!result) {
+                    ml_entry["status"] = "Store";
+                    accept(ml_entry);
+                }
+                else {
+                    if(ml_entry[ml_fields.name] == result.name && (result.comment == ml_entry[ml_fields.comment] || 
+                        !result.comment && ml_entry[ml_fields.comment].length == 0))
+                        ml_entry['status'] = "Ignore";
+                    else
+                        ml_entry['status'] = "Overwrite";
+                        ml_entry["to_overwrite"] = result;
+                     accept(ml_entry);
                 }
             })
     });

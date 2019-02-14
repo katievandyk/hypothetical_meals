@@ -112,7 +112,7 @@ module.exports.getFormulasFilterResult = getFormulasFilterResult = function(req,
                 req.body.ingredients}});
     }
 
-    formulasFindPromise = formulasFindPromise.populate('ingredients_list._id')
+    formulasFindPromise = formulasFindPromise.populate("ingredients_list._id")
 
     callback(req, res, formulasFindPromise, formulasCountPromise)
 }

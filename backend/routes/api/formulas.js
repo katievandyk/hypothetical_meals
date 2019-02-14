@@ -11,6 +11,7 @@ const Helper = require('../../bulk_import/helpers')
 router.get('/', (req, res) => {
     Formula
         .find()
+        .populate("ingredients_list._id")
         .lean()
         .then(formulas => res.json(formulas))
 });
@@ -142,6 +143,20 @@ router.delete('/:id', (req, res) => {
             ).catch(err => res.status(404).json({success: false, message: err.message}))
         }
     })
+});
+
+// @route GET api/formulas/:id/skus
+// @desc gets a list of skus for a formula
+// @access public
+router.get('/:id/skus', (req, res) => {
+    SKU
+        .find({ 'formula': mongoose.Types.ObjectId(req.params.id) })
+        .lean()
+        .populate('product_line')
+        .populate('formula')
+        .populate('manufacturing_lines._id')
+        .then(skus => res.json(skus))
+        .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
 module.exports = router;

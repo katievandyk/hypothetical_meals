@@ -4,10 +4,12 @@ const ing_fields = {number: 'Ingr#', name: 'Name', vendor: 'Vendor Info', size: 
 const pl_fields = {name: 'Name'};
 const sku_fields = {number: 'SKU#', name: 'Name', case_upc: 'Case UPC', unit_upc: 'Unit UPC', unit_size: 'Unit size', count: 'Count per case', pl_name: 'Product Line Name', comment: 'Comment'};
 const formula_fields = {sku_num: 'SKU#', ing_num: 'Ingr#', quantity:'Quantity'};
+const ml_fields = {name: 'Name', shortname: 'ML Shortname', comment: 'Comment'};
 
 const ProductLine = require('../models/ProductLine');
 const SKU = require('../models/SKU');
 const Ingredient = require('../models/Ingredient');
+const ManufacturingLine = require('../models/ManufacturingLine');
 
 module.exports.uploadIngredients = uploadIngredients = function(ings_data) {
     let overwrite = ings_data.Overwrite
@@ -170,5 +172,45 @@ function uploadOneSKUFormula(formula_entry) {
                 new_res = {name: result.name, number: result.number, ing_list: ing_list}
                 accept(new_res)
             }).catch(error => reject(error));
+    });
+}
+
+module.exports.uploadMLs = uploadMLs = function(mls_data) {
+    let overwrite = mls_data.Overwrite
+    let store = mls_data.Store
+    let overwritePromise = Promise.all(overwrite.map(updateOneML))
+    let storePromise = Promise.all(store.map(createOneML))
+    return Promise.all([overwritePromise, storePromise]);
+}
+
+function updateOneML(ml_entry) {
+    let name = ml_entry[ml_fields.name];
+    let shortname = ml_entry[ml_fields.shortname];
+    let comment = ml_entry[ml_fields.comment];
+
+    return new Promise(function(resolve, reject) {
+        let updateObj = {
+            name: name,
+            shortname: shortname,
+            comment: comment
+        };
+        ManufacturingLine
+        .findByIdAndUpdate(ml_entry.to_overwrite._id, updateObj, {new: true})
+        .then(ml => resolve(ml)).catch(error => reject(error));
+    });
+}
+
+function createOneML(ml_entry) {
+    let name = ml_entry[ml_fields.name];
+    let shortname = ml_entry[ml_fields.shortname];
+    let comment = ml_entry[ml_fields.comment];
+
+    return new Promise(function(resolve, reject) {
+        new ManufacturingLine({
+            _id: new mongoose.Types.ObjectId(),
+            name: name,
+            shortname: shortname,
+            comment: comment
+        }).save().then(ml => resolve(ml)).catch(error => reject(error));
     });
 }

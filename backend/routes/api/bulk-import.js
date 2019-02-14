@@ -45,6 +45,9 @@ function bulkImport(file_name, file_body, res) {
     sku_file_regex = /^skus(\S)*\.csv$/;
     pl_file_regex = /^product_lines(\S)*\.csv$/;
     formulas_file_regex = /^formulas(\S)*\.csv$/;
+    ml_file_regex = /^manufacturing_lines(\S)*\.csv$/;
+    sku_ml_file_regex = /^sku_manufacturing_lines(\S)*\.csv$/;
+
     let parsePromise;
     if(ing_file_regex.test(file_name)) {
         parsePromise = Parser.parseIngredientFile(file_body)
@@ -61,6 +64,10 @@ function bulkImport(file_name, file_body, res) {
     else if(formulas_file_regex.test(file_name)) {
         parsePromise = Parser.parseForumula(file_body)
         file_type = "formulas"
+    }
+    else if(ml_file_regex.test(file_name)) {
+        parsePromise = Parser.parseMLFile(file_body)
+        file_type = "manufacturing_lines"
     }
     else {
         res.status(404).json({
@@ -152,5 +159,17 @@ router.post('/upload/formulas', (req, res) => {
         console.log(err);
         res.status(404).json({success: false, message: err.message})});
 });
+
+// @route POST api/bulk-import/update/manufacturinglines
+// @desc bulk import manufacturing lines
+// @access public
+router.post('/upload/manufacturinglines', (req, res) => {
+    Uploader.uploadMLs(req.body.data)
+    .then(result => res.json(generateResultsSummary(req,result)))
+    .catch(err => { 
+        console.log(err);
+        res.status(404).json({success: false, message: err.message})});
+});
+
 
 module.exports = router;
