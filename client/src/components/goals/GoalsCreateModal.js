@@ -29,8 +29,10 @@ class GoalsCreateModal extends React.Component {
       quantity: '',
       skuSel: '',
       skus_list: [],
+      date: '',
       validNum: '',
       validName: '',
+      validDate: ''
     };
 
     this.toggle = this.toggle.bind(this);
@@ -40,6 +42,7 @@ class GoalsCreateModal extends React.Component {
     this.skuCallback = this.skuCallback.bind(this);
     this.onNameChange = this.onNameChange.bind(this);
     this.onNumberChange = this.onNumberChange.bind(this);
+    this.onDateChange = this.onDateChange.bind(this);
   }
 
    componentDidMount() {
@@ -49,11 +52,13 @@ class GoalsCreateModal extends React.Component {
    onSubmit = e => {
      var goals  = this.props.goals.goals
      if(this.state.name.length === 0 || goals.find(elem => elem.name === this.state.name) != null) alert("Please enter a unique name for your goal.")
+     else if(this.state.validDate !== 'success') alert("Please enter a valid date.")
      else {
          const newGoal = {
            name: this.state.name,
            skus_list: this.state.skus_list,
-           user_email: this.props.auth.user_email
+           user_email: this.props.auth.user_email,
+           deadline: this.state.date
          };
          this.props.addGoal(newGoal);
          this.toggle();
@@ -95,6 +100,19 @@ class GoalsCreateModal extends React.Component {
           valid = 'failure'
         }
         this.setState({ validName: valid })
+   }
+
+   onDateChange = e => {
+        var currentTime = new Date();
+        var enteredDate = new Date(e.target.value)
+        this.setState({ date: e.target.value })
+        var valid = '';
+        if (enteredDate >= currentTime) {
+          valid = 'success'
+        } else {
+          valid = 'failure'
+        }
+        this.setState({ validDate: valid })
    }
 
    onCancel  = e => {
@@ -143,8 +161,12 @@ class GoalsCreateModal extends React.Component {
           <ModalBody>
                <Form>
                  <FormGroup>
-                     <Label for="goal_name">Manufacturing Goal Name</Label>
-                     <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.name} onChange={this.onNameChange}/>
+                     <Label>Manufacturing Goal Name</Label>
+                     <Input valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.name} onChange={this.onNameChange}/>
+                 </FormGroup>
+                 <FormGroup>
+                      <Label>Manufacturing Goal Deadline</Label>
+                      <Input valid={this.state.validDate === 'success'} invalid={this.state.validDate === 'failure'} onChange={this.onDateChange} type="date" />
                  </FormGroup>
                  <Label>Create SKU List</Label>
                  <FormGroup>

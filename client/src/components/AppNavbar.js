@@ -91,7 +91,7 @@ class AppNavbar extends Component {
                </DropdownToggle>
                <DropdownMenu right>
                  <DropdownItem>
-                  <NavLink tag={RRNavLink} to="/goals" className="nav-link" activeClassName="active">Goals</NavLink>
+                  <NavLink tag={RRNavLink} to="/manufacturinggoals" className="nav-link" activeClassName="active">Goals</NavLink>
                  </DropdownItem>
                  <DropdownItem>
                    Schedule
