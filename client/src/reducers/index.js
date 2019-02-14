@@ -6,6 +6,7 @@ import errorReducer from './errorReducer';
 import plineReducer from './plineReducer';
 import skuReducer from './skuReducer';
 import importReducer from './importReducer';
+import formulaReducer from './formulaReducer';
 
 export default combineReducers({
   ing: ingReducer,
@@ -14,5 +15,6 @@ export default combineReducers({
   errors: errorReducer,
   plines: plineReducer,
   skus: skuReducer,
-  import: importReducer
+  import: importReducer,
+  formulas: formulaReducer
 });

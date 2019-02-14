@@ -1,5 +1,5 @@
-.brightgreen{
-  color: #8EE18C;
+.main-green{
+  color: #28a745;
 }
 
 .fade-enter {
@@ -22,4 +22,23 @@
 
 .hidden {
   display:none!important;
+}
+
+.navbar-dark .navbar-nav .dropdown-item .nav-link,
+.navbar-dark .navbar-nav .dropdown-item .nav-link:hover {
+  color: black;
+  padding: 0 0 0 0;
+}
+
+.navbar-dark .navbar-nav .dropdown-item .nav-link.active {
+  color: green;
+  padding: 0 0 0 0;
+}
+
+.navbar-dark .navbar-nav .dropdown-toggle.nav-link:focus {
+  color: rgba(255,255,255,.5);
+}
+
+.navbar-dark .navbar-nav .show>.dropdown-toggle.nav-link:focus {
+  color: rgba(255,255,255,.75);
 }

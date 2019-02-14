@@ -6,14 +6,14 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getSKUsByPLine } from '../../actions/skuActions';
+import { getSKUsByPLine, getSKUs } from '../../actions/skuActions';
 import { getPLines } from '../../actions/plineActions';
 
 class GoalsProductLineFilter extends React.Component {
   state={
     modal: false,
-    pline_filters:{},
-    selected_plines:{}
+    pline_filters: {},
+    selected_plines: {}
   }
 
   toggle = () => {
@@ -50,12 +50,12 @@ class GoalsProductLineFilter extends React.Component {
 
   onRemoveFilter = e => {
     delete this.state.pline_filters[e.target.id];
-    this.props.getSKUsByPLine(Object.keys(this.state.pline_filters));
+    if(Object.keys(this.state.pline_filters).length === 0) this.props.getSKUs();
+    else this.props.getSKUsByPLine(Object.keys(this.state.pline_filters));
   };
 
   onXRemoveFilter = (e, id) => {
     delete this.state.pline_filters[id];
-    this.props.getSKUsByPLine(Object.keys(this.state.pline_filters));
   };
 
   render() {
@@ -106,6 +106,7 @@ GoalsProductLineFilter.propTypes = {
   plines: PropTypes.object.isRequired,
   skus: PropTypes.object.isRequired,
   getPLines: PropTypes.func.isRequired,
+  getSKUs: PropTypes.func.isRequired,
   getSKUsByPLine: PropTypes.func.isRequired
 };
 
@@ -114,4 +115,4 @@ const mapStateToProps = state => ({
   skus: state.skus
 });
 
-export default connect(mapStateToProps, {getSKUsByPLine, getPLines})(GoalsProductLineFilter);
+export default connect(mapStateToProps, {getSKUsByPLine, getSKUs, getPLines})(GoalsProductLineFilter);
