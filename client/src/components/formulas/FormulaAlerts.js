@@ -7,10 +7,10 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-class IngredientsAlerts extends Component {
+class FormulaAlerts extends Component {
 
   render(){
-    const error_msg = this.props.ing.error_msg;
+    const error_msg = this.props.formulas.error_msg;
     if(error_msg.length > 0){
       return (
         <Row>
@@ -31,12 +31,12 @@ class IngredientsAlerts extends Component {
   }
 }
 
-IngredientsAlerts.propTypes = {
-  ing: PropTypes.object.isRequired
+FormulaAlerts.propTypes = {
+  formulas: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  ing: state.ing
+  formulas: state.formulas
 });
 
-export default connect(mapStateToProps)(IngredientsAlerts);
+export default connect(mapStateToProps)(FormulaAlerts);

@@ -7,12 +7,15 @@ import ProductLines from './views/ProductLines';
 import Reports from './views/Reports';
 import Import from './views/Import';
 import SKU from './views/SKU';
+import Formulas from './views/Formulas';
 import { BrowserRouter, Route, Switch} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch, faEdit, faTrash, faList, faSortAlphaUp,
   faSortAlphaDown, faSortNumericUp, faSortNumericDown,
-  faTimes, faChevronLeft, faChevronRight, faInfoCircle}
+  faTimes, faChevronLeft, faChevronRight, faInfoCircle,
+  faSort, faSortUp, faSortDown
+}
 from '@fortawesome/free-solid-svg-icons';
 
 import { Provider } from "react-redux";
@@ -26,7 +29,8 @@ import AdminRoute from "./components/private-route/AdminRoute";
 
 library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
    faSortAlphaDown, faSortNumericUp, faSortNumericDown,
-   faTimes, faChevronLeft, faChevronRight, faInfoCircle
+   faTimes, faChevronLeft, faChevronRight, faInfoCircle,
+   faSort, faSortUp, faSortDown
   );
 
 // Check for token to keep user logged in
@@ -62,7 +66,7 @@ class App extends Component {
                       <PrivateRoute path="/manufacturinggoals" component={ManufacturingGoals} />
                       <PrivateRoute path="/productlines" component={ProductLines} />
                       <PrivateRoute path="/sku" component={SKU} />
-                      <PrivateRoute path="/productlines" component={ProductLines} />
+                      <PrivateRoute path="/formulas" component={Formulas} />
                       <AdminRoute path="/import" component={Import} />
                       <PrivateRoute path="/reports" component={Reports} />
                       <Route path="api/*" component={Login} />

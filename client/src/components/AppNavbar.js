@@ -11,9 +11,13 @@ import {
   Nav,
   NavItem,
   NavLink,
-  Container
+  Container,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
 } from 'reactstrap';
-
+import { withRouter } from "react-router";
 import { NavLink as RRNavLink } from 'react-router-dom';
 
 class AppNavbar extends Component {
@@ -33,9 +37,8 @@ class AppNavbar extends Component {
   }
 
   render() {
-    //TO DO: Add when page is active
     return(<div>
-      <Navbar dark expand="md" className="mb-5" style={{backgroundColor: '#8EE18C'}}>
+      <Navbar dark expand="md" className="mb-5" style={{backgroundColor: '#28a745'}}>
           <NavbarBrand style={{color:'white'}}>Hypothetical Meals</NavbarBrand>
         <NavbarToggler onClick={this.toggle} />
         <Container className="">
@@ -45,21 +48,59 @@ class AppNavbar extends Component {
             {this.props.auth.isAdmin ? (<NavItem>
               <NavLink tag={RRNavLink} to="/register" className="nav-link" activeClassName="active">Register</NavLink>
             </NavItem>): (<div></div>)}
-            <NavItem>
-              <NavLink tag={RRNavLink} to="/ingredients" className="nav-link" activeClassName="active">Ingredients</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink tag={RRNavLink} to="/productlines" className="nav-link" activeClassName="active">Product Lines</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink tag={RRNavLink} to="/sku" className="nav-link" activeClassName="active">SKUs</NavLink>
-            </NavItem>
+            <UncontrolledDropdown nav
+              active={
+                (this.props.location.pathname === '/ingredients' ||
+                this.props.location.pathname === '/productlines' ||
+                this.props.location.pathname === '/sku' ||
+                this.props.location.pathname === '/formulas') ?
+                (true) : (false)
+              }
+              inNavbar>
+               <DropdownToggle nav caret>
+                 Data Management
+               </DropdownToggle>
+               <DropdownMenu right>
+                 <DropdownItem>
+                  <NavLink tag={RRNavLink} to="/ingredients" className="nav-link" activeClassName="active">Ingredients</NavLink>
+                 </DropdownItem>
+                 <DropdownItem>
+                   <NavLink tag={RRNavLink} to="/productlines" className="nav-link" activeClassName="active">Product Lines</NavLink>
+                 </DropdownItem>
+                 <DropdownItem>
+                   <NavLink tag={RRNavLink} to="/sku" className="nav-link" activeClassName="active">SKUs</NavLink>
+                 </DropdownItem>
+                 <DropdownItem>
+                   <NavLink tag={RRNavLink} to="/formulas" className="nav-link" activeClassName="active">Formulas</NavLink>
+                 </DropdownItem>
+               </DropdownMenu>
+             </UncontrolledDropdown>
             {this.props.auth.isAdmin ? (<NavItem>
               <NavLink tag={RRNavLink} to="/import" className="nav-link" activeClassName="active">Import</NavLink>
             </NavItem>): (<div></div>)}
-            <NavItem>
-              <NavLink tag={RRNavLink} to="/manufacturinggoals" className="nav-link" activeClassName="active">Manufacturing</NavLink>
-            </NavItem>
+            <UncontrolledDropdown nav
+              active={
+                (this.props.location.pathname === '/goals' ||
+                this.props.location.pathname === '/schedule' ||
+                this.props.location.pathname === '/manufacturinglines') ?
+                (true) : (false)
+              }
+            inNavbar>
+               <DropdownToggle nav caret>
+                 Manufacturing
+               </DropdownToggle>
+               <DropdownMenu right>
+                 <DropdownItem>
+                  <NavLink tag={RRNavLink} to="/manufacturinggoals" className="nav-link" activeClassName="active">Goals</NavLink>
+                 </DropdownItem>
+                 <DropdownItem>
+                   Schedule
+                 </DropdownItem>
+                 <DropdownItem>
+                   Manufacturing Lines
+                 </DropdownItem>
+               </DropdownMenu>
+             </UncontrolledDropdown>
             <NavItem>
               <NavLink tag={RRNavLink} to="/reports" className="nav-link" activeClassName="active">Reports</NavLink>
             </NavItem>
@@ -78,7 +119,10 @@ class AppNavbar extends Component {
 
 AppNavbar.propTypes = {
   logoutUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired
 };
 const mapStateToProps = state => ({
   auth: state.auth
@@ -86,4 +130,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   { logoutUser }
-)(AppNavbar);
+)(withRouter(AppNavbar));
