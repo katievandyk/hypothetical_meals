@@ -7,6 +7,7 @@ import ProductLines from './views/ProductLines';
 import Reports from './views/Reports';
 import Import from './views/Import';
 import SKU from './views/SKU';
+import Formulas from './views/Formulas';
 import { BrowserRouter, Route, Switch} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -59,10 +60,10 @@ class App extends Component {
                       <Route exact={true} path="/" component={Login} />
                       <AdminRoute exact={true} path="/register" component={Register} />
                       <PrivateRoute path="/ingredients" component={Ingredients} />
-                      <PrivateRoute path="/manufacturing" component={Manufacturing} />
+                      <PrivateRoute path="/goals" component={Manufacturing} />
                       <PrivateRoute path="/productlines" component={ProductLines} />
                       <PrivateRoute path="/sku" component={SKU} />
-                      <PrivateRoute path="/productlines" component={ProductLines} />
+                      <PrivateRoute path="/formulas" component={Formulas} />
                       <AdminRoute path="/import" component={Import} />
                       <PrivateRoute path="/reports" component={Reports} />
                       <Route path="api/*" component={Login} />

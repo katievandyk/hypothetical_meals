@@ -139,7 +139,7 @@ class SKUsEntry extends React.Component {
           validate[field_type] = 'not-valid-upca'
         }
       }
-    } else if(field_type !== 'comment' && field_type !== 'number'){
+    } else if(field_type !== 'edit_comment' && field_type !== 'edit_number'){
       validate[e.target.name] = 'is-empty';
     }
     this.setState({ validate });
