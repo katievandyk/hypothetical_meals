@@ -178,7 +178,7 @@ class FormulasEntry extends React.Component {
                       ))
                     }
                     </td>
-                    <td> {comment} </td>
+                    <td style={{wordBreak:'break-all'}}> {comment} </td>
                     {this.props.auth.isAdmin &&
                       <td>
                         <Button size="sm" color="link"

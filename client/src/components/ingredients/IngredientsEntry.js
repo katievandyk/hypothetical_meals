@@ -108,7 +108,7 @@ class IngredientsEntry extends React.Component {
           validate[field_type] = 'not-valid'
         }
       }
-    } else if(field_type !== 'comment' && field_type !== 'vendor_info' && field_type !== 'number'){
+    } else if(field_type !== 'edit_comment' && field_type !== 'edit_vendor_info' && field_type !== 'edit_number'){
       validate[e.target.name] = 'is-empty';
     }
     this.setState({ validate });
@@ -154,7 +154,7 @@ class IngredientsEntry extends React.Component {
           <thead>
             <tr>
               <th>Name</th>
-              <th>#</th>
+              <th>Ingr#</th>
               <th>Vendor's Info</th>
               <th>Package Size</th>
               <th>Cost/Package</th>
@@ -186,7 +186,7 @@ class IngredientsEntry extends React.Component {
                       <FontAwesomeIcon icon="list"/>
                       </Button>
                     </td>
-                    <td> {comment} </td>
+                    <td style={{wordBreak:'break-all'}}> {comment} </td>
                     {this.props.auth.isAdmin &&
                       <td>
                         <Button size="sm" color="link"
@@ -328,8 +328,8 @@ class IngredientsEntry extends React.Component {
           <ModalHeader toggle={this.sku_toggle}>SKUs that use Ingredient: {this.props.ing.ing_skus.length}</ModalHeader>
           <ModalBody>
             <ListGroup>
-              {this.props.ing.ing_skus.map(({_id, name, unit_size, count_per_case}) => (
-              <ListGroupItem key={_id}> <div>{name + ": " + unit_size + " * " + count_per_case}</div> </ListGroupItem>
+              {this.props.ing.ing_skus.map(({_id, name, number, unit_size, count_per_case}) => (
+              <ListGroupItem key={_id}> <div>{name + ": " + unit_size + " * " + count_per_case + " (SKU#: " + number +")"}</div> </ListGroupItem>
               ))}
             </ListGroup>
           </ModalBody>

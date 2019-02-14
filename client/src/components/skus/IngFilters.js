@@ -45,19 +45,19 @@ class IngFilters extends React.Component {
       ing_filters: newFilters
     });
     this.props.filterByIngs(Object.keys(this.state.selected_ings));
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
     this.toggle();
   };
 
   onRemoveFilter = e => {
     delete this.state.ing_filters[e.target.id];
     this.props.filterByIngs(Object.keys(this.state.ing_filters));
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
   };
   onXRemoveFilter = (e,id) => {
     delete this.state.ing_filters[id];
     this.props.filterByIngs(Object.keys(this.state.ing_filters));
-    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+    this.props.sortSKUs(this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
   };
 
   render() {

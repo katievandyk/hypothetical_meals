@@ -277,7 +277,7 @@ class SKUsEntry extends React.Component {
                           <FontAwesomeIcon icon="list"/>
                           </Button>
                         </td>
-                        <td> {comment} </td>
+                        <td style={{wordBreak:'break-all'}}> {comment} </td>
                         {this.props.auth.isAdmin &&
                           <td>
                             <Button size="sm" color="link"
@@ -349,7 +349,7 @@ class SKUsEntry extends React.Component {
                         <FontAwesomeIcon icon="list"/>
                         </Button>
                       </td>
-                      <td> {comment} </td>
+                      <td style={{wordBreak:'break-all'}}> {comment} </td>
                       {this.props.auth.isAdmin &&
                         <td>
                           <Button size="sm" color="link"
