@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
 import LinesEntry from '../components/lines/LinesEntry'
+import LinesCreateModal from '../components/lines/LinesCreateModal'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
@@ -18,10 +19,16 @@ class ManufacturingLines extends Component {
                 <div>
                     <AppNavbar />
                 </div>
-                <Container className="mb-3">
-                   <Row>
-                        <Col> <h1>Manufacturing Lines</h1> </Col>
-                   </Row>
+                <Container>
+                    <Container className="mb-3">
+                       <Row>
+                            <Col> <h1>Manufacturing Lines</h1> </Col>
+                       </Row>
+                       <Row>
+                            <Col style={{'textAlign': 'right'}}> </Col>
+                            <LinesCreateModal />
+                       </Row>
+                   </Container>
                    <LinesEntry/>
                 </Container>
             </div>
