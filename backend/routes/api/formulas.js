@@ -2,8 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 
-const Formula = require('../../models/Formula');
-const Helper = require('../../bulk_import/helpers')
+const Formula = require('../../models/Formula')
+const Parser = require('../../bulk_import/parser')
 
 // @route GET api/formulas
 // @desc get all formulas
@@ -15,15 +15,6 @@ router.get('/', (req, res) => {
         .lean()
         .then(formulas => res.json(formulas))
 });
-
-function checkFormulaFields(obj) {
-    if(!(obj.name) || !(obj.number)) 
-        throw new Error(`Formula name and number are required. Got: ${obj.name}, ${obj.number}`)
-    if(obj.name.length > 32)
-        throw new Error(`Formula name must be less than 32 characters. Got length ${obj.name.length} in ${obj.name}`)
-    if(!Helper.isPositiveInteger(obj.number))
-        throw new Error(`Formula number should be a positive number. Got: ${obj.number}`)
-} 
 
 // @route POST api/formulas
 // @desc create a formula
@@ -47,7 +38,7 @@ router.post('/', (req, res) => {
         formulaObj.ingredients_list = req.body.ingredients_list ? req.body.ingredients_list : [];
 
         try {
-            checkFormulaFields(formulaObj)
+            Parser.checkFormulaFields(formulaObj.name, formulaObj.number)
             if(req.body.ingredients_list && !Array.isArray(req.body.ingredients_list))
                 throw new Error("Formula ingredients list must be an array.")
             if(req.body.ingredients_list)
@@ -89,7 +80,7 @@ router.post('/update/:id', (req, res) => {
         };
 
         try {
-            checkFormulaFields(updatedFormula)
+            Parser.checkFormulaFields(updatedFormula.name, updatedFormula.number)
             if(req.body.ingredients_list != null && !Array.isArray(req.body.ingredients_list))
                 throw new Error("Formula ingredients list must be an array.")
             if(req.body.ingredients_list)

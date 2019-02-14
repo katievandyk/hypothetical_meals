@@ -45,6 +45,7 @@ function bulkImport(file_name, file_body, res) {
     sku_file_regex = /^skus(\S)*\.csv$/;
     pl_file_regex = /^product_lines(\S)*\.csv$/;
     formulas_file_regex = /^formulas(\S)*\.csv$/;
+    formula_ing_file_regex = /^formula_ingredients(\S)*\.csv$/;
     ml_file_regex = /^manufacturing_lines(\S)*\.csv$/;
     sku_ml_file_regex = /^sku_manufacturing_lines(\S)*\.csv$/;
 
@@ -62,8 +63,12 @@ function bulkImport(file_name, file_body, res) {
         file_type = "product_lines"
     }
     else if(formulas_file_regex.test(file_name)) {
-        parsePromise = Parser.parseForumula(file_body)
+        parsePromise = Parser.parseFormula(file_body)
         file_type = "formulas"
+    }
+    else if(formula_ing_file_regex.test(file_name)) {
+        parsePromise = Parser.parseFormulaIngredients(file_body)
+        file_type = "formula_ingredients"
     }
     else if(ml_file_regex.test(file_name)) {
         parsePromise = Parser.parseMLFile(file_body)
@@ -151,8 +156,8 @@ router.post('/upload/skus', (req, res) => {
 // @route POST api/bulk-import/update/formulas
 // @desc update formulas
 // @access public
-router.post('/upload/formulas', (req, res) => {
-    Uploader.uploadFormulas(req.body.data)
+router.post('/upload/formulasings', (req, res) => {
+    Uploader.uploadFormulaIngs(req.body.data)
     .then(result => {
         res.json(generateResultsSummary(req, [result, []]))})
     .catch(err => { 
@@ -165,6 +170,17 @@ router.post('/upload/formulas', (req, res) => {
 // @access public
 router.post('/upload/manufacturinglines', (req, res) => {
     Uploader.uploadMLs(req.body.data)
+    .then(result => res.json(generateResultsSummary(req,result)))
+    .catch(err => { 
+        console.log(err);
+        res.status(404).json({success: false, message: err.message})});
+});
+
+// @route POST api/bulk-import/update/formulas
+// @desc bulk import formulas
+// @access public
+router.post('/upload/formulas', (req, res) => {
+    Uploader.uploadFormulas(req.body.data)
     .then(result => res.json(generateResultsSummary(req,result)))
     .catch(err => { 
         console.log(err);
