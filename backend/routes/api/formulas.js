@@ -4,7 +4,7 @@ const router = express.Router();
 
 const Formula = require('../../models/Formula')
 const Parser = require('../../bulk_import/parser')
-
+const Helper = require('../../bulk_import/helpers')
 // @route GET api/formulas
 // @desc get all formulas
 // @access public
@@ -22,9 +22,9 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     Formula.find().select("-_id number").sort({number: -1}).limit(1).then(max_number => {
         let numberResolved
-        if(max_number.length === 0) 
+        if(max_number.length === 0)
             numberResolved = 1
-        else 
+        else
             numberResolved = max_number[0].number+1
 
         numberResolved = req.body.number ? req.body.number : numberResolved
