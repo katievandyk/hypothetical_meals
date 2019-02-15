@@ -108,7 +108,7 @@ class IngredientsEntry extends React.Component {
           validate[field_type] = 'not-valid'
         }
       }
-    } else if(field_type !== 'comment' && field_type !== 'vendor_info' && field_type !== 'number'){
+    } else if(field_type !== 'edit_comment' && field_type !== 'edit_vendor_info' && field_type !== 'edit_number'){
       validate[e.target.name] = 'is-empty';
     }
     this.setState({ validate });
@@ -136,6 +136,32 @@ class IngredientsEntry extends React.Component {
     this.props.getIngSKUs(id);
   };
 
+  getSortIcon = (field) =>{
+    if(this.props.ing.sortby === field && this.props.ing.sortdir === 'desc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-down"/>
+    }
+    else if(this.props.ing.sortby === field && this.props.ing.sortdir === 'asc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-up"/>
+    }
+    else{
+      return <FontAwesomeIcon icon = "sort"/>
+    }
+  }
+
+  sortCol = (field, e) => {
+    if(this.props.ing.sortby === field){
+      if(this.props.ing.sortdir === 'asc'){
+        this.props.sortIngs(field, 'desc', 1, this.props.ing.pagelimit, this.props.ing.obj);
+      }
+      else{
+        this.props.sortIngs(field, 'asc', 1, this.props.ing.pagelimit, this.props.ing.obj);
+      }
+    }
+    else{
+      this.props.sortIngs(field, 'asc', 1, this.props.ing.pagelimit, this.props.ing.obj);
+    }
+  }
+
   render() {
     const { ings } = this.props.ing;
     const loading = this.props.ing.loading;
@@ -153,11 +179,31 @@ class IngredientsEntry extends React.Component {
         <Table responsive size="sm">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>#</th>
-              <th>Vendor's Info</th>
-              <th>Package Size</th>
-              <th>Cost/Package</th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'name')}>
+                Name{' '}
+                {this.getSortIcon('name')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'number')}>
+                Ingr#{' '}
+                  {this.getSortIcon('number')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'vendor_info')}>
+                Vendor's Info{' '}
+                  {this.getSortIcon('vendor_info')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'package_size')}>
+                Package Size{' '}
+                  {this.getSortIcon('package_size')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'cost_per_package')}>
+                Cost/Package{' '}
+                  {this.getSortIcon('cost_per_package')}
+              </th>
               <th>SKUs</th>
               <th>Comments</th>
               {this.props.auth.isAdmin &&
@@ -186,7 +232,7 @@ class IngredientsEntry extends React.Component {
                       <FontAwesomeIcon icon="list"/>
                       </Button>
                     </td>
-                    <td> {comment} </td>
+                    <td style={{wordBreak:'break-all'}}> {comment} </td>
                     {this.props.auth.isAdmin &&
                       <td>
                         <Button size="sm" color="link"
@@ -328,8 +374,8 @@ class IngredientsEntry extends React.Component {
           <ModalHeader toggle={this.sku_toggle}>SKUs that use Ingredient: {this.props.ing.ing_skus.length}</ModalHeader>
           <ModalBody>
             <ListGroup>
-              {this.props.ing.ing_skus.map(({_id, name, unit_size, count_per_case}) => (
-              <ListGroupItem key={_id}> <div>{name + ": " + unit_size + " * " + count_per_case}</div> </ListGroupItem>
+              {this.props.ing.ing_skus.map(({_id, name, number, unit_size, count_per_case}) => (
+              <ListGroupItem key={_id}> <div>{name + ": " + unit_size + " * " + count_per_case + " (SKU#: " + number +")"}</div> </ListGroupItem>
               ))}
             </ListGroup>
           </ModalBody>

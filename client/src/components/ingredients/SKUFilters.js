@@ -26,10 +26,10 @@ class SKUFilters extends React.Component {
     this.props.sortSKUs('name', 'asc', 1, -1, {});
   }
 
-  onChange = (e, _id, name, unit_size, count_per_case) =>{
+  onChange = (e, _id, name, number, unit_size, count_per_case) =>{
     if(e.target.checked){
       const newSelected = this.state.selected_skus;
-      newSelected[_id] = name+": " + unit_size + " * " + count_per_case;
+      newSelected[_id] = name+": " + unit_size + " * " + count_per_case + " (SKU#: " + number +")";
       this.setState({
         selected_skus: newSelected
       });
@@ -84,13 +84,13 @@ class SKUFilters extends React.Component {
       <Badge style={{'marginLeft': '2px', 'marginRight': '2px'}} href="#" onClick={this.toggle} color="success">+ Add Filter</Badge>
       <Modal isOpen={this.state.modal} toggle={this.toggle}>
         <ModalHeader toggle={this.toggle}>Select SKU Filters to Add</ModalHeader>
-        <ModalBody style={{'textAlign': 'center'}}>
+        <ModalBody>
          <Form>
             <FormGroup>
-              {skus.map(({_id, name, count_per_case, unit_size}) => (
-                <CustomInput key={_id} type="checkbox" id={_id} label={name+": " + unit_size + " * " + count_per_case}
+              {skus.map(({_id, name, number, count_per_case, unit_size}) => (
+                <CustomInput key={_id} type="checkbox" id={_id} label={name+": " + unit_size + " * " + count_per_case  + " (SKU#: " + number +")"}
                 defaultChecked={{_id} in this.state.sku_filters}
-                onChange={(e) => {this.onChange(e, _id, name, unit_size, count_per_case)}}/>
+                onChange={(e) => {this.onChange(e, _id, name, number, unit_size, count_per_case)}}/>
               ))}
             </FormGroup>
           </Form>
