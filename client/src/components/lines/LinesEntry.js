@@ -1,5 +1,9 @@
 import React from 'react';
-import { Button, Table, Form, FormGroup, Label } from 'reactstrap';
+import {
+  Col, Row, Input,
+  Modal, ModalHeader, ModalBody, ModalFooter,
+  Button, Table, Form, FormGroup, Label
+} from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import PropTypes from 'prop-types';
@@ -92,6 +96,33 @@ class LinesEntry extends React.Component {
               ))}
               </tbody>
             </Table>
+                <Modal size="lg" isOpen={this.state.edit_modal} toggle={this.toggle} className={this.props.className}>
+                  <ModalHeader>Create Manufacturing Line</ModalHeader>
+                  <ModalBody>
+                       <Form>
+                         <FormGroup>
+                            <Row>
+                            <Col md={6}>
+                                <Label>Name</Label>
+                                <Input valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.edit_name} onChange={this.onNameChange}/>
+                            </Col>
+                            <Col md={2}>
+                                <Label>Short Name</Label>
+                                <Input type="zipcode" valid={this.state.validShortName === 'success'} invalid={this.state.validShortName === 'failure'} value={this.state.edit_shortname} onChange={this.onShortNameChange}/>
+                            </Col>
+                            </Row>
+                          </FormGroup>
+                          <FormGroup>
+                             <Label>Comments</Label>
+                             <Input type="textarea" valid={this.state.validComment === 'success'} placeholder='Add any comments on the manufacturing line...' value={this.state.edit_comment} onChange={this.onCommentChange}/>
+                         </FormGroup>
+                       </Form>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button onClick={this.onSubmit} color="success">Save</Button> &nbsp;
+                    <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                  </ModalFooter>
+                </Modal>
        </div>
 
     );

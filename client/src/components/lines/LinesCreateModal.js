@@ -8,10 +8,8 @@ import { getLines, addLine } from '../../actions/linesActions';
 import {
   Col, Row, Input,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  Button, Table, Form, FormGroup, Label
+  Button, Form, FormGroup, Label
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 
 class LinesCreateModal extends React.Component {
   constructor(props) {
@@ -37,8 +35,7 @@ class LinesCreateModal extends React.Component {
    }
 
    onSubmit = e => {
-     var lines = this.props.lines
-     if(this.state.validName != 'success') alert("Please enter a unique name for your goal.")
+     if(this.state.validName !== 'success') alert("Please enter a unique name for your goal.")
      else if(this.state.validShortName !== 'success') alert("Please enter a valid short name.")
      else {
          const newLine = {
@@ -52,7 +49,6 @@ class LinesCreateModal extends React.Component {
    }
 
    onNameChange = e => {
-        var lines  = this.props.lines.lines
         this.setState({ name: e.target.value })
         var valid = '';
         if (e.target.value.length > 0 && e.target.value.length <= 32) {
