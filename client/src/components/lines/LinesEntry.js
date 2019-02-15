@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getLines, updateLine } from '../../actions/linesActions';
+import { getLines, updateLine, deleteLine } from '../../actions/linesActions';
 
 class LinesEntry extends React.Component {
     constructor(props) {
@@ -26,7 +26,7 @@ class LinesEntry extends React.Component {
     }
 
   componentDidMount() {
-    this.props.getLines();
+    this.props.getLines()
   }
 
   toggle = () => {
@@ -36,7 +36,7 @@ class LinesEntry extends React.Component {
   }
 
   onDeleteClick = id => {
-    //TODO
+    this.props.deleteLine(id)
   }
 
   onEditClick = (_id, name, shortName, comment) => {
@@ -132,11 +132,12 @@ class LinesEntry extends React.Component {
 LinesEntry.propTypes = {
   getLines: PropTypes.func.isRequired,
   lines: PropTypes.object.isRequired,
-  updateLine: PropTypes.func.isRequired
+  updateLine: PropTypes.func.isRequired,
+  deleteLine: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
     lines: state.lines
 });
 
-export default connect(mapStateToProps, { getLines, updateLine })(LinesEntry);
+export default connect(mapStateToProps, { getLines, updateLine, deleteLine })(LinesEntry);

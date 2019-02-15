@@ -1,4 +1,4 @@
-import {GET_LINES, ADD_LINE, UPDATE_LINE, LINES_LOADING, LINE_ERROR} from '../actions/types';
+import {GET_LINES, ADD_LINE, UPDATE_LINE, DELETE_LINE, LINES_LOADING, LINE_ERROR} from '../actions/types';
 
 const initialState = {
    lines: [],
@@ -24,6 +24,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         lines: [...state.lines, action.payload]
+      }
+    case DELETE_LINE:
+      return {
+        ...state,
+        lines: state.lines.filter( line => line._id !== action.payload )
       }
     case UPDATE_LINE:{
       return {

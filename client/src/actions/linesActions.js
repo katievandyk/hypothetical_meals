@@ -36,6 +36,20 @@ export const addLine = (line) => dispatch =>  {
   });
 };
 
+export const deleteLine = id => dispatch =>  {
+  axios.delete(`/api/manufacturinglines/${id}`).then(res =>
+    dispatch({
+      type: DELETE_LINE,
+      payload: id
+    })
+  ).catch(error =>{
+    dispatch({
+      type: LINE_ERROR,
+      payload: error.response
+    })
+  });
+};
+
 export const updateLine = (line) => dispatch => {
   axios.post(`/api/manufacturinglines/update/${line.id}`, line).then(res => {
       dispatch({
