@@ -1,0 +1,33 @@
+{
+  "name": "hypothetical_meals",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"cd backend && node server.js\" \"cd client && npm start\"",
+    "install": "cd backend && npm install && cd ../client && npm install",
+    "deploy": "cd client && npm run build && cd ../backend && NODE_ENV=production pm2 -f start server.js",
+    "test": "cd backend && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/katievandyk/hypothetical_meals.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/katievandyk/hypothetical_meals/issues"
+  },
+  "homepage": "https://github.com/katievandyk/hypothetical_meals#readme",
+  "dependencies": {
+    "concurrently": "^4.1.0",
+    "js-file-download": "^0.4.4",
+    "jspdf": "^1.5.3",
+    "jspdf-autotable": "^3.0.5",
+    "mongo": "^0.1.0",
+    "papaparse": "^4.6.3",
+    "pm2": "^3.2.9"
+  },
+  "devDependencies": {}
+}

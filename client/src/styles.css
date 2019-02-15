@@ -1,0 +1,44 @@
+.main-green{
+  color: #28a745;
+}
+
+.fade-enter {
+  opacity: 0.01;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 1000ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0.01;
+  transition: opacity 1000ms ease-in;
+}
+
+.hidden {
+  display:none!important;
+}
+
+.navbar-dark .navbar-nav .dropdown-item .nav-link,
+.navbar-dark .navbar-nav .dropdown-item .nav-link:hover {
+  color: black;
+  padding: 0 0 0 0;
+}
+
+.navbar-dark .navbar-nav .dropdown-item .nav-link.active {
+  color: green;
+  padding: 0 0 0 0;
+}
+
+.navbar-dark .navbar-nav .dropdown-toggle.nav-link:focus {
+  color: rgba(255,255,255,.5);
+}
+
+.navbar-dark .navbar-nav .show>.dropdown-toggle.nav-link:focus {
+  color: rgba(255,255,255,.75);
+}
