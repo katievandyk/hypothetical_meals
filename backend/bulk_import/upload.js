@@ -253,3 +253,27 @@ function createOneFormula(formula_entry) {
         }).save().then(formula => resolve(formula)).catch(error => reject(error));
     });
 }
+
+module.exports.uploadSKUMls = uploadSKUMls = function(sku_ml_data) {
+    sku_mls = sku_ml_data.Overwrite
+    return Promise.all(sku_mls.map(uploadOneSKUML));
+}
+
+function uploadOneSKUML(ml_entry) {
+    let sku_id = ml_entry.sku_id
+    let new_list = []
+    let ml_list = []
+    
+    ml_entry.result.forEach(tuple => {
+        ml_list.push(tuple[0])
+        new_list.push({_id: mongoose.Types.ObjectId(tuple[0]["ml_id"])})})
+
+    return new Promise(function(accept, reject) {
+        SKU.findOneAndUpdate({"_id": sku_id}, 
+            { $set: {manufacturing_lines: new_list}})
+            .then(result => {
+                new_res = {name: result.name, number: result.number, ml_list: ml_list}
+                accept(new_res)
+            }).catch(error => reject(error));
+    });
+}

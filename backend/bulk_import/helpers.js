@@ -185,6 +185,14 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
         findPromise = findPromise.skip((currentPage-1)*limit).limit(limit);
     }
 
+    let sortField;
+    if(req.params.field == "product_line") 
+        sortField = "product_line.name"
+    else 
+        sortField = req.params.field
+
+    console.log(sortField)
+
     var sortOrder = req.params.asc === 'asc' ? 1 : -1;
     var sortPromise;
     if (req.params.field === 'score') {
@@ -193,7 +201,7 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
     }
     else {
         sortPromise = findPromise.lean().sort(
-            {[req.params.field] : sortOrder});
+            {[sortField] : sortOrder});
     }
 
     Promise.all([countPromise.count(), sortPromise])

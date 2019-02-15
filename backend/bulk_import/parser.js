@@ -436,6 +436,126 @@ function checkFormulaIngredients(data) {
 
 }
 
+module.exports.parseSKUMLs = parseSKUMLs = function(file) {
+    return new Promise(function(resolve, reject) {
+        return Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true, 
+            delimiter: ",",
+            complete: resolve, 
+            error: reject
+        });
+    }).then(function(data) {
+        return checkSKUMLs(data);
+    })
+}
+
+const sku_ml_fields = {sku_num: 'SKU#', ml_shortname: 'ML Shortname'};
+const sku_ml_header = [ sku_ml_fields.sku_num, sku_ml_fields.ml_shortname];
+
+function checkSKUMLs(data) {
+    if (data.errors.length != 0) throw data.errors;
+    Helpers.checkFileHeaders(data.meta.fields, sku_ml_header);
+
+    sku_ml_data = data.data;
+
+    sku_ml_map = checkSKUMLsFileDuplicates(sku_ml_data);
+
+    return Promise.all(
+        Object.keys(sku_ml_map).map(
+            function(key) {
+                return Promise.all(
+                    sku_ml_map[key].map(checkOneSKUML)
+                        ).then(result => {
+                            return new Promise(function(accept, reject) {
+                                new_list = result
+                                old_list = result[0][1]
+                                status = checkSKUMlResultOverlap(new_list, old_list) ? "Ignore" : "Overwrite";
+                                final_res = {sku_id: result[0][0].sku_id, result: result, status: status, to_overwrite: result[0][1]}
+                                accept(final_res)
+                            })
+                        })
+                    }))
+
+}
+
+// visible for testing
+module.exports.checkSKUMLsFileDuplicates = checkSKUMLsFileDuplicates = function(sku_ml_data) {
+    let i;
+    let sku_to_mls = {};
+    let skus_map = {};
+    for(i = 0; i < sku_ml_data.length; i++) {
+        if(sku_to_mls[sku_ml_data[i][sku_ml_fields.sku_num]] && 
+            sku_to_mls[sku_ml_data[i][sku_ml_fields.sku_num]]
+            .includes(sku_ml_data[i][sku_ml_fields.ml_shortname]))
+            throw new Error(`Duplicate SKU#,ML Shortname entry in file: ` + 
+            `${sku_ml_data[i][sku_ml_fields.sku_num]},${sku_ml_data[i][sku_ml_fields.ml_shortname]}`);
+        if(sku_to_mls[sku_ml_data[i][sku_ml_fields.sku_num]]) {
+            sku_to_mls[sku_ml_data[i][sku_ml_fields.sku_num]].push(sku_ml_data[i][sku_ml_fields.ml_shortname]);
+            skus_map[sku_ml_data[i][sku_ml_fields.sku_num]].push(sku_ml_data[i])
+        }
+        else {
+            sku_to_mls[sku_ml_data[i][sku_ml_fields.sku_num]] = [sku_ml_data[i][sku_ml_fields.ml_shortname]];
+            skus_map[sku_ml_data[i][sku_ml_fields.sku_num]] = [(sku_ml_data[i])]
+        }
+    }
+    return skus_map
+}
+
+module.exports.checkOneSKUML = checkOneSKUML = function(sku_ml_data) {
+    if(sku_ml_data[sku_ml_fields.sku_num].length === 0 || sku_ml_data[sku_ml_fields.ml_shortname].length === 0) 
+        throw new Error("SKU# and ML Shortname fields are required.")
+    if(!Helpers.isPositiveInteger(sku_ml_data[sku_ml_fields.sku_num])) 
+        throw new Error(
+            "Formula# is not a valid number: " + sku_ml_data[sku_ml_fields.sku_num]);
+    let sku_num = parseInt(sku_ml_data[sku_ml_fields.sku_num]);
+
+    var skuPromise = new Promise(function(accept, reject) {
+        SKU.findOne({number: sku_num}).populate('manufacturing_lines._id').lean()
+            .then(result => {
+                if(!result) reject(new Error("SKU# not found: " + sku_num));
+                else accept(result);
+            });
+    });
+
+    var mlPromise = new Promise(function(accept, reject) {
+        ManufacturingLine.findOne({shortname: sku_ml_data[sku_ml_fields.ml_shortname]}).lean()
+            .then(result => {
+                if(!result) reject(new Error("ML Shortname not found: " + sku_ml_data[sku_ml_fields.ml_shortname]));
+                else accept(result);
+            });
+    });
+
+    return new Promise(function(accept, reject) {
+        Promise.all([skuPromise, mlPromise]).then(result => {
+            let skuDoc = result[0];
+            let mlDoc = result[1];
+    
+            sku_ml_data["sku_id"] = skuDoc._id;
+            sku_ml_data["ml_id"] = mlDoc._id;
+            accept([sku_ml_data, skuDoc.manufacturing_lines]);
+        }).catch(error => reject(error));
+    });
+}
+
+
+function checkSKUMlResultOverlap(new_list, old_list) {
+    new_list_set = new Set();
+    
+    new_list.forEach(entry => {
+        new_list_set.add(entry[0]['ML Shortname'])
+    })
+
+    old_list_set = new Set();
+    old_list.forEach(entry => {
+        if(entry._id !== null)
+            old_list_set.add((entry._id.shortname).toString())
+    })
+
+    return setsEqual(new_list_set, old_list_set, {}, {})
+}
+
+
 function checkResultOverlap(new_list, old_list) {
     new_list_set = new Set();
     new_list_dict = {};
