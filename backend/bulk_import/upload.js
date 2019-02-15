@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const ing_fields = {number: 'Ingr#', name: 'Name', vendor: 'Vendor Info', size: 'Size', cost: 'Cost', comment: 'Comment'};
 const pl_fields = {name: 'Name'};
-const sku_fields = {number: 'SKU#', name: 'Name', case_upc: 'Case UPC', unit_upc: 'Unit UPC', unit_size: 'Unit size', count: 'Count per case', pl_name: 'Product Line Name', comment: 'Comment'};
+const sku_fields = {number: 'SKU#', name: 'Name', case_upc: 'Case UPC', unit_upc: 'Unit UPC', unit_size: 'Unit size', count: 'Count per case', pl_name: 'Product Line Name', comment: 'Comment', formula_num: "Formula#", formula_factor: "Formula factor", rate: "Rate", mls: "Manufacturing Lines"};
 const formula_fields = {number: 'Formula#', name: 'Name', comment: 'Comment'};
 const ml_fields = {name: 'Name', shortname: 'ML Shortname', comment: 'Comment'};
 
@@ -115,11 +115,17 @@ function updateOneSKU(sku_entry) {
             unit_size: unit_size,
             count_per_case: count_per_case,
             product_line: mongoose.Types.ObjectId(pl_id),
-            comment: comment
+            comment: comment,
+            formula: sku_entry["formula_id"],
+            formula_scale_factor: sku_entry[sku_fields.formula_factor],
+            manufacturing_lines: sku_entry["ml_results"],
+            manufacturing_rate: sku_entry[sku_fields.rate]
         };
         SKU
         .findByIdAndUpdate(sku_entry.to_overwrite._id, updateObj, {new: true})
-        .then(sku => resolve(sku)).catch(error => reject(error));
+        .then(sku => {
+            resolve(sku_entry)
+        }).catch(error => reject(error));
     });
 }
 
@@ -143,9 +149,14 @@ function createOneSKU(sku_entry) {
             unit_size: unit_size,
             count_per_case: count_per_case,
             product_line: mongoose.Types.ObjectId(pl_id),
-            ingredients_list: [],
-            comment: comment
-        }).save().then(sku => resolve(sku)).catch(error => reject(error));
+            comment: comment,
+            formula: sku_entry["formula_id"],
+            formula_scale_factor: sku_entry[sku_fields.formula_factor],
+            manufacturing_lines: sku_entry["ml_results"],
+            manufacturing_rate: sku_entry[sku_fields.rate]
+        }).save().then(sku => {
+            resolve(sku_entry)
+        }).catch(error => reject(error));
     });
 }
 

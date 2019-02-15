@@ -261,8 +261,10 @@ module.exports.parseSkuFile = parseSku = function(file) {
         return uploadSKUs(data);
     })
 }
-const sku_fields = {number: 'SKU#', name: 'Name', case_upc: 'Case UPC', unit_upc: 'Unit UPC', unit_size: 'Unit size', count: 'Count per case', pl_name: 'Product Line Name', comment: 'Comment'};
-const skus_header =  [ sku_fields.number,sku_fields.name,sku_fields.case_upc,sku_fields.unit_upc,sku_fields.unit_size,sku_fields.count,sku_fields.pl_name,sku_fields.comment ];
+
+
+const sku_fields = {number: 'SKU#', name: 'Name', case_upc: 'Case UPC', unit_upc: 'Unit UPC', unit_size: 'Unit size', count: 'Count per case', pl_name: 'Product Line Name', comment: 'Comment', formula_num: "Formula#", formula_factor: "Formula factor", rate: "Rate", mls: "Manufacturing Lines"};
+const skus_header =  [ sku_fields.number,sku_fields.name,sku_fields.case_upc,sku_fields.unit_upc,sku_fields.unit_size,sku_fields.count,sku_fields.pl_name,sku_fields.comment,sku_fields.formula_num,sku_fields.formula_factor,sku_fields.rate,sku_fields.mls ];
 
 function uploadSKUs(data) {
     if (data.errors.length != 0) throw data.errors;
@@ -344,15 +346,17 @@ module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc
 }
 
 module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
-    skuFieldsCheck(sku_data[sku_fields.name], sku_data[sku_fields.number], sku_data[sku_fields.case_upc], sku_data[sku_fields.unit_upc], sku_data[sku_fields.unit_size], sku_data[sku_fields.count], sku_data[sku_fields.pl_name])
+    skuFieldsCheck(sku_data[sku_fields.name], sku_data[sku_fields.number], sku_data[sku_fields.case_upc], sku_data[sku_fields.unit_upc], sku_data[sku_fields.unit_size], sku_data[sku_fields.count], sku_data[sku_fields.formula_num], sku_data[sku_fields.pl_name],sku_data[sku_fields.formula_factor],sku_data[sku_fields.rate])
 
     let pl = sku_data[sku_fields.pl_name];
 
     return new Promise(function(accept, reject) {
         Promise.all([
             ProductLine.findOne({'name': pl}),
-            SKU.findOne({'number': sku_data[sku_fields.number]}).populate("product_line"),
-            SKU.findOne({'case_number': sku_data[sku_fields.case_upc]})
+            SKU.findOne({'number': sku_data[sku_fields.number]}).populate("product_line").populate("manufacturing_lines._id"),
+            SKU.findOne({'case_number': sku_data[sku_fields.case_upc]}),
+            Formula.findOne({'number': sku_data[sku_fields.formula_num]}),
+            ManufacturingLine.find({shortname: { $in: sku_data[sku_fields.mls].split(',') }})
         ])
             .then(result => {
                 pl_result = result[0];
@@ -364,6 +368,16 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                 case_number_result = result[2];
                 let status = "Store";
 
+                formula_result = result[3]
+                if(!formula_result) reject(new Error("Formula not found: " + sku_data[sku_fields.formula_num]));
+                sku_data['formula_id'] = formula_result._id;
+                sku_data['formula_name'] = formula_result.name
+
+                mls = result[4]
+                expected_mls = sku_data[sku_fields.mls].split(',')
+                if(mls.length != expected_mls.length) reject(new Error("Not all Manufacturing Lines found: " + sku_data[sku_fields.mls]));
+                sku_data['ml_results'] = mls
+
                 if(number_result) {
                     if(number_result.name == sku_data[sku_fields.name] &&
                         number_result.case_number == sku_data[sku_fields.case_upc] &&
@@ -372,7 +386,11 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                         number_result.count_per_case == sku_data[sku_fields.count] &&
                         number_result.product_line._id.toString() == pl_result._id.toString() &&
                         (number_result.comment == sku_data[sku_fields.comment] ||
-                        !number_result.comment && sku_data[sku_fields.comment].length == 0))
+                        !number_result.comment && sku_data[sku_fields.comment].length == 0) &&
+                        number_result.formula._id.toString() == formula_result._id.toString() &&
+                        number_result.formula_scale_factor == sku_data[sku_fields.formula_factor] &&
+                        number_result.manufacturing_rate == sku_data[sku_fields.rate] &&
+                        mLsEqual(number_result.manufacturing_lines, expected_mls))
                         status = "Ignore";
                     else {
                         status = "Overwrite";
@@ -392,6 +410,23 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
             });
     });
 }
+
+function mLsEqual(old_mls, new_mls) {
+    new_list_set = new Set();
+    
+    new_mls.forEach(entry => {
+        new_list_set.add(entry)
+    })
+
+    old_list_set = new Set();
+    old_mls.forEach(entry => {
+        if(entry._id !== null)
+            old_list_set.add((entry._id.shortname).toString())
+    })
+
+    return setsEqual(new_list_set, old_list_set, {}, {})
+}
+
 
 module.exports.parseFormulaIngredients = parseFormulaIngredients = function(file) {
     return new Promise(function(resolve, reject) {
