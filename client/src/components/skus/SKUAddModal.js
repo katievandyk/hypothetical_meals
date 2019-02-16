@@ -13,7 +13,8 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import SKUsFormPLineSelection from './SKUsFormPLineSelection'
-import SKUsFormIngTupleSelection from './SKUsFormIngTupleSelection'
+import SKUsFormFormula from './SKUsFormFormula';
+import SKUsFormMLines from './SKUsFormMLines';
 import { addSKU, sortSKUs } from '../../actions/skuActions';
 
 class SKUAddModal extends React.Component {
@@ -26,7 +27,10 @@ class SKUAddModal extends React.Component {
     unit_size: '',
     product_line: '',
     count_per_case: '',
-    ingredients_list: [],
+    formula: {},
+    formula_scale_factor: '',
+    manufacturing_lines: [],
+    manufacturing_rate: '',
     comment: '',
     validate: {}
   };
@@ -88,6 +92,15 @@ class SKUAddModal extends React.Component {
           validate[field_type] = 'not-valid-num'
         }
       }
+      else if(field_type === 'formula_scale_factor' || field_type === 'manufacturing_rate'){
+        const numRex = /^[1-9]\d*(\.\d+)?$/mg
+        if (numRex.test(e.target.value)) {
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid'
+        }
+      }
       else if(field_type === 'case_number' || field_type === 'unit_number'){
         if(this.is_upca_standard(e.target.value)){
           validate[field_type] = 'has-success';
@@ -123,33 +136,15 @@ class SKUAddModal extends React.Component {
       unit_size: this.state.unit_size,
       product_line: this.state.product_line,
       count_per_case: this.state.count_per_case,
-      ingredients_list: this.state.ingredients_list,
+      formula: this.state.formula,
+      formula_scale_factor: this.state.formula_scale_factor,
+      manufacturing_lines: this.state.manufacturing_lines,
+      manufacturing_rate: this.state.manufacturing_rate,
       comment: this.state.comment
     };
 
     this.props.addSKU(newSKU, this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
     this.toggle();
-  }
-
-  onIngListChange = (ing_list, valid) => {
-    var val_obj = this.state.validate;
-    if(valid){
-      val_obj.ingredients_list = 'has-success'
-    }
-    else{
-      val_obj.ingredients_list = 'has-danger'
-    }
-    var newIngList = [];
-    for(var i = 0; i < ing_list.length; i ++){
-      if(ing_list[i]._id.length > 0 && ing_list[i].quantity.length > 0){
-        newIngList = [...newIngList, ing_list[i]];
-      }
-    }
-
-    this.setState({
-      ingredients_list: newIngList,
-      validate: val_obj
-    });
   }
 
   onProductLineChange = (prod_line, valid) => {
@@ -162,6 +157,40 @@ class SKUAddModal extends React.Component {
     }
     this.setState({
       product_line: prod_line,
+      validate: val_obj
+    });
+  }
+
+  onFormulaChange = (formula, valid) => {
+    var val_obj = this.state.validate;
+    if(valid){
+      val_obj.formula = 'has-success'
+    }
+    else{
+      val_obj.formula = 'has-danger'
+    }
+    this.setState({
+      formula: formula,
+      validate: val_obj
+    });
+  }
+
+  onLinesChange = (lines, valid) => {
+    var val_obj = this.state.validate;
+    if(valid){
+      val_obj.manufacturing_lines = 'has-success';
+    }
+    else{
+      val_obj.manufacturing_lines = 'has-danger';
+    }
+    var newLines = [];
+    for(var i = 0; i < lines.length; i ++){
+      if(lines[i]._id.length > 0 ){
+        newLines = [...newLines, lines[i]];
+      }
+    }
+    this.setState({
+      manufacturing_lines: newLines,
       validate: val_obj
     });
   }
@@ -293,7 +322,52 @@ class SKUAddModal extends React.Component {
                 )}
             </FormGroup>
             <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange}/>
-            <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange}/>
+            <SKUsFormFormula onFormulaChange={this.onFormulaChange}/>
+              <FormGroup>
+                <Label for="formula_scale_factor">Formula Scale Factor</Label>
+                  <Input
+                    valid={this.state.validate.formula_scale_factor === 'has-success' }
+                    invalid={this.state.validate.formula_scale_factor === 'is-empty' || this.state.validate.formula_scale_factor === 'not-valid'}
+                    type="text"
+                    name="formula_scale_factor"
+                    id="formula_scale_factor"
+                    placeholder="Add the Formula Scale Factor"
+                    onChange={this.onChange}
+                    defaultValue={this.state.formula_scale_factor}>
+                  </Input>
+                  {this.state.validate.formula_scale_factor === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid scale factor.
+                    </FormFeedback>
+                  )}
+              </FormGroup>
+              <SKUsFormMLines onLinesChange={this.onLinesChange} />
+              <FormGroup>
+                <Label for="manufacturing_rate">Manufacturing Rate</Label>
+                  <Input
+                    valid={this.state.validate.manufacturing_rate === 'has-success' }
+                    invalid={this.state.validate.manufacturing_rate === 'is-empty' || this.state.validate.manufacturing_rate === 'not-valid'}
+                    type="text"
+                    name="manufacturing_rate"
+                    id="manufacturing_rate"
+                    placeholder="Add the Manufacturing Rate"
+                    onChange={this.onChange}
+                    defaultValue={this.state.manufacturing_rate}>
+                  </Input>
+                  {this.state.validate.manufacturing_rate === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid manufacturing rate.
+                    </FormFeedback>
+                  )}
+              </FormGroup>
             <FormGroup>
               <Label for="comment">Comments</Label>
                 <Input
@@ -305,7 +379,7 @@ class SKUAddModal extends React.Component {
                 </Input>
             </FormGroup>
             <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-            <Button className={this.allValidated() ? (''):('disabled')} color="dark" type="submit" block>
+            <Button className={this.allValidated() ? (''):('disabled')} color="dark" onClick={this.onSubmit.bind(this)} block>
                   Add SKU
                 </Button>
               </div>

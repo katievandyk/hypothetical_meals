@@ -39,7 +39,7 @@ class SKUsFormPLineSelection extends React.Component {
           placeholder="Select the Product Line"
           onChange={this.onChange.bind(this)}
           defaultValue={this.props.defaultValue}>
-          <option key='select' value='select'>Select</option>
+          <option key='select' value='select'>Select Product Line</option>
           {this.props.plines.plines.map(({_id, name }) => (
           <option key={_id} value={_id} name={name}>{name}</option>
         ))}

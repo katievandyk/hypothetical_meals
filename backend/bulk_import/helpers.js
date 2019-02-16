@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const IngredientDepReport = require('../reports/ingredient-dep')
 const Papa = require('papaparse');
+const Constants = require('./constants')
 
-module.exports.isNumeric = function(n){
+module.exports.isNumeric = isNumeric = function(n){
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
@@ -37,6 +38,28 @@ module.exports.is_upca_standard = function(code_str) {
 
     return true;
 };
+
+module.exports.unitChecker = unitChecker =  function(str) {
+    let regex = /^(\d*\.?\d+)\s*([^\d].*|)$/;
+    if(!regex.test(str)) return false;
+    let match = regex.exec(str)
+
+    let num = match[1]
+    let unit = match[2]
+
+    if(!isNumeric(num)) 
+        return false
+    if (parseFloat(num) < 0) 
+        return false
+
+    let replace_regex = /(\.|\s)/
+    unit = unit.replace(new RegExp(replace_regex, "g"), "").replace(/s$/, "").toLowerCase();
+
+    if (!(unit in Constants.units)) {
+        return false
+    }
+    return true
+}
 
 module.exports.checkFileHeaders = function(actual_header, expected_header) {
     var is_same = (actual_header.length == expected_header.length) && actual_header.every(function(element, index) {
@@ -112,7 +135,7 @@ module.exports.getFormulasFilterResult = getFormulasFilterResult = function(req,
                 req.body.ingredients}});
     }
 
-    formulasFindPromise = formulasFindPromise.populate('ingredients_list._id')
+    formulasFindPromise = formulasFindPromise.populate("ingredients_list._id")
 
     callback(req, res, formulasFindPromise, formulasCountPromise)
 }
@@ -172,7 +195,7 @@ module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, call
                     function(el) { return mongoose.Types.ObjectId(el) }) }});
     }
 
-    skuFindPromise = skuFindPromise.populate('product_line').populate('ingredients_list._id')
+    skuFindPromise = skuFindPromise.populate('product_line').populate('formula').populate('manufacturing_lines._id')
 
     callback(req, res, skuFindPromise, skuCountPromise)
 }
@@ -185,6 +208,14 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
         findPromise = findPromise.skip((currentPage-1)*limit).limit(limit);
     }
 
+    let sortField;
+    if(req.params.field == "product_line") 
+        sortField = "product_line.name"
+    else 
+        sortField = req.params.field
+
+    console.log(sortField)
+
     var sortOrder = req.params.asc === 'asc' ? 1 : -1;
     var sortPromise;
     if (req.params.field === 'score') {
@@ -193,7 +224,7 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
     }
     else {
         sortPromise = findPromise.lean().sort(
-            {[req.params.field] : sortOrder});
+            {[sortField] : sortOrder});
     }
 
     Promise.all([countPromise.count(), sortPromise])

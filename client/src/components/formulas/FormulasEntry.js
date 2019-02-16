@@ -8,11 +8,12 @@ import {
   FormGroup,
   FormFeedback,
   Label,
-  Input
+  Input,
+  ListGroup, ListGroupItem
  } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { sortFormulas, updateFormula, deleteFormula} from '../../actions/formulaActions';
+import { sortFormulas, getFormulaSKUs, updateFormula, deleteFormula} from '../../actions/formulaActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SKUsFormIngTupleSelection from '../skus/SKUsFormIngTupleSelection'
@@ -26,6 +27,7 @@ class FormulasEntry extends React.Component {
     edit_number: '',
     edit_comment: '',
     edit_ingredients_list: [],
+    sku_modal: false,
     validate: {}
   };
 
@@ -33,6 +35,12 @@ class FormulasEntry extends React.Component {
     this.setState({
       modal: !this.state.modal,
       validate: {}
+    });
+  }
+
+  sku_toggle = () => {
+    this.setState({
+      sku_modal: !this.state.sku_modal
     });
   }
 
@@ -133,6 +141,11 @@ class FormulasEntry extends React.Component {
     });
   }
 
+  onSKUListClick = id => {
+    this.sku_toggle();
+    //this.props.getFormulaSKUs(id);
+  };
+
   getSortIcon = (field) =>{
     if(this.props.formulas.sortby === field && this.props.formulas.sortdir === 'desc'){
       return <FontAwesomeIcon className='main-green' icon = "sort-down"/>
@@ -185,6 +198,7 @@ class FormulasEntry extends React.Component {
                 {this.getSortIcon('number')}
               </th>
               <th>Ingredients List</th>
+              <th>SKUs</th>
               <th>Comment</th>
                 {this.props.auth.isAdmin &&
                   <th>Edit</th>
@@ -207,6 +221,13 @@ class FormulasEntry extends React.Component {
                         <div key={_id._id}> {_id.name}, {quantity}</div>
                       ))
                     }
+                    </td>
+                    <td>
+                      <Button size="sm" color="link"
+                      onClick={this.onSKUListClick.bind(this, _id)}
+                      style={{'color':'black'}}>
+                      <FontAwesomeIcon icon="list"/>
+                      </Button>
                     </td>
                     <td style={{wordBreak:'break-all'}}> {comment} </td>
                     {this.props.auth.isAdmin &&
@@ -282,11 +303,21 @@ class FormulasEntry extends React.Component {
                 </Input>
             </FormGroup>
               <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-              <Button color="dark" className={this.allValidated() ?(''): ('disabled')} type="submit" block>
-                    Submit SKU Edits
+              <Button color="dark" className={this.allValidated() ?(''): ('disabled')} onClick={this.onEditSubmit} block>
+                    Submit Formula Edits
                   </Button>
               </div>
             </Form>
+          </ModalBody>
+        </Modal>
+        <Modal isOpen={this.state.sku_modal} toggle={this.sku_toggle}>
+          <ModalHeader toggle={this.sku_toggle}>SKUs that use Formula: {this.props.formulas.formula_skus.length}</ModalHeader>
+          <ModalBody>
+            <ListGroup>
+              {this.props.formulas.formula_skus.map(({_id, name, number, unit_size, count_per_case}) => (
+              <ListGroupItem key={_id}> <div>{name + ": " + unit_size + " * " + count_per_case + " (SKU#: " + number +")"}</div> </ListGroupItem>
+              ))}
+            </ListGroup>
           </ModalBody>
         </Modal>
         </div>
@@ -299,6 +330,7 @@ FormulasEntry.propTypes = {
   sortFormulas: PropTypes.func.isRequired,
   deleteFormula: PropTypes.func.isRequired,
   updateFormula: PropTypes.func.isRequired,
+  getFormulaSKUs: PropTypes.func.isRequired,
   formulas: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
 };
@@ -308,4 +340,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { sortFormulas, deleteFormula, updateFormula })(FormulasEntry);
+export default connect(mapStateToProps, { sortFormulas, getFormulaSKUs, deleteFormula, updateFormula })(FormulasEntry);
