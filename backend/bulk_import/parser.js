@@ -1,6 +1,6 @@
-const fs = require('fs');
 const Papa = require('papaparse');
 const Helpers = require('./helpers');
+const Constants = require('./constants')
 
 // Import Models
 const ProductLine = require('../models/ProductLine');
@@ -9,22 +9,37 @@ const Ingredient = require('../models/Ingredient');
 const ManufacturingLine = require('../models/ManufacturingLine');
 const Formula = require('../models/Formula')
 
-module.exports.ing_fields = ing_fields = {number: 'Ingr#', name: 'Name', vendor: 'Vendor Info', size: 'Size', cost: 'Cost', comment: 'Comment'};
-module.exports.ing_fields = ingredients_header = [ ing_fields.number, ing_fields.name, ing_fields.vendor, ing_fields.size, ing_fields.cost, ing_fields.comment ];
+const ing_fields = Constants.ing_fields
+const ingredients_header = Constants.ingredients_header
 
-const pl_fields = {name: 'Name'};
-const product_lines_header = [ pl_fields.name ];
+const pl_fields = Constants.pl_fields
+const product_lines_header = Constants.product_lines_header
 
+const sku_fields = Constants.sku_fields
+const skus_header =  Constants.skus_header
+
+const formula_fields = Constants.formula_fields
+const formula_header = Constants.formula_header
+
+function parseFile(file, resolve, reject) {
+    return Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true, 
+        beforeFirstChunk: function(chunk) {
+            var rows = chunk.split( /\r\n|\r|\n/ );
+            var headings = rows[0].toLowerCase();
+            rows[0] = headings;
+            return rows.join("\r\n");
+        },
+        delimiter: ",",
+        complete: resolve, 
+        error: reject
+    });
+}
 
 module.exports.parsePLFile = parsePL = function(file) {
     return new Promise(function(resolve, reject) {
-        return Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true, 
-            delimiter: ",",
-            complete: resolve, 
-            error: reject
-        });
+        return parseFile(file, resolve, reject) 
     }).then(function(data) {
         return checkPLs(data);
     })
@@ -71,86 +86,9 @@ module.exports.preprocessOnePL = preprocessOnePL = function(pl_entry) {
     });
 }
 
-module.exports.ml_fields = ml_fields = {name: 'Name', shortname: 'ML Shortname', comment: 'Comment'};
-module.exports.ml_header = ml_header = [ml_fields.name, ml_fields.shortname, ml_fields.comment ];
-
-module.exports.parseMLFile = parseMLFile = function(file) {
-    return new Promise(function(resolve, reject) {
-        return Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true, 
-            delimiter: ",",
-            complete: resolve, 
-            error: reject
-        });
-    }).then(function(data) {
-        return checkMLs(data);
-    })
-}
-
-function checkMLs(data) {
-    if (data.errors.length != 0) throw data.errors;
-    Helpers.checkFileHeaders(data.meta.fields, ml_header);
-
-    let ml_data = data.data;
-    checkMLFileDuplicates(ml_data);
-    return Promise.all(ml_data.map(preprocessOneML));
-}
-
-module.exports.checkMLFileDuplicates = checkMLFileDuplicates = function(ml_data) {
-    let i;
-    let shortnames = [];
-    for(i = 0; i < ml_data.length; i++) {
-        if(shortnames.includes(ml_data[i][ml_fields.shortname])) {
-            throw new Error("Duplicate shortname in file: " + ml_data[i][ml_fields.shortname]);
-        }
-        shortnames.push(ml_data[i][ml_fields.shortname]);
-    }
-}
-
- module.exports.checkManufacturingLine = checkManufacturingLine = function(name, shortname) {
-    if(!(name) || !(shortname)) 
-        throw new Error(`Manufacturing line name and shortname required. Got: ${name},${shortname}`)
-    if(name.length > 32) 
-        throw new Error(`Manufacturing line name must be less than 32 characters. Got length ${name.length} for: ${name}`)
-    if(shortname.length > 5)
-        throw new Error(`Manufacturing line shortname must be less than 5 characters. Got length ${shortname.length} for ${shortname}`)
-}
-
-// visible for testing
-module.exports.preprocessOneML = preprocessOneML = function(ml_entry) {
-    checkManufacturingLine(ml_entry[ml_fields.name], ml_entry[ml_fields.shortname])
-
-    return new Promise(function(accept, reject) {
-        ManufacturingLine
-            .findOne({shortname: ml_entry[ml_fields.shortname]})
-            .then(result => {
-                if(!result) {
-                    ml_entry["status"] = "Store";
-                    accept(ml_entry);
-                }
-                else {
-                    if(ml_entry[ml_fields.name] == result.name && (result.comment == ml_entry[ml_fields.comment] || 
-                        !result.comment && ml_entry[ml_fields.comment].length == 0))
-                        ml_entry['status'] = "Ignore";
-                    else
-                        ml_entry['status'] = "Overwrite";
-                        ml_entry["to_overwrite"] = result;
-                     accept(ml_entry);
-                }
-            })
-    });
-}
-
 module.exports.parseIngredientFile = parseIng = function(file) {
     return new Promise(function(resolve, reject) {
-        return Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true, 
-            delimiter: ",",
-            complete: resolve, 
-            error: reject
-        });
+        return parseFile(file, resolve, reject) 
     }).then(function(data) {
         return uploadIngredients(data);
     })
@@ -208,6 +146,9 @@ module.exports.ingredientFieldsCheck = ingredientFieldsCheck = function(name, nu
         throw new Error("Ingredient cost is not a number: " + cost);
     if (parseFloat(cost) < 0) 
         throw new Error("Ingredient cost is not positive: " + cost);
+
+    if(!Helpers.unitChecker(size))
+        throw new Error("Ingredient package size is not formatted correctly: " + size)
 }
 
 // visible for testing
@@ -250,19 +191,11 @@ module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_
 
 module.exports.parseSkuFile = parseSku = function(file) {
     return new Promise(function(resolve, reject) {
-        return Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true, 
-            delimiter: ",",
-            complete: resolve, 
-            error: reject
-        });
+        return parseFile(file, resolve, reject) 
     }).then(function(data) {
         return uploadSKUs(data);
     })
 }
-const sku_fields = {number: 'SKU#', name: 'Name', case_upc: 'Case UPC', unit_upc: 'Unit UPC', unit_size: 'Unit size', count: 'Count per case', pl_name: 'Product Line Name', comment: 'Comment'};
-const skus_header =  [ sku_fields.number,sku_fields.name,sku_fields.case_upc,sku_fields.unit_upc,sku_fields.unit_size,sku_fields.count,sku_fields.pl_name,sku_fields.comment ];
 
 function uploadSKUs(data) {
     if (data.errors.length != 0) throw data.errors;
@@ -344,15 +277,17 @@ module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc
 }
 
 module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
-    skuFieldsCheck(sku_data[sku_fields.name], sku_data[sku_fields.number], sku_data[sku_fields.case_upc], sku_data[sku_fields.unit_upc], sku_data[sku_fields.unit_size], sku_data[sku_fields.count], sku_data[sku_fields.pl_name])
+    skuFieldsCheck(sku_data[sku_fields.name], sku_data[sku_fields.number], sku_data[sku_fields.case_upc], sku_data[sku_fields.unit_upc], sku_data[sku_fields.unit_size], sku_data[sku_fields.count], sku_data[sku_fields.formula_num], sku_data[sku_fields.pl_name],sku_data[sku_fields.formula_factor],sku_data[sku_fields.rate])
 
     let pl = sku_data[sku_fields.pl_name];
 
     return new Promise(function(accept, reject) {
         Promise.all([
             ProductLine.findOne({'name': pl}),
-            SKU.findOne({'number': sku_data[sku_fields.number]}).populate("product_line"),
-            SKU.findOne({'case_number': sku_data[sku_fields.case_upc]})
+            SKU.findOne({'number': sku_data[sku_fields.number]}).populate("product_line").populate("manufacturing_lines._id"),
+            SKU.findOne({'case_number': sku_data[sku_fields.case_upc]}),
+            Formula.findOne({'number': sku_data[sku_fields.formula_num]}),
+            ManufacturingLine.find({shortname: { $in: sku_data[sku_fields.mls].split(',') }})
         ])
             .then(result => {
                 pl_result = result[0];
@@ -364,6 +299,16 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                 case_number_result = result[2];
                 let status = "Store";
 
+                formula_result = result[3]
+                if(!formula_result) reject(new Error("Formula not found: " + sku_data[sku_fields.formula_num]));
+                sku_data['formula_id'] = formula_result._id;
+                sku_data['formula_name'] = formula_result.name
+
+                mls = result[4]
+                expected_mls = sku_data[sku_fields.mls].split(',')
+                if(mls.length != expected_mls.length) reject(new Error("Not all Manufacturing Lines found: " + sku_data[sku_fields.mls]));
+                sku_data['ml_results'] = mls
+
                 if(number_result) {
                     if(number_result.name == sku_data[sku_fields.name] &&
                         number_result.case_number == sku_data[sku_fields.case_upc] &&
@@ -372,7 +317,11 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                         number_result.count_per_case == sku_data[sku_fields.count] &&
                         number_result.product_line._id.toString() == pl_result._id.toString() &&
                         (number_result.comment == sku_data[sku_fields.comment] ||
-                        !number_result.comment && sku_data[sku_fields.comment].length == 0))
+                        !number_result.comment && sku_data[sku_fields.comment].length == 0) &&
+                        number_result.formula._id.toString() == formula_result._id.toString() &&
+                        number_result.formula_scale_factor == sku_data[sku_fields.formula_factor] &&
+                        number_result.manufacturing_rate == sku_data[sku_fields.rate] &&
+                        mLsEqual(number_result.manufacturing_lines, expected_mls))
                         status = "Ignore";
                     else {
                         status = "Overwrite";
@@ -393,64 +342,37 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
     });
 }
 
-module.exports.parseFormulaIngredients = parseFormulaIngredients = function(file) {
-    return new Promise(function(resolve, reject) {
-        return Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true, 
-            delimiter: ",",
-            complete: resolve, 
-            error: reject
-        });
-    }).then(function(data) {
-        return checkFormulaIngredients(data);
+function mLsEqual(old_mls, new_mls) {
+    new_list_set = new Set();
+    
+    new_mls.forEach(entry => {
+        new_list_set.add(entry)
     })
+
+    old_list_set = new Set();
+    old_mls.forEach(entry => {
+        if(entry._id !== null)
+            old_list_set.add((entry._id.shortname).toString())
+    })
+
+    return setsEqual(new_list_set, old_list_set, {}, {})
 }
 
-const formula_ing_fields = {formula_num: 'Formula#', ing_num: 'Ingr#', quantity:'Quantity'};
-const formula_ing_header = [ formula_ing_fields.formula_num, formula_ing_fields.ing_num, formula_ing_fields.quantity];
-
-function checkFormulaIngredients(data) {
-    if (data.errors.length != 0) throw data.errors;
-    Helpers.checkFileHeaders(data.meta.fields, formula_ing_header);
-
-    formula_data = data.data;
-
-    formulas_map = checkFormulaIngredientsFileDuplicates(formula_data);
-
-    return Promise.all(
-        Object.keys(formulas_map).map(
-            function(key) {
-                return Promise.all(
-                        formulas_map[key].map(checkOneForumlaIngredient)
-                        ).then(result => {
-                            return new Promise(function(accept, reject) {
-                                new_list = result
-                                old_list = result[0][1]
-                                status = checkResultOverlap(new_list, old_list) ? "Ignore" : "Overwrite";
-                                final_res = {formula_id: result[0][0].formula_id, result: result, status: status, to_overwrite: result[0][1]}
-                                accept(final_res)
-                            })
-                        })
-                    }))
-
-}
-
-function checkResultOverlap(new_list, old_list) {
+function checkFormulaIngsOverlap(new_list, old_list) {
     new_list_set = new Set();
     new_list_dict = {};
     
     new_list.forEach(entry => {
-        new_list_set.add(entry[0]['Ingr#'])
-        new_list_dict[entry[0]['Ingr#']] = Number.parseFloat(entry[0]['Quantity'])
+        new_list_set.add(entry._id.toString())
+        new_list_dict[entry._id.toString()] = entry.quantity
     })
 
     old_list_set = new Set();
     old_list_dict = {};
     old_list.forEach(entry => {
         if(entry._id !== null)
-            old_list_set.add((entry._id.number).toString())
-            old_list_dict[(entry._id.number).toString()] = entry.quantity
+            old_list_set.add((entry._id._id).toString())
+            old_list_dict[(entry._id._id).toString()] = entry.quantity
     })
 
     return setsEqual(new_list_set, old_list_set, new_list_dict, old_list_dict)
@@ -462,113 +384,62 @@ function setsEqual(set1, set2, dict1, dict2) {
     return true;
 }
 
-// visible for testing
-module.exports.checkFormulaIngredientsFileDuplicates = checkFormulaIngredientsFileDuplicates = function(formula_data) {
-    let i;
-    let formula_to_ings = {};
-    let formulas_map = {};
-    for(i = 0; i < formula_data.length; i++) {
-        if(formula_to_ings[formula_data[i][formula_ing_fields.formula_num]] && 
-            formula_to_ings[formula_data[i][formula_ing_fields.formula_num]]
-            .includes(formula_data[i][formula_ing_fields.ing_num]))
-            throw new Error(`Duplicate formula,ing entry in file: ` + 
-            `${formula_data[i][formula_ing_fields.formula_num]},${formula_data[i][formula_ing_fields.ing_num]}`);
-        if(formula_to_ings[formula_data[i][formula_ing_fields.formula_num]]) {
-            formula_to_ings[formula_data[i][formula_ing_fields.formula_num]].push(formula_data[i][formula_ing_fields.ing_num]);
-            formulas_map[formula_data[i][formula_ing_fields.formula_num]].push(formula_data[i])
-        }
-        else {
-            formula_to_ings[formula_data[i][formula_ing_fields.formula_num]] = [formula_data[i][formula_ing_fields.ing_num]];
-            formulas_map[formula_data[i][formula_ing_fields.formula_num]] = [(formula_data[i])]
-        }
-    }
-    return formulas_map
-}
-
-module.exports.checkOneForumlaIngredient = checkOneForumlaIngredient = function(formula_data) {
-    if(formula_data[formula_ing_fields.formula_num].length === 0 || formula_data[formula_ing_fields.ing_num].length === 0 || formula_data[formula_ing_fields.quantity] === 0) 
-        throw new Error("Formula#, Ingr#, and Quantity fields are required.")
-    if(!Helpers.isPositiveInteger(formula_data[formula_ing_fields.formula_num])) 
-        throw new Error(
-            "Formula# is not a valid number: " + formula_data[formula_ing_fields.formula_num]);
-    let formula_num = parseInt(formula_data[formula_ing_fields.formula_num]);
-
-    if(!Helpers.isPositiveInteger(formula_data[formula_ing_fields.ing_num])) 
-        throw new Error(
-            "Ingr# is not a valid number: " + formula_data[formula_ing_fields.ing_num]);
-    let ing = parseInt(formula_data[formula_ing_fields.ing_num]);
-
-    if(!Helpers.isNumeric(formula_data[formula_ing_fields.quantity])) 
-        throw new Error(
-            "Ingredient quantity is not a number: " + formula_data[formula_ing_fields.quantity]);
-    if (parseFloat(formula_data[formula_ing_fields.quantity]) < 0) 
-        throw new Error(
-            "Ingredient quantity is not a positive number: " + formula_data[k]);
-
-    var formulaPromise = new Promise(function(accept, reject) {
-        Formula.findOne({number: formula_num}).populate("ingredients_list._id").lean()
-            .then(result => {
-                if(!result) reject(new Error("Formula# not found: " + formula_num));
-                else accept(result);
-            });
-    });
-
-    var ingPromise = new Promise(function(accept, reject) {
-        Ingredient.findOne({number: ing}).lean()
-            .then(result => {
-                if(!result) reject(new Error("Ingredient number not found: " + ing));
-                else accept(result);
-            });
-    });
-
-    return new Promise(function(accept, reject) {
-        Promise.all([formulaPromise, ingPromise]).then(result => {
-            let formulaDoc = result[0];
-            let ingDoc = result[1];
-    
-            formula_data["ing_id"] = ingDoc._id;
-            formula_data["formula_id"] = formulaDoc._id;
-            accept([formula_data, formulaDoc.ingredients_list]);
-        }).catch(error => reject(error));
-    });
-}
-
 module.exports.parseFormula = parseFormula = function(file) {
     return new Promise(function(resolve, reject) {
-        return Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true, 
-            delimiter: ",",
-            complete: resolve, 
-            error: reject
-        });
+        return parseFile(file, resolve, reject) 
     }).then(function(data) {
         return checkFormulas(data);
     })
 }
-
-module.exports.formula_fields = formula_fields = {number: 'Formula#', name: 'Name', comment: 'Comment'};
-module.exports.formula_header = formula_header = [ formula_fields.number, formula_fields.name, formula_fields.comment ];
-
 
 function checkFormulas(data) {
     if (data.errors.length != 0) throw data.errors;
     Helpers.checkFileHeaders(data.meta.fields, formula_header);
 
     let formula_data = data.data;
-    checkFormulaFileDuplicates(formula_data);
-    return Promise.all(formula_data.map(preprocessOneFormula));
+    let formulas = checkFormulaFileDuplicates(formula_data);
+    return Promise.all(formulas.map(preprocessOneFormula));
 }
 
 module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = function(formula_data) {
     let i;
-    let numbers = [];
+    let cur_formula = null
+    let formulas = []
+    let numbers = []
     for(i = 0; i < formula_data.length; i++) {
-        if(numbers.includes(formula_data[i][formula_fields.number])) {
-            throw new Error("Duplicate Formula# in file: " + formula_data[i][formula_fields.number]);
+        if(cur_formula == null || 
+            (cur_formula.name != formula_data[i][formula_fields.name] || 
+                cur_formula.number != formula_data[i][formula_fields.number])) {
+            if(cur_formula != null) {
+                formulas.push(cur_formula)
+            }
+
+            if(numbers.includes(formula_data[i][formula_fields.number])) {
+                throw new Error("Duplicate Formula# in file: " + formula_data[i][formula_fields.number]);
+            }
+            numbers.push(formula_data[i][formula_fields.number]);
+            
+            cur_formula = {
+                name: formula_data[i][formula_fields.name],
+                number: formula_data[i][formula_fields.number],
+                ingredients_list: [],
+                comment: formula_data[i][formula_fields.comment]
+            }
         }
-        numbers.push(formula_data[i][formula_fields.number]);
+
+        if (cur_formula.ingredients_list.some(e => e.number === formula_data[i][formula_fields.ing_num])) {
+            throw new Error(`Formula number ${cur_formula.number} contains duplicate Ingr#: ${formula_data[i][formula_fields.number]}.`);
+        }
+        cur_formula.ingredients_list.push({
+            number: formula_data[i][formula_fields.ing_num],
+            quantity: formula_data[i][formula_fields.quantity]})
     }
+
+    if(cur_formula != null) {
+        formulas.push(cur_formula)
+    }
+
+    return formulas
 }
 
  module.exports.checkFormulaFields = checkFormulaFields = function (name, number) {
@@ -580,28 +451,56 @@ module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = functio
         throw new Error(`Formula number should be a positive integer. Got: ${number}`)
 } 
 
+function checkFormulaFileFields(name, number, ing_list) {
+    checkFormulaFields(name, number)
+
+    ing_list.forEach(ing => {
+        if(!Helpers.isPositiveInteger(ing.number)) 
+            throw new Error(
+                `Ingr# for formula number ${number} is not a valid number: ${ing.number}`);
+
+        if(!Helpers.unitChecker(ing.quantity)) 
+            throw new Error(
+                `Ingredient quantity for formula number ${number} is not formatted correctly: ` + ing.quantity);
+
+    })
+}
+
 // visible for testing
 module.exports.preprocessOneFormula = preprocessOneFormula = function(formula_entry) {
-    checkFormulaFields(formula_entry[formula_fields.name], formula_entry[formula_fields.number])
-
+    checkFormulaFileFields(formula_entry.name, formula_entry.number, formula_entry.ingredients_list)
     return new Promise(function(accept, reject) {
-        Formula
-            .findOne({number: formula_entry[formula_fields.number]})
-            .then(result => {
-                if(!result) {
-                    formula_entry["status"] = "Store";
+        Promise.all([
+            Formula.findOne({number: formula_entry.number}),
+            Promise.all(formula_entry.ingredients_list.map(ing => Ingredient.findOne({number: ing.number})))
+        ])
+        .then(result => {
+            formula_res = result[0]
+            ings_res = result[1]
+            let i
+            for (i = 0; i < formula_entry.ingredients_list.length; i++) {
+                if(!(ings_res[i])) {
+                    reject(new Error(`Ingr# for formula ${formula_entry.number} not found: ${formula_entry.ingredients_list[i].number}.`))
+                    return;
+                }
+                formula_entry.ingredients_list[i]._id = ings_res[i]._id
+            }
+            if(!formula_res) {
+                formula_entry["status"] = "Store";
+                accept(formula_entry);
+            }
+            else {
+                if(formula_entry[formula_fields.name] == formula_res.name && 
+                    (formula_res.comment == formula_entry[formula_fields.comment] || 
+                    !formula_res.comment && formula_entry[formula_fields.comment].length == 0) &&
+                    checkFormulaIngsOverlap(formula_entry.ingredients_list, formula_res.ingredients_list))
+                    formula_entry['status'] = "Ignore";
+                else
+                    formula_entry['status'] = "Overwrite";
+                    formula_entry["to_overwrite"] = formula_res;
                     accept(formula_entry);
-                }
-                else {
-                    if(formula_entry[formula_fields.name] == result.name && 
-                        (result.comment == formula_entry[formula_fields.comment] || 
-                        !result.comment && formula_entry[formula_fields.comment].length == 0))
-                        formula_entry['status'] = "Ignore";
-                    else
-                        formula_entry['status'] = "Overwrite";
-                        formula_entry["to_overwrite"] = result;
-                     accept(formula_entry);
-                }
-            })
+            }
+        })
+        .catch(reject)
     });
 }

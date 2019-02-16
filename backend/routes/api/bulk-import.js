@@ -45,9 +45,6 @@ function bulkImport(file_name, file_body, res) {
     sku_file_regex = /^skus(\S)*\.csv$/;
     pl_file_regex = /^product_lines(\S)*\.csv$/;
     formulas_file_regex = /^formulas(\S)*\.csv$/;
-    formula_ing_file_regex = /^formula_ingredients(\S)*\.csv$/;
-    ml_file_regex = /^manufacturing_lines(\S)*\.csv$/;
-    sku_ml_file_regex = /^sku_manufacturing_lines(\S)*\.csv$/;
 
     let parsePromise;
     if(ing_file_regex.test(file_name)) {
@@ -65,14 +62,6 @@ function bulkImport(file_name, file_body, res) {
     else if(formulas_file_regex.test(file_name)) {
         parsePromise = Parser.parseFormula(file_body)
         file_type = "formulas"
-    }
-    else if(formula_ing_file_regex.test(file_name)) {
-        parsePromise = Parser.parseFormulaIngredients(file_body)
-        file_type = "formula_ingredients"
-    }
-    else if(ml_file_regex.test(file_name)) {
-        parsePromise = Parser.parseMLFile(file_body)
-        file_type = "manufacturing_lines"
     }
     else {
         res.status(404).json({
@@ -153,11 +142,23 @@ router.post('/upload/skus', (req, res) => {
         res.status(404).json({success: false, message: err.message})});
 });
 
-// @route POST api/bulk-import/update/formulas
+// @route POST api/bulk-import/update/formulasings
 // @desc update formulas
 // @access public
 router.post('/upload/formulasings', (req, res) => {
     Uploader.uploadFormulaIngs(req.body.data)
+    .then(result => {
+        res.json(generateResultsSummary(req, [result, []]))})
+    .catch(err => { 
+        console.log(err);
+        res.status(404).json({success: false, message: err.message})});
+});
+
+// @route POST api/bulk-import/update/skumls
+// @desc update formulas
+// @access public
+router.post('/upload/skumls', (req, res) => {
+    Uploader.uploadSKUMls(req.body.data)
     .then(result => {
         res.json(generateResultsSummary(req, [result, []]))})
     .catch(err => { 

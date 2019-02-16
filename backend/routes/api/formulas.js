@@ -45,8 +45,9 @@ router.post('/', (req, res) => {
                 req.body.ingredients_list.forEach(tuple => {
                     if(!(tuple._id && tuple.quantity))
                         throw new Error("Formula ingredients list must contain id and quantity")
-                    if(!Helper.isNumeric(tuple.quantity))
-                        throw new Error("Formula ingredients list quantity must be a number.")
+                    if(!Helper.unitChecker(tuple.quantity)) 
+                        throw new Error(
+                            `Formula ingredient quantity is not formatted correctly: ` + tuple.quantity);
                 })
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
@@ -88,9 +89,10 @@ router.post('/update/:id', (req, res) => {
                     if(!(tuple._id && tuple.quantity)) {
                         throw new Error("Formula ingredients list must contain id and quantity")
                     }
-                    if(!Helper.isNumeric(tuple.quantity)) {
-                        throw new Error("Formula ingredients list quantity must be a number.")
-                    }
+                    if(!Helper.unitChecker(tuple.quantity)) 
+                        throw new Error(
+                            `Formula ingredient quantity is not formatted correctly: ` + tuple.quantity);
+                
             })
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
