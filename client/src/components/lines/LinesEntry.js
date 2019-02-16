@@ -35,9 +35,56 @@ class LinesEntry extends React.Component {
       });
   }
 
+   onSubmit = e => {
+     if(this.state.validName !== 'success') alert("Please enter a unique name for your goal.")
+     else if(this.state.validShortName !== 'success') alert("Please enter a valid short name.")
+     else {
+         const newLine = {
+           id: this.state.edit_id,
+           name: this.state.edit_name,
+           shortname: this.state.edit_shortname,
+           comment: this.state.edit_comment
+         };
+         this.props.updateLine(newLine);
+         this.toggle();
+     }
+   }
+
   onDeleteClick = id => {
     this.props.deleteLine(id)
   }
+
+   onNameChange = e => {
+        this.setState({ edit_name: e.target.value })
+        var valid = '';
+        if (e.target.value.length > 0 && e.target.value.length <= 32) {
+          valid = 'success'
+        } else {
+          valid = 'failure'
+        }
+        this.setState({ validName: valid })
+   }
+
+   onShortNameChange = e => {
+        var lines  = this.props.lines.lines
+        this.setState({ edit_shortname: e.target.value })
+        var valid = '';
+        if (e.target.value.length > 0 && e.target.value.length <= 5 && lines.find(elem => elem.shortname === e.target.value) == null) {
+          valid = 'success'
+        } else {
+          valid = 'failure'
+        }
+        this.setState({ validShortName: valid })
+   }
+
+   onCommentChange = e => {
+        this.setState({ edit_comment: e.target.value })
+        var valid = '';
+        if (e.target.value.length > 0) {
+          valid = 'success'
+        }
+        this.setState({ validComment: valid })
+   }
 
   onEditClick = (_id, name, shortName, comment) => {
     this.setState({
@@ -141,3 +188,4 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { getLines, updateLine, deleteLine })(LinesEntry);
+
