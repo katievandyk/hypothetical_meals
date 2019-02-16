@@ -14,3 +14,58 @@ module.exports.skus_header =  [ sku_fields.number,sku_fields.name,sku_fields.cas
 module.exports.formula_fields = formula_fields = {number: 'formula#', name: 'name', ing_num: "ingr#", quantity: "quantity", comment: 'comment'};
 module.exports.formula_header = formula_header = [ formula_fields.number, formula_fields.name, formula_fields.ing_num, formula_fields.quantity, formula_fields.comment ];
 
+// Units
+module.exports.units = {
+    "oz": "weight",
+    "ounce": "weight",
+    "lb": "weight",
+    "pound": "weight",
+    "ton": "weight",
+    "g": "weight",
+    "gram": "weight",
+    "kg": "weight",
+    "kilogram": "weight",
+    "floz": "volume",
+    "fluidounce": "volume",
+    "pt": "volume",
+    "pint": "volume",
+    "qt": "volume",
+    "quart": "volume",
+    "gal": "volume",
+    "gallon": "volume",
+    "ml": "volume",
+    "milliliter": "volume",
+    "l": "volume",
+    "liter": "volume",
+    "ct": "count",
+    "count": "count",
+}
+
+// the conversion between 1 key and ounce
+module.exports.weight_conv = {
+    "oz": 1.0,
+    "ounce": 1.0,
+    "lb": 16.0,
+    "pound": 16.0,
+    "ton": 32000,
+    "g": 0.035274,
+    "gram": 0.035274,
+    "kg": 35.274,
+    "kilogram": 35.274
+}
+
+// the conversion between 1 key and floz
+module.exports.volume_conv = {
+    "floz": 1.0,
+    "fluidounce": 1.0,
+    "pt": 19.2152,
+    "pint": 19.2152,
+    "qt": 32.0,
+    "quart": 32.0,
+    "gal": 128.0,
+    "gallon": 128.0,
+    "ml": 0.033814,
+    "milliliter": 0.033814,
+    "l": 33.814,
+    "liter": 33.814
+}

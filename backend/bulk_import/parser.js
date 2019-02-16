@@ -146,6 +146,9 @@ module.exports.ingredientFieldsCheck = ingredientFieldsCheck = function(name, nu
         throw new Error("Ingredient cost is not a number: " + cost);
     if (parseFloat(cost) < 0) 
         throw new Error("Ingredient cost is not positive: " + cost);
+
+    if(!Helpers.unitChecker(size))
+        throw new Error("Ingredient package size is not formatted correctly: " + size)
 }
 
 // visible for testing
@@ -456,9 +459,9 @@ function checkFormulaFileFields(name, number, ing_list) {
             throw new Error(
                 `Ingr# for formula number ${number} is not a valid number: ${ing.number}`);
 
-        if(ing.quantity.length === 0) 
+        if(!Helpers.unitChecker(ing.quantity)) 
             throw new Error(
-                `Ingredient quantity for formula number ${number} is not correctly formatted: ` + ing.quantity);
+                `Ingredient quantity for formula number ${number} is not formatted correctly: ` + ing.quantity);
 
     })
 }
