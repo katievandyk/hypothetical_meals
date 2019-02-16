@@ -13,7 +13,8 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import SKUsFormPLineSelection from './SKUsFormPLineSelection'
-import SKUsFormFormula from './SKUsFormFormula'
+import SKUsFormFormula from './SKUsFormFormula';
+import SKUsFormMLines from './SKUsFormMLines';
 import { addSKU, sortSKUs } from '../../actions/skuActions';
 
 class SKUAddModal extends React.Component {
@@ -174,6 +175,26 @@ class SKUAddModal extends React.Component {
     });
   }
 
+  onLinesChange = (lines, valid) => {
+    var val_obj = this.state.validate;
+    if(valid){
+      val_obj.manufacturing_lines = 'has-success';
+    }
+    else{
+      val_obj.manufacturing_lines = 'has-danger';
+    }
+    var newLines = [];
+    for(var i = 0; i < lines.length; i ++){
+      if(lines[i]._id.length > 0 ){
+        newLines = [...newLines, lines[i]];
+      }
+    }
+    this.setState({
+      manufacturing_lines: newLines,
+      validate: val_obj
+    });
+  }
+
   render() {
     return (
       <div style={{'display': 'inline-block'}}>
@@ -324,6 +345,7 @@ class SKUAddModal extends React.Component {
                     </FormFeedback>
                   )}
               </FormGroup>
+              <SKUsFormMLines onLinesChange={this.onLinesChange} />
               <FormGroup>
                 <Label for="manufacturing_rate">Manufacturing Rate</Label>
                   <Input

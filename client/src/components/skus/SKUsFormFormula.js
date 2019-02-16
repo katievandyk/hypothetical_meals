@@ -37,8 +37,9 @@ class SKUsFormFormula extends React.Component {
   }
 
   onEditClick = () => {
+    var selectedFormula={};
     if(this.state.formula_id.length > 0){
-      var [selectedFormula] = this.props.formulas.formulas.filter(({_id}) => _id === this.state.formula_id);
+      [selectedFormula] = this.props.formulas.formulas.filter(({_id}) => _id === this.state.formula_id);
       this.setState({
         edit_modal: true,
         edit_id: selectedFormula._id,
@@ -49,7 +50,7 @@ class SKUsFormFormula extends React.Component {
       });
     }
     else if(this.state.use_added){
-      var [selectedFormula] = this.props.formulas.formulas.filter(({_id}) => _id === this.props.formulas.added_formula._id);
+      [selectedFormula] = this.props.formulas.formulas.filter(({_id}) => _id === this.props.formulas.added_formula._id);
       this.setState({
         edit_modal: true,
         edit_id: selectedFormula._id,

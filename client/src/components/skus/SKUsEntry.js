@@ -16,7 +16,8 @@ import { getSKUs, sortSKUs, deleteSKU, updateSKU } from '../../actions/skuAction
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SKUsFormPLineSelection from './SKUsFormPLineSelection'
-import SKUsFormFormula from './SKUsFormFormula'
+import SKUsFormFormula from './SKUsFormFormula';
+import SKUsFormMLines from './SKUsFormMLines';
 import '../../styles.css'
 
 class SKUsEntry extends React.Component {
@@ -227,6 +228,26 @@ class SKUsEntry extends React.Component {
     });
   }
 
+  onLinesChange = (lines, valid) => {
+    var val_obj = this.state.validate;
+    if(valid){
+      val_obj.manufacturing_lines = 'has-success';
+    }
+    else{
+      val_obj.manufacturing_lines = 'has-danger';
+    }
+    var newLines = [];
+    for(var i = 0; i < lines.length; i ++){
+      if(lines[i]._id.length > 0 ){
+        newLines = [...newLines, lines[i]];
+      }
+    }
+    this.setState({
+      edit_manufacturing_lines: newLines,
+      validate: val_obj
+    });
+  }
+
   getSortIcon = (field) =>{
     if(this.props.skus.sortby === field && this.props.skus.sortdir === 'desc'){
       return <FontAwesomeIcon className='main-green' icon = "sort-down"/>
@@ -379,7 +400,7 @@ class SKUsEntry extends React.Component {
                 )}
             </FormGroup>
             <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} defaultValue={this.state.edit_product_line._id}/>
-            <SKUsFormFormula onFormulaChange={this.onFormulaChange} defaultValue={this.state.edit_formula._id}/>
+            <SKUsFormFormula onFormulaChange={this.onFormulaChange} defaultValue={(this.state.edit_formula && this.state.edit_formula._id)? (this.state.edit_formula._id):('')}/>
             <FormGroup>
                 <Label for="edit_formula_scale_factor">Formula Scale Factor</Label>
                   <Input
@@ -402,6 +423,7 @@ class SKUsEntry extends React.Component {
                     </FormFeedback>
                   )}
               </FormGroup>
+              <SKUsFormMLines onLinesChange={this.onLinesChange} defaultValue={this.state.edit_manufacturing_lines}/>
               <FormGroup>
                 <Label for="edit_manufacturing_rate">Manufacturing Rate</Label>
                   <Input

@@ -5,7 +5,7 @@ FormGroup, Input, Label, Row, Col, Button, FormFeedback
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getLines } from '../../actions/ingActions';
+import { getLines } from '../../actions/linesActions';
 
 class SKUsFormMLines extends React.Component {
   state={
@@ -14,7 +14,7 @@ class SKUsFormMLines extends React.Component {
   };
 
   componentDidMount() {
-    this.props.getLines());
+    this.props.getLines();
     var tmpArray = [];
     var tmpVal = [];
     if(this.props.defaultValue){
@@ -34,7 +34,7 @@ class SKUsFormMLines extends React.Component {
   allValid = (validState=this.state.validate) => {
     var isValid = true;
     for(var i = 0; i < validState.length; i++){
-      if((validState[i] !== 'has-success'){
+      if(validState[i] !== 'has-success'){
          isValid = false;
        }
     }
@@ -69,7 +69,7 @@ class SKUsFormMLines extends React.Component {
     this.setState({
       validate: newVal
     });
-    this.props.onFormulaChange(this.state.lines, this.allValid());
+    this.props.onLinesChange(this.state.lines, this.allValid());
     }
 
 
@@ -82,7 +82,7 @@ class SKUsFormMLines extends React.Component {
     }
     else {
       this.setState({
-        ing_tuples: [{_id:''}],
+        lines: [{_id:''}],
         validate: ['']
       });
     }
@@ -95,7 +95,7 @@ class SKUsFormMLines extends React.Component {
       lines: reduced_lines,
       validate: reduced_val
     });
-    this.props.onFormulaChange(reduced_lines, this.allValid(reduced_val));
+    this.props.onLinesChange(reduced_lines, this.allValid(reduced_val));
   }
 
   render() {
@@ -109,11 +109,11 @@ class SKUsFormMLines extends React.Component {
         </Row>
         {lines.map(({_id}, index) => (
         <Row key={index}>
-          <Col md={6}>
+          <Col md={10}>
             <FormGroup>
               <Input
                 valid={this.state.validate[index] === 'has-success'}
-                invalid={this.state.validate[index]=== 'not-selected' || this.state.validate[index].ing === 'already-selected'}
+                invalid={this.state.validate[index]=== 'not-selected' || this.state.validate[index] === 'already-selected'}
                 type="select"
                 name="line"
                 id="line"
@@ -121,17 +121,17 @@ class SKUsFormMLines extends React.Component {
                 onChange={this.onChangeLine.bind(this, index)}
                 value={_id}>
                 <option value=''>Select Manufacturing Line</option>
-                {this.props.lines.lines.map(({_id, name }) => (
-                <option key={_id} value={_id} name={name}>{name}</option>
+                {this.props.lines.lines.map(({_id, shortname }) => (
+                <option key={_id} value={_id} name={shortname}>{shortname}</option>
               ))}
               </Input>
-              {this.state.validate[index].ing === 'not-selected' ? (
+              {this.state.validate[index] === 'not-selected' ? (
                 <FormFeedback>
                   Please select a valid manufacturing line from the dropdown.
                 </FormFeedback>
               ):(
                 <FormFeedback>
-                  This manufacturing line has already been added. Please select a different ingredient from the dropdown.
+                  This manufacturing line has already been added. Please select a different manufacturing line from the dropdown.
                 </FormFeedback>
               )}
             </FormGroup>
@@ -147,7 +147,7 @@ class SKUsFormMLines extends React.Component {
         </Row>
         ))}
         <Row>
-          <Col style={{textAlign: 'center'}}>
+          <Col style={{textAlign: 'center', paddingBottom: '1em'}}>
             <Button size="sm" onClick={this.addLine}>
               Add Another Manufacturing Line
             </Button>
