@@ -14,7 +14,7 @@ const FormulaSchema = new Schema({
     },
     ingredients_list: [{
         _id: { type: Schema.Types.ObjectId, ref: 'ingredient' },
-        quantity: Number
+        quantity: String
     }],
     comment: {
         type: String,

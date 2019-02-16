@@ -1,15 +1,14 @@
 const mongoose = require('mongoose');
+const Constants = require('./constants')
 
-const ing_fields = {number: 'Ingr#', name: 'Name', vendor: 'Vendor Info', size: 'Size', cost: 'Cost', comment: 'Comment'};
-const pl_fields = {name: 'Name'};
-const sku_fields = {number: 'SKU#', name: 'Name', case_upc: 'Case UPC', unit_upc: 'Unit UPC', unit_size: 'Unit size', count: 'Count per case', pl_name: 'Product Line Name', comment: 'Comment', formula_num: "Formula#", formula_factor: "Formula factor", rate: "Rate", mls: "Manufacturing Lines"};
-const formula_fields = {number: 'Formula#', name: 'Name', comment: 'Comment'};
-const ml_fields = {name: 'Name', shortname: 'ML Shortname', comment: 'Comment'};
+const ing_fields = Constants.ing_fields
+const pl_fields = Constants.pl_fields
+const sku_fields = Constants.sku_fields
+const formula_fields = Constants.formula_fields
 
 const ProductLine = require('../models/ProductLine');
 const SKU = require('../models/SKU');
 const Ingredient = require('../models/Ingredient');
-const ManufacturingLine = require('../models/ManufacturingLine');
 const Formula = require('../models/Formula')
 
 module.exports.uploadIngredients = uploadIngredients = function(ings_data) {
@@ -185,46 +184,6 @@ function uploadOneFormulaIngredient(formula_entry) {
     });
 }
 
-module.exports.uploadMLs = uploadMLs = function(mls_data) {
-    let overwrite = mls_data.Overwrite
-    let store = mls_data.Store
-    let overwritePromise = Promise.all(overwrite.map(updateOneML))
-    let storePromise = Promise.all(store.map(createOneML))
-    return Promise.all([overwritePromise, storePromise]);
-}
-
-function updateOneML(ml_entry) {
-    let name = ml_entry[ml_fields.name];
-    let shortname = ml_entry[ml_fields.shortname];
-    let comment = ml_entry[ml_fields.comment];
-
-    return new Promise(function(resolve, reject) {
-        let updateObj = {
-            name: name,
-            shortname: shortname,
-            comment: comment
-        };
-        ManufacturingLine
-        .findByIdAndUpdate(ml_entry.to_overwrite._id, updateObj, {new: true})
-        .then(ml => resolve(ml)).catch(error => reject(error));
-    });
-}
-
-function createOneML(ml_entry) {
-    let name = ml_entry[ml_fields.name];
-    let shortname = ml_entry[ml_fields.shortname];
-    let comment = ml_entry[ml_fields.comment];
-
-    return new Promise(function(resolve, reject) {
-        new ManufacturingLine({
-            _id: new mongoose.Types.ObjectId(),
-            name: name,
-            shortname: shortname,
-            comment: comment
-        }).save().then(ml => resolve(ml)).catch(error => reject(error));
-    });
-}
-
 module.exports.uploadFormulas = uploadFormulas = function(formulas_data) {
     let overwrite = formulas_data.Overwrite
     let store = formulas_data.Store
@@ -234,57 +193,17 @@ module.exports.uploadFormulas = uploadFormulas = function(formulas_data) {
 }
 
 function updateOneFormula(formula_entry) {
-    let name = formula_entry[formula_fields.name];
-    let number = formula_entry[formula_fields.number];
-    let comment = formula_entry[formula_fields.comment];
-
     return new Promise(function(resolve, reject) {
-        let updateObj = {
-            name: name,
-            number: number,
-            comment: comment
-        };
         Formula
-        .findByIdAndUpdate(formula_entry.to_overwrite._id, updateObj, {new: true})
-        .then(formula => resolve(formula)).catch(error => reject(error));
+        .findByIdAndUpdate(formula_entry.to_overwrite._id, formula_entry, {new: true})
+        .then(formula => resolve(formula_entry)).catch(error => reject(error));
     });
 }
 
 function createOneFormula(formula_entry) {
-    let name = formula_entry[formula_fields.name];
-    let number = formula_entry[formula_fields.number];
-    let comment = formula_entry[formula_fields.comment];
-
     return new Promise(function(resolve, reject) {
-        new Formula({
-            _id: new mongoose.Types.ObjectId(),
-            name: name,
-            number: number,
-            comment: comment
-        }).save().then(formula => resolve(formula)).catch(error => reject(error));
-    });
-}
-
-module.exports.uploadSKUMls = uploadSKUMls = function(sku_ml_data) {
-    sku_mls = sku_ml_data.Overwrite
-    return Promise.all(sku_mls.map(uploadOneSKUML));
-}
-
-function uploadOneSKUML(ml_entry) {
-    let sku_id = ml_entry.sku_id
-    let new_list = []
-    let ml_list = []
-    
-    ml_entry.result.forEach(tuple => {
-        ml_list.push(tuple[0])
-        new_list.push({_id: mongoose.Types.ObjectId(tuple[0]["ml_id"])})})
-
-    return new Promise(function(accept, reject) {
-        SKU.findOneAndUpdate({"_id": sku_id}, 
-            { $set: {manufacturing_lines: new_list}})
-            .then(result => {
-                new_res = {name: result.name, number: result.number, ml_list: ml_list}
-                accept(new_res)
-            }).catch(error => reject(error));
+        formula_entry._id = new mongoose.Types.ObjectId()
+        new Formula(formula_entry)
+            .save().then(formula => resolve(formula_entry)).catch(error => reject(error));
     });
 }

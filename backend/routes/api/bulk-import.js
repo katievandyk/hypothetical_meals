@@ -45,9 +45,6 @@ function bulkImport(file_name, file_body, res) {
     sku_file_regex = /^skus(\S)*\.csv$/;
     pl_file_regex = /^product_lines(\S)*\.csv$/;
     formulas_file_regex = /^formulas(\S)*\.csv$/;
-    formula_ing_file_regex = /^formula_ingredients(\S)*\.csv$/;
-    ml_file_regex = /^manufacturing_lines(\S)*\.csv$/;
-    sku_ml_file_regex = /^sku_manufacturing_lines(\S)*\.csv$/;
 
     let parsePromise;
     if(ing_file_regex.test(file_name)) {
@@ -65,18 +62,6 @@ function bulkImport(file_name, file_body, res) {
     else if(formulas_file_regex.test(file_name)) {
         parsePromise = Parser.parseFormula(file_body)
         file_type = "formulas"
-    }
-    else if(formula_ing_file_regex.test(file_name)) {
-        parsePromise = Parser.parseFormulaIngredients(file_body)
-        file_type = "formula_ingredients"
-    }
-    else if(ml_file_regex.test(file_name)) {
-        parsePromise = Parser.parseMLFile(file_body)
-        file_type = "manufacturing_lines"
-    }
-    else if(sku_ml_file_regex.test(file_name)) {
-        parsePromise = Parser.parseSKUMLs(file_body)
-        ile_type = "sku_manufacturing_lines"
     }
     else {
         res.status(404).json({
