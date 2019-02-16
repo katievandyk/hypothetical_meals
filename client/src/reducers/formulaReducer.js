@@ -14,7 +14,8 @@ const initialState = {
   sortby: 'name',
   sortdir: 'asc',
   formula_skus: [],
-  formula_skus_loading: false
+  formula_skus_loading: false,
+  added_formula: {}
 };
 
 export default function(state = initialState, action) {
@@ -39,23 +40,23 @@ export default function(state = initialState, action) {
     case ADD_FORMULA:
       return {
         ...state,
-        plines: [action.payload, state.plines]
+        added_formula: action.payload
       }
     case DELETE_FORMULA:
       return {
         ...state,
-        plines: state.plines.filter( pline => pline._id !== action.payload )
+        formulas: state.formulas.filter( formula => formula._id !== action.payload )
       }
     case UPDATE_FORMULA:
       return {
-        ...state,
-        plines: [action.payload, state.plines]
+        ...state
       }
      case FORMULA_ERROR:{
        return {
          ...state,
          error_msg: action.payload.data.message,
-         loading: false
+         loading: false,
+         added_formula: {}
        }
      }
      case FORMULA_KW_SEARCH:{
