@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ManufacturingGoals from './views/ManufacturingGoals';
 import ManufacturingLines from './views/ManufacturingLines';
+import ManufacturingSchedule from './views/ManufacturingSchedule';
 import Login from './views/Login';
 import Register from './views/Register';
 import Ingredients from './views/Ingredients';
@@ -66,6 +67,7 @@ class App extends Component {
                       <PrivateRoute path="/ingredients" component={Ingredients} />
                       <PrivateRoute path="/manufacturinggoals" component={ManufacturingGoals} />
                       <PrivateRoute path="/manufacturinglines" component={ManufacturingLines} />
+                      <PrivateRoute path="/manufacturingschedule" component={ManufacturingSchedule} />
                       <PrivateRoute path="/productlines" component={ProductLines} />
                       <PrivateRoute path="/sku" component={SKU} />
                       <PrivateRoute path="/formulas" component={Formulas} />
