@@ -146,27 +146,6 @@ class SKUAddModal extends React.Component {
     this.toggle();
   }
 
-  /*onIngListChange = (ing_list, valid) => {
-    var val_obj = this.state.validate;
-    if(valid){
-      val_obj.ingredients_list = 'has-success'
-    }
-    else{
-      val_obj.ingredients_list = 'has-danger'
-    }
-    var newIngList = [];
-    for(var i = 0; i < ing_list.length; i ++){
-      if(ing_list[i]._id.length > 0 && ing_list[i].quantity.length > 0){
-        newIngList = [...newIngList, ing_list[i]];
-      }
-    }
-
-    this.setState({
-      ingredients_list: newIngList,
-      validate: val_obj
-    });
-  }*/
-
   onProductLineChange = (prod_line, valid) => {
     var val_obj = this.state.validate;
     if(valid){

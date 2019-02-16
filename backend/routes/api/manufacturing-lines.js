@@ -32,7 +32,7 @@ router.post('/', (req, res) => {
         res.status(404).json({success: false, message: error.message})
         return;
     }
-        
+
     const newManufacturingLine = new ManufacturingLine(mLObj);
 
     ManufacturingLine.findOne({shortname: mLObj.shortname}).then(ml => {
