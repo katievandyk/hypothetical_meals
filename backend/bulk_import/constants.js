@@ -3,8 +3,8 @@ module.exports.pl_fields = pl_fields = {name: 'name'};
 module.exports.product_lines_header = [ pl_fields.name ];
 
 // Ingredients headers
-module.exports.ing_fields = ing_fields = {number: 'ingr#', name: 'name', vendor: 'vendor Info', size: 'size', cost: 'cost', comment: 'comment'};
-module.exports.ing_fields = [ ing_fields.number, ing_fields.name, ing_fields.vendor, ing_fields.size, ing_fields.cost, ing_fields.comment ];
+module.exports.ing_fields = ing_fields = {number: 'ingr#', name: 'name', vendor: 'vendor info', size: 'size', cost: 'cost', comment: 'comment'};
+module.exports.ingredients_header = [ ing_fields.number, ing_fields.name, ing_fields.vendor, ing_fields.size, ing_fields.cost, ing_fields.comment ];
 
 // SKUs headers
 module.exports.sku_fields = sku_fields = {number: 'sku#', name: 'name', case_upc: 'case upc', unit_upc: 'unit upc', unit_size: 'unit size', count: 'count per case', pl_name: 'pl name', comment: 'comment', formula_num: "formula#", formula_factor: "formula factor", rate: "rate", mls: "ml shortnames"};
