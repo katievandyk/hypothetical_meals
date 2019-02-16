@@ -15,7 +15,7 @@ export const ING_ERROR = 'ING_ERROR';
 export const GET_ERRORS = "GET_ERRORS";
 export const USER_LOADING = "USER_LOADING";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
-// Goal
+// Manufacturing Goals
 export const GET_GOALS = 'GET_GOALS';
 export const ADD_GOAL = 'ADD_GOAL';
 export const UPDATE_GOAL = 'UPDATE_GOAL';
@@ -25,6 +25,13 @@ export const GOALS_INGQUANTITY = 'GOALS_INGQUANTITY';
 export const GOAL_EXPORT = 'GOAL_EXPORT';
 export const GOAL_CALCULATOREXPORT = 'GOAL_CALCULATOREXPORT';
 export const GOAL_ERROR = 'GOAL_ERROR';
+// Manufacturing Lines
+export const GET_LINES = 'GET_LINES';
+export const ADD_LINE = 'ADD_LINE';
+export const UPDATE_LINE = 'UPDATE_LINE';
+export const DELETE_LINE = 'DELETE_LINE';
+export const LINES_LOADING = 'LINES_LOADING';
+export const LINE_ERROR = 'LINE_ERROR'
 // Product Lines
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';

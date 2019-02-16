@@ -86,4 +86,14 @@ router.post('/update/:id', (req, res) => {
     })
 })
 
+// @route DELETE api/manufacturinglines/:id
+// @desc delete a manufacturing line
+// @access public
+router.delete('/:id', (req, res) => {
+    ManufacturingLine.findById(req.params.id)
+        .then(line => line.remove().then(
+            () => res.json({success: true}))
+            ).catch(err => res.status(404).json({success: false, message: err.message}))
+})
+
 module.exports = router;
