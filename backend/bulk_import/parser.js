@@ -318,7 +318,7 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                         number_result.product_line._id.toString() == pl_result._id.toString() &&
                         (number_result.comment == sku_data[sku_fields.comment] ||
                         !number_result.comment && sku_data[sku_fields.comment].length == 0) &&
-                        number_result.formula.toString() == formula_result._id.toString() &&
+                        number_result.formula._id.toString() == formula_result._id.toString() &&
                         number_result.formula_scale_factor == sku_data[sku_fields.formula_factor] &&
                         number_result.manufacturing_rate == sku_data[sku_fields.rate] &&
                         mLsEqual(number_result.manufacturing_lines, expected_mls))
@@ -471,7 +471,7 @@ module.exports.preprocessOneFormula = preprocessOneFormula = function(formula_en
     checkFormulaFileFields(formula_entry.name, formula_entry.number, formula_entry.ingredients_list)
     return new Promise(function(accept, reject) {
         Promise.all([
-            Formula.findOne({number: formula_entry.number}),
+            Formula.findOne({number: formula_entry.number}).populate("ingredients_list._id"),
             Promise.all(formula_entry.ingredients_list.map(ing => Ingredient.findOne({number: ing.number})))
         ])
         .then(result => {
