@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
+import ScheduleWindow from '../components/schedule/ScheduleWindow';
 
 import { Provider } from 'react-redux';
 import store from '../store';
@@ -23,6 +24,7 @@ class ManufacturingSchedule extends Component {
                             <Col> <h1>Manufacturing Schedule</h1> </Col>
                        </Row>
                 </Container>
+                <ScheduleWindow/>
                 </Container>
             </div>
 

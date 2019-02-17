@@ -240,7 +240,7 @@ class GoalsCreateModal extends React.Component {
     GoalsCreateModal.propTypes = {
       addGoal: PropTypes.func.isRequired,
       skus: PropTypes.object.isRequired,
-      auth: PropTypes.object.auth,
+      auth: PropTypes.object.isRequired,
       goals: PropTypes.object.isRequired
     };
 
