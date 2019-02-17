@@ -42,3 +42,7 @@
 .navbar-dark .navbar-nav .show>.dropdown-toggle.nav-link:focus {
   color: rgba(255,255,255,.75);
 }
+
+.importSummary > .modal-content {
+  background-color: #d4edda;
+}

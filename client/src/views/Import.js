@@ -77,7 +77,7 @@ class Import extends Component {
                     <Table responsive size="sm">
                       <thead>
                         <tr>
-                          <th>Filehead Prefix</th>
+                          <th>Filename Prefix</th>
                           <th>Header</th>
                         </tr>
                       </thead>
@@ -86,7 +86,7 @@ class Import extends Component {
                           <td>
                             skus
                           </td>
-                          <td>SKU#,Name,Case UPC,Unit UPC,Unit size,Count per case,Product Line Name,Comment</td>
+                          <td>SKU#,Name,Case UPC,Unit UPC,Unit size,Count per case,PL Name,Formula#,Formula factor,ML shortnames,Rate,Comment</td>
                         </tr>
                         <tr>
                           <td>
@@ -104,9 +104,8 @@ class Import extends Component {
                           <td>
                             formulas
                           </td>
-                          <td>SKU#,Ingr#,Quantity</td>
+                          <td>Formula#,Name,Ingr#,Quantity,Comment</td>
                         </tr>
-
                       </tbody>
                     </Table>
                    </CardBody>
