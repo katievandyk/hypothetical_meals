@@ -284,7 +284,7 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
     return new Promise(function(accept, reject) {
         Promise.all([
             ProductLine.findOne({'name': pl}),
-            SKU.findOne({'number': sku_data[sku_fields.number]}).populate("product_line").populate("manufacturing_lines._id"),
+            SKU.findOne({'number': sku_data[sku_fields.number]}).populate("product_line").populate("manufacturing_lines._id").populate("formula"),
             SKU.findOne({'case_number': sku_data[sku_fields.case_upc]}),
             Formula.findOne({'number': sku_data[sku_fields.formula_num]}),
             ManufacturingLine.find({shortname: { $in: sku_data[sku_fields.mls].split(',') }})
@@ -503,4 +503,13 @@ module.exports.preprocessOneFormula = preprocessOneFormula = function(formula_en
         })
         .catch(reject)
     });
+}
+
+module.exports.checkManufacturingLine = checkManufacturingLine = function(name, shortname) {
+    if(!(name) || !(shortname)) 
+        throw new Error(`Manufacturing line name and shortname required. Got: ${name},${shortname}`)
+    if(name.length > 32) 
+        throw new Error(`Manufacturing line name must be less than 32 characters. Got length ${name.length} for: ${name}`)
+    if(shortname.length > 5)
+        throw new Error(`Manufacturing line shortname must be less than 5 characters. Got length ${shortname.length} for ${shortname}`)
 }
