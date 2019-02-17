@@ -318,7 +318,7 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                         number_result.product_line._id.toString() == pl_result._id.toString() &&
                         (number_result.comment == sku_data[sku_fields.comment] ||
                         !number_result.comment && sku_data[sku_fields.comment].length == 0) &&
-                        number_result.formula._id.toString() == formula_result._id.toString() &&
+                        number_result.formula.toString() == formula_result._id.toString() &&
                         number_result.formula_scale_factor == sku_data[sku_fields.formula_factor] &&
                         number_result.manufacturing_rate == sku_data[sku_fields.rate] &&
                         mLsEqual(number_result.manufacturing_lines, expected_mls))
