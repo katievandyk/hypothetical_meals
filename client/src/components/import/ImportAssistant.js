@@ -99,63 +99,6 @@ class ImportAssistant extends Component {
     this.props.toggle();
   }
 
-  ow_oldEntry_helper = (oldEntry, file_headers, obj_headers) => {
-    var new_ow_arr = [];
-    var i;
-    for (i = 0; i < file_headers.length; i++) {
-      var newkv = ['', ''];
-      newkv[0] = file_headers[i];
-      if(newkv[0] === 'Product Line Name'){
-        newkv[1] = oldEntry[obj_headers[i]].name;
-      }
-      else{
-        newkv[1] = oldEntry[obj_headers[i]];
-      }
-      new_ow_arr = [...new_ow_arr, newkv];
-    }
-    return new_ow_arr;
-  }
-
-  asst_ow_helper = (obj, file_headers) => {
-    var new_ow_arr = [];
-    var i;
-    for (i = 0; i < file_headers.length; i++) {
-      var newkv = ['', ''];
-      newkv[0] = file_headers[i];
-      newkv[1] = obj[file_headers[i]];
-      new_ow_arr = [...new_ow_arr, newkv];
-    }
-    return new_ow_arr;
-  }
-
-  old_formulas_helper = (obj, sku_num) => {
-    var prevEntries = [];
-    if(obj.length > 0){
-      for(var i = 0; i < obj.length; i++){
-        if(obj[i]._id){
-          var newObj = {"SKU#": sku_num, "Ing#":obj[i]._id.number, "Quantity": obj[i].quantity}
-          prevEntries = [...prevEntries, newObj];
-        }
-      }
-    }
-    //return newArr;
-    return(
-      prevEntries.length > 0 ? (
-        prevEntries.map((value, i) => (
-      <tr key= {i} style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
-        <td>Current Entry</td>
-        {Object.entries(value).map(([key,val])=> (
-          <td key={key}>{val}</td>
-        ))}
-      </tr>
-      ))
-      ):
-       (<tr style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
-       <td>Current Entry</td><td colSpan="3">No Previous Formula Entries Found</td>
-     </tr>)
-      );
-  }
-
   //new
 
   owSKUsMLines = (mlines) => {
@@ -590,6 +533,123 @@ class ImportAssistant extends Component {
         return(
           <div>
             <h4>Store: {store.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>SKU#</th>
+                    <th>Name</th>
+                    <th>Case UPC</th>
+                    <th>Unit UPC</th>
+                    <th>Unit size</th>
+                    <th>Count per case</th>
+                    <th>PL Name</th>
+                    <th>Formula#</th>
+                    <th>Formula factor</th>
+                    <th>ML shortnames</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {store.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['sku#']}</td>
+                      <td>{entry['name']}</td>
+                      <td>{entry['case upc']}</td>
+                      <td>{entry['unit upc']}</td>
+                      <td>{entry['unit size']}</td>
+                      <td>{entry['count per case']}</td>
+                      <td>{entry['pl name']}</td>
+                      <td>{entry['formula#']}</td>
+                      <td>{entry['formula factor']}</td>
+                      <td>{entry['ml shortnames']}</td>
+                      <td>{entry['comment']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'ingredients'){
+        return(
+          <div>
+            <h4>Store: {store.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Ingr#</th>
+                    <th>Name</th>
+                    <th>Vendor Info</th>
+                    <th>Size</th>
+                    <th>Cost</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {store.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['ingr#']}</td>
+                      <td>{entry['name']}</td>
+                      <td>{entry['vendor info']}</td>
+                      <td>{entry['size']}</td>
+                      <td>{entry['cost']}</td>
+                      <td>{entry['comment']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'product_lines'){
+        return(
+          <div>
+            <h4>Store: {store.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {store.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['name']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'formulas'){
+        return(
+          <div>
+            <h4>Store: {store.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Formula#</th>
+                    <th>Name</th>
+                    <th>Ingr#</th>
+                    <th>Quantity</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                  {store.records.map((entry, i)=>(
+                    <tbody key={i}>
+                      {entry.ingredients_list.map((ingItem, j) => (
+                        <tr key={j}>
+                          <td>{entry['number']}</td>
+                          <td>{entry['name']}</td>
+                          <td>{ingItem["number"]}</td>
+                          <td>{ingItem["quantity"]}</td>
+                          <td>{entry['comment']}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  ))}
+              </Table>
           </div>
         );
       }
@@ -602,15 +662,405 @@ class ImportAssistant extends Component {
   }
 
   displayOverwrite_res = (file_type, ow) => {
-
+    if(ow && ow.records && ow.records.length > 0){
+      if(file_type === 'skus'){
+        return(
+          <div>
+            <h4>Overwrite: {ow.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>SKU#</th>
+                    <th>Name</th>
+                    <th>Case UPC</th>
+                    <th>Unit UPC</th>
+                    <th>Unit size</th>
+                    <th>Count per case</th>
+                    <th>PL Name</th>
+                    <th>Formula#</th>
+                    <th>Formula factor</th>
+                    <th>ML shortnames</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ow.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['sku#']}</td>
+                      <td>{entry['name']}</td>
+                      <td>{entry['case upc']}</td>
+                      <td>{entry['unit upc']}</td>
+                      <td>{entry['unit size']}</td>
+                      <td>{entry['count per case']}</td>
+                      <td>{entry['pl name']}</td>
+                      <td>{entry['formula#']}</td>
+                      <td>{entry['formula factor']}</td>
+                      <td>{entry['ml shortnames']}</td>
+                      <td>{entry['comment']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'ingredients'){
+        return(
+          <div>
+            <h4>Overwrite: {ow.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Ingr#</th>
+                    <th>Name</th>
+                    <th>Vendor Info</th>
+                    <th>Size</th>
+                    <th>Cost</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ow.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['number']}</td>
+                      <td>{entry['name']}</td>
+                      <td>{entry['vendor_info']}</td>
+                      <td>{entry['package_size']}</td>
+                      <td>{entry['cost_per_package']}</td>
+                      <td>{entry['comment']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'product_lines'){
+        return(
+          <div>
+            <h4>Overwrite: {ow.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ow.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['name']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'formulas'){
+        return(
+          <div>
+            <h4>Overwrite: {ow.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Formula#</th>
+                    <th>Name</th>
+                    <th>Ingr#</th>
+                    <th>Quantity</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                  {ow.records.map((entry, i)=>(
+                    <tbody key={i}>
+                      {entry.ingredients_list.map((ingItem, j) => (
+                        <tr key={j}>
+                          <td>{entry['number']}</td>
+                          <td>{entry['name']}</td>
+                          <td>{ingItem["number"]}</td>
+                          <td>{ingItem["quantity"]}</td>
+                          <td>{entry['comment']}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  ))}
+              </Table>
+          </div>
+        );
+      }
+    }
+    else{
+      return(
+        <h4>Overwrite: 0 records</h4>
+      );
+    }
   }
 
   displayIgnore_res = (file_type, ignore) => {
-
+    if(ignore && ignore.records && ignore.records.length > 0){
+      if(file_type === 'skus'){
+        return(
+          <div>
+            <h4>Ignore: {ignore.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>SKU#</th>
+                    <th>Name</th>
+                    <th>Case UPC</th>
+                    <th>Unit UPC</th>
+                    <th>Unit size</th>
+                    <th>Count per case</th>
+                    <th>PL Name</th>
+                    <th>Formula#</th>
+                    <th>Formula factor</th>
+                    <th>ML shortnames</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ignore.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['sku#']}</td>
+                      <td>{entry['name']}</td>
+                      <td>{entry['case upc']}</td>
+                      <td>{entry['unit upc']}</td>
+                      <td>{entry['unit size']}</td>
+                      <td>{entry['count per case']}</td>
+                      <td>{entry['pl name']}</td>
+                      <td>{entry['formula#']}</td>
+                      <td>{entry['formula factor']}</td>
+                      <td>{entry['ml shortnames']}</td>
+                      <td>{entry['comment']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'ingredients'){
+        return(
+          <div>
+            <h4>Ignore: {ignore.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Ingr#</th>
+                    <th>Name</th>
+                    <th>Vendor Info</th>
+                    <th>Size</th>
+                    <th>Cost</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ignore.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['ingr#']}</td>
+                      <td>{entry['name']}</td>
+                      <td>{entry['vendor info']}</td>
+                      <td>{entry['size']}</td>
+                      <td>{entry['cost']}</td>
+                      <td>{entry['comment']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'product_lines'){
+        return(
+          <div>
+            <h4>Ignore: {ignore.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ignore.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['name']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'formulas'){
+        return(
+          <div>
+            <h4>Ignore: {ignore.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Formula#</th>
+                    <th>Name</th>
+                    <th>Ingr#</th>
+                    <th>Quantity</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                  {ignore.records.map((entry, i)=>(
+                    <tbody key={i}>
+                      {entry.ingredients_list.map((ingItem, j) => (
+                        <tr key={j}>
+                          <td>{entry['number']}</td>
+                          <td>{entry['name']}</td>
+                          <td>{ingItem["number"]}</td>
+                          <td>{ingItem["quantity"]}</td>
+                          <td>{entry['comment']}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  ))}
+              </Table>
+          </div>
+        );
+      }
+    }
+    else{
+      return(
+        <h4>Ignore: 0 records</h4>
+      );
+    }
   }
 
   displayNoOverwrite_res = (file_type, no_ow) => {
-
+    if(no_ow && no_ow.records && no_ow.records.length > 0){
+      if(file_type === 'skus'){
+        return(
+          <div>
+            <h4>Ignored Overwrites: {no_ow.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>SKU#</th>
+                    <th>Name</th>
+                    <th>Case UPC</th>
+                    <th>Unit UPC</th>
+                    <th>Unit size</th>
+                    <th>Count per case</th>
+                    <th>PL Name</th>
+                    <th>Formula#</th>
+                    <th>Formula factor</th>
+                    <th>ML shortnames</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {no_ow.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['sku#']}</td>
+                      <td>{entry['name']}</td>
+                      <td>{entry['case upc']}</td>
+                      <td>{entry['unit upc']}</td>
+                      <td>{entry['unit size']}</td>
+                      <td>{entry['count per case']}</td>
+                      <td>{entry['pl name']}</td>
+                      <td>{entry['formula#']}</td>
+                      <td>{entry['formula factor']}</td>
+                      <td>{entry['ml shortnames']}</td>
+                      <td>{entry['comment']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'ingredients'){
+        return(
+          <div>
+            <h4>Ignored Overwrites: {no_ow.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Ingr#</th>
+                    <th>Name</th>
+                    <th>Vendor Info</th>
+                    <th>Size</th>
+                    <th>Cost</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {no_ow.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['ingr#']}</td>
+                      <td>{entry['name']}</td>
+                      <td>{entry['vendor info']}</td>
+                      <td>{entry['size']}</td>
+                      <td>{entry['cost']}</td>
+                      <td>{entry['comment']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'product_lines'){
+        return(
+          <div>
+            <h4>Ignored Overwrites: {no_ow.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {no_ow.records.map((entry, i)=>(
+                    <tr key={i}>
+                      <td>{entry['name']}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </div>
+        );
+      }
+      else if(file_type === 'formulas'){
+        return(
+          <div>
+            <h4>Ignored Overwrites: {no_ow.count} records</h4>
+              <Table responsive size="sm">
+                <thead>
+                  <tr>
+                    <th>Formula#</th>
+                    <th>Name</th>
+                    <th>Ingr#</th>
+                    <th>Quantity</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                  {no_ow.records.map((entry, i)=>(
+                    <tbody key={i}>
+                      {entry.ingredients_list.map((ingItem, j) => (
+                        <tr key={j}>
+                          <td>{entry['number']}</td>
+                          <td>{entry['name']}</td>
+                          <td>{ingItem["number"]}</td>
+                          <td>{ingItem["quantity"]}</td>
+                          <td>{entry['comment']}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  ))}
+              </Table>
+          </div>
+        );
+      }
+    }
+    else{
+      return(
+        <h4>Ignored Overwrites: 0 records</h4>
+      );
+    }
   }
 
   render(){
@@ -620,27 +1070,7 @@ class ImportAssistant extends Component {
       file_type = res.file_type;
     }
 
-    /*var file_headers = [];
-    var obj_headers = [];
-    if(file_type === 'ingredients'){
-      file_headers = ["Ingr#", "Name", "Vendor Info", "Size", "Cost", "Comment"];
-      obj_headers = ["number", "name", "vendor_info", "package_size", "cost_per_package", "comment"];
-    }
-    else if (file_type === 'skus') {
-      file_headers = ["SKU#","Name","Case UPC","Unit UPC","Unit size","Count per case","PL Name","Comment", "Formula#", "Formula factor","Rate"];
-      obj_headers = ["number", "name", "case_number", "unit_number", "unit_size", "count_per_case", "product_line", "comment"];
-    }
-    else if (file_type === 'product_lines') {
-      file_headers = ["Name"];
-      obj_headers = ["name"];
-    }
-    else if (file_type === 'formulas') {
-      file_headers = ["SKU#", "Ingr#", "Quantity"];
-      obj_headers = ["number", "name", "number"];
-    }*/
-
     const import_res = this.props.import.import_res;
-    console.log(import_res);
     if(this.props.import.success && !this.props.import.loading){
       return (
         <div>
@@ -700,7 +1130,7 @@ class ImportAssistant extends Component {
               <Button onClick={this.onCancel} color="danger">Cancel</Button>
             </ModalFooter>
           </Modal>
-          <Modal size="xl" className="importSummary"
+          <Modal size="xl" style={{color:'darkgreen'}} className="importSummary"
             isOpen={this.state.results_modal && this.props.import.success}
             toggle={this.results_modal_toggle}>
             <ModalHeader toggle={this.results_modal_toggle}>
@@ -713,93 +1143,6 @@ class ImportAssistant extends Component {
                 {this.displayIgnore_res(file_type, import_res.Ignore)}
                 {this.displayNoOverwrite_res(file_type, import_res.NoOverwrite)}
               </div>
-              {/*
-              {Object.keys(import_res).length > 0 ? (
-                <div style={{color: 'green'}}>
-                  {(Object.entries(import_res).map(([name,value]) => (
-                    (Object.keys(value).length > 0) ?
-                    (<div key={name}>
-                        <h4>{name === 'NoOverwrite'? ('No Overwrite'):(name)}: {value.count} records</h4>
-                        {value.count > 0 ? (<Table responsive size="sm">
-                          <thead>
-                            <tr>
-                              {file_headers.map((key) => (
-                                <th key={key}> {key}</th>
-                              ))}
-                            </tr>
-                          </thead>
-                          {file_type === 'formulas'? (
-                            value.records.map((obj,i) => (
-                              <tbody key={i}>
-                              <tr><td colSpan="3"><div><em>Formula {i}</em></div></td></tr>
-                                {name === 'Overwrite'? (
-                                  obj.ing_list.map((entry, k) => (
-                                  <tr key={k}>
-                                  {this.asst_ow_helper(entry, file_headers).map(([key,value], i) => (
-                                    <td key={key}>{value}</td>
-                                  ))}
-                                  </tr>
-                                ))
-                                ): (
-                                  obj.result.map((entry, j) => (
-                                    <tr key={j}>
-                                      {this.asst_ow_helper(entry[0], file_headers).map(([key,value]) => (
-                                          <td key={key}>{value}</td>
-
-                                        ))}
-                                    </tr>
-                                ))
-                                )}
-
-                            </tbody>
-                          ))
-
-                          ): (
-                            <tbody>
-
-                              {value.records.map((obj,i) => (
-                                name === 'Store' ? (
-                                  <tr key={i}>
-                                    {this.asst_ow_helper(obj, obj_headers).map(([key,value]) => (
-
-                                        <td key={key}>{value}</td>
-                                      ))}
-                                  </tr>
-                                ):(
-                                  name === 'Overwrite' ? (
-                                    <tr key={i}>
-                                      {this.ow_oldEntry_helper(obj, file_headers, obj_headers).map(([key,value]) => (
-
-                                          <td key={key}>{value}</td>
-                                        ))}
-                                    </tr>
-                                  ):(
-                                    <tr key={i}>
-                                      {this.asst_ow_helper(obj, file_headers).map(([key,value]) => (
-
-                                          <td key={key}>{value}</td>
-                                        ))}
-                                    </tr>
-
-                                  )
-
-                                )
-
-                              ))}
-                            </tbody>
-                          )}
-
-                        </Table>):(<div></div>)}
-                      </div>):
-                    (
-                      <div key={name}>
-                        <h4>{name}</h4>
-                        None
-                      </div>
-                    )
-                  )))}
-                </div>
-              ): (<div>Import Incomplete</div>)}*/}
             </ModalBody>
           </Modal>
         </div>
