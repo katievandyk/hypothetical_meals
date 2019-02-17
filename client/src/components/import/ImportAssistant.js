@@ -274,7 +274,7 @@ class ImportAssistant extends Component {
                       <td>{(k===0)? ('Current Entry'):('')}</td>
                       <td>{entry.to_overwrite['number']}</td>
                       <td>{entry.to_overwrite['name']}</td>
-                      <td>{ingItem_ow['quantity']}</td>
+                      <td>{ingItem_ow['_id'].number}</td>
                       <td>{ingItem_ow['quantity']}</td>
                       <td>{entry.to_overwrite['comment']}</td>
                     </tr>
