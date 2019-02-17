@@ -471,7 +471,7 @@ module.exports.preprocessOneFormula = preprocessOneFormula = function(formula_en
     checkFormulaFileFields(formula_entry.name, formula_entry.number, formula_entry.ingredients_list)
     return new Promise(function(accept, reject) {
         Promise.all([
-            Formula.findOne({number: formula_entry.number}),
+            Formula.findOne({number: formula_entry.number}).populate("ingredients_list._id"),
             Promise.all(formula_entry.ingredients_list.map(ing => Ingredient.findOne({number: ing.number})))
         ])
         .then(result => {
