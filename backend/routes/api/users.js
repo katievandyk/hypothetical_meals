@@ -66,7 +66,6 @@ router.post("/login", (req, res) => {
   // Check password
       bcrypt.compare(password, user.password).then(isMatch => {
         if (isMatch) {
-          console.log("password match");
           // User matched
           // Create JWT Payload
           const payload = {
@@ -90,7 +89,6 @@ router.post("/login", (req, res) => {
             }
           );
         } else {
-          console.log("no password");
           return res
             .status(400)
             .json({ passwordincorrect: "Password incorrect" });
@@ -163,7 +161,6 @@ router.post("/login", (req, res) => {
   })
 
   function makeNetidAdmin(username) {
-    console.log('username is ' + username);
     NetidUser.findOne({ username: username }).then(user => {
       if (!user) {
         return res.status(400).json({ username: "Username does not exist" });
