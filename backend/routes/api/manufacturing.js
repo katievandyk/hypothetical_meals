@@ -193,5 +193,29 @@ router.get('/exportcalculator/:id', (req, res) => {
         }).catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
+router.get('/', (req, res) => {
+    Goal.find().lean().then(result => res.json(result));
+})
+
+
+// @route GET api/manufacturing/ingquantities/:id
+// @desc get quantities of all ingredients needed for manufacturing goal
+// @access public
+router.get('/ingquantities2/:id', (req, res) => {
+    Goal.findById(req.params.id).lean().populate("skus_list.sku").then(goal => {
+        Formula.populate(goal, {path:"skus_list.sku.formula"}).then(f_pop => {
+            Ingredient.populate(f_pop, {path:"skus_list.sku.formula.ingredients_list._id"})
+            .then(populated => {
+                asdfd = populated.skus_list.map(sku => {
+                    ing_qty = sku.sku.formula.ingredients_list.map(ing => {
+                        return {ingredient: ing._id.name, quantity: ing.quantity}
+                    })
+                    return ing_qty
+                })
+                res.json(asdfd)
+            })
+        })
+    })
+})
 
 module.exports = router;
