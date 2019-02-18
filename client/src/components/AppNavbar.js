@@ -45,9 +45,27 @@ class AppNavbar extends Component {
         <Collapse className="justify-content-end" isOpen={this.state.isOpen} navbar>
           {this.props.auth.isAuthenticated ? (
           <Nav className="navbar-expand-md" navbar>
-            {this.props.auth.isAdmin ? (<NavItem>
-              <NavLink tag={RRNavLink} to="/register" className="nav-link" activeClassName="active">Register</NavLink>
-            </NavItem>): (<div></div>)}
+            {this.props.auth.isAdmin ? (
+            <UncontrolledDropdown nav
+            active={
+              (this.props.location.pathname === '/register' ||
+              this.props.location.pathname === '/makeAdmin') ?
+              (true) : (false)
+            }
+            inNavbar>
+             <DropdownToggle nav caret>
+               Users
+             </DropdownToggle>
+             <DropdownMenu right>
+               <DropdownItem>
+                <NavLink tag={RRNavLink} to="/register" className="nav-link" activeClassName="active">Register</NavLink>
+               </DropdownItem>
+               <DropdownItem>
+                 <NavLink tag={RRNavLink} to="/makeAdmin" className="nav-link" activeClassName="active">Make Admin</NavLink>
+               </DropdownItem>
+             </DropdownMenu>
+           </UncontrolledDropdown>
+            ): (<div></div>)}
             <UncontrolledDropdown nav
               active={
                 (this.props.location.pathname === '/ingredients' ||
