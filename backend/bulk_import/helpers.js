@@ -205,7 +205,7 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
     // Paginate. If limit = -1, then gives all records
     var currentPage = parseInt(req.params.pagenumber);
     var limit = parseInt(req.params.limit);
-    if (limit != -1) {
+    if (limit != -1 || req.body.bulk_edit_mls !== "True") {
         findPromise = findPromise.skip((currentPage-1)*limit).limit(limit);
     }
 
@@ -214,8 +214,6 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
         sortField = "product_line.name"
     else 
         sortField = req.params.field
-
-    console.log(sortField)
 
     var sortOrder = req.params.asc === 'asc' ? 1 : -1;
     var sortPromise;
@@ -239,7 +237,7 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
                 res.json(finalResult)
             }
             else {
-                sku_ml_mapping = skuMLMappings(results, res)
+                sku_ml_mapping = skuMLMappings(results, req, res)
             }   
         })    
         .catch(err => {
@@ -259,7 +257,7 @@ function groupByProductLine(results) {
     return pl_to_skus;
 }
 
-function skuMLMappings(results, res) {
+function skuMLMappings(results, req, res) {
     sku_result = results[1]
     let mapping = []
     sku_mls = sku_result.forEach(sku => {
@@ -282,6 +280,9 @@ function skuMLMappings(results, res) {
 
         })
         mapping = groupByGroup(mls)
+        var currentPage = parseInt(req.params.pagenumber);
+        var limit = parseInt(req.params.limit);
+        limited_res = limit == -1 ? results[1] : results[1].slice((currentPage-1)*limit, (currentPage-1)*limit+limit)
         finalResult = {count: results[0], results: results[1], mapping: mapping};
         res.json(finalResult)
     })
