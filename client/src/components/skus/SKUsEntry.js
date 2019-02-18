@@ -39,7 +39,13 @@ class SKUsEntry extends React.Component {
     ml_modal: false,
     mlines: [],
     group_by_pl: false,
-    validate: {}
+    validate: {},
+    formula_id:'',
+    formula_name:'',
+    formula_number: '',
+    formula_ingredients_list: [],
+    formula_comment:'',
+    formula_modal: false
   };
 
   toggle = () => {
@@ -52,6 +58,12 @@ class SKUsEntry extends React.Component {
   ml_toggle = () => {
     this.setState({
       ml_modal: !this.state.ml_modal
+    });
+  }
+
+  formula_toggle = () => {
+    this.setState({
+      formula_modal: !this.state.formula_modal
     });
   }
 
@@ -198,6 +210,17 @@ class SKUsEntry extends React.Component {
       mlines: newMlines
     });
     this.ml_toggle();
+  }
+
+  onFormulaClick = formula => {
+    this.setState({
+      formula_id: formula._id,
+      formula_name: formula.name,
+      formula_number: formula.number,
+      formula_ingredients_list: formula.ingredients_list,
+      formula_comment: formula.comment
+    });
+    this.formula_toggle();
   }
 
   onProductLineChange = (prod_line, valid) => {
@@ -483,6 +506,33 @@ class SKUsEntry extends React.Component {
     );
   }
 
+  formulaModal = () => {
+    return (
+      <Modal size="sm" isOpen={this.state.formula_modal} toggle={this.formula_toggle}>
+        <ModalHeader toggle={this.formula_toggle}>{this.state.formula_name}</ModalHeader>
+        <ModalBody>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Name: </b> {this.state.formula_name}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Number: </b> {this.state.formula_number}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Ingredients List: </b>
+              <div>
+              {this.state.formula_ingredients_list.map(({_id, quantity})=>(
+                <div key={_id._id}>{_id.name}, {quantity}</div>
+              ))}
+              </div>
+          </div>
+          <div style={{wordBreak:'break-all', paddingBottom: '1.5em'}}>
+            <b>Comment: </b> {this.state.formula_comment}
+          </div>
+        </ModalBody>
+      </Modal>
+    );
+  }
+
   render() {
     const { skus } = this.props.skus;
     const loading = this.props.skus.loading;
@@ -571,7 +621,15 @@ class SKUsEntry extends React.Component {
                         <td> {unit_size} </td>
                         <td> {count_per_case}</td>
                         {product_line ? (<td> {product_line.name}</td>):(<td></td>)}
-                        {formula ? (<td> {formula.name}</td>):(<td></td>)}
+                        {formula ? (
+                          <td>
+                            {formula.name}
+                            <Button size="sm" color="link"
+                              onClick={this.onFormulaClick.bind(this, formula)}
+                              style={{'color':'black'}}>
+                              <FontAwesomeIcon icon="info-circle"/>
+                            </Button>
+                          </td>):(<td></td>)}
                         <td> {formula_scale_factor} </td>
                         <td>
                           <Button size="sm" color="link"
@@ -612,6 +670,7 @@ class SKUsEntry extends React.Component {
             </Table>
             {this.editForm()}
             {this.mlModal()}
+            {this.formulaModal()}
           </div>
           ))}
         </div>
@@ -689,7 +748,15 @@ class SKUsEntry extends React.Component {
                       <td> {unit_size} </td>
                       <td> {count_per_case}</td>
                       {product_line ? (<td> {product_line.name}</td>):(<td></td>)}
-                      {formula ? (<td> {formula.name}</td>):(<td></td>)}
+                      {formula ? (
+                        <td>
+                          {formula.name}
+                          <Button size="sm" color="link"
+                            onClick={this.onFormulaClick.bind(this, formula)}
+                            style={{'color':'black'}}>
+                            <FontAwesomeIcon icon="info-circle"/>
+                          </Button>
+                        </td>):(<td></td>)}
                       <td> {formula_scale_factor} </td>
                       <td>
                         <Button size="sm" color="link"
@@ -730,6 +797,7 @@ class SKUsEntry extends React.Component {
           </Table>
           {this.editForm()}
           {this.mlModal()}
+          {this.formulaModal()}
           </div>
 
       );
