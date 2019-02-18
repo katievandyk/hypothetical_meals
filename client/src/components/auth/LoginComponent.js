@@ -14,8 +14,10 @@ class LoginComponent extends Component {
     this.state = {
       isLoggedIn: false,
       isAdmin: false,
-      email: "",
+      username: "",
       password: "",
+      tokenHash: "",
+      url: "https://oauth.oit.duke.edu/oauth/authorize.php?client_id=hypo-meal&client_secret=secret&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fnetid&response_type=token&state=1129&scope=basic",
       errors: {}
     };
   }
@@ -45,7 +47,7 @@ onChange = e => {
 onSubmit = e => {
     e.preventDefault();
 const userData = {
-      email: this.state.email,
+      username: this.state.username,
       password: this.state.password
     };
 this.props.loginUser(userData); // since we handle the redirect within our component, we don't need to pass in this.props.history as a parameter
@@ -64,19 +66,22 @@ return (
           <h4>
             <b>Login</b> below
           </h4>
+          <p className="grey-text text-darken-1">
+            <a href={this.state.url}>Login with NetID</a>
+          </p>
           <FormGroup>
-            <Label for="email">Email</Label>
+            <Label for="username">Username</Label>
             <Input onChange={this.onChange}
-            value={this.state.email}
-            error={errors.email}
-            id="email"
-            type="email"
+            value={this.state.username}
+            error={errors.username}
+            id="username"
+            type="username"
             className={classnames("", {
-              invalid: errors.email || errors.emailnotfound
+              invalid: errors.username || errors.usernamenotfound
             })}></Input>
             <span style={{'color': 'red'}}>
-              {errors.email}
-              {errors.emailnotfound}
+              {errors.username}
+              {errors.username}
             </span>
           </FormGroup>
           <FormGroup>

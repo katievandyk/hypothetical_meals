@@ -8,26 +8,26 @@ const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 // Load User model
 const User = require("../../models/User");
+const NetidUser = require("../../models/NetidUser");
+
 
 // @route POST api/users/register
 // @desc Register user
-// @access Public
+// @access Private
 router.post("/register", (req, res) => {
-  console.log("gets here register");
     // Form validation
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check validation
     if (!isValid) {
-      console.log(`is not valid`)
       return res.status(400).json(errors);
     }
-  User.findOne({ email: req.body.email }).then(user => {
+  User.findOne({ username: req.body.username }).then(user => {
       if (user) {
-        return res.status(400).json({ email: "Email already exists" });
+        return res.status(400).json({ username: "Username already exists" });
       };
   const newUser = new User({
           name: req.body.name,
-          email: req.body.email,
+          username: req.body.username,
           password: req.body.password
         });
   // Hash password before saving in database
@@ -55,24 +55,23 @@ router.post("/login", (req, res) => {
   if (!isValid) {
     return res.status(400).json(errors);
   }
-  const email = req.body.email;
+  const username = req.body.username;
   const password = req.body.password;
-  // Find user by email
-  User.findOne({ email }).then(user => {
+  // Find user by username
+  User.findOne({ username }).then(user => {
       // Check if user exists
     if (!user) {
-      return res.status(404).json({ emailnotfound: "Email not found" });
+      return res.status(404).json({ usernamenotfound: "Username not found" });
     }
   // Check password
       bcrypt.compare(password, user.password).then(isMatch => {
         if (isMatch) {
-          console.log("password match");
           // User matched
           // Create JWT Payload
           const payload = {
             id: user.id,
             name: user.name,
-            email: user.email,
+            username: user.username,
             isAdmin: user.isAdmin
           };
   // Sign token
@@ -90,7 +89,6 @@ router.post("/login", (req, res) => {
             }
           );
         } else {
-          console.log("no password");
           return res
             .status(400)
             .json({ passwordincorrect: "Password incorrect" });
@@ -98,6 +96,100 @@ router.post("/login", (req, res) => {
       });
     });
   });
+
+  // @route POST api/users/netid
+  // @desc create JWT for netid user, also checks to see if there is a user
+  // @access Private
+  router.post("/netid", (req, res) => {
+    const name = req.body.name;
+    const username = req.body.username;
+    NetidUser.findOne({ username: username }).then(user => {
+      if(!user) {
+        //Make a user
+        const newUser = new NetidUser({
+          name: name,
+          username: username
+        });
+        newUser
+              .save( function(err, newDocument) {
+                const payload = {
+                  id: user.id,
+                  name: user.name,
+                  username: user.username,
+                  isAdmin: user.isAdmin
+                };
+                // Sign token
+                jwt.sign(
+                  payload,
+                  keys.secretOrKey,
+                  {
+                    expiresIn: 31556926 // 1 year in seconds
+                  },
+                  (err, token) => {
+                    res.json({
+                      success: true,
+                      token: "Bearer " + token
+                    });
+                  }
+                );
+              })
+              .catch(err => console.log(err));
+      }
+      else {
+        const payload = {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          isAdmin: user.isAdmin
+        };
+        // Sign token
+        jwt.sign(
+          payload,
+          keys.secretOrKey,
+          {
+            expiresIn: 31556926 // 1 year in seconds
+          },
+          (err, token) => {
+            res.json({
+              success: true,
+              token: "Bearer " + token
+            });
+          }
+        );
+      }
+    })
+  })
+
+  function makeNetidAdmin(username) {
+    NetidUser.findOne({ username: username }).then(user => {
+      if (!user) {
+        return res.status(400).json({ username: "Username does not exist" });
+      }
+      if(user.isAdmin) {
+        return res.status(400).json({ username: "User is already an admin"});
+      }
+      NetidUser.findOne({ username: username }, function (err, doc){
+        doc.isAdmin = true;
+        doc.save().then(updatedUser => res.json(updatedUser))
+        .catch(err => console.log(err.message));
+      });
+    });
+  }
+  router.post("/makeAdmin", (req, res) => {
+    User.findOne({ username: req.body.username }).then(user => {
+        if (!user) {
+          makeNetidAdmin(req.body.username);
+        }
+        if(user.isAdmin) {
+          return res.status(400).json({ username: "User is already an admin"});
+        }
+        User.findOne({ username: req.body.username }, function (err, doc){
+          doc.isAdmin = true;
+          doc.save().then(updatedUser => res.json(updatedUser))
+          .catch(err => console.log(err.message));
+        });
+      });
+    });
 
   module.exports = router;
   

@@ -12,9 +12,9 @@ module.exports = passport => {
       User.findById(jwt_payload.id)
         .then(user => {
           if (user) {
-            return done(null, user);
+            done(null, user);
           }
-          return done(null, false);
+          done(null, false);
         })
         .catch(err => console.log(err));
     })

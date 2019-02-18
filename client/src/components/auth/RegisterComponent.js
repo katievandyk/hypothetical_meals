@@ -12,7 +12,7 @@ class RegisterComponent extends Component {
     super();
     this.state = {
       name: "",
-      email: "",
+      username: "",
       password: "",
       password2: "",
       errors: {}
@@ -33,7 +33,7 @@ onSubmit = e => {
     e.preventDefault();
 const newUser = {
       name: this.state.name,
-      email: this.state.email,
+      username: this.state.username,
       password: this.state.password,
       password2: this.state.password2
     };
@@ -66,17 +66,17 @@ return (
               </span>
             </FormGroup>
             <FormGroup>
-              <Label for="email">Email</Label>
+              <Label for="username">Username</Label>
               <Input onChange={this.onChange}
-              value={this.state.email}
-              error={errors.email}
-              id="email"
-              type="email"
+              value={this.state.username}
+              error={errors.username}
+              id="username"
+              type="username"
               className={classnames("", {
-                invalid: errors.email
+                invalid: errors.username
               })}></Input>
               <span style={{'color': 'red'}}>
-                {errors.email}
+                {errors.username}
               </span>
             </FormGroup>
             <FormGroup>
