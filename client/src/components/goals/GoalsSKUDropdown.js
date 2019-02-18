@@ -1,43 +1,39 @@
 import React from 'react';
-import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Input } from 'reactstrap';
 
 class GoalsSKUDropdown extends React.Component {
   constructor(props) {
     super(props);
-
-    this.toggle = this.toggle.bind(this);
     this.changeValue = this.changeValue.bind(this);
     this.state = {
-      skuValue: 'SKU',
-      dropdownOpen: false
+      dropdownOpen: false,
+      valid: ''
     };
   }
 
-  toggle() {
-    this.setState({
-      dropdownOpen: !this.state.dropdownOpen
-    });
-  }
-
   changeValue(e) {
-    const { skus } = this.props.skus;
-    this.setState({skuValue: e.currentTarget.textContent})
-    this.props.callbackFromParent(skus.find((sku) => sku._id === e.currentTarget.id))
+    const { skus } = this.props.skus
+    var selSku = skus.find((sku) => sku._id === e.currentTarget.value)
+    var valid = '';
+    if(selSku != null && this.props.skus_list.find(elem => elem.sku._id === e.currentTarget.value) == null) {
+      valid = 'success'
+      this.props.callbackFromParent(selSku)
+    }
+    else {
+      valid = 'failure'
+    }
+    this.setState({ validName: valid })
   }
 
   render() {
     const { skus } = this.props.skus;
     return (
-      <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-        <DropdownToggle caret>
-          {this.state.skuValue}
-        </DropdownToggle>
-        <DropdownMenu>
-             {skus.map(({_id, name, unit_size, count_per_case }) => (
-                <DropdownItem key={_id} id={_id} onClick={this.changeValue}> {name}: {unit_size} * {count_per_case} </DropdownItem>
+        <Input type="select" onChange={e => this.changeValue(e)} valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'}>
+             <option>Select a SKU</option>
+             {skus.map(({_id, name, unit_size, count_per_case}) => (
+                <option id={_id} value={_id}> {name}: {unit_size} * {count_per_case} </option>
             ))}
-        </DropdownMenu>
-      </ButtonDropdown>
+        </Input>
     );
   }
 }

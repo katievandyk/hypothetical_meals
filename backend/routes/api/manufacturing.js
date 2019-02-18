@@ -26,12 +26,40 @@ router.post('/', (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         skus_list: req.body.skus_list,
-        user_username: req.body.user_username
+        user_email: req.body.user_email,
+        deadline: req.body.deadline
     });
 
     newGoal.save().then(goal => res.json(goal))
         .catch(err => console.log(err.message));
 });
+
+// @route DELETE api/manufacturing/:id
+// @desc delete a goal
+// @access public
+router.delete('/:id', (req, res) => {
+   Goal.findById(req.params.id)
+        .then(goal => goal.remove().then(
+            () => res.json({success: true}))
+        ).catch(err => res.status(404).json({success: false, message: err.message}))
+});
+
+// @route POST api/manufacturing/update/:id
+// @desc updates a goal
+// @access public
+router.post('/update/:id', (req, res) => {
+    Goal.findOne({name: req.body.name}).then(goal => {
+        if(goal !== null && req.params.id != goal._id) {
+            res.status(404).json({success: false, message: "Goal name is not unique: " + req.body.name})
+        }
+        else {
+            Goal.findByIdAndUpdate(req.params.id, {$set:req.body})
+            .then(() => res.json({success: true}))
+            .catch(err => res.status(404).json({success: false, message: err.message}))
+        }
+    }).catch(err => res.status(404).json({success: false, message: err.message}))
+});
+
 
 // @route GET api/manufacturing/ingquantities/:id
 // @desc get quantities of all ingredients needed for manufacturing goal

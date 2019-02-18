@@ -16,15 +16,23 @@ export const GET_ERRORS = "GET_ERRORS";
 export const USER_LOADING = "USER_LOADING";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 export const SET_NETID_USER = "SET_NETID_USER";
-// Goal
+// Manufacturing Goals
 export const GET_GOALS = 'GET_GOALS';
 export const ADD_GOAL = 'ADD_GOAL';
+export const UPDATE_GOAL = 'UPDATE_GOAL';
 export const DELETE_GOAL = 'DELETE_GOAL';
 export const GOALS_LOADING = 'GOALS_LOADING';
 export const GOALS_INGQUANTITY = 'GOALS_INGQUANTITY';
 export const GOAL_EXPORT = 'GOAL_EXPORT';
 export const GOAL_CALCULATOREXPORT = 'GOAL_CALCULATOREXPORT';
 export const GOAL_ERROR = 'GOAL_ERROR';
+// Manufacturing Lines
+export const GET_LINES = 'GET_LINES';
+export const ADD_LINE = 'ADD_LINE';
+export const UPDATE_LINE = 'UPDATE_LINE';
+export const DELETE_LINE = 'DELETE_LINE';
+export const LINES_LOADING = 'LINES_LOADING';
+export const LINE_ERROR = 'LINE_ERROR'
 // Product Lines
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';
@@ -57,3 +65,14 @@ export const UPLOAD_ERROR = 'UPLOAD_ERROR';
 export const SET_IMPORT_LOADING = 'SET_IMPORT_LOADING';
 export const IMPORT_OVERWRITES = 'IMPORT_OVERWRITES';
 export const RESET_IMPORT_STATE = 'RESET_IMPORT_STATE';
+// Formulas
+export const SORT_FORMULAS = 'SORT_FORMULAS';
+export const ADD_FORMULA = 'ADD_FORMULA';
+export const DELETE_FORMULA = 'DELETE_FORMULA';
+export const UPDATE_FORMULA = 'UPDATE_FORMULA';
+export const FORMULA_ERROR = 'FORMULA_ERROR';
+export const FORMULAS_LOADING = 'FORMULAS_LOADING';
+export const FORMULA_KW_SEARCH = 'FORMULA_KW_SEARCH';
+export const FORMULA_ING_FILTER = 'FORMULA_ING_FILTER';
+export const GET_FORMULA_SKUS = 'GET_FORMULA_SKUS';
+export const FORMULA_SKUS_LOADING = 'FORMULA_SKUS_LOADING';

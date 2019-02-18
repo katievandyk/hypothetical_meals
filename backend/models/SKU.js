@@ -30,10 +30,18 @@ const SKUSchema = new Schema({
         required: true 
     },
     product_line: { type: Schema.Types.ObjectId, ref: 'productLine'},
-    ingredients_list: [{
-        _id: { type: Schema.Types.ObjectId, ref: 'ingredient' },
-        quantity: Number
+    formula: { type: Schema.Types.ObjectId, ref: 'formula' },
+    formula_scale_factor: {
+        type: Number,
+        required: true
+    },
+    manufacturing_lines: [{
+        _id: { type: Schema.Types.ObjectId, ref: 'manufacturingline' }
     }],
+    manufacturing_rate: {
+        type: Number,
+        required: true
+    },
     comment: {
         type: String,
         required: false

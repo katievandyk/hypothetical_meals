@@ -18,4 +18,4 @@ const ManufacturingLineSchema = new Schema({
     }
 });
 
-module.exports = ManufacturingLine = mongoose.model('maufacturingline', ManufacturingLineSchema);
+module.exports = ManufacturingLine = mongoose.model('manufacturingline', ManufacturingLineSchema);

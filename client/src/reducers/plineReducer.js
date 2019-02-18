@@ -6,7 +6,7 @@ const initialState = {
   page: 1,
   pagelimit:10,
   count: 0,
-  error_msgs: []
+  error_msg: ''
 };
 
 export default function(state = initialState, action) {
@@ -19,7 +19,7 @@ export default function(state = initialState, action) {
         page: action.payload.page,
         pagelimit: action.payload.pagelimit,
         loading: false,
-        error_msgs: []
+        error_msg: ''
       }
     case PLINES_LOADING:
       return {
@@ -45,7 +45,7 @@ export default function(state = initialState, action) {
        console.log(action.payload);
        return {
          ...state,
-         error_msgs: [...state.error_msgs, action.payload.data.message],
+         error_msg: action.payload.data.message,
          loading: false
        }
      }
