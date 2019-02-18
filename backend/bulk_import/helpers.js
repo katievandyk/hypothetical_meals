@@ -205,7 +205,7 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
     // Paginate. If limit = -1, then gives all records
     var currentPage = parseInt(req.params.pagenumber);
     var limit = parseInt(req.params.limit);
-    if (limit != -1 && req.body.bulk_edit_mls != "True") {
+    if (limit != -1) {
         findPromise = findPromise.skip((currentPage-1)*limit).limit(limit);
     }
 
@@ -232,13 +232,8 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
                 results[1] = groupByProductLine(results[1]);
             }
             
-            if(req.body.bulk_edit_mls !== "True") {
-                finalResult = {count: results[0], results: results[1]};
-                res.json(finalResult)
-            }
-            else {
-                sku_ml_mapping = skuMLMappings(results, req, res)
-            }   
+            finalResult = {count: results[0], results: results[1]};
+            res.json(finalResult) 
         })    
         .catch(err => {
             console.log(err)
@@ -257,42 +252,5 @@ function groupByProductLine(results) {
     return pl_to_skus;
 }
 
-function skuMLMappings(results, req, res) {
-    sku_result = results[1]
-    let mapping = []
-    sku_mls = sku_result.forEach(sku => {
-        sku.manufacturing_lines.forEach(mls => {
-            mapping[mls._id.shortname] = mls._id.shortname in mapping ? mapping[mls._id.shortname]+1 : 1;
-        })
-    })
 
-    ManufacturingLine.find().lean().then(mls => {
-        mls.forEach(ml => {
-            if (ml.shortname in mapping) {
-                if(mapping[ml.shortname] == sku_result.length)
-                    ml.group = "All"
-                else
-                    ml.group = "Some"
-            }
-            else {
-                ml.group = "None"
-            }
-
-        })
-        final_mapping = groupByGroup(mls)
-        var currentPage = parseInt(req.params.pagenumber);
-        var limit = parseInt(req.params.limit);
-        limited_res = limit == -1 ? results[1] : results[1].slice((currentPage-1)*limit, (currentPage-1)*limit+limit)
-        finalResult = {count: results[0], results: limited_res, mapping: final_mapping};
-        res.json(finalResult)
-    })
-}
-
-function groupByGroup(res) {
-    return res.reduce(function(r,a) {
-        r[a.group] = r[a.group] || [];
-        r[a.group].push(a);
-        return r;
-    }, Object.create(null))
-}
 

@@ -249,4 +249,78 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     Helper.getSKUFilterResult(req, res, Helper.sortAndLimit)
 });
 
+// @route POST api/skus/map-mls
+// request body fields:
+// - skus: list of skus to find ml mappings
+router.post('/map-mls', (req, res) => {
+    SKU.find({_id: {$in: req.body.skus}})
+    .lean()
+    .populate("manufacturing_lines._id")
+    .then(result => skuMLMappings(result, res))
+})
+
+function skuMLMappings(sku_result, res) {
+    let mapping = []
+    sku_mls = sku_result.forEach(sku => {
+        sku.manufacturing_lines.forEach(mls => {
+            mapping[mls._id.shortname] = mls._id.shortname in mapping ? mapping[mls._id.shortname]+1 : 1;
+        })
+    })
+
+    ManufacturingLine.find().lean().then(mls => {
+        mls.forEach(ml => {
+            if (ml.shortname in mapping) {
+                if(mapping[ml.shortname] == sku_result.length)
+                    ml.group = "All"
+                else
+                    ml.group = "Some"
+            }
+            else {
+                ml.group = "None"
+            }
+
+        })
+        final_mapping = groupByGroup(mls)
+        res.json(final_mapping)
+    })
+}
+
+function groupByGroup(res) {
+    return res.reduce(function(r,a) {
+        r[a.group] = r[a.group] || [];
+        r[a.group].push(a);
+        return r;
+    }, Object.create(null))
+}
+
+// @route POST api/skus/bulk-edit-mls
+// request body fields:
+// - skus: list of skus to add or delete mls
+// - none: list of mls to delete from all given skus
+// - all: list of mls to add to all given skus
+router.post('/bulk-edit-mls', (req, res) => {
+    Promise.all(req.body.skus.map(sku_id => {
+        new Promise(function(accept, reject) {
+            SKU.findById(sku_id)
+            .lean()
+            .then(sku => {
+                let ml_list = sku.manufacturing_lines
+                req.body.none.forEach(ml_del => {
+                    var index = ml_list.findIndex(x => x._id.toString()==ml_del)
+                    if (index > -1) {
+                        ml_list.splice(index, 1);
+                    }
+                })
+                
+                req.body.all.forEach(ml_add => {
+                    var index = ml_list.findIndex(x => x._id.toString()==ml_add)
+                    if (index == -1) {
+                        ml_list.push({_id: ml_add});
+                    }
+                })
+                SKU.findByIdAndUpdate(sku_id, {manufacturing_lines: ml_list}).then(accept).catch(reject)
+            })
+        })
+    })).then(res.json({success: true}))
+})
 module.exports = router;
