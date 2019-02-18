@@ -205,7 +205,7 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
     // Paginate. If limit = -1, then gives all records
     var currentPage = parseInt(req.params.pagenumber);
     var limit = parseInt(req.params.limit);
-    if (limit != -1 || req.body.bulk_edit_mls !== "True") {
+    if (limit != -1 && req.body.bulk_edit_mls != "True") {
         findPromise = findPromise.skip((currentPage-1)*limit).limit(limit);
     }
 
@@ -279,11 +279,11 @@ function skuMLMappings(results, req, res) {
             }
 
         })
-        mapping = groupByGroup(mls)
+        final_mapping = groupByGroup(mls)
         var currentPage = parseInt(req.params.pagenumber);
         var limit = parseInt(req.params.limit);
         limited_res = limit == -1 ? results[1] : results[1].slice((currentPage-1)*limit, (currentPage-1)*limit+limit)
-        finalResult = {count: results[0], results: results[1], mapping: mapping};
+        finalResult = {count: results[0], results: limited_res, mapping: final_mapping};
         res.json(finalResult)
     })
 }
