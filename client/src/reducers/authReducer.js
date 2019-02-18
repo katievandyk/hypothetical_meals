@@ -1,6 +1,7 @@
 import {
     SET_CURRENT_USER,
-    USER_LOADING
+    USER_LOADING,
+    SET_NETID_USER
   } from "../actions/types";
   const isEmpty = require("is-empty");
   const initialState = {
@@ -25,6 +26,14 @@ import {
           ...state,
           loading: true
         };
+      case SET_NETID_USER:
+        return {
+          ...state,
+          isAuthenticated: true,
+          isAdmin: action.payload.isAdmin,
+          user_username: action.payload.username,
+          user:action.payload
+        }
       default:
         return state;
     }

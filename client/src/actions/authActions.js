@@ -37,7 +37,8 @@ export const loginUser = userData => dispatch => {
     .post("/api/users/login", userData)
     .then(res => {
       // Save to localStorage
-// Set token to localStorage
+      // Set token to localStorage
+      console.log("on front end");
       const { token } = res.data;
       localStorage.setItem("jwtToken", token);
       // Set token to Auth header
@@ -54,6 +55,48 @@ export const loginUser = userData => dispatch => {
       })
     );
 };
+
+// Login - get user token
+export const loginNetID = token => dispatch => {
+  axios
+  .get('https://api.colab.duke.edu/identity/v1/', {
+    headers: {
+      'x-api-key': 'hypo-meal',
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    const name = res.data.displayName;
+    const username = res.data.netid;
+    const userdata = {
+      username: username,
+      name: name
+    }
+    localStorage.setItem("testItem", "isRyanGreat");
+    axios
+      .post("/api/users/netid", userdata)
+      .then(res => {
+        // Save to localStorage
+        // Set token to localStorage
+        const { token } = res.data;
+
+        localStorage.setItem("jwtToken", token);
+        // Set token to Auth header
+        setAuthToken(token);
+        // Decode token to get user data
+        const decoded = jwt_decode(token);
+        // Set current user
+        dispatch(setCurrentUser(decoded));
+      })
+      .catch(err =>
+        dispatch({
+          type: GET_ERRORS,
+          payload: err.response.data
+        })
+      );
+  })
+};
+
 // Set logged in user
 export const setCurrentUser = decoded => {
   return {

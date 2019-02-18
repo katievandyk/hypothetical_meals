@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Manufacturing from './views/Manufacturing';
 import Login from './views/Login';
+import NetID from './views/NetID';
 import Register from './views/Register';
 import Ingredients from './views/Ingredients';
 import ProductLines from './views/ProductLines';
@@ -58,6 +59,7 @@ class App extends Component {
                     <Switch>
                       <Route exact={true} path="/login" component={Login} />
                       <Route exact={true} path="/" component={Login} />
+                      <Route exact={true} path="/netid" component={NetID} />
                       <AdminRoute exact={true} path="/register" component={Register} />
                       <AdminRoute exact={true} path="/makeAdmin" component={MakeAdmin} />
                       <PrivateRoute path="/ingredients" component={Ingredients} />
@@ -67,7 +69,6 @@ class App extends Component {
                       <PrivateRoute path="/productlines" component={ProductLines} />
                       <AdminRoute path="/import" component={Import} />
                       <PrivateRoute path="/reports" component={Reports} />
-                      <Route path="api/*" component={Login} />
                     </Switch>
 
                   </div>

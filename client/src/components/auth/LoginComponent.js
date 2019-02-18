@@ -16,6 +16,8 @@ class LoginComponent extends Component {
       isAdmin: false,
       username: "",
       password: "",
+      tokenHash: "",
+      url: "https://oauth.oit.duke.edu/oauth/authorize.php?client_id=hypo-meal&client_secret=secret&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fnetid&response_type=token&state=1129&scope=basic",
       errors: {}
     };
   }
@@ -64,6 +66,9 @@ return (
           <h4>
             <b>Login</b> below
           </h4>
+          <p className="grey-text text-darken-1">
+            <a href={this.state.url}>Login with NetID</a>
+          </p>
           <FormGroup>
             <Label for="username">Username</Label>
             <Input onChange={this.onChange}
