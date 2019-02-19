@@ -66,51 +66,51 @@ router.post('/update/:id', (req, res) => {
 // @route GET api/manufacturing/ingquantities/:id
 // @desc get quantities of all ingredients needed for manufacturing goal
 // @access public
-router.get('/ingquantities/:id', (req, res) => {
-    Goal.aggregate(
-        [ { $match: {'_id': mongoose.Types.ObjectId(req.params.id) }},
-          { $project: { skus_list: "$skus_list"} },
-          { $unwind: "$skus_list" },
-          { $replaceRoot: { newRoot: "$skus_list" } },
-          {
-              $lookup: {
-                  from: 'skus',
-                  localField: 'sku',
-                  foreignField: '_id',
-                  as: 'sku'
-              } },
-          { $project: {"_id": {"$map": { "input": "$sku",
-                                      "as": "row",
-                                       "in": {
-                                            "ingredient": {
-                                             "$map": { "input": "$$row.ingredients_list",
-                                                        "as": "rowrow",
-                                                         "in": {
-                                                          "_id": { "$ifNull": [ "$$rowrow._id", "" ] },
-                                                          "quantity": { "$multiply": [
-                                                                 { "$ifNull": [ "$$rowrow.quantity", 0 ] },
-                                                                 { "$ifNull": [ "$quantity", 0 ] }
-                                                               ]}
-                                                        }}}
-            }}}}},
-          { $unwind: "$_id" },
-          { $replaceRoot: { newRoot: "$_id" } },
-          { $unwind: "$ingredient" },
-          { $replaceRoot: { newRoot: "$ingredient" } },
-          { $group: { _id: "$_id", quantity: { $sum: "$quantity" }} },
-          {
-              $lookup: {
-                  from: 'ingredients',
-                  localField: '_id',
-                  foreignField: '_id',
-                  as: 'ingredient'
-              } },
-          { $unwind: "$ingredient" },
-          { $project: { _id: 0, ingredient: 1, quantity: round('$quantity', 2)} },
-        ]
-    ).then(result => res.json(result))
-    .catch(err => res.status(404).json({success: false, message: err.message}));
-});
+// router.get('/ingquantities/:id', (req, res) => {
+//     Goal.aggregate(
+//         [ { $match: {'_id': mongoose.Types.ObjectId(req.params.id) }},
+//           { $project: { skus_list: "$skus_list"} },
+//           { $unwind: "$skus_list" },
+//           { $replaceRoot: { newRoot: "$skus_list" } },
+//           {
+//               $lookup: {
+//                   from: 'skus',
+//                   localField: 'sku',
+//                   foreignField: '_id',
+//                   as: 'sku'
+//               } },
+//           { $project: {"_id": {"$map": { "input": "$sku",
+//                                       "as": "row",
+//                                        "in": {
+//                                             "ingredient": {
+//                                              "$map": { "input": "$$row.ingredients_list",
+//                                                         "as": "rowrow",
+//                                                          "in": {
+//                                                           "_id": { "$ifNull": [ "$$rowrow._id", "" ] },
+//                                                           "quantity": { "$multiply": [
+//                                                                  { "$ifNull": [ "$$rowrow.quantity", 0 ] },
+//                                                                  { "$ifNull": [ "$quantity", 0 ] }
+//                                                                ]}
+//                                                         }}}
+//             }}}}},
+//           { $unwind: "$_id" },
+//           { $replaceRoot: { newRoot: "$_id" } },
+//           { $unwind: "$ingredient" },
+//           { $replaceRoot: { newRoot: "$ingredient" } },
+//           { $group: { _id: "$_id", quantity: { $sum: "$quantity" }} },
+//           {
+//               $lookup: {
+//                   from: 'ingredients',
+//                   localField: '_id',
+//                   foreignField: '_id',
+//                   as: 'ingredient'
+//               } },
+//           { $unwind: "$ingredient" },
+//           { $project: { _id: 0, ingredient: 1, quantity: round('$quantity', 2)} },
+//         ]
+//     ).then(result => res.json(result))
+//     .catch(err => res.status(404).json({success: false, message: err.message}));
+// });
 
 
 // @route GET api/manufacturing/export/:id
@@ -203,7 +203,7 @@ router.get('/', (req, res) => {
 // @route GET api/manufacturing/ingquantities/:id
 // @desc get quantities of all ingredients needed for manufacturing goal
 // @access public
-router.get('/ingquantities2/:id', (req, res) => {
+router.get('/ingquantities/:id', (req, res) => {
     Goal.findById(req.params.id).lean().populate("skus_list.sku").then(goal => {
         Formula.populate(goal, {path:"skus_list.sku.formula"}).then(f_pop => {
             Ingredient.populate(f_pop, {path:"skus_list.sku.formula.ingredients_list._id"})
@@ -239,7 +239,7 @@ router.get('/ingquantities2/:id', (req, res) => {
                             packages = (Math.round(formula_qty_converted / package_num * 100) / 100)
                             unit = "count"
                         }
-                        return {ingredient: ing._id.name, quantity: ing_qty, packages: packages, unit: unit}
+                        return {ingredient: ing._id, quantity: ing_qty, packages: packages, unit: unit}
                     })
                     return ing_qty
                 })
