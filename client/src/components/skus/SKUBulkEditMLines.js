@@ -119,7 +119,11 @@ class SKUBulkEditMLines extends React.Component {
       showAllSKUs: false,
       selected_skus: new_selected_skus
     })
-    var skuObj = {skus:new_selected_skus};
+    var sku_ids = [];
+    new_selected_skus.forEach(function(sku){
+      sku_ids = [...sku_ids, sku._id]
+    });
+    var skuObj = {skus:sku_ids};
     this.props.getMLineMappings(skuObj);
     this.sku_select_toggle();
     this.mline_select_toggle();
@@ -147,7 +151,19 @@ class SKUBulkEditMLines extends React.Component {
         new_not_selected_mlines = new_not_selected_mlines.concat(some_mlines);
       }
     }
-    var newObj = {skus:this.state.selected_skus, none:new_not_selected_mlines, all: new_selected_mlines};
+    var sku_ids = [];
+    this.state.selected_skus.forEach(function(sku){
+      sku_ids = [...sku_ids, sku._id]
+    });
+    var sel_mlines_ids = [];
+    new_selected_mlines.forEach(function(mline){
+      sel_mlines_ids = [...sel_mlines_ids, mline._id]
+    });
+    var not_sel_mlines_ids = [];
+    new_not_selected_mlines.forEach(function(mline){
+      not_sel_mlines_ids = [...not_sel_mlines_ids, mline._id]
+    });
+    var newObj = {skus:sku_ids, none:not_sel_mlines_ids, all: sel_mlines_ids};
     this.props.bulkEditSKULines(newObj, this.props.skus.sortby, this.props.skus.sortdir,
        this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
     this.mline_select_toggle();
