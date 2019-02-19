@@ -21,8 +21,8 @@ const ManufacturingActivitySchema = new Schema({
         type: Date,
         required: true,
     },
-    stop: {
-        type: Date,
+    duration: {
+        type: Number, //Number of hours
         required: true
     }
 });
