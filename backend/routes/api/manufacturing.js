@@ -28,7 +28,7 @@ router.post('/', (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         skus_list: req.body.skus_list,
-        user_email: req.body.user_email,
+        user_username: req.body.user_username,
         deadline: req.body.deadline
     });
 
