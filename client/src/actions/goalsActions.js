@@ -3,9 +3,9 @@ import { GET_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_ING
 
 const FileDownload = require('js-file-download');
 
-export const getGoals = (user_email) => dispatch =>  {
+export const getGoals = (user_username) => dispatch =>  {
   dispatch(setGoalsLoading());
-  axios.get('/api/manufacturing/' + user_email).then(res =>
+  axios.get('/api/manufacturing/' + user_username).then(res =>
     dispatch({
       type: GET_GOALS,
       payload: res.data

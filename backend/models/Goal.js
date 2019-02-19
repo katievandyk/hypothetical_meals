@@ -12,7 +12,7 @@ const GoalSchema = new Schema({
             sku: { type: Schema.Types.ObjectId, ref: 'sku' },
             quantity: Number
     }],
-    user_email: {
+    user_username: {
         type: String,
         required: true
     },

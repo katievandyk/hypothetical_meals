@@ -27,6 +27,11 @@ class SKUsFormFormula extends React.Component {
   }
   componentDidMount() {
     this.props.sortFormulas('name', 'asc', 1, -1, {});
+    if(this.props.defaultValue){
+      this.setState({
+        formula_id: this.props.defaultValue
+      });
+    }
   }
 
   edit_toggle = () => {

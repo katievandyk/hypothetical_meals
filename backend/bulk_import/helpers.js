@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const IngredientDepReport = require('../reports/ingredient-dep')
 const Papa = require('papaparse');
 const Constants = require('./constants')
+const ManufacturingLine = require('../models/ManufacturingLine');
 
 module.exports.isNumeric = isNumeric = function(n){
     return !isNaN(parseFloat(n)) && isFinite(n);
@@ -222,8 +223,6 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
     else 
         sortField = req.params.field
 
-    console.log(sortField)
-
     var sortOrder = req.params.asc === 'asc' ? 1 : -1;
     var sortPromise;
     if (req.params.field === 'score') {
@@ -240,9 +239,10 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
             if (req.body.group_pl === "True") {
                 results[1] = groupByProductLine(results[1]);
             }
-                
+            
             finalResult = {count: results[0], results: results[1]};
-            res.json(finalResult)})
+            res.json(finalResult) 
+        })    
         .catch(err => {
             console.log(err)
             res.status(404).json({success: false, message: err.message})
@@ -259,4 +259,6 @@ function groupByProductLine(results) {
     }
     return pl_to_skus;
 }
+
+
 

@@ -28,7 +28,9 @@ class FormulasEntry extends React.Component {
     edit_comment: '',
     edit_ingredients_list: [],
     sku_modal: false,
-    validate: {}
+    validate: {},
+    sku_info: {},
+    sku_info_modal: false
   };
 
   toggle = () => {
@@ -41,6 +43,12 @@ class FormulasEntry extends React.Component {
   sku_toggle = () => {
     this.setState({
       sku_modal: !this.state.sku_modal
+    });
+  }
+
+  sku_info_toggle = () => {
+    this.setState({
+      sku_info_modal: !this.state.sku_info_modal
     });
   }
 
@@ -64,6 +72,13 @@ class FormulasEntry extends React.Component {
       edit_comment: comment
     });
   };
+
+  onSKUInfoClick = sku => {
+    this.setState({
+      sku_info: sku,
+      sku_info_modal: true
+    });
+  }
 
   onChange = e => {
     this.validate(e);
@@ -143,8 +158,60 @@ class FormulasEntry extends React.Component {
 
   onSKUListClick = id => {
     this.sku_toggle();
-    //this.props.getFormulaSKUs(id);
+    this.props.getFormulaSKUs(id);
   };
+
+  skuInfoModal = () => {
+    var sku = this.state.sku_info;
+    return (
+      <Modal isOpen={this.state.sku_info_modal} toggle={this.sku_info_toggle}>
+        <ModalHeader toggle={this.sku_info_toggle}>{sku.name}</ModalHeader>
+        <ModalBody>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Name: </b> {sku.name}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>SKU#: </b> {sku.number}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Case UPC#: </b> {sku.case_number}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Unit UPC#: </b> {sku.unit_number}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Unit Size: </b> {sku.unit_size}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Count per case: </b> {sku.count_per_case}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Product Line: </b> {(sku.product_line && sku.product_line.name) ? (sku.product_line.name):('')}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Formula: </b> {(sku.formula && sku.formula.name) ? (sku.formula.name):('')}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Formula Scale Factor: </b> {sku.formula_scale_factor}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Manufacturing Lines: </b>
+              <div>
+              {sku.manufacturing_lines && (sku.manufacturing_lines.map(({_id})=>(
+                <div key={_id._id}>{_id.shortname}</div>
+              )))}
+              </div>
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Manufacturing Rate: </b> {sku.manufacturing_rate}
+          </div>
+          <div style={{wordBreak:'break-all', paddingBottom: '1.5em'}}>
+            <b>Comment: </b> {sku.comment}
+          </div>
+        </ModalBody>
+      </Modal>
+    );
+  }
 
   getSortIcon = (field) =>{
     if(this.props.formulas.sortby === field && this.props.formulas.sortdir === 'desc'){
@@ -314,12 +381,22 @@ class FormulasEntry extends React.Component {
           <ModalHeader toggle={this.sku_toggle}>SKUs that use Formula: {this.props.formulas.formula_skus.length}</ModalHeader>
           <ModalBody>
             <ListGroup>
-              {this.props.formulas.formula_skus.map(({_id, name, number, unit_size, count_per_case}) => (
-              <ListGroupItem key={_id}> <div>{name + ": " + unit_size + " * " + count_per_case + " (SKU#: " + number +")"}</div> </ListGroupItem>
+              {this.props.formulas.formula_skus.map((sku) => (
+              <ListGroupItem key={sku._id}>
+                 <div>
+                   {sku.name + ": " + sku.unit_size + " * " + sku.count_per_case + " (SKU#: " + sku.number +")"}
+                   <Button size="sm" color="link"
+                     onClick={this.onSKUInfoClick.bind(this, sku)}
+                     style={{'color':'black'}}>
+                     <FontAwesomeIcon icon="info-circle"/>
+                   </Button>
+                 </div>
+               </ListGroupItem>
               ))}
             </ListGroup>
           </ModalBody>
         </Modal>
+        {this.skuInfoModal()}
         </div>
 
     );
