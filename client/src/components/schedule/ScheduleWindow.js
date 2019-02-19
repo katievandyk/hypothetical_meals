@@ -1,6 +1,11 @@
 import React  from 'react'
 import Timeline from 'react-visjs-timeline'
-import { Card, CardHeader, CardFooter, CardBody, Row, Col, ListGroup, ListGroupItem } from 'reactstrap'
+import { Row, Col, Button } from 'reactstrap'
+import ScheduleSidePanel from './ScheduleSidePanel'
+
+import { getLines } from '../../actions/linesActions';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 const groupsExample = {
   groups: [],
@@ -55,32 +60,32 @@ const groupsExample = {
   };
 
 
-
 class ScheduleWindow extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
       selectedIds: [],
+      items: []
     }
   }
 
+  componentDidMount() {
+    this.props.getLines()
+  }
+
   render() {
+    const { lines } = this.props.lines;
     return (
       <div>
+        <Row style={{paddingBottom: '1.5em'}}>
+            <Col style={{'textAlign': 'right'}}> </Col>
+            <Button>Manufacturing Schedule Report </Button>
+        </Row>
         <Row>
-            <Col md={3}>
-                <Card>
-                <CardHeader>Manufacturing Lines</CardHeader>
-                <CardBody>
-                    <ListGroup>
-                            <ListGroupItem color="info" md={2} draggable="true" onDragStart={this.handleDragStart} onDragEnd={this.handleObjectItemDragEnd}>
-                                item 3 - range
-                            </ListGroupItem>
-                    </ListGroup>
-                </CardBody>
-                </Card>
-            </Col>
+           <Col md={3}>
+                <ScheduleSidePanel handleDragStart={this.handleDragStart}/>
+           </Col>
             <Col>
             <Timeline
               {...groupsExample}
@@ -93,26 +98,20 @@ class ScheduleWindow extends React.Component {
     )
   }
 
-   handleDragStart(event) {
+   handleDragStart(event, name) {
     event.dataTransfer.effectAllowed = 'move';
-    var itemType = event.target.innerHTML.split('-')[1].trim();
     var item = {
       id: new Date(),
-      type: itemType,
-      content: event.target.innerHTML.split('-')[0].trim()
+      type:'range',
+      content: name
     };
 
     groupsExample.items.push(item)
 
-    var isFixedTimes = (event.target.innerHTML.split('-')[2] && event.target.innerHTML.split('-')[2].trim() === 'fixed times')
-    if (isFixedTimes) {
-      item.start = new Date();
-      item.end = new Date(1000*60*10 + (new Date()).valueOf());
-    }
     event.dataTransfer.setData("text", JSON.stringify(item));
   }
 
-  handleObjectItemDragStart(event) {
+  handleObjectItemDragStart(event, name) {
     event.dataTransfer.effectAllowed = 'move';
     var objectItem = {
       content: 'objectItemData',
@@ -122,4 +121,29 @@ class ScheduleWindow extends React.Component {
   }
 }
 
-export default ScheduleWindow
+ScheduleWindow.propTypes = {
+  getLines: PropTypes.func.isRequired,
+  lines: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+    lines: state.lines
+});
+
+export default connect(mapStateToProps, { getLines })(ScheduleWindow);
+
+
+
+/**
+
+
+              groups = {lines.map(line =>{
+                                                 var group = {};
+                                                 group.id = line._id;
+                                                 group.content = line.name;
+                                                 return group;
+                                              })}
+              items = {groupsExample.items}
+
+
+              **/

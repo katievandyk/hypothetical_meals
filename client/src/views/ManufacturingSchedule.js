@@ -34,4 +34,4 @@ class ManufacturingSchedule extends Component {
 }
 
 
-export default ManufacturingSchedule;
+export default ManufacturingSchedule
