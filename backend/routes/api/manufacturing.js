@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Papa = require('papaparse');
+const Helpers = require('../../bulk_import/helpers')
+const Constants = require('../../bulk_import/constants')
 
 // Goal Model
 const Goal = require('../../models/Goal');
@@ -206,16 +208,78 @@ router.get('/ingquantities2/:id', (req, res) => {
         Formula.populate(goal, {path:"skus_list.sku.formula"}).then(f_pop => {
             Ingredient.populate(f_pop, {path:"skus_list.sku.formula.ingredients_list._id"})
             .then(populated => {
-                asdfd = populated.skus_list.map(sku => {
+                ing_per_sku = populated.skus_list.map(sku => {
                     ing_qty = sku.sku.formula.ingredients_list.map(ing => {
-                        return {ingredient: ing._id.name, quantity: ing.quantity}
+                        extracted_ps = Helpers.extractUnits(ing._id.package_size)
+                        package_num = extracted_ps[0]
+                        package_unit = extracted_ps[1]
+
+                        extracted_fs = Helpers.extractUnits(ing.quantity)
+                        formula_qty = extracted_fs[0]
+                        formula_unit = extracted_fs[1]
+
+                        let ing_qty
+                        let packages
+                        let unit
+                        if(Constants.units[package_unit] == "weight" && Constants.units[formula_unit] == "weight") {
+                            formula_qty_converted = formula_qty * Constants.weight_conv[formula_unit] / Constants.weight_conv[package_unit] * (sku.sku.formula_scale_factor) * sku.quantity
+                            ing_qty = (Math.round(formula_qty_converted * 100) / 100)
+                            packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
+                            unit = package_unit
+                        }
+                        else if(Constants.units[package_unit] == "volume" && Constants.units[formula_unit] == "volume") {
+                            formula_qty_converted = formula_qty * Constants.volume_conv[formula_unit] / Constants.volume_conv[package_unit] * (sku.sku.formula_scale_factor) * sku.quantity
+                            ing_qty = (Math.round(formula_qty_converted * 100) / 100)
+                            packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
+                            unit = package_unit
+                        }
+                        else { // count
+                            formula_qty_converted = formula_qty * (sku.sku.formula_scale_factor) * sku.quantity
+                            ing_qty = (Math.round(formula_qty_converted * 100) / 100)
+                            packages = (Math.round(formula_qty_converted / package_num * 100) / 100)
+                            unit = "count"
+                        }
+                        return {ingredient: ing._id.name, quantity: ing_qty, packages: packages, unit: unit}
                     })
                     return ing_qty
                 })
-                res.json(asdfd)
+
+                groupedByIng = groupByIngredient(ing_per_sku)
+
+                const reducer = (accumulator, currentValue) => {
+                    accumulator.quantity =  accumulator.quantity + currentValue.quantity;
+                    accumulator.packages =  accumulator.packages + currentValue.packages;
+                    return accumulator
+                }
+
+                aggregated = Object
+                .values(groupedByIng)
+                .map(one_ing => one_ing.reduce(
+                    reducer, {
+                        ingredient: one_ing[0].ingredient, 
+                        quantity: 0, 
+                        packages: 0, 
+                        unit: one_ing[0].unit}))
+
+                aggregated.forEach(ing => {
+                    ing.quantity = ing.quantity + " " + ing.unit
+                    ing.packages = ing.packages + " packages"
+                    delete ing.unit
+                })
+
+                res.json(aggregated)
             })
         })
     })
 })
+
+function groupByIngredient(res) {
+    var merged = [].concat.apply([], res);
+    return merged.reduce(function(r,a) {
+        r[a.ingredient] = r[a.ingredient] || [];
+        r[a.ingredient].push(a);
+        return r;
+    }, Object.create(null))
+}
 
 module.exports = router;
