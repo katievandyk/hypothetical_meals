@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
-import LoginComponent from '../components/auth/LoginComponent';
+import MakeAdminComponent from '../components/auth/MakeAdminComponent';
 
-
-class Login extends Component {
+class MakeAdmin extends Component {
    render() {
        return(
          <div>
            <AppNavbar />
            <div>
-             <LoginComponent />
+             <MakeAdminComponent />
            </div>
          </div>
        );
     }
 }
 
-export default Login;
+export default MakeAdmin;

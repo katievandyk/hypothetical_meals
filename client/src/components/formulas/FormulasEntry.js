@@ -8,11 +8,12 @@ import {
   FormGroup,
   FormFeedback,
   Label,
-  Input
+  Input,
+  ListGroup, ListGroupItem
  } from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
-import { sortFormulas, updateFormula, deleteFormula} from '../../actions/formulaActions';
+import { sortFormulas, getFormulaSKUs, updateFormula, deleteFormula} from '../../actions/formulaActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SKUsFormIngTupleSelection from '../skus/SKUsFormIngTupleSelection'
@@ -26,13 +27,28 @@ class FormulasEntry extends React.Component {
     edit_number: '',
     edit_comment: '',
     edit_ingredients_list: [],
-    validate: {}
+    sku_modal: false,
+    validate: {},
+    sku_info: {},
+    sku_info_modal: false
   };
 
   toggle = () => {
     this.setState({
       modal: !this.state.modal,
       validate: {}
+    });
+  }
+
+  sku_toggle = () => {
+    this.setState({
+      sku_modal: !this.state.sku_modal
+    });
+  }
+
+  sku_info_toggle = () => {
+    this.setState({
+      sku_info_modal: !this.state.sku_info_modal
     });
   }
 
@@ -56,6 +72,13 @@ class FormulasEntry extends React.Component {
       edit_comment: comment
     });
   };
+
+  onSKUInfoClick = sku => {
+    this.setState({
+      sku_info: sku,
+      sku_info_modal: true
+    });
+  }
 
   onChange = e => {
     this.validate(e);
@@ -133,6 +156,63 @@ class FormulasEntry extends React.Component {
     });
   }
 
+  onSKUListClick = id => {
+    this.sku_toggle();
+    this.props.getFormulaSKUs(id);
+  };
+
+  skuInfoModal = () => {
+    var sku = this.state.sku_info;
+    return (
+      <Modal isOpen={this.state.sku_info_modal} toggle={this.sku_info_toggle}>
+        <ModalHeader toggle={this.sku_info_toggle}>{sku.name}</ModalHeader>
+        <ModalBody>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Name: </b> {sku.name}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>SKU#: </b> {sku.number}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Case UPC#: </b> {sku.case_number}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Unit UPC#: </b> {sku.unit_number}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Unit Size: </b> {sku.unit_size}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Count per case: </b> {sku.count_per_case}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Product Line: </b> {(sku.product_line && sku.product_line.name) ? (sku.product_line.name):('')}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Formula: </b> {(sku.formula && sku.formula.name) ? (sku.formula.name):('')}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Formula Scale Factor: </b> {sku.formula_scale_factor}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Manufacturing Lines: </b>
+              <div>
+              {sku.manufacturing_lines && (sku.manufacturing_lines.map(({_id})=>(
+                <div key={_id._id}>{_id.shortname}</div>
+              )))}
+              </div>
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Manufacturing Rate: </b> {sku.manufacturing_rate}
+          </div>
+          <div style={{wordBreak:'break-all', paddingBottom: '1.5em'}}>
+            <b>Comment: </b> {sku.comment}
+          </div>
+        </ModalBody>
+      </Modal>
+    );
+  }
+
   getSortIcon = (field) =>{
     if(this.props.formulas.sortby === field && this.props.formulas.sortdir === 'desc'){
       return <FontAwesomeIcon className='main-green' icon = "sort-down"/>
@@ -185,6 +265,7 @@ class FormulasEntry extends React.Component {
                 {this.getSortIcon('number')}
               </th>
               <th>Ingredients List</th>
+              <th>SKUs</th>
               <th>Comment</th>
                 {this.props.auth.isAdmin &&
                   <th>Edit</th>
@@ -207,6 +288,13 @@ class FormulasEntry extends React.Component {
                         <div key={_id._id}> {_id.name}, {quantity}</div>
                       ))
                     }
+                    </td>
+                    <td>
+                      <Button size="sm" color="link"
+                      onClick={this.onSKUListClick.bind(this, _id)}
+                      style={{'color':'black'}}>
+                      <FontAwesomeIcon icon="list"/>
+                      </Button>
                     </td>
                     <td style={{wordBreak:'break-all'}}> {comment} </td>
                     {this.props.auth.isAdmin &&
@@ -282,13 +370,33 @@ class FormulasEntry extends React.Component {
                 </Input>
             </FormGroup>
               <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-              <Button color="dark" className={this.allValidated() ?(''): ('disabled')} type="submit" block>
-                    Submit SKU Edits
+              <Button color="dark" className={this.allValidated() ?(''): ('disabled')} onClick={this.onEditSubmit} block>
+                    Submit Formula Edits
                   </Button>
               </div>
             </Form>
           </ModalBody>
         </Modal>
+        <Modal isOpen={this.state.sku_modal} toggle={this.sku_toggle}>
+          <ModalHeader toggle={this.sku_toggle}>SKUs that use Formula: {this.props.formulas.formula_skus.length}</ModalHeader>
+          <ModalBody>
+            <ListGroup>
+              {this.props.formulas.formula_skus.map((sku) => (
+              <ListGroupItem key={sku._id}>
+                 <div>
+                   {sku.name + ": " + sku.unit_size + " * " + sku.count_per_case + " (SKU#: " + sku.number +")"}
+                   <Button size="sm" color="link"
+                     onClick={this.onSKUInfoClick.bind(this, sku)}
+                     style={{'color':'black'}}>
+                     <FontAwesomeIcon icon="info-circle"/>
+                   </Button>
+                 </div>
+               </ListGroupItem>
+              ))}
+            </ListGroup>
+          </ModalBody>
+        </Modal>
+        {this.skuInfoModal()}
         </div>
 
     );
@@ -299,6 +407,7 @@ FormulasEntry.propTypes = {
   sortFormulas: PropTypes.func.isRequired,
   deleteFormula: PropTypes.func.isRequired,
   updateFormula: PropTypes.func.isRequired,
+  getFormulaSKUs: PropTypes.func.isRequired,
   formulas: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
 };
@@ -308,4 +417,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { sortFormulas, deleteFormula, updateFormula })(FormulasEntry);
+export default connect(mapStateToProps, { sortFormulas, getFormulaSKUs, deleteFormula, updateFormula })(FormulasEntry);

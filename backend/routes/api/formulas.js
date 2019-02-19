@@ -2,27 +2,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 
-const Formula = require('../../models/Formula');
+const Formula = require('../../models/Formula')
+const Parser = require('../../bulk_import/parser')
 const Helper = require('../../bulk_import/helpers')
-
 // @route GET api/formulas
 // @desc get all formulas
 // @access public
 router.get('/', (req, res) => {
     Formula
         .find()
+        .populate("ingredients_list._id")
         .lean()
         .then(formulas => res.json(formulas))
 });
-
-function checkFormulaFields(obj) {
-    if(!(obj.name) || !(obj.number)) 
-        throw new Error(`Formula name and number are required. Got: ${obj.name}, ${obj.number}`)
-    if(obj.name.length > 32)
-        throw new Error(`Formula name must be less than 32 characters. Got length ${obj.name.length} in ${obj.name}`)
-    if(!Helper.isPositiveInteger(obj.number))
-        throw new Error(`Formula number should be a positive number. Got: ${obj.number}`)
-} 
 
 // @route POST api/formulas
 // @desc create a formula
@@ -30,9 +22,9 @@ function checkFormulaFields(obj) {
 router.post('/', (req, res) => {
     Formula.find().select("-_id number").sort({number: -1}).limit(1).then(max_number => {
         let numberResolved
-        if(max_number.length === 0) 
+        if(max_number.length === 0)
             numberResolved = 1
-        else 
+        else
             numberResolved = max_number[0].number+1
 
         numberResolved = req.body.number ? req.body.number : numberResolved
@@ -46,15 +38,16 @@ router.post('/', (req, res) => {
         formulaObj.ingredients_list = req.body.ingredients_list ? req.body.ingredients_list : [];
 
         try {
-            checkFormulaFields(formulaObj)
+            Parser.checkFormulaFields(formulaObj.name, formulaObj.number)
             if(req.body.ingredients_list && !Array.isArray(req.body.ingredients_list))
                 throw new Error("Formula ingredients list must be an array.")
             if(req.body.ingredients_list)
                 req.body.ingredients_list.forEach(tuple => {
                     if(!(tuple._id && tuple.quantity))
                         throw new Error("Formula ingredients list must contain id and quantity")
-                    if(!Helper.isNumeric(tuple.quantity))
-                        throw new Error("Formula ingredients list quantity must be a number.")
+                    if(!Helper.unitChecker(tuple.quantity)) 
+                        throw new Error(
+                            `Formula ingredient quantity is not formatted correctly: ` + tuple.quantity);
                 })
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
@@ -88,7 +81,7 @@ router.post('/update/:id', (req, res) => {
         };
 
         try {
-            checkFormulaFields(updatedFormula)
+            Parser.checkFormulaFields(updatedFormula.name, updatedFormula.number)
             if(req.body.ingredients_list != null && !Array.isArray(req.body.ingredients_list))
                 throw new Error("Formula ingredients list must be an array.")
             if(req.body.ingredients_list)
@@ -96,9 +89,10 @@ router.post('/update/:id', (req, res) => {
                     if(!(tuple._id && tuple.quantity)) {
                         throw new Error("Formula ingredients list must contain id and quantity")
                     }
-                    if(!Helper.isNumeric(tuple.quantity)) {
-                        throw new Error("Formula ingredients list quantity must be a number.")
-                    }
+                    if(!Helper.unitChecker(tuple.quantity)) 
+                        throw new Error(
+                            `Formula ingredient quantity is not formatted correctly: ` + tuple.quantity);
+                
             })
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
@@ -125,6 +119,37 @@ router.post('/update/:id', (req, res) => {
 // @access public
 router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     Helper.getFormulasFilterResult(req, res, Helper.sortAndLimit)
+});
+
+// @route DELETE api/formulas/:id
+// @desc delete a formula
+// @access public
+router.delete('/:id', (req, res) => {
+    SKU.find({formula: req.params.id}).then(result => {
+        if(result === null || result.length !== 0) {
+            res.status(404).json({success: false, message: "Formula cannot be deleted because one or more SKU(s) are associated with it."})
+        }
+        else {
+            Formula.findById(req.params.id)
+            .then(formula => formula.remove().then(
+                () => res.json({success: true}))
+            ).catch(err => res.status(404).json({success: false, message: err.message}))
+        }
+    })
+});
+
+// @route GET api/formulas/:id/skus
+// @desc gets a list of skus for a formula
+// @access public
+router.get('/:id/skus', (req, res) => {
+    SKU
+        .find({ 'formula': mongoose.Types.ObjectId(req.params.id) })
+        .lean()
+        .populate('product_line')
+        .populate('formula')
+        .populate('manufacturing_lines._id')
+        .then(skus => res.json(skus))
+        .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
 module.exports = router;

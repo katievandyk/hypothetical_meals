@@ -31,10 +31,11 @@ mongoose
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
-// Passport middleware
-app.use(passport.initialize());
 // Passport config
 require("./config/passport")(passport);
+// Passport middleware
+app.use(passport.initialize());
+
 // Passport User Routes
 app.use("/api/users", users);
 

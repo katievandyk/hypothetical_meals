@@ -21,7 +21,8 @@ router.get('/', (req, res) => {
     SKU
         .find({})
         .populate('product_line')
-        .populate('ingredients_list._id')
+        .populate('formula')
+        .populate('manufacturing_lines._id')
         .lean()
         .then(sku => res.json(sku))
 });
@@ -38,16 +39,17 @@ router.post('/', (req, res) => {
             numberResolved = max_number[0].number+1
 
         numberResolved = req.body.number ? req.body.number : numberResolved
+
+        let formulaSaleFactorResolved = req.body.formula_scale_factor ? req.body.formula_scale_factor : 1.0
         try {
-            Parser.skuFieldsCheck(req.body.name, numberResolved, req.body.case_number, req.body.unit_number, req.body.unit_size, req.body.count_per_case, req.body.product_line)
-            if(req.body.ingredients_list && !Array.isArray(req.body.ingredients_list))
-                throw new Error("Ingredients list must be an array.")
-            if(req.body.ingredients_list)
-                req.body.ingredients_list.forEach(tuple => {
-                    if(!(tuple._id && tuple.quantity))
-                        throw new Error("SKU ingredients list must contain id and quantity")
-                    if(!Helper.isNumeric(tuple.quantity))
-                        throw new Error("SKU ingredients list quantity must be a number.")
+            Parser.skuFieldsCheck(req.body.name, numberResolved, req.body.case_number, req.body.unit_number, req.body.unit_size, req.body.count_per_case, req.body.product_line,
+                req.body.formula, formulaSaleFactorResolved, req.body.manufacturing_rate)
+            if(req.body.manufacturing_lines && !Array.isArray(req.body.manufacturing_lines))
+                throw new Error("Manufacturing lines must be an array.")
+            if(req.body.manufacturing_lines)
+                req.body.manufacturing_lines.forEach(line => {
+                    if(!(line._id))
+                        throw new Error("Manufacturing line id cannot be empty.")
                 })
         } catch(err) {
             console.log(err)
@@ -62,9 +64,12 @@ router.post('/', (req, res) => {
             case_number: req.body.case_number,
             unit_number: req.body.unit_number,
             unit_size: req.body.unit_size,
-            product_line: mongoose.Types.ObjectId(req.body.product_line),
             count_per_case: req.body.count_per_case,
-            ingredients_list: req.body.ingredients_list,
+            product_line: req.body.product_line,
+            formula: req.body.formula,
+            formula_scale_factor: formulaSaleFactorResolved,
+            manufacturing_lines: req.body.manufacturing_lines,
+            manufacturing_rate: req.body.manufacturing_rate,
             comment: req.body.comment
         });
 
@@ -101,7 +106,7 @@ router.delete('/:id', (req, res) => {
         Promise.all(goal_matches.map(function(goal) {
             return new Promise(function(accept, reject) {
                 new_list = goal.skus_list.filter(function( obj ) {
-                    return obj.sku.toString() !== req.params.id;
+                    return obj.sku.toString() !== req.params.id.toString();
                 });
                 Goal.findByIdAndUpdate(goal._id, {skus_list: new_list}).then(accept).catch(reject)
             })
@@ -110,10 +115,9 @@ router.delete('/:id', (req, res) => {
             SKU.findById(req.params.id)
             .then(sku => sku.remove().then(
                 () => res.json({success: true}))
-            ).catch(err => res.status(404).json({success: false, message: err.message}))
-        }).catch(err => res.status(404).json({success: false, message: err.message}))
-    })
-    
+            )
+        })
+    }).catch(err => res.status(404).json({success: false, message: err.message}))
 });
 
 // @route POST api/skus/update/:id
@@ -121,38 +125,31 @@ router.delete('/:id', (req, res) => {
 // @access public
 router.post('/update/:id', (req, res) => {
     SKU.findById(req.params.id).lean().then(sku => {
-        old_pl = sku.product_line.toString()
-        ing_list = req.body.ingredients_list.map(function(ing) {
-            return {
-                "_id": ing._id.toString(),
-                "quantity": ing.quantity.toString()
-            }
-        })
         const updatedSku = {
-            name: req.body.name !== null ? req.body.name : sku.name,
-            number: req.body.number !== null ? req.body.number : sku.number,
-            case_number: req.body.case_number !== null ? req.body.case_number : sku.case_number,
-            unit_number: req.body.unit_number !== null ? req.body.unit_number : sku.unit_number,
-            unit_size: req.body.unit_size !== null ? req.body.unit_size : sku.unit_size,
+            name: req.body.name != null ? req.body.name : sku.name,
+            number: req.body.number != null ? req.body.number : sku.number,
+            case_number: req.body.case_number != null ? req.body.case_number : sku.case_number,
+            unit_number: req.body.unit_number != null ? req.body.unit_number : sku.unit_number,
+            unit_size: req.body.unit_size != null ? req.body.unit_size : sku.unit_size,
             product_line: req.body.product_line != null ? req.body.product_line : sku.product_line,
-            count_per_case: req.body.count_per_case !== null ? req.body.count_per_case : sku.count_per_case,
-            ingredients_list: req.body.ingredients_list != null ? req.body.ingredients_list : sku.ingredients_list,
-            comment: req.body.comment !== null ? req.body.comment : sku.comment,
+            count_per_case: req.body.count_per_case != null ? req.body.count_per_case : sku.count_per_case,
+            formula: req.body.formula != null ? req.body.formula : sku.formula,
+            formula_scale_factor: req.body.formula_scale_factor != null ? req.body.formula_scale_factor : sku.formula_scale_factor,
+            manufacturing_lines: req.body.manufacturing_lines != null ? req.body.manufacturing_lines : sku.manufacturing_lines,
+            manufacturing_rate: req.body.manufacturing_rate != null ? req.body.manufacturing_rate : sku.manufacturing_rate,
+            comment: req.body.comment != null ? req.body.comment : sku.comment,
         };
 
         try {
-            Parser.skuFieldsCheck(updatedSku.name, updatedSku.number.toString(), updatedSku.case_number.toString(), updatedSku.unit_number.toString(), updatedSku.unit_size, updatedSku.count_per_case, updatedSku.product_line)
-            if(req.body.ingredients_list !== null && !Array.isArray(req.body.ingredients_list))
-                throw new Error("Ingredients list must be an array.")
-            if(req.body.ingredients_list)
-                req.body.ingredients_list.forEach(tuple => {
-                    if(!(tuple._id && tuple.quantity)) {
-                        throw new Error("SKU ingredients list must contain id and quantity")
-                    }
-                    if(!Helper.isNumeric(tuple.quantity)) {
-                        throw new Error("SKU ingredients list quantity must be a number.")
-                    }
-            })
+            Parser.skuFieldsCheck(updatedSku.name, updatedSku.number.toString(), updatedSku.case_number.toString(), updatedSku.unit_number.toString(), updatedSku.unit_size, updatedSku.count_per_case, updatedSku.product_line,
+                updatedSku.formula, updatedSku.formula_scale_factor, updatedSku.manufacturing_rate)
+            if(updatedSku.manufacturing_lines && !Array.isArray(updatedSku.manufacturing_lines))
+                throw new Error("Manufacturing lines must be an array.")
+            if(updatedSku.manufacturing_lines)
+                updatedSku.manufacturing_lines.forEach(line => {
+                    if(!(line._id))
+                        throw new Error("Manufacturing line id cannot be empty.")
+                })
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
             return;
@@ -251,4 +248,82 @@ router.post('/filter/sort/:field/:asc/:pagenumber/:limit', (req, res) => {
     Helper.getSKUFilterResult(req, res, Helper.sortAndLimit)
 });
 
+// @route POST api/skus/map-mls
+// request body fields:
+// - skus: list of skus to find ml mappings
+router.post('/map-mls', (req, res) => {
+    SKU.find({_id: {$in: req.body.skus}})
+    .lean()
+    .populate("manufacturing_lines._id")
+    .then(result => skuMLMappings(result, res))
+})
+
+function skuMLMappings(sku_result, res) {
+    let mapping = []
+    sku_mls = sku_result.forEach(sku => {
+        sku.manufacturing_lines.forEach(mls => {
+            mapping[mls._id.shortname] = mls._id.shortname in mapping ? mapping[mls._id.shortname]+1 : 1;
+        })
+    })
+
+    ManufacturingLine.find().lean().then(mls => {
+        mls.forEach(ml => {
+            if (ml.shortname in mapping) {
+                if(mapping[ml.shortname] == sku_result.length)
+                    ml.group = "All"
+                else
+                    ml.group = "Some"
+            }
+            else {
+                ml.group = "None"
+            }
+
+        })
+        final_mapping = groupByGroup(mls)
+        res.json(final_mapping)
+    })
+}
+
+function groupByGroup(res) {
+    return res.reduce(function(r,a) {
+        r[a.group] = r[a.group] || [];
+        r[a.group].push(a);
+        return r;
+    }, Object.create(null))
+}
+
+// @route POST api/skus/bulk-edit-mls
+// request body fields:
+// - skus: list of skus to add or delete mls
+// - none: list of mls to delete from all given skus
+// - all: list of mls to add to all given skus
+router.post('/bulk-edit-mls', (req, res) => {
+    Promise.all(req.body.skus.map(sku_id => {
+        new Promise(function(accept, reject) {
+            SKU.findById(sku_id)
+            .lean()
+            .then(sku => {
+                let ml_list = sku.manufacturing_lines
+                req.body.none.forEach(ml_del => {
+                    var index = ml_list.findIndex(x => {
+                        return x._id.toString()==ml_del.toString()
+                    })
+                    if (index > -1) {
+                        ml_list.splice(index, 1);
+                    }
+                })
+                
+                req.body.all.forEach(ml_add => {
+                    var index = ml_list.findIndex(x => {
+                        return x._id.toString()==ml_add.toString()
+                    })
+                    if (index == -1) {
+                        ml_list.push({_id: ml_add});
+                    }
+                })
+                SKU.findByIdAndUpdate(sku_id, {manufacturing_lines: ml_list}).then(accept).catch(reject)
+            })
+        })
+    })).then(res.json({success: true}))
+})
 module.exports = router;

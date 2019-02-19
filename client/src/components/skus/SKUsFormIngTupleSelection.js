@@ -127,7 +127,7 @@ class SKUsFormIngTupleSelection extends React.Component {
   }
 
   render() {
-    const ing_tuples = this.state.ing_tuples;
+    var ing_tuples = this.state.ing_tuples;
     return(
       <div>
         <Row>
@@ -147,7 +147,7 @@ class SKUsFormIngTupleSelection extends React.Component {
                 id="ingredient_name"
                 placeholder="Select the Ingredient"
                 onChange={this.onChangeIngredient.bind(this, index)}
-                defaultValue={_id}>
+                value={_id}>
                 <option value=''>Select Ingredient</option>
                 {this.props.ing.ings.map(({_id, name }) => (
                 <option key={_id} value={_id} name={name}>{name}</option>
@@ -174,7 +174,7 @@ class SKUsFormIngTupleSelection extends React.Component {
                 id="ingredient_quantity"
                 placeholder="Quantity"
                 onChange={this.onChangeQuantity.bind(this, index)}
-                defaultValue={quantity}>
+                value={quantity}>
 
               </Input>
               <FormFeedback>

@@ -1,7 +1,8 @@
 import { GET_SKUS_BYPLINE, SKUS_LOADING, GET_SKUS,
 ADD_SKU, DELETE_SKU, UPDATE_SKU, SKU_KW_SEARCH,
 SKU_SORT, SKU_ING_FILTER, SKU_PLINE_FILTER, SKU_ERROR,
-SKU_GROUP_BY_PL} from '../actions/types';
+SKU_GROUP_BY_PL, SKUS_BULK_EDIT, MLINES_BULK_EDIT,
+BULK_EDIT_MAP} from '../actions/types';
 
 const initialState = {
   skus: [],
@@ -13,8 +14,9 @@ const initialState = {
   count: 0,
   page: 1,
   pagelimit: 10,
-  error_msg: ''
-
+  error_msg: '',
+  bulkedit_skus: [],
+  bulkedit_mlines: {}
 };
 
 export default function(state = initialState, action) {
@@ -113,6 +115,23 @@ export default function(state = initialState, action) {
         pagelimit: action.payload.pagelimit,
         page: page_val,
         error_msg: ''
+      }
+    }
+    case SKUS_BULK_EDIT:{
+      return {
+        ...state,
+        bulkedit_skus: action.payload.results
+      }
+    }
+    case MLINES_BULK_EDIT:{
+      return{
+        ...state,
+        bulkedit_mlines: action.payload
+      }
+    }
+    case BULK_EDIT_MAP:{
+      return{
+        ...state
       }
     }
     case SKU_ERROR:{

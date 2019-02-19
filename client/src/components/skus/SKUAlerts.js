@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 class SKUAlerts extends Component {
 
   render(){
-    const error_msg = this.props.formulas.error_msg;
+    const error_msg = this.props.skus.error_msg;
     if(error_msg.length > 0){
       return (
         <Row>

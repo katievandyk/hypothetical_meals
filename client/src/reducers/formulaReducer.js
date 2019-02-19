@@ -1,5 +1,7 @@
 import {SORT_FORMULAS, ADD_FORMULA, UPDATE_FORMULA, DELETE_FORMULA,
-  FORMULAS_LOADING, FORMULA_ERROR, FORMULA_KW_SEARCH, FORMULA_ING_FILTER} from '../actions/types';
+  FORMULAS_LOADING, FORMULA_ERROR, FORMULA_KW_SEARCH, FORMULA_ING_FILTER,
+  GET_FORMULA_SKUS, FORMULA_SKUS_LOADING
+} from '../actions/types';
 
 const initialState = {
   formulas: [],
@@ -10,7 +12,10 @@ const initialState = {
   error_msg: '',
   obj: {},
   sortby: 'name',
-  sortdir: 'asc'
+  sortdir: 'asc',
+  formula_skus: [],
+  formula_skus_loading: false,
+  added_formula: {}
 };
 
 export default function(state = initialState, action) {
@@ -35,23 +40,23 @@ export default function(state = initialState, action) {
     case ADD_FORMULA:
       return {
         ...state,
-        plines: [action.payload, state.plines]
+        added_formula: action.payload
       }
     case DELETE_FORMULA:
       return {
         ...state,
-        plines: state.plines.filter( pline => pline._id !== action.payload )
+        formulas: state.formulas.filter( formula => formula._id !== action.payload )
       }
     case UPDATE_FORMULA:
       return {
-        ...state,
-        plines: [action.payload, state.plines]
+        ...state
       }
      case FORMULA_ERROR:{
        return {
          ...state,
          error_msg: action.payload.data.message,
-         loading: false
+         loading: false,
+         added_formula: {}
        }
      }
      case FORMULA_KW_SEARCH:{
@@ -72,6 +77,17 @@ export default function(state = initialState, action) {
          obj: state.obj
        }
      }
+     case GET_FORMULA_SKUS:
+       return {
+         ...state,
+         formula_skus: action.payload,
+         formula_skus_loading: false
+       }
+     case FORMULA_SKUS_LOADING:
+       return {
+         ...state,
+         formula_skus_loading: true
+       }
     default:
       return state;
   }

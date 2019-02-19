@@ -15,6 +15,7 @@ export const ING_ERROR = 'ING_ERROR';
 export const GET_ERRORS = "GET_ERRORS";
 export const USER_LOADING = "USER_LOADING";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
+export const SET_NETID_USER = "SET_NETID_USER";
 // Manufacturing Goals
 export const GET_GOALS = 'GET_GOALS';
 export const ADD_GOAL = 'ADD_GOAL';
@@ -52,6 +53,9 @@ export const SKU_PLINE_FILTER = 'SKU_PLINE_FILTER';
 export const SKU_SORT = 'SKU_SORT';
 export const SKU_ERROR = 'SKU_ERROR';
 export const SKU_GROUP_BY_PL = "SKU_GROUP_BY_PL";
+export const SKUS_BULK_EDIT = "SKUS_BULK_EDIT";
+export const MLINES_BULK_EDIT = 'MLINES_BULK_EDIT';
+export const BULK_EDIT_MAP = 'BULK_EDIT_MAP';
 // Export Actions
 export const EXPORT_SKUS = 'EXPORT_SKUS';
 export const EXPORT_PLINES = 'EXPORT_PLINES';
@@ -73,3 +77,5 @@ export const FORMULA_ERROR = 'FORMULA_ERROR';
 export const FORMULAS_LOADING = 'FORMULAS_LOADING';
 export const FORMULA_KW_SEARCH = 'FORMULA_KW_SEARCH';
 export const FORMULA_ING_FILTER = 'FORMULA_ING_FILTER';
+export const GET_FORMULA_SKUS = 'GET_FORMULA_SKUS';
+export const FORMULA_SKUS_LOADING = 'FORMULA_SKUS_LOADING';

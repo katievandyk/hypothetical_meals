@@ -233,12 +233,17 @@ router.post('/byskus', (req, res) => {
 // @desc gets a list of skus for an ingredient
 // @access public
 router.get('/:id/skus', (req, res) => {
-    SKU
-        .find({ 'ingredients_list._id': mongoose.Types.ObjectId(req.params.id) })
+    Formula.find({ 'ingredients_list._id': mongoose.Types.ObjectId(req.params.id) })
+        .select('_id')
         .lean()
-        .then(skus => res.json(skus))
+        .then(formulas => {
+            SKU.find({'formula': {
+                $in: formulas
+            }})
+            .then(skus => res.json(skus))
+            .catch(err => res.status(404).json({success: false, message: err.message}));
+        })
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
-
 
 module.exports = router;

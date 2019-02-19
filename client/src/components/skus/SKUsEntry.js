@@ -13,10 +13,12 @@ import {
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { getSKUs, sortSKUs, deleteSKU, updateSKU } from '../../actions/skuActions';
+import { sortFormulas } from '../../actions/formulaActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SKUsFormPLineSelection from './SKUsFormPLineSelection'
-import SKUsFormIngTupleSelection from './SKUsFormIngTupleSelection'
+import SKUsFormFormula from './SKUsFormFormula';
+import SKUsFormMLines from './SKUsFormMLines';
 import '../../styles.css'
 
 class SKUsEntry extends React.Component {
@@ -30,12 +32,21 @@ class SKUsEntry extends React.Component {
     edit_unit_size: '',
     edit_product_line: '',
     edit_count_per_case: '',
-    edit_ingredients_list: [],
+    edit_formula: {},
+    edit_formula_scale_factor: '',
+    edit_manufacturing_lines: [],
+    edit_manufacturing_rate: '',
     edit_comment: '',
-    ing_modal: false,
-    ing_tuples: [],
+    ml_modal: false,
+    mlines: [],
     group_by_pl: false,
-    validate: {}
+    validate: {},
+    formula_id:'',
+    formula_name:'',
+    formula_number: '',
+    formula_ingredients_list: [],
+    formula_comment:'',
+    formula_modal: false
   };
 
   toggle = () => {
@@ -45,14 +56,21 @@ class SKUsEntry extends React.Component {
     });
   }
 
-  ing_toggle = () => {
+  ml_toggle = () => {
     this.setState({
-      ing_modal: !this.state.ing_modal
+      ml_modal: !this.state.ml_modal
+    });
+  }
+
+  formula_toggle = () => {
+    this.setState({
+      formula_modal: !this.state.formula_modal
     });
   }
 
   componentDidMount() {
     this.props.sortSKUs('name', 'asc', 1, 10, {});
+    this.props.sortFormulas('name', 'asc', 1, -1, {});
     if(this.props.skus.obj && this.props.skus.obj.group_pl && this.props.skus.obj.group_pl === "True"){
       this.setState({
         group_by_pl: true
@@ -65,7 +83,7 @@ class SKUsEntry extends React.Component {
   };
 
   onEditClick = (id, name, number, case_number, unit_number, unit_size, count_per_case, product_line,
-  ingredients_list, comment) => {
+  formula, formula_scale_factor, manufacturing_lines, manufacturing_rate, comment) => {
     this.setState({
       modal: true,
       edit_id: id,
@@ -76,7 +94,10 @@ class SKUsEntry extends React.Component {
       edit_unit_size: unit_size,
       edit_product_line: product_line,
       edit_count_per_case: count_per_case,
-      edit_ingredients_list: ingredients_list,
+      edit_formula: formula,
+      edit_formula_scale_factor: formula_scale_factor,
+      edit_manufacturing_lines: manufacturing_lines,
+      edit_manufacturing_rate: manufacturing_rate,
       edit_comment: comment
     });
   };
@@ -131,6 +152,15 @@ class SKUsEntry extends React.Component {
           validate[field_type] = 'not-valid-num'
         }
       }
+      else if(field_type === 'edit_formula_scale_factor' || field_type === 'edit_manufacturing_rate'){
+        const numRex = /^[1-9]\d*(\.\d+)?$/mg
+        if (numRex.test(e.target.value)) {
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid'
+        }
+      }
       else if(field_type === 'edit_case_number' || field_type === 'edit_unit_number'){
         if(this.is_upca_standard(e.target.value)){
           validate[field_type] = 'has-success';
@@ -167,25 +197,33 @@ class SKUsEntry extends React.Component {
       unit_size: this.state.edit_unit_size,
       product_line: this.state.edit_product_line,
       count_per_case: this.state.edit_count_per_case,
-      ingredients_list: this.state.edit_ingredients_list,
+      formula: this.state.edit_formula,
+      formula_scale_factor: this.state.edit_formula_scale_factor,
+      manufacturing_lines: this.state.edit_manufacturing_lines,
+      manufacturing_rate: this.state.edit_manufacturing_rate,
       comment: this.state.edit_comment
     };
     this.props.updateSKU(editedSKU,this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
     this.toggle();
   };
 
-  onIngListClick = ingredients_list => {
-    var newIngTuples = [];
-    for(var i = 0; i < ingredients_list.length; i++){
-      if(ingredients_list[i]._id){
-        newIngTuples = [...newIngTuples, ingredients_list[i]];
-      }
-    }
+  onMLinesListClick = newMlines => {
     this.setState({
-      ing_tuples: newIngTuples
+      mlines: newMlines
     });
-    this.ing_toggle();
-  };
+    this.ml_toggle();
+  }
+
+  onFormulaClick = formula => {
+    this.setState({
+      formula_id: formula._id,
+      formula_name: formula.name,
+      formula_number: formula.number,
+      formula_ingredients_list: formula.ingredients_list,
+      formula_comment: formula.comment
+    });
+    this.formula_toggle();
+  }
 
   onProductLineChange = (prod_line, valid) => {
     var val_obj = this.state.validate;
@@ -201,22 +239,36 @@ class SKUsEntry extends React.Component {
     });
   };
 
-  onIngListChange = (ing_list, valid) => {
+  onFormulaChange = (formula, valid) => {
     var val_obj = this.state.validate;
     if(valid){
-      val_obj.ingredients_list = 'has-success';
+      val_obj.formula = 'has-success'
     }
     else{
-      val_obj.ingredients_list = 'has-danger';
+      val_obj.formula = 'has-danger'
     }
-    var newIngList = [];
-    for(var i = 0; i < ing_list.length; i ++){
-      if(ing_list[i]._id.length > 0 && ing_list[i].quantity.length > 0){
-        newIngList = [...newIngList, ing_list[i]];
+    this.setState({
+      edit_formula: formula,
+      validate: val_obj
+    });
+  }
+
+  onLinesChange = (lines, valid) => {
+    var val_obj = this.state.validate;
+    if(valid){
+      val_obj.manufacturing_lines = 'has-success';
+    }
+    else{
+      val_obj.manufacturing_lines = 'has-danger';
+    }
+    var newLines = [];
+    for(var i = 0; i < lines.length; i ++){
+      if(lines[i]._id.length > 0 ){
+        newLines = [...newLines, lines[i]];
       }
     }
     this.setState({
-      edit_ingredients_list: newIngList,
+      edit_manufacturing_lines: newLines,
       validate: val_obj
     });
   }
@@ -244,6 +296,254 @@ class SKUsEntry extends React.Component {
     }
     else{
       this.props.sortSKUs(field, 'asc', 1, this.props.skus.pagelimit, this.props.skus.obj);
+    }
+  }
+
+  editForm = () => {
+    return (
+      <Modal isOpen={this.state.modal} toggle={this.toggle}>
+        <ModalHeader toggle={this.toggle}> Edit SKU </ModalHeader>
+        <ModalBody>
+          <Form onSubmit={this.onEditSubmit}>
+            <FormGroup>
+              <Label for="edit_name">Name</Label>
+                <Input
+                  valid={ this.state.validate.edit_name === 'has-success' }
+                  invalid={ this.state.validate.edit_name === 'is-empty' }
+                  type="text"
+                  name="edit_name"
+                  id="edit_name"
+                  onChange={this.onChange}
+                  defaultValue={this.state.edit_name}>
+                </Input>
+                <FormFeedback>
+                  Please input a name.
+                </FormFeedback>
+            </FormGroup>
+            <FormGroup>
+              <Label for="edit_number">Number</Label>
+                <Input
+                  valid={this.state.validate.edit_number === 'has-success' }
+                  invalid={this.state.validate.edit_number === 'is-empty' || this.state.validate.edit_number === 'not-valid-num'}
+                  type="text"
+                  name="edit_number"
+                  id="edit_number"
+                  placeholder="Add SKU Number"
+                  onChange={this.onChange}
+                  defaultValue={this.state.edit_number}>
+                </Input>
+                {this.state.validate.edit_number === 'is-empty' ? (
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
+                ):(
+                  <FormFeedback>
+                    Please input a valid number.
+                  </FormFeedback>
+                )}
+            </FormGroup>
+            <FormGroup>
+              <Label for="edit_case_number">Case UPC#</Label>
+                <Input
+                  valid={this.state.validate.edit_case_number === 'has-success' }
+                  invalid={this.state.validate.edit_case_number === 'is-empty' || this.state.validate.edit_case_number === 'not-valid-upca'}
+                  type="text"
+                  name="edit_case_number"
+                  id="edit_case_number"
+                  placeholder="Add Case UPC#"
+                  onChange={this.onChange}
+                  defaultValue={this.state.edit_case_number}>
+                </Input>
+                {this.state.validate.edit_case_number === 'is-empty' ? (
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
+                ):(
+                  <FormFeedback>
+                    Please input a valid UPC-A number.
+                  </FormFeedback>
+                )}
+            </FormGroup>
+            <FormGroup>
+              <Label for="edit_unit_number">Unit UPC#</Label>
+                <Input
+                  valid={this.state.validate.edit_unit_number === 'has-success' }
+                  invalid={this.state.validate.edit_unit_number === 'is-empty' || this.state.validate.edit_unit_number === 'not-valid-upca'}
+                  type="text"
+                  name="edit_unit_number"
+                  id="edit_unit_number"
+                  placeholder="Add the Unit UPC#"
+                  onChange={this.onChange}
+                  defaultValue={this.state.edit_unit_number}>
+                </Input>
+                {this.state.validate.edit_unit_number === 'is-empty' ? (
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
+                ):(
+                  <FormFeedback>
+                    Please input a valid UPC-A number.
+                  </FormFeedback>
+                )}
+            </FormGroup>
+            <FormGroup>
+              <Label for="edit_unit_size">Unit Size</Label>
+                <Input
+                  valid={this.state.validate.edit_unit_size === 'has-success' }
+                  invalid={this.state.validate.edit_unit_size === 'is-empty'}
+                  type="text"
+                  name="edit_unit_size"
+                  id="edit_unit_size"
+                  placeholder="Add the Unit Size"
+                  onChange={this.onChange}
+                  defaultValue={this.state.edit_unit_size}>
+                </Input>
+                <FormFeedback>
+                  Please input a value.
+                </FormFeedback>
+            </FormGroup>
+            <FormGroup>
+              <Label for="edit_count_per_case">Count per Case</Label>
+                <Input
+                  valid={this.state.validate.edit_count_per_case === 'has-success' }
+                  invalid={this.state.validate.edit_count_per_case === 'is-empty' || this.state.validate.edit_count_per_case === 'not-valid-num'}
+                  type="text"
+                  name="edit_count_per_case"
+                  id="edit_count_per_case"
+                  placeholder="Add the Count per Case"
+                  onChange={this.onChange}
+                  defaultValue={this.state.edit_count_per_case}>
+                </Input>
+                {this.state.validate.edit_count_per_case === 'is-empty' ? (
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
+                ):(
+                  <FormFeedback>
+                    Please input a valid number.
+                  </FormFeedback>
+                )}
+            </FormGroup>
+            <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} defaultValue={this.state.edit_product_line._id}/>
+            <SKUsFormFormula onFormulaChange={this.onFormulaChange} defaultValue={(this.state.edit_formula && this.state.edit_formula._id)? (this.state.edit_formula._id):('')}/>
+            <FormGroup>
+                <Label for="edit_formula_scale_factor">Formula Scale Factor</Label>
+                  <Input
+                    valid={this.state.validate.edit_formula_scale_factor === 'has-success' }
+                    invalid={this.state.validate.edit_formula_scale_factor === 'is-empty' || this.state.validate.edit_formula_scale_factor === 'not-valid'}
+                    type="text"
+                    name="edit_formula_scale_factor"
+                    id="edit_formula_scale_factor"
+                    placeholder="Add the Formula Scale Factor"
+                    onChange={this.onChange}
+                    defaultValue={this.state.edit_formula_scale_factor}>
+                  </Input>
+                  {this.state.validate.edit_formula_scale_factor === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid scale factor.
+                    </FormFeedback>
+                  )}
+              </FormGroup>
+              <SKUsFormMLines onLinesChange={this.onLinesChange} defaultValue={this.state.edit_manufacturing_lines}/>
+              <FormGroup>
+                <Label for="edit_manufacturing_rate">Manufacturing Rate</Label>
+                  <Input
+                    valid={this.state.validate.edit_manufacturing_rate === 'has-success' }
+                    invalid={this.state.validate.edit_manufacturing_rate === 'is-empty' || this.state.validate.edit_manufacturing_rate === 'not-valid'}
+                    type="text"
+                    name="edit_manufacturing_rate"
+                    id="edit_manufacturing_rate"
+                    placeholder="Add the Manufacturing Rate"
+                    onChange={this.onChange}
+                    defaultValue={this.state.edit_manufacturing_rate}>
+                  </Input>
+                  {this.state.validate.edit_manufacturing_rate === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid manufacturing rate.
+                    </FormFeedback>
+                  )}
+              </FormGroup>
+            <FormGroup>
+              <Label for="edit_comment">Comments</Label>
+                <Input
+                  type="textarea"
+                  name="edit_comment"
+                  id="edit_comment"
+                  placeholder="Add any comments on the ingredient"
+                  onChange={this.onChange}
+                  defaultValue={this.state.edit_comment}>
+                </Input>
+            </FormGroup>
+            <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
+            <Button color="dark" className={this.allValidated() ?(''): ('disabled')} type="submit" block>
+                  Submit SKU Edits
+                </Button>
+            </div>
+          </Form>
+        </ModalBody>
+      </Modal>
+    );
+  }
+
+  mlModal = () => {
+    return (
+      <Modal isOpen={this.state.ml_modal} toggle={this.ml_toggle}>
+        <ModalHeader toggle={this.ml_toggle}>Manufacturing Lines for SKU:</ModalHeader>
+        <ModalBody>
+          <ListGroup>
+            {this.state.mlines.map(({_id}) => (
+            <ListGroupItem key={_id._id}> <div>{_id.shortname}</div> </ListGroupItem>
+            ))}
+          </ListGroup>
+        </ModalBody>
+      </Modal>
+    );
+  }
+
+  formulaModal = () => {
+    var formulas = this.props.formulas.formulas;
+    var formula = this.formula_ing_helper(this.state.formula_id, formulas);
+    return (
+      <Modal size="sm" isOpen={this.state.formula_modal} toggle={this.formula_toggle}>
+        <ModalHeader toggle={this.formula_toggle}>{this.state.formula_name}</ModalHeader>
+        <ModalBody>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Name: </b> {this.state.formula_name}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Number: </b> {this.state.formula_number}
+          </div>
+          <div style={{paddingBottom: '1.5em'}}>
+            <b>Ingredients List: </b>
+              <div>
+              {formula.ingredients_list &&
+                formula.ingredients_list.map(({_id, quantity})=>(
+                <div key={_id._id}>{_id.name}, {quantity}</div>
+              ))}
+              </div>
+          </div>
+          <div style={{wordBreak:'break-all', paddingBottom: '1.5em'}}>
+            <b>Comment: </b> {this.state.formula_comment}
+          </div>
+        </ModalBody>
+      </Modal>
+    );
+  }
+
+  formula_ing_helper = (id, formulas) => {
+    var formula = formulas.filter(({_id}) => _id === id);
+    if(formula[0])
+      return formula[0];
+    else {
+      return {};
     }
   }
 
@@ -304,7 +604,18 @@ class SKUsEntry extends React.Component {
                     Product Line{' '}
                       {this.getSortIcon('product_line')}
                   </th>
-                  <th>Ingredients</th>
+                  <th>Formula</th>
+                    <th style={{cursor:'pointer'}}
+                      onClick={this.sortCol.bind(this, 'formula_scale_factor')}>
+                      Formula Scale Factor{' '}
+                        {this.getSortIcon('formula_scale_factor')}
+                    </th>
+                  <th>Mfg. Lines</th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'manufacturing_rate')}>
+                    Mfg. Rate{' '}
+                      {this.getSortIcon('manufacturing_rate')}
+                  </th>
                   <th>Comments</th>
                   {this.props.auth.isAdmin && <th>Edit</th>}
                   {this.props.auth.isAdmin && <th>Delete</th>}
@@ -313,7 +624,8 @@ class SKUsEntry extends React.Component {
               <tbody is="transition-group" >
                 <TransitionGroup className="ingredients-table" component={null}>
                   {value.map(({_id, name, number, case_number, unit_number, unit_size,
-                    count_per_case, product_line, ingredients_list, comment }) => (
+                    count_per_case, product_line, formula, formula_scale_factor,
+                    manufacturing_lines, manufacturing_rate, comment }) => (
                     <CSSTransition key={_id} timeout={500} classNames="fade">
                       <tr>
                         <td> {name} </td>
@@ -323,21 +635,32 @@ class SKUsEntry extends React.Component {
                         <td> {unit_size} </td>
                         <td> {count_per_case}</td>
                         {product_line ? (<td> {product_line.name}</td>):(<td></td>)}
-
+                        {formula ? (
+                          <td>
+                            {formula.name}
+                            <Button size="sm" color="link"
+                              onClick={this.onFormulaClick.bind(this, formula)}
+                              style={{'color':'black'}}>
+                              <FontAwesomeIcon icon="info-circle"/>
+                            </Button>
+                          </td>):(<td></td>)}
+                        <td> {formula_scale_factor} </td>
                         <td>
                           <Button size="sm" color="link"
-                          onClick={this.onIngListClick.bind(this, ingredients_list)}
+                          onClick={this.onMLinesListClick.bind(this, manufacturing_lines)}
                           style={{'color':'black'}}>
-                          <FontAwesomeIcon icon="list"/>
+                            <FontAwesomeIcon icon="list"/>
                           </Button>
                         </td>
+                        <td> {manufacturing_rate} </td>
                         <td style={{wordBreak:'break-all'}}> {comment} </td>
                         {this.props.auth.isAdmin &&
                           <td>
                             <Button size="sm" color="link"
                               onClick={this.onEditClick.bind(this,
                                 _id, name, number, case_number, unit_number, unit_size,
-                                  count_per_case, product_line, ingredients_list, comment
+                                  count_per_case, product_line, formula, formula_scale_factor,
+                                  manufacturing_lines, manufacturing_rate, comment
                               )}
                               style={{'color':'black'}}>
                               <FontAwesomeIcon icon = "edit"/>
@@ -359,6 +682,9 @@ class SKUsEntry extends React.Component {
               </TransitionGroup>
               </tbody>
             </Table>
+            {this.editForm()}
+            {this.mlModal()}
+            {this.formulaModal()}
           </div>
           ))}
         </div>
@@ -405,7 +731,18 @@ class SKUsEntry extends React.Component {
                   Product Line{' '}
                     {this.getSortIcon('product_line')}
                 </th>
-                <th>Ingredients</th>
+                <th>Formula</th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'formula_scale_factor')}>
+                    Formula Scale Factor{' '}
+                      {this.getSortIcon('formula_scale_factor')}
+                  </th>
+                <th>Mfg. Lines</th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'manufacturing_rate')}>
+                  Mfg. Rate{' '}
+                    {this.getSortIcon('manufacturing_rate')}
+                </th>
                 <th>Comments</th>
                 {this.props.auth.isAdmin && <th>Edit</th> }
                 {this.props.auth.isAdmin && <th>Delete</th>}
@@ -414,7 +751,8 @@ class SKUsEntry extends React.Component {
             <tbody is="transition-group" >
               <TransitionGroup className="ingredients-table" component={null}>
                 {skus.map(({_id, name, number, case_number, unit_number, unit_size,
-                  count_per_case, product_line, ingredients_list, comment }) => (
+                  count_per_case, product_line, formula, formula_scale_factor,
+                  manufacturing_lines, manufacturing_rate, comment }) => (
                   <CSSTransition key={_id} timeout={500} classNames="fade">
                     <tr>
                       <td> {name} </td>
@@ -424,20 +762,32 @@ class SKUsEntry extends React.Component {
                       <td> {unit_size} </td>
                       <td> {count_per_case}</td>
                       {product_line ? (<td> {product_line.name}</td>):(<td></td>)}
+                      {formula ? (
+                        <td>
+                          {formula.name}
+                          <Button size="sm" color="link"
+                            onClick={this.onFormulaClick.bind(this, formula)}
+                            style={{'color':'black'}}>
+                            <FontAwesomeIcon icon="info-circle"/>
+                          </Button>
+                        </td>):(<td></td>)}
+                      <td> {formula_scale_factor} </td>
                       <td>
                         <Button size="sm" color="link"
-                        onClick={this.onIngListClick.bind(this, ingredients_list)}
+                        onClick={this.onMLinesListClick.bind(this, manufacturing_lines)}
                         style={{'color':'black'}}>
-                        <FontAwesomeIcon icon="list"/>
+                          <FontAwesomeIcon icon="list"/>
                         </Button>
                       </td>
+                      <td> {manufacturing_rate} </td>
                       <td style={{wordBreak:'break-all'}}> {comment} </td>
                       {this.props.auth.isAdmin &&
                         <td>
                           <Button size="sm" color="link"
                             onClick={this.onEditClick.bind(this,
                               _id, name, number, case_number, unit_number, unit_size,
-                                count_per_case, product_line, ingredients_list, comment
+                                count_per_case, product_line, formula, formula_scale_factor,
+                                manufacturing_lines, manufacturing_rate, comment
                             )}
                             style={{'color':'black'}}>
                             <FontAwesomeIcon icon = "edit"/>
@@ -459,160 +809,9 @@ class SKUsEntry extends React.Component {
             </TransitionGroup>
             </tbody>
           </Table>
-          <Modal isOpen={this.state.modal} toggle={this.toggle}>
-            <ModalHeader toggle={this.toggle}> Edit Ingredient </ModalHeader>
-            <ModalBody>
-              <Form onSubmit={this.onEditSubmit}>
-                <FormGroup>
-                  <Label for="edit_name">Name</Label>
-                    <Input
-                      valid={ this.state.validate.edit_name === 'has-success' }
-                      invalid={ this.state.validate.edit_name === 'is-empty' }
-                      type="text"
-                      name="edit_name"
-                      id="edit_name"
-                      onChange={this.onChange}
-                      defaultValue={this.state.edit_name}>
-                    </Input>
-                    <FormFeedback>
-                      Please input a name.
-                    </FormFeedback>
-                </FormGroup>
-                <FormGroup>
-                  <Label for="edit_number">Number</Label>
-                    <Input
-                      valid={this.state.validate.edit_number === 'has-success' }
-                      invalid={this.state.validate.edit_number === 'is-empty' || this.state.validate.edit_number === 'not-valid-num'}
-                      type="text"
-                      name="edit_number"
-                      id="edit_number"
-                      placeholder="Add SKU Number"
-                      onChange={this.onChange}
-                      defaultValue={this.state.edit_number}>
-                    </Input>
-                    {this.state.validate.edit_number === 'is-empty' ? (
-                      <FormFeedback>
-                        Please input a value.
-                      </FormFeedback>
-                    ):(
-                      <FormFeedback>
-                        Please input a valid number.
-                      </FormFeedback>
-                    )}
-                </FormGroup>
-                <FormGroup>
-                  <Label for="edit_case_number">Case UPC#</Label>
-                    <Input
-                      valid={this.state.validate.edit_case_number === 'has-success' }
-                      invalid={this.state.validate.edit_case_number === 'is-empty' || this.state.validate.edit_case_number === 'not-valid-upca'}
-                      type="text"
-                      name="edit_case_number"
-                      id="edit_case_number"
-                      placeholder="Add Case UPC#"
-                      onChange={this.onChange}
-                      defaultValue={this.state.edit_case_number}>
-                    </Input>
-                    {this.state.validate.edit_case_number === 'is-empty' ? (
-                      <FormFeedback>
-                        Please input a value.
-                      </FormFeedback>
-                    ):(
-                      <FormFeedback>
-                        Please input a valid UPC-A number.
-                      </FormFeedback>
-                    )}
-                </FormGroup>
-                <FormGroup>
-                  <Label for="edit_unit_number">Unit UPC#</Label>
-                    <Input
-                      valid={this.state.validate.edit_unit_number === 'has-success' }
-                      invalid={this.state.validate.edit_unit_number === 'is-empty' || this.state.validate.edit_unit_number === 'not-valid-upca'}
-                      type="text"
-                      name="edit_unit_number"
-                      id="edit_unit_number"
-                      placeholder="Add the Unit UPC#"
-                      onChange={this.onChange}
-                      defaultValue={this.state.edit_unit_number}>
-                    </Input>
-                    {this.state.validate.edit_unit_number === 'is-empty' ? (
-                      <FormFeedback>
-                        Please input a value.
-                      </FormFeedback>
-                    ):(
-                      <FormFeedback>
-                        Please input a valid UPC-A number.
-                      </FormFeedback>
-                    )}
-                </FormGroup>
-                <FormGroup>
-                  <Label for="edit_unit_size">Unit Size</Label>
-                    <Input
-                      valid={this.state.validate.edit_unit_size === 'has-success' }
-                      invalid={this.state.validate.edit_unit_size === 'is-empty'}
-                      type="text"
-                      name="edit_unit_size"
-                      id="edit_unit_size"
-                      placeholder="Add the Unit Size"
-                      onChange={this.onChange}
-                      defaultValue={this.state.edit_unit_size}>
-                    </Input>
-                    <FormFeedback>
-                      Please input a value.
-                    </FormFeedback>
-                </FormGroup>
-                <FormGroup>
-                  <Label for="edit_count_per_case">Count per Case</Label>
-                    <Input
-                      valid={this.state.validate.edit_count_per_case === 'has-success' }
-                      invalid={this.state.validate.edit_count_per_case === 'is-empty' || this.state.validate.edit_count_per_case === 'not-valid-num'}
-                      type="text"
-                      name="edit_count_per_case"
-                      id="edit_count_per_case"
-                      placeholder="Add the Count per Case"
-                      onChange={this.onChange}
-                      defaultValue={this.state.edit_count_per_case}>
-                    </Input>
-                    {this.state.validate.edit_count_per_case === 'is-empty' ? (
-                      <FormFeedback>
-                        Please input a value.
-                      </FormFeedback>
-                    ):(
-                      <FormFeedback>
-                        Please input a valid number.
-                      </FormFeedback>
-                    )}
-                </FormGroup>
-                <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} defaultValue={this.state.edit_product_line._id}/>
-                <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list}/>
-                <FormGroup>
-                  <Label for="edit_comment">Comments</Label>
-                    <Input
-                      type="textarea"
-                      name="edit_comment"
-                      id="edit_comment"
-                      placeholder="Add any comments on the ingredient"
-                      onChange={this.onChange}
-                      defaultValue={this.state.edit_comment}>
-                    </Input>
-                </FormGroup>
-                <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-                <Button color="dark" className={this.allValidated() ?(''): ('disabled')} type="submit" block>
-                      Submit SKU Edits
-                    </Button>
-                </div>
-              </Form>
-            </ModalBody>
-          </Modal>
-          {<Modal isOpen={this.state.ing_modal} toggle={this.ing_toggle}>
-            <ModalHeader toggle={this.ing_toggle}>Ingredients in this SKU:</ModalHeader>
-            <ModalBody>
-              <ListGroup>
-                {this.state.ing_tuples.map(({_id, quantity}) => (
-                <ListGroupItem key={_id._id}> <div>{_id.name}, Quantity: {quantity}</div> </ListGroupItem>
-                ))}
-              </ListGroup>
-            </ModalBody>
-          </Modal>}
+          {this.editForm()}
+          {this.mlModal()}
+          {this.formulaModal()}
           </div>
 
       );
@@ -625,13 +824,16 @@ SKUsEntry.propTypes = {
   sortSKUs: PropTypes.func.isRequired,
   deleteSKU: PropTypes.func.isRequired,
   updateSKU: PropTypes.func.isRequired,
+  sortFormulas: PropTypes.func.isRequired,
+  formulas: PropTypes.object.isRequired,
   skus: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
   skus: state.skus,
+  formulas: state.formulas,
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getSKUs, sortSKUs, deleteSKU, updateSKU })(SKUsEntry);
+export default connect(mapStateToProps, { getSKUs, sortSKUs, deleteSKU, updateSKU, sortFormulas })(SKUsEntry);

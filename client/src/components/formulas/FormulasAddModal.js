@@ -80,10 +80,12 @@ class FormulasAddModal extends React.Component {
       ingredients_list: this.state.ingredients_list,
       comment: this.state.comment
     };
-
     this.props.addFormula(newFormula,this.props.formulas.sortby,
       this.props.formulas.sortdir, 1, this.props.formulas.pagelimit,
       this.props.formulas.obj);
+    if(this.props.getAddedFormula){
+      this.props.getAddedFormula();
+    }
     this.toggle();
   }
 
@@ -159,7 +161,7 @@ class FormulasAddModal extends React.Component {
                 </Input>
             </FormGroup>
             <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-            <Button color="dark" className={this.allValidated() ? (''):('disabled')} type="submit" block>
+            <Button color="dark" className={this.allValidated() ? (''):('disabled')} onClick={this.onSubmit} block>
                   Add Formula
                 </Button>
               </div>
@@ -174,7 +176,8 @@ class FormulasAddModal extends React.Component {
 FormulasAddModal.propTypes = {
   sortFormulas: PropTypes.func.isRequired,
   addFormula: PropTypes.func.isRequired,
-  formulas: PropTypes.object.isRequired
+  formulas: PropTypes.object.isRequired,
+  getAddedFormula: PropTypes.func
 };
 
 const mapStateToProps = state => ({
