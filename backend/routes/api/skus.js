@@ -306,7 +306,7 @@ router.post('/bulk-edit-mls', (req, res) => {
                 let ml_list = sku.manufacturing_lines
                 req.body.none.forEach(ml_del => {
                     var index = ml_list.findIndex(x => {
-                        x._id.toString()==ml_del.toString()
+                        return x._id.toString()==ml_del.toString()
                     })
                     if (index > -1) {
                         ml_list.splice(index, 1);
@@ -314,7 +314,9 @@ router.post('/bulk-edit-mls', (req, res) => {
                 })
                 
                 req.body.all.forEach(ml_add => {
-                    var index = ml_list.findIndex(x => x._id.toString()==ml_add.toString())
+                    var index = ml_list.findIndex(x => {
+                        return x._id.toString()==ml_add.toString()
+                    })
                     if (index == -1) {
                         ml_list.push({_id: ml_add});
                     }
