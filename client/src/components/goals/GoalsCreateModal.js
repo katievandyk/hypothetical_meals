@@ -57,7 +57,7 @@ class GoalsCreateModal extends React.Component {
          const newGoal = {
            name: this.state.name,
            skus_list: this.state.skus_list,
-           user_email: this.props.auth.user_email,
+           user_username: this.props.auth.user_username,
            deadline: this.state.date
          };
          this.props.addGoal(newGoal);
@@ -240,7 +240,7 @@ class GoalsCreateModal extends React.Component {
     GoalsCreateModal.propTypes = {
       addGoal: PropTypes.func.isRequired,
       skus: PropTypes.object.isRequired,
-      auth: PropTypes.object.auth,
+      auth: PropTypes.object.isRequired,
       goals: PropTypes.object.isRequired
     };
 
