@@ -106,7 +106,7 @@ router.delete('/:id', (req, res) => {
         Promise.all(goal_matches.map(function(goal) {
             return new Promise(function(accept, reject) {
                 new_list = goal.skus_list.filter(function( obj ) {
-                    return obj.sku.toString() !== req.params.id;
+                    return obj.sku.toString() !== req.params.id.toString();
                 });
                 Goal.findByIdAndUpdate(goal._id, {skus_list: new_list}).then(accept).catch(reject)
             })
@@ -116,8 +116,8 @@ router.delete('/:id', (req, res) => {
             .then(sku => sku.remove().then(
                 () => res.json({success: true}))
             )
-        }).catch(err => res.status(404).json({success: false, message: err.message}))
-    })
+        })
+    }).catch(err => res.status(404).json({success: false, message: err.message}))
 });
 
 // @route POST api/skus/update/:id
