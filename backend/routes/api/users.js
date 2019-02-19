@@ -113,10 +113,10 @@ router.post("/login", (req, res) => {
         newUser
               .save( function(err, newDocument) {
                 const payload = {
-                  id: user.id,
-                  name: user.name,
-                  username: user.username,
-                  isAdmin: user.isAdmin
+                  id: newDocument.id,
+                  name: newDocument.name,
+                  username: newDocument.username,
+                  isAdmin: newDocument.isAdmin
                 };
                 // Sign token
                 jwt.sign(
