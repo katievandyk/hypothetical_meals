@@ -172,7 +172,6 @@ function calculateIngredientQuantities(req, res, callback) {
 
                 aggregated.forEach(ing => {
                     ing.quantity = ing.quantity + " " + ing.unit
-                    ing.packages = ing.packages + " packages"
                     delete ing.unit
                 })
 
