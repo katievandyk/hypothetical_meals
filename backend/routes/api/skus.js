@@ -106,7 +106,7 @@ router.delete('/:id', (req, res) => {
         Promise.all(goal_matches.map(function(goal) {
             return new Promise(function(accept, reject) {
                 new_list = goal.skus_list.filter(function( obj ) {
-                    return obj.sku.toString() !== req.params.id;
+                    return obj.sku.toString() !== req.params.id.toString();
                 });
                 Goal.findByIdAndUpdate(goal._id, {skus_list: new_list}).then(accept).catch(reject)
             })
@@ -115,10 +115,9 @@ router.delete('/:id', (req, res) => {
             SKU.findById(req.params.id)
             .then(sku => sku.remove().then(
                 () => res.json({success: true}))
-            ).catch(err => res.status(404).json({success: false, message: err.message}))
-        }).catch(err => res.status(404).json({success: false, message: err.message}))
-    })
-    
+            )
+        })
+    }).catch(err => res.status(404).json({success: false, message: err.message}))
 });
 
 // @route POST api/skus/update/:id
@@ -306,14 +305,18 @@ router.post('/bulk-edit-mls', (req, res) => {
             .then(sku => {
                 let ml_list = sku.manufacturing_lines
                 req.body.none.forEach(ml_del => {
-                    var index = ml_list.findIndex(x => x._id.toString()==ml_del)
+                    var index = ml_list.findIndex(x => {
+                        return x._id.toString()==ml_del.toString()
+                    })
                     if (index > -1) {
                         ml_list.splice(index, 1);
                     }
                 })
                 
                 req.body.all.forEach(ml_add => {
-                    var index = ml_list.findIndex(x => x._id.toString()==ml_add)
+                    var index = ml_list.findIndex(x => {
+                        return x._id.toString()==ml_add.toString()
+                    })
                     if (index == -1) {
                         ml_list.push({_id: ml_add});
                     }
