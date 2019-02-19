@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
 import SKUAddModal from '../components/skus/SKUAddModal';
+import SKUBulkEditMLines from '../components/skus/SKUBulkEditMLines';
 import SKUsKeywordSearch from '../components/skus/SKUsKeywordSearch';
 import SKUsEntry from '../components/skus/SKUsEntry';
 import SKUAlerts from '../components/skus/SKUAlerts';
@@ -93,7 +94,7 @@ class SKU extends Component {
            <Container className="mb-3">
              <Row>
                <Col> <h1>SKUs</h1> </Col>
-               <Col>  </Col>
+               <Col> </Col>
                <Col> <SKUsKeywordSearch/> </Col>
              </Row>
              <Row>
@@ -104,8 +105,9 @@ class SKU extends Component {
                  <PLineFilters/>
                </Col>
                <Col style={{'textAlign': 'right'}}>
-                 <Button onClick={this.onGBPLClick}> {groupByMsg}</Button> {' '}
-                 {this.props.auth.isAdmin && <SKUAddModal/>}
+                 <Button onClick={this.onGBPLClick}> {groupByMsg}</Button> {' '}&nbsp;
+                 {this.props.auth.isAdmin &&
+                   <SKUAddModal/>}
                </Col>
              </Row>
            </Container>
@@ -134,9 +136,13 @@ class SKU extends Component {
                </Col>
                </Row>
             <Row>
-               <Col style={{'textAlign': 'right'}}/>
+              <Col style={{textAlign:'left'}}>
+                <SKUBulkEditMLines/>
+              </Col>
+              <Col style={{'textAlign': 'right'}}>
              <Button onClick={() =>  this.props.exportSKUs(this.props.skus.obj)}>Export SKUs</Button> &nbsp;
              <Button onClick={() =>  this.props.exportFormulas(this.props.skus.obj)}>Export Formulas</Button>
+             </Col>
              </Row>
            </Container>
          </div>
