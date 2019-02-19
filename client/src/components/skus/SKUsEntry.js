@@ -13,6 +13,7 @@ import {
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { getSKUs, sortSKUs, deleteSKU, updateSKU } from '../../actions/skuActions';
+import { sortFormulas } from '../../actions/formulaActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SKUsFormPLineSelection from './SKUsFormPLineSelection'
@@ -69,6 +70,7 @@ class SKUsEntry extends React.Component {
 
   componentDidMount() {
     this.props.sortSKUs('name', 'asc', 1, 10, {});
+    this.props.sortFormulas('name', 'asc', 1, -1, {});
     if(this.props.skus.obj && this.props.skus.obj.group_pl && this.props.skus.obj.group_pl === "True"){
       this.setState({
         group_by_pl: true
@@ -507,6 +509,8 @@ class SKUsEntry extends React.Component {
   }
 
   formulaModal = () => {
+    var formulas = this.props.formulas.formulas;
+    var formula = this.formula_ing_helper(this.state.formula_id, formulas);
     return (
       <Modal size="sm" isOpen={this.state.formula_modal} toggle={this.formula_toggle}>
         <ModalHeader toggle={this.formula_toggle}>{this.state.formula_name}</ModalHeader>
@@ -520,7 +524,8 @@ class SKUsEntry extends React.Component {
           <div style={{paddingBottom: '1.5em'}}>
             <b>Ingredients List: </b>
               <div>
-              {this.state.formula_ingredients_list.map(({_id, quantity})=>(
+              {formula.ingredients_list &&
+                formula.ingredients_list.map(({_id, quantity})=>(
                 <div key={_id._id}>{_id.name}, {quantity}</div>
               ))}
               </div>
@@ -531,6 +536,15 @@ class SKUsEntry extends React.Component {
         </ModalBody>
       </Modal>
     );
+  }
+
+  formula_ing_helper = (id, formulas) => {
+    var formula = formulas.filter(({_id}) => _id === id);
+    if(formula[0])
+      return formula[0];
+    else {
+      return {};
+    }
   }
 
   render() {
@@ -810,13 +824,16 @@ SKUsEntry.propTypes = {
   sortSKUs: PropTypes.func.isRequired,
   deleteSKU: PropTypes.func.isRequired,
   updateSKU: PropTypes.func.isRequired,
+  sortFormulas: PropTypes.func.isRequired,
+  formulas: PropTypes.object.isRequired,
   skus: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
   skus: state.skus,
+  formulas: state.formulas,
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getSKUs, sortSKUs, deleteSKU, updateSKU })(SKUsEntry);
+export default connect(mapStateToProps, { getSKUs, sortSKUs, deleteSKU, updateSKU, sortFormulas })(SKUsEntry);
