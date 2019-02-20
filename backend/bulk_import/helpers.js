@@ -91,8 +91,8 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
     ).then(result => {
         var keywords, keyword_numbers
         if(req.body.keywords != null ) {
-            keywords = req.body.keywords.filter(word => !isNumeric(word))
-            keyword_numbers = req.body.keywords.filter(word => isNumeric(word)).map(parseFloat)
+            keywords = req.body.keywords.split(/\s+/).filter(word => !isNumeric(word))
+            keyword_numbers = req.body.keywords.split(/\s+/).filter(word => isNumeric(word)).map(parseFloat)
         }
     
         var onlyIds = result.map(obj => obj._id);
@@ -145,8 +145,8 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
 module.exports.getFormulasFilterResult = getFormulasFilterResult = function(req, res, callback) {
     var keywords, keyword_numbers
     if(req.body.keywords != null ) {
-        keywords = req.body.keywords.filter(word => !isNumeric(word))
-        keyword_numbers = req.body.keywords.filter(word => isNumeric(word)).map(parseFloat)
+        keywords = req.body.keywords.split(/\s+/).filter(word => !isNumeric(word))
+        keyword_numbers = req.body.keywords.split(/\s+/).filter(word => isNumeric(word)).map(parseFloat)
     }
 
     var formulasFindPromise = Formula.find();
@@ -209,8 +209,8 @@ module.exports.ingredientDependencyReportCsv = ingredientDependencyReportCsv = f
 module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, callback) {
     var keywords, keyword_numbers
     if(req.body.keywords != null ) {
-        keywords = req.body.keywords.filter(word => !isNumeric(word))
-        keyword_numbers = req.body.keywords.filter(word => isNumeric(word)).map(parseFloat)
+        keywords = req.body.keywords.split(/\s+/).filter(word => !isNumeric(word))
+        keyword_numbers = req.body.keywords.split(/\s+/).filter(word => isNumeric(word)).map(parseFloat)
     }
 
     var skuFindPromise = SKU.find();
