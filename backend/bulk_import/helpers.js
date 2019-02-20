@@ -89,16 +89,26 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
         { $replaceRoot: { newRoot: "$ingredients" } }
         ]
     ).then(result => {
+        var keywords, keyword_numbers
+        if(req.body.keywords != null ) {
+            keywords = req.body.keywords.filter(word => !isNumeric(word))
+            keyword_numbers = req.body.keywords.filter(word => isNumeric(word)).map(parseFloat)
+        }
+    
         var onlyIds = result.map(obj => obj._id);
         var ingredientFindPromise;
         var ingredientCountPromise;
-        if (req.body.skus != null && req.body.keywords != null) {
+        if (req.body.skus != null && req.body.keywords != null && keywords.length > 0) {
             ingredientFindPromise = Ingredient.find({$text: {
-                $search: req.body.keywords}},
+                $search: keywords,
+                $caseSensitive: false,
+                $diacriticSensitive: true}},
                 {score:{$meta: "textScore"}}, 
                 ).where({_id: {$in: onlyIds}});
             ingredientCountPromise = Ingredient.find({$text: {
-                $search: req.body.keywords}},
+                $search: req.body.keywords,
+                $caseSensitive: false,
+                $diacriticSensitive: true}},
                 {score:{$meta: "textScore"}}, 
                 ).where({_id: {$in: onlyIds}});
         }
@@ -106,33 +116,53 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
             ingredientFindPromise = Ingredient.find().where({_id: {$in: onlyIds}});
             ingredientCountPromise = Ingredient.find().where({_id: {$in: onlyIds}});
         }
-        else if (req.body.keywords != null) {
+        else if (req.body.keywords != null && keywords.length > 0) {
             ingredientFindPromise = Ingredient.find({$text: {
-                $search: req.body.keywords}},
+                $search: req.body.keywords,
+                $caseSensitive: false,
+                $diacriticSensitive: true}},
                 {score:{$meta: "textScore"}});
             ingredientCountPromise = Ingredient.find({$text: {
-                $search: req.body.keywords}},
+                $search: req.body.keywords,
+                $caseSensitive: false,
+                $diacriticSensitive: true}},
                 {score:{$meta: "textScore"}});
         }
         else {
             ingredientFindPromise = Ingredient.find();
             ingredientCountPromise = Ingredient.find();
         }
+        
+        if(req.body.keywords != null && keyword_numbers.length > 0) {
+            ingredientFindPromise = ingredientFindPromise.where({"number": {$in: keyword_numbers}})
+            ingredientCountPromise = ingredientCountPromise.where({"number": {$in: keyword_numbers}})
+        }
+
         callback(req, res, ingredientFindPromise, ingredientCountPromise)
     }).catch(err => res.status(404).json({success: false, message: err.message}));
 }
 
 module.exports.getFormulasFilterResult = getFormulasFilterResult = function(req, res, callback) {
+    var keywords, keyword_numbers
+    if(req.body.keywords != null ) {
+        keywords = req.body.keywords.filter(word => !isNumeric(word))
+        keyword_numbers = req.body.keywords.filter(word => isNumeric(word)).map(parseFloat)
+    }
+
     var formulasFindPromise = Formula.find();
     let formulasCountPromise = Formula.find();
 
-    if (req.body.keywords != null) {
+    if (req.body.keywords != null && keywords.length > 0) {
         formulasFindPromise = Formula.find(
-            {$text: {$search: req.body.keywords}},
+            {$text: {$search: keywords,
+                $caseSensitive: false,
+                $diacriticSensitive: true}},
             {score:{$meta: "textScore"}});
 
         formulasCountPromise= Formula.find(
-            {$text: {$search: req.body.keywords}},
+            {$text: {$search: keywords,
+                $caseSensitive: false,
+                $diacriticSensitive: true}},
             {score:{$meta: "textScore"}});
     }
     if (req.body.ingredients != null) {
@@ -144,6 +174,10 @@ module.exports.getFormulasFilterResult = getFormulasFilterResult = function(req,
                 req.body.ingredients}});
     }
 
+    if(req.body.keywords != null && keyword_numbers.length > 0) {
+        formulasFindPromise = formulasFindPromise.where({"number": {$in: keyword_numbers}})
+        formulasCountPromise = formulasCountPromise.where({"number": {$in: keyword_numbers}})
+    }
     formulasFindPromise = formulasFindPromise.populate("ingredients_list._id")
 
     callback(req, res, formulasFindPromise, formulasCountPromise)
@@ -173,16 +207,26 @@ module.exports.ingredientDependencyReportCsv = ingredientDependencyReportCsv = f
 }
 
 module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, callback) {
+    var keywords, keyword_numbers
+    if(req.body.keywords != null ) {
+        keywords = req.body.keywords.filter(word => !isNumeric(word))
+        keyword_numbers = req.body.keywords.filter(word => isNumeric(word)).map(parseFloat)
+    }
+
     var skuFindPromise = SKU.find();
     let skuCountPromise = SKU.find();
 
-    if (req.body.keywords != null) {
+    if (req.body.keywords != null && keywords.length > 0) {
         skuFindPromise = SKU.find(
-            {$text: {$search: req.body.keywords}},
+            {$text: {$search: keywords,
+                $caseSensitive: false,
+                $diacriticSensitive: true}},
             {score:{$meta: "textScore"}});
 
         skuCountPromise= SKU.find(
-            {$text: {$search: req.body.keywords}},
+            {$text: {$search: keywords,
+                $caseSensitive: false,
+                $diacriticSensitive: true}},
             {score:{$meta: "textScore"}});
     }
     if (req.body.ingredients != null) {
@@ -202,6 +246,21 @@ module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, call
             { 'product_line': { $in: 
                 req.body.product_lines.map(
                     function(el) { return mongoose.Types.ObjectId(el) }) }});
+    }
+
+    if(req.body.keywords != null && keyword_numbers.length > 0) {
+        skuFindPromise = skuFindPromise.where({
+            $or:[ 
+                {"number": {$in: keyword_numbers}},
+                {"case_number": {$in: keyword_numbers}},
+                {"unit_number": {$in: keyword_numbers}}
+            ]})
+            skuCountPromise = skuCountPromise.where({
+            $or:[ 
+                {"number": {$in: keyword_numbers}},
+                {"case_number": {$in: keyword_numbers}},
+                {"unit_number": {$in: keyword_numbers}}
+            ]})
     }
 
     skuFindPromise = skuFindPromise.populate('product_line').populate('formula').populate('manufacturing_lines._id')
