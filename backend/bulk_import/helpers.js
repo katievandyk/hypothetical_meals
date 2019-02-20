@@ -209,10 +209,9 @@ module.exports.ingredientDependencyReportCsv = ingredientDependencyReportCsv = f
 module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, callback) {
     var keywords, keyword_numbers
     if(req.body.keywords != null ) {
-        keywords = req.body.keywords.split(/\s+/).filter(word => !isNumeric(word))
-        keyword_numbers = req.body.keywords.split(/\s+/).filter(word => isNumeric(word)).map(parseFloat)
+        keywords = req.body.keywords.split(/\s(?=(?:[^'"`]*(['"`])[^'"`]*\1)*[^'"`]*$)/).filter(word => (word && !isNumeric(word))).map(word => word.replace(/['"]+/g, ''))
+        keyword_numbers = req.body.keywords.split(/\s(?=(?:[^'"`]*(['"`])[^'"`]*\1)*[^'"`]*$)/).filter(word => isNumeric(word)).map(parseFloat)
     }
-
     var skuFindPromise = SKU.find();
     let skuCountPromise = SKU.find();
 
@@ -272,15 +271,9 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
     // Paginate. If limit = -1, then gives all records
     var currentPage = parseInt(req.params.pagenumber);
     var limit = parseInt(req.params.limit);
-    if (limit != -1) {
+    if (limit != -1 && req.params.field != "product_line" && req.params.field != "formula") {
         findPromise = findPromise.skip((currentPage-1)*limit).limit(limit);
     }
-
-    let sortField;
-    if(req.params.field == "product_line") 
-        sortField = "product_line.name"
-    else 
-        sortField = req.params.field
 
     var sortOrder = req.params.asc === 'asc' ? 1 : -1;
     var sortPromise;
@@ -290,13 +283,19 @@ module.exports.sortAndLimit = sortAndLimit = function(req, res, findPromise, cou
     }
     else {
         sortPromise = findPromise.lean().sort(
-            {[sortField] : sortOrder});
+            {[req.params.field] : sortOrder});
     }
 
     Promise.all([countPromise.count(), sortPromise])
         .then(results => {
             if (req.body.group_pl === "True") {
                 results[1] = groupByProductLine(results[1]);
+            }
+            else if (req.params.field == "product_line") {
+                results[1] = skuSortByProductLine(results[1], (currentPage-1)*limit, limit, sortOrder)
+            }
+            else if (req.params.field == "formula") {
+                results[1] = skuSortByFormula(results[1], (currentPage-1)*limit, limit, sortOrder)
             }
             
             finalResult = {count: results[0], results: results[1]};
@@ -317,6 +316,16 @@ function groupByProductLine(results) {
             pl_to_skus[pl_name].push(results[i]) : pl_to_skus[pl_name] = [results[i]];
     }
     return pl_to_skus;
+}
+
+function skuSortByProductLine(results, start, limit, asc) {
+    results.sort((a,b) => asc*a.product_line.name.localeCompare(b.product_line.name));
+    return limit <= 0 ? results : results.slice(start, start+limit)
+}
+
+function skuSortByFormula(results, start, limit, asc) {
+    results.sort((a,b) => asc*a.formula.name.localeCompare(b.formula.name));
+    return limit <= 0 ? results : results.slice(start, start+limit)
 }
 
 
