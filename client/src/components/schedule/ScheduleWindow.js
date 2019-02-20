@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
         orientation: 'top',
         horizontalScroll: true,
         onAdd: function(item, callback) {
-          if(data.items.find(i => (i.start < item.end) && (item.start < i.end) && i.id !== item.id && i.group === item.group)) {
+          if(data.items.find(i => (i.start < item.end) && (item.start < i.end) && i.id !== item.id && i.group === item.group && (i.group === item.group))) {
                 alert("Move item to a non-overlapping location.")
                 callback(null)
           }
@@ -28,11 +28,10 @@ import { connect } from 'react-redux';
           }
         },
         onMove: function(item, callback) {
-          console.log(data)
-          const index = data.items.indexOf(i => i.id === item.id)
-          data.items.splice(index)
-          data.items.push(item)
-          if(data.items.find(i => (i.start < item.end) && (item.start <= i.end) && i.id !== item.id && i.group === item.group)) {
+          const index = data.items.indexOf(item)
+          if(index > -1) data.items[index] = item;
+          console.log(data.items)
+          if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id) && (i.group === item.group) ))) {
                 alert("Move item to a non-overlapping location.")
                 callback(null)
           }
