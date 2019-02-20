@@ -16,7 +16,7 @@ class ScheduleSidePanel extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getGoals(this.props.auth.user_email);
+    this.props.getGoals(this.props.auth.user_username);
   }
 
   toggleActive = (id) => {
@@ -57,7 +57,7 @@ class ScheduleSidePanel extends React.Component {
                                     <Label><h6>{name}</h6></Label>
                                     {skus_list.map(({_id, sku})=> (
                                         <ListGroup>
-                                            <ListGroupItem  md={2} draggable="true" onDragStart={(e) => this.props.handleDragStart(e, sku.name)}>
+                                            <ListGroupItem  md={2} draggable="true" onDragStart={(e) => this.props.handleDragStart(e, sku._id, sku.name)}>
                                                 {sku.name}
                                             </ListGroupItem>
                                         </ListGroup>
