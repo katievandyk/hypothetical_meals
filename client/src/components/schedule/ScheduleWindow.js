@@ -17,9 +17,24 @@ import { connect } from 'react-redux';
         editable: true,
         orientation: 'top',
         horizontalScroll: true,
-        onDropObjectOnItem: function(objectData, item, callback) {
-          if (!item) { return; }
-          alert('dropped object with content: "' + objectData.content + '" to item: "' + item.content + '"');
+        onAdd: function(item, callback) {
+          if(data.items.find(i => (i.start < item.end) && (item.start < i.end) && i.id !== item.id && i.group === item.group)) {
+                alert("Move item to a non-overlapping location.")
+                callback(null)
+          }
+          else {
+            data.items.push(item)
+            callback(item)
+          }
+        },
+        onMove: function(item, callback) {
+          const index = data.items.indexOf(i => i.id === item.id)
+          data.items.splice(index)
+          data.items.push(item)
+          if(data.items.find(i => (i.start < item.end) && (item.start < i.end) && i.id !== item.id && i.group === item.group)) {
+                alert("Move item to a non-overlapping location.")
+                callback(null)
+          }
         }
       }
    }
@@ -60,13 +75,16 @@ class ScheduleWindow extends React.Component {
             <Col>
             <Timeline
               {...data}
-              selection={this.state.selectedIds}
             />
             </Col>
             </Row>
       </div>
     )
   }
+
+   onMoving = (item) => {
+        console.log(item.start)
+    }
 
    handleDragStart = (event, _id, name) => {
     event.dataTransfer.effectAllowed = 'move';
@@ -75,7 +93,6 @@ class ScheduleWindow extends React.Component {
       type:'range',
       content: name,
     };
-    data.items.push(item)
     event.dataTransfer.setData("text", JSON.stringify(item));
   }
 

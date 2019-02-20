@@ -1,5 +1,6 @@
 import React  from 'react'
-import { Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
+import { Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { getGoals } from '../../actions/goalsActions';
 import PropTypes from 'prop-types';
@@ -19,6 +20,12 @@ class ScheduleSidePanel extends React.Component {
     this.props.getGoals(this.props.auth.user_username);
   }
 
+  modal_toggle = () => {
+      this.setState({
+        modal: !this.state.modal,
+      });
+  }
+
   toggleActive = (id) => {
     const { goals } = this.props.goals;
     const selGoal = goals.find(goal => goal._id === id)
@@ -36,7 +43,16 @@ class ScheduleSidePanel extends React.Component {
     return (
       <div>
                 <Card>
-                <CardHeader>Manufacturing Lines</CardHeader>
+                <CardHeader onClick={this.modal_toggle}>
+                    <Row>&nbsp; &nbsp;
+                        Active Goals
+                        <Col style={{textAlign: 'right'}}/>
+                        <FontAwesomeIcon icon = "edit"/>
+                    </Row>
+                </CardHeader>
+                </Card> &nbsp;
+                <Modal isOpen={this.state.modal} toggle={this.modal_toggle} >
+                    <ModalHeader>Set Active Manufacturing Lines</ModalHeader>
                     <CardBody>
                         <Label>Goals Search</Label>
                         <Input placeholder="Enter goal or creator..."/> &nbsp;
@@ -48,7 +64,7 @@ class ScheduleSidePanel extends React.Component {
                             ))}
                         </ListGroup>
                     </CardBody>
-                </Card> &nbsp;
+                </Modal>
                 <Card>
                 <CardHeader>SKUs for Selected Goals</CardHeader>
                     <CardBody>
