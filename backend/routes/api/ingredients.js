@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const IngredientHelper = require('../../bulk_import/helpers');
 const Parser = require('../../bulk_import/parser')
+const Constants = require('../../bulk_import/constants')
 
 // Ingredient Model
 const Ingredient = require('../../models/Ingredient');
@@ -102,16 +103,21 @@ router.delete('/:id', (req, res) => {
 router.post('/update/:id', (req, res) => {
     Ingredient.findById(req.params.id).then(ing => {
         new_ing = {
-            name: req.body.name !== null ? req.body.name : ing.name,
-            number: req.body.number !== null ? req.body.number : ing.number,
-            vendor_info: req.body.vendor_info !== null ? req.body.vendor_info : ing.vendor_info,
-            package_size: req.body.package_size !== null ? req.body.package_size : ing.package_size,
-            cost_per_package: req.body.cost_per_package !== null ? req.body.cost_per_package : ing.cost_per_package,
-            comment: req.body.comment !== null ? req.body.comment : ing.comment
+            name: req.body.name != null ? req.body.name : ing.name,
+            number: req.body.number != null ? req.body.number : ing.number,
+            vendor_info: req.body.vendor_info != null ? req.body.vendor_info : ing.vendor_info,
+            package_size: req.body.package_size != null ? req.body.package_size : ing.package_size,
+            cost_per_package: req.body.cost_per_package != null ? req.body.cost_per_package : ing.cost_per_package,
+            comment: req.body.comment != null ? req.body.comment : ing.comment
         }
 
         try {
             Parser.ingredientFieldsCheck(new_ing.name, new_ing.number, new_ing.package_size, new_ing.cost_per_package)
+            
+            let prev_unit = IngredientHelper.extractUnits(ing.package_size)[1]
+            let new_unit = IngredientHelper.extractUnits(new_ing.package_size)[1]
+            if(Constants.units[prev_unit] !== Constants.units[new_unit])
+                throw new Error(`Package size can only be ${Constants.units[prev_unit]}-based. Found ${Constants.units[new_unit]}-based unit: ${new_unit}`)
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
             return;

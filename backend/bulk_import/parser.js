@@ -173,6 +173,11 @@ module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_
                         !number_result.comment && ing_data[ing_fields.comment].length == 0))
                         status = "Ignore";
                      else {
+                        let prev_unit = Helpers.extractUnits(number_result.package_size)[1]
+                        let new_unit = Helpers.extractUnits(ing_data[ing_fields.size])[1]
+                        if(Constants.units[prev_unit] !== Constants.units[new_unit])
+                            reject(new Error(`Package size for ingredient number ${number_result.number} can only be ${Constants.units[prev_unit]}-based. Found ${Constants.units[new_unit]}-based unit: ${new_unit}`))
+
                         status = "Overwrite";
                         ing_data["to_overwrite"] = number_result;
                      }
@@ -484,6 +489,12 @@ module.exports.preprocessOneFormula = preprocessOneFormula = function(formula_en
                     return;
                 }
                 formula_entry.ingredients_list[i]._id = ings_res[i]._id
+
+                let ing_unit = Helpers.extractUnits(ings_res[i].quantity)[1]
+                let formula_unit = Helpers.extractUnits(formula_entry.ingredients_list[i].quantity)[1]
+                console.log(ing_unit + " " + formula_unit)
+                if(Constants.units[ing_unit] !== Constants.units[formula_unit])
+                    reject(new Error(`Package size can only be ${Constants.units[ing_unit]}-based. Found ${Constants.units[formula_unit]}-based unit: ${formula_unit}`))
             }
             if(!formula_res) {
                 formula_entry["status"] = "Store";
