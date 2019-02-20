@@ -17,6 +17,9 @@ const ManufacturingScheduleSchema = new Schema({
         type: String,
         required: true
     },
+    enabled_goals: [{
+        goal: {type: Schema.Types.ObjectId, ref: 'goal'}
+    }]
 });
 
 module.exports = ManufacturingSchedule = mongoose.model('manufacturingschedule', ManufacturingScheduleSchema);
