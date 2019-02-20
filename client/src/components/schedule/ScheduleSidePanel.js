@@ -43,13 +43,13 @@ class ScheduleSidePanel extends React.Component {
     return (
       <div>
                 <Card>
-                <CardHeader onClick={this.modal_toggle}>
-                    <Row>&nbsp; &nbsp;
-                        Active Goals
-                        <Col style={{textAlign: 'right'}}/>
-                        <FontAwesomeIcon icon = "edit"/>
-                    </Row>
-                </CardHeader>
+                    <CardHeader onClick={this.modal_toggle}>
+                        <Row>&nbsp; &nbsp;
+                            Active Goals
+                            <Col style={{textAlign: 'right'}}/>
+                            <FontAwesomeIcon icon = "edit"/>
+                        </Row>
+                    </CardHeader>
                 </Card> &nbsp;
                 <Modal isOpen={this.state.modal} toggle={this.modal_toggle} >
                     <ModalHeader>Set Active Manufacturing Lines</ModalHeader>
@@ -58,7 +58,7 @@ class ScheduleSidePanel extends React.Component {
                         <Input placeholder="Enter goal or creator..."/> &nbsp;
                         <ListGroup>
                             {goals.map(({_id, name})=> (
-                                <ListGroupItem action active={this.state.selectedGoals.some(goal => goal._id === _id)} tag="button" onClick={() => this.toggleActive(_id)} md={2} >
+                                <ListGroupItem key={_id} action active={this.state.selectedGoals.some(goal => goal._id === _id)} tag="button" onClick={() => this.toggleActive(_id)} md={2} >
                                     {name}
                                 </ListGroupItem>
                             ))}

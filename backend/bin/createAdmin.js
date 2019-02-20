@@ -6,7 +6,7 @@ var url = require('../configs').mongoURI;
 
 MongoClient.connect(url, function(err, db) {
   if (err) throw err;
-  var dbo = db.db('mern_test');
+  var dbo = db.db('hypothetical_meals');
   var newUser = new User({
     name: process.argv[2],
     username: process.argv[3],

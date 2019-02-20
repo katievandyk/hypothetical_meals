@@ -35,6 +35,11 @@ import { connect } from 'react-redux';
                 alert("Move item to a non-overlapping location.")
                 callback(null)
           }
+        },
+        onRemove: function(item, callback) {
+            const index = data.items.indexOf(i => i.id === item.id)
+            data.items.splice(index)
+            callback(item)
         }
       }
    }
