@@ -61,8 +61,8 @@ class GoalsEntry extends React.Component {
   calculator_toggle = () => {
       this.setState({
         calculator_modal: !this.state.calculator_modal,
-      });
-  }
+         });
+     }
 
    exportPDF = () => {
      const input = document.getElementById("toPDF")

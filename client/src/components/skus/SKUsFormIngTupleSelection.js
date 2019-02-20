@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getIngs, sortIngs } from '../../actions/ingActions';
+import {unit_checker} from '../../utils/unitChecker';
 
 class SKUsFormIngTupleSelection extends React.Component {
   state={
@@ -78,14 +79,17 @@ class SKUsFormIngTupleSelection extends React.Component {
 
 
   onChangeQuantity = (index, e) => {
-    const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
     const newIngTuples = this.state.ing_tuples;
     newIngTuples[index].quantity = e.target.value;
     var newVal = this.state.validate;
+    var isRightUnit = false;
+    if(e.target.value.length > 0){
+      isRightUnit = unit_checker(e.target.value);
+    }
     if(this.state.validate[index].ing === ''){
       newVal[index].ing = 'not-selected';
     }
-    if (numRex.test(e.target.value) && e.target.value.length > 0) {
+    if (isRightUnit && e.target.value.length > 0) {
       newVal[index].quantity = 'has-success';
       this.setState({
         ing_tuples: newIngTuples,
@@ -178,7 +182,7 @@ class SKUsFormIngTupleSelection extends React.Component {
 
               </Input>
               <FormFeedback>
-                Please enter a valid quantity.
+                Please enter a valid quantity (with proper weight, count, or volume units).
               </FormFeedback>
             </FormGroup>
           </Col >

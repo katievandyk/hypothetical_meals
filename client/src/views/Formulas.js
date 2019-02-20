@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import { Provider } from 'react-redux';
 import store from '../store';
 import { sortFormulas } from '../actions/formulaActions';
+import { exportFormulas} from '../actions/exportActions';
 
 import {
   Container, Row, Col, Button
@@ -112,7 +113,7 @@ class Formulas extends Component {
              </Row>
              <Row>
              <Col style={{'textAlign': 'right'}}/>
-             {/*<Button onClick={() => { this.props.exportPLines() }}>Export Product Lines</Button>*/}
+               <Button onClick={() =>  this.props.exportFormulas(this.props.formulas.obj)}>Export Formulas</Button>
              </Row>
            </Container>
          </div>
@@ -123,8 +124,9 @@ class Formulas extends Component {
 
 const mapStateToProps = state => ({
   sortFormulas: PropTypes.func.isRequired,
+  exportFormulas: PropTypes.func.isRequired,
   formulas: state.formulas,
   auth: state.auth
 });
 
-export default connect(mapStateToProps, {sortFormulas})(Formulas);
+export default connect(mapStateToProps, {sortFormulas, exportFormulas})(Formulas);
