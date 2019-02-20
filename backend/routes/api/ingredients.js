@@ -42,12 +42,13 @@ router.post('/', (req, res) => {
             res.status(404).json({success: false, message: err.message})
         }
         
+        let package_size = IngredientHelper.extractUnits(req.body.package_size)[0] + " " + Constants.units_display[IngredientHelper.extractUnits(req.body.package_size)[1]]
         const newIngredient = new Ingredient({
             _id: new mongoose.Types.ObjectId(),
             name: req.body.name,
             number: numberResolved,
             vendor_info: req.body.vendor_info,
-            package_size: req.body.package_size,
+            package_size: package_size,
             cost_per_package: req.body.cost_per_package,
             comment: req.body.comment
         });
@@ -115,9 +116,11 @@ router.post('/update/:id', (req, res) => {
             Parser.ingredientFieldsCheck(new_ing.name, new_ing.number, new_ing.package_size, new_ing.cost_per_package)
             
             let prev_unit = IngredientHelper.extractUnits(ing.package_size)[1]
+            let new_ing_num = IngredientHelper.extractUnits(new_ing.package_size)[0]
             let new_unit = IngredientHelper.extractUnits(new_ing.package_size)[1]
             if(Constants.units[prev_unit] !== Constants.units[new_unit])
                 throw new Error(`Package size can only be ${Constants.units[prev_unit]}-based. Found ${Constants.units[new_unit]}-based unit: ${new_unit}`)
+            new_ing.package_size = new_ing_num + " " + Constants.units_display[new_unit]
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
             return;
@@ -141,7 +144,7 @@ router.post('/update/:id', (req, res) => {
                     }
                 })
                 if(!error_thrown)
-                    Ingredient.findByIdAndUpdate(req.params.id, {$set:req.body}, {new: true})
+                    Ingredient.findByIdAndUpdate(req.params.id, {$set:new_ing}, {new: true})
                     .then(() => res.json({success: true}))
                     .catch(err => res.status(404).json({success: false, message: err.message}))});
             })
