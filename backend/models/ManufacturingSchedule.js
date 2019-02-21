@@ -13,10 +13,6 @@ const ManufacturingScheduleSchema = new Schema({
             activity: { type: Schema.Types.ObjectId, ref: 'manufacturingactivity'}
         }]
     }],
-    user_username: {
-        type: String,
-        required: true
-    },
     enabled_goals: [{
         goal: {type: Schema.Types.ObjectId, ref: 'goal'}
     }]

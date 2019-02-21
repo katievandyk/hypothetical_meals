@@ -27,4 +27,4 @@ const ManufacturingActivitySchema = new Schema({
     }
 });
 
-module.exports = ManufacturingActivitySchema = mongoose.model('manufacturingactivity', ManufacturingActivitySchema);
+module.exports = ManufacturingActivity = mongoose.model('manufacturingactivity', ManufacturingActivitySchema);
