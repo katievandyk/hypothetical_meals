@@ -604,7 +604,10 @@ class SKUsEntry extends React.Component {
                     Product Line{' '}
                       {this.getSortIcon('product_line')}
                   </th>
-                  <th>Formula</th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'formula')}>
+                    Formula{' '}
+                      {this.getSortIcon('formula')}</th>
                     <th style={{cursor:'pointer'}}
                       onClick={this.sortCol.bind(this, 'formula_scale_factor')}>
                       Formula Scale Factor{' '}
@@ -731,7 +734,10 @@ class SKUsEntry extends React.Component {
                   Product Line{' '}
                     {this.getSortIcon('product_line')}
                 </th>
-                <th>Formula</th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'formula')}>
+                  Formula{' '}
+                    {this.getSortIcon('formula')}</th>
                   <th style={{cursor:'pointer'}}
                     onClick={this.sortCol.bind(this, 'formula_scale_factor')}>
                     Formula Scale Factor{' '}

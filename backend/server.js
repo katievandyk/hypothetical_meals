@@ -67,6 +67,9 @@ app.use('/api/manufacturing', manufacturing);
 const formula = require('./routes/api/formulas');
 app.use('/api/formulas', formula);
 
+const manufacturingSchedule = require('./routes/api/manufacturing-schedule');
+app.use('/api/manufacturingschedule', manufacturingSchedule);
+
 var env = process.env.NODE_ENV || 'dev';
 
 if(env!=='dev') {

@@ -167,12 +167,18 @@ module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_
                     if(number_result.number == ing_data[ing_fields.number] && 
                         (number_result.vendor_info == ing_data[ing_fields.vendor] || 
                         !number_result.vendor_info && ing_data[ing_fields.vendor].length == 0) &&
-                        number_result.package_size == ing_data[ing_fields.size] &&
+                        Helpers.extractUnits(number_result.package_size)[0] == Helpers.extractUnits(ing_data[ing_fields.size])[0] &&
+                        Constants.units_display[Helpers.extractUnits(number_result.package_size)[1]] == Constants.units_display[Helpers.extractUnits(ing_data[ing_fields.size])[1]] &&
                         number_result.cost_per_package == ing_data[ing_fields.cost] &&
                         (number_result.comment == ing_data[ing_fields.comment] || 
                         !number_result.comment && ing_data[ing_fields.comment].length == 0))
                         status = "Ignore";
                      else {
+                        let prev_unit = Helpers.extractUnits(number_result.package_size)[1]
+                        let new_unit = Helpers.extractUnits(ing_data[ing_fields.size])[1]
+                        if(Constants.units[prev_unit] !== Constants.units[new_unit])
+                            reject(new Error(`Package size for ingredient number ${number_result.number} can only be ${Constants.units[prev_unit]}-based. Found ${Constants.units[new_unit]}-based unit: ${new_unit}`))
+                        
                         status = "Overwrite";
                         ing_data["to_overwrite"] = number_result;
                      }
@@ -184,6 +190,7 @@ module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_
                     reject(new Error(`Ambiguous Record: Record name: ${ing_data[ing_fields.name]} `+
                     `and number ${ing_data[ing_fields.number]} conflicts with existing records in db.`))
                 ing_data["status"] = status;
+                ing_data[ing_fields.size] = Helpers.extractUnits(ing_data[ing_fields.size])[0] + " " + Constants.units_display[Helpers.extractUnits(ing_data[ing_fields.size])[1]]
                 accept(ing_data);
             })
     });
@@ -484,6 +491,13 @@ module.exports.preprocessOneFormula = preprocessOneFormula = function(formula_en
                     return;
                 }
                 formula_entry.ingredients_list[i]._id = ings_res[i]._id
+
+                let ing_unit = Helpers.extractUnits(ings_res[i].package_size)[1]
+                let formula_qty = Helpers.extractUnits(formula_entry.ingredients_list[i].quantity)[0]
+                let formula_unit = Helpers.extractUnits(formula_entry.ingredients_list[i].quantity)[1]
+                if(Constants.units[ing_unit] !== Constants.units[formula_unit])
+                    reject(new Error(`Formula quantity for formula ${formula_entry.number} can only be ${Constants.units[ing_unit]}-based. Found ${Constants.units[formula_unit]}-based unit: ${formula_unit}`))
+                formula_entry.ingredients_list[i].quantity = formula_qty + " " + Constants.units_display[formula_unit]
             }
             if(!formula_res) {
                 formula_entry["status"] = "Store";

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const IngredientHelper = require('../../bulk_import/helpers');
 const Parser = require('../../bulk_import/parser')
+const Constants = require('../../bulk_import/constants')
 
 // Ingredient Model
 const Ingredient = require('../../models/Ingredient');
@@ -41,12 +42,13 @@ router.post('/', (req, res) => {
             res.status(404).json({success: false, message: err.message})
         }
         
+        let package_size = IngredientHelper.extractUnits(req.body.package_size)[0] + " " + Constants.units_display[IngredientHelper.extractUnits(req.body.package_size)[1]]
         const newIngredient = new Ingredient({
             _id: new mongoose.Types.ObjectId(),
             name: req.body.name,
             number: numberResolved,
             vendor_info: req.body.vendor_info,
-            package_size: req.body.package_size,
+            package_size: package_size,
             cost_per_package: req.body.cost_per_package,
             comment: req.body.comment
         });
@@ -102,16 +104,23 @@ router.delete('/:id', (req, res) => {
 router.post('/update/:id', (req, res) => {
     Ingredient.findById(req.params.id).then(ing => {
         new_ing = {
-            name: req.body.name !== null ? req.body.name : ing.name,
-            number: req.body.number !== null ? req.body.number : ing.number,
-            vendor_info: req.body.vendor_info !== null ? req.body.vendor_info : ing.vendor_info,
-            package_size: req.body.package_size !== null ? req.body.package_size : ing.package_size,
-            cost_per_package: req.body.cost_per_package !== null ? req.body.cost_per_package : ing.cost_per_package,
-            comment: req.body.comment !== null ? req.body.comment : ing.comment
+            name: req.body.name != null ? req.body.name : ing.name,
+            number: req.body.number != null ? req.body.number : ing.number,
+            vendor_info: req.body.vendor_info != null ? req.body.vendor_info : ing.vendor_info,
+            package_size: req.body.package_size != null ? req.body.package_size : ing.package_size,
+            cost_per_package: req.body.cost_per_package != null ? req.body.cost_per_package : ing.cost_per_package,
+            comment: req.body.comment != null ? req.body.comment : ing.comment
         }
 
         try {
             Parser.ingredientFieldsCheck(new_ing.name, new_ing.number, new_ing.package_size, new_ing.cost_per_package)
+            
+            let prev_unit = IngredientHelper.extractUnits(ing.package_size)[1]
+            let new_ing_num = IngredientHelper.extractUnits(new_ing.package_size)[0]
+            let new_unit = IngredientHelper.extractUnits(new_ing.package_size)[1]
+            if(Constants.units[prev_unit] !== Constants.units[new_unit])
+                throw new Error(`Package size can only be ${Constants.units[prev_unit]}-based. Found ${Constants.units[new_unit]}-based unit: ${new_unit}`)
+            new_ing.package_size = new_ing_num + " " + Constants.units_display[new_unit]
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
             return;
@@ -135,7 +144,7 @@ router.post('/update/:id', (req, res) => {
                     }
                 })
                 if(!error_thrown)
-                    Ingredient.findByIdAndUpdate(req.params.id, {$set:req.body}, {new: true})
+                    Ingredient.findByIdAndUpdate(req.params.id, {$set:new_ing}, {new: true})
                     .then(() => res.json({success: true}))
                     .catch(err => res.status(404).json({success: false, message: err.message}))});
             })
@@ -209,31 +218,28 @@ router.get('/sort/:field/:asc', (req, res) => {
 // - skus: Array of SKU ids (Strings) to get ingredients for
 // @access public
 router.post('/byskus', (req, res) => {
-    SKU.aggregate(
-        [{ $match: {'_id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
-        { $unwind: "$ingredients_list" },
-        {
-            $lookup: {
-                from: 'ingredients',
-                localField: 'ingredients_list._id',
-                foreignField: '_id',
-                as: 'ingredients_joined'
+    SKU
+    .find({'_id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })}})
+    .populate("formula")
+    .lean()
+    .then(sku_res => {
+        Ingredient.populate(sku_res, {path:"formula.ingredients_list._id"})
+        .then(populated => {
+            const reducer = (accumulator, currentValue) => {
+                currentValue.forEach(entry => accumulator.push(entry._id._id))
+                return accumulator
             }
-        },
-        { $group: { _id: { ingredients: '$ingredients_joined'} } },
-        { $replaceRoot: { newRoot: "$_id" } },
-        { $unwind: "$ingredients" },
-        { $replaceRoot: { newRoot: "$ingredients" } }
-        ]
-    ).then(result => res.json(result))
-    .catch(err => res.status(404).json({success: false, message: err.message}));
+            ingredients = populated.map(obj => obj.formula.ingredients_list).reduce(reducer, [])
+            res.json(ingredients)
+        })
+    })
 });
 
 // @route GET api/ingredients/:id/skus
 // @desc gets a list of skus for an ingredient
 // @access public
 router.get('/:id/skus', (req, res) => {
-    Formula.find({ 'ingredients_list._id': mongoose.Types.ObjectId(req.params.id) })
+    Formula.find({ 'ingredients_list._id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} })
         .select('_id')
         .lean()
         .then(formulas => {

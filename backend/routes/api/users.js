@@ -160,7 +160,7 @@ router.post("/login", (req, res) => {
     })
   })
 
-  function makeNetidAdmin(username) {
+  function makeNetidAdmin(username, res) {
     NetidUser.findOne({ username: username }).then(user => {
       if (!user) {
         return res.status(400).json({ username: "Username does not exist" });
@@ -178,7 +178,7 @@ router.post("/login", (req, res) => {
   router.post("/makeAdmin", (req, res) => {
     User.findOne({ username: req.body.username }).then(user => {
         if (!user) {
-          makeNetidAdmin(req.body.username);
+          makeNetidAdmin(req.body.username, res);
         }
         if(user.isAdmin) {
           return res.status(400).json({ username: "User is already an admin"});
