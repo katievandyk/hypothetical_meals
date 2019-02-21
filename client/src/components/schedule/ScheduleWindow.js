@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
         orientation: 'top',
         horizontalScroll: true,
         onAdd: function(item, callback) {
-          if(data.items.find(i => (i.start < item.end) && (item.start < i.end) && i.id !== item.id && i.group === item.group && (i.group === item.group))) {
+          if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                 alert("Move item to a non-overlapping location.")
                 callback(null)
           }
@@ -28,16 +28,18 @@ import { connect } from 'react-redux';
           }
         },
         onMove: function(item, callback) {
-          const index = data.items.indexOf(item)
-          if(index > -1) data.items[index] = item;
           console.log(data.items)
-          if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id) && (i.group === item.group) ))) {
+          if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                 alert("Move item to a non-overlapping location.")
                 callback(null)
           }
+          else {
+            const index = data.items.findIndex(i => i.id === item.id)
+            if(index > -1) data.items[index] = item;
+          }
         },
         onRemove: function(item, callback) {
-            const index = data.items.indexOf(i => i.id === item.id)
+            var index = data.items.indexOf(i => i.id === item.id)
             data.items.splice(index)
             callback(item)
         }
@@ -87,14 +89,10 @@ class ScheduleWindow extends React.Component {
     )
   }
 
-   onMoving = (item) => {
-        console.log(item.start)
-    }
-
    handleDragStart = (event, _id, name) => {
     event.dataTransfer.effectAllowed = 'move';
     var item = {
-      id: new Date(),
+      id: _id,
       type:'range',
       content: name,
     };
@@ -113,3 +111,11 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { getLines })(ScheduleWindow);
+
+
+/** && (i.id !== item.id) && (i.group === item.group)
+
+|| (item.start <= i.end && i.start <= item.end)
+
+
+**/
