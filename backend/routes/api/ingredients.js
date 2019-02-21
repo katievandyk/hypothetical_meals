@@ -218,31 +218,28 @@ router.get('/sort/:field/:asc', (req, res) => {
 // - skus: Array of SKU ids (Strings) to get ingredients for
 // @access public
 router.post('/byskus', (req, res) => {
-    SKU.aggregate(
-        [{ $match: {'_id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} }},
-        { $unwind: "$ingredients_list" },
-        {
-            $lookup: {
-                from: 'ingredients',
-                localField: 'ingredients_list._id',
-                foreignField: '_id',
-                as: 'ingredients_joined'
+    SKU
+    .find({'_id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })}})
+    .populate("formula")
+    .lean()
+    .then(sku_res => {
+        Ingredient.populate(sku_res, {path:"formula.ingredients_list._id"})
+        .then(populated => {
+            const reducer = (accumulator, currentValue) => {
+                currentValue.forEach(entry => accumulator.push(entry._id._id))
+                return accumulator
             }
-        },
-        { $group: { _id: { ingredients: '$ingredients_joined'} } },
-        { $replaceRoot: { newRoot: "$_id" } },
-        { $unwind: "$ingredients" },
-        { $replaceRoot: { newRoot: "$ingredients" } }
-        ]
-    ).then(result => res.json(result))
-    .catch(err => res.status(404).json({success: false, message: err.message}));
+            ingredients = populated.map(obj => obj.formula.ingredients_list).reduce(reducer, [])
+            res.json(ingredients)
+        })
+    })
 });
 
 // @route GET api/ingredients/:id/skus
 // @desc gets a list of skus for an ingredient
 // @access public
 router.get('/:id/skus', (req, res) => {
-    Formula.find({ 'ingredients_list._id': mongoose.Types.ObjectId(req.params.id) })
+    Formula.find({ 'ingredients_list._id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} })
         .select('_id')
         .lean()
         .then(formulas => {
