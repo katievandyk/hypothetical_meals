@@ -6,6 +6,7 @@ import ScheduleSidePanel from './ScheduleSidePanel'
 import { getLines } from '../../actions/linesActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import '../../styles.css'
 
   const data = {
       groups: [],
@@ -14,7 +15,12 @@ import { connect } from 'react-redux';
         stack: false,
         start: new Date(),
         end: new Date(1000*60*60*24 + (new Date()).valueOf()),
-        editable: true,
+         editable: {
+            add: true,         // add new items by double tapping
+            updateTime: true,
+            updateGroup: true, // drag items from one group to another
+            remove: true       // delete an item by tapping the delete button top right
+          },
         orientation: 'top',
         horizontalScroll: true,
         onAdd: function(item, callback) {
@@ -28,7 +34,6 @@ import { connect } from 'react-redux';
           }
         },
         onMove: function(item, callback) {
-          console.log(data.items)
           if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                 alert("Move item to a non-overlapping location.")
                 callback(null)
@@ -36,6 +41,7 @@ import { connect } from 'react-redux';
           else {
             const index = data.items.findIndex(i => i.id === item.id)
             if(index > -1) data.items[index] = item;
+            callback(item)
           }
         },
         onRemove: function(item, callback) {
@@ -95,6 +101,7 @@ class ScheduleWindow extends React.Component {
       id: _id,
       type:'range',
       content: name,
+      className: 'green'
     };
     event.dataTransfer.setData("text", JSON.stringify(item));
   }
@@ -111,11 +118,3 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { getLines })(ScheduleWindow);
-
-
-/** && (i.id !== item.id) && (i.group === item.group)
-
-|| (item.start <= i.end && i.start <= item.end)
-
-
-**/
