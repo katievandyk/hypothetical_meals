@@ -5,6 +5,7 @@ const router = express.Router();
 const Formula = require('../../models/Formula')
 const Parser = require('../../bulk_import/parser')
 const Helper = require('../../bulk_import/helpers')
+const Constants = require('../../bulk_import/constants')
 // @route GET api/formulas
 // @desc get all formulas
 // @access public
@@ -54,16 +55,37 @@ router.post('/', (req, res) => {
             return;
         }
 
-        const newFormula = new Formula(formulaObj);
+        Promise.all(formulaObj.ingredients_list.map(ing => Ingredient.findById(ing._id)))
+        .then(ings_res => {
+            try {
+                for (i = 0; i < formulaObj.ingredients_list.length; i++) {
+                    if(!(ings_res[i])) {
+                        throw new Error(`Ingr id for formula ${formulaObj.number} not found: ${formulaObj.ingredients_list[i]._id}.`)
+                    }
+    
+                    let ing_unit = Helper.extractUnits(ings_res[i].package_size)[1]
+                    let formula_qty = Helper.extractUnits(formulaObj.ingredients_list[i].quantity)[0]
+                    let formula_unit = Helper.extractUnits(formulaObj.ingredients_list[i].quantity)[1]
+                    if(Constants.units[ing_unit] !== Constants.units[formula_unit])
+                        throw new Error(`Formula quantity for ingredient id ${formulaObj.ingredients_list[i]._id} can only be ${Constants.units[ing_unit]}-based. Found ${Constants.units[formula_unit]}-based unit: ${formula_unit}`)
+                    formulaObj.ingredients_list[i].quantity = formula_qty + " " + Constants.units_display[formula_unit]
+                }
+            } catch(err) {
+                res.status(404).json({success: false, message: err.message})
+                return
+            } 
+            
+            const newFormula = new Formula(formulaObj);
 
-        Formula.findOne({number: formulaObj.number}).then(formula => {
-            if(formula !== null) {
-                res.status(404).json({success: false, message: "Formula number is not unique: " + formulaObj.number})
-            }
-            else {
-                newFormula.save().then(formula => res.json(formula))
-                .catch(err => res.status(404).json({success: false, message: err.message}));
-            }
+            Formula.findOne({number: formulaObj.number}).then(formula => {
+                if(formula !== null) {
+                    res.status(404).json({success: false, message: "Formula number is not unique: " + formulaObj.number})
+                }
+                else {
+                    newFormula.save().then(formula => res.json(formula))
+                    .catch(err => res.status(404).json({success: false, message: err.message}));
+                }
+            })
         })
     })
 });
@@ -98,15 +120,37 @@ router.post('/update/:id', (req, res) => {
             res.status(404).json({success: false, message: err.message})
             return;
         }
-
-        Formula.findOne({number: updatedFormula.number}).then(formula_old => {
+        
+        Promise.all(updatedFormula.ingredients_list.map(ing => Ingredient.findById(ing._id)))
+        .then(ings_res => {
+            try {
+                for (i = 0; i < updatedFormula.ingredients_list.length; i++) {
+                    if(!(ings_res[i])) {
+                        throw new Error(`Ingr id for formula ${updatedFormula.number} not found: ${updatedFormula.ingredients_list[i]._id}.`)
+                    }
+    
+                    let ing_unit = Helper.extractUnits(ings_res[i].package_size)[1]
+                    let formula_qty = Helper.extractUnits(updatedFormula.ingredients_list[i].quantity)[0]
+                    let formula_unit = Helper.extractUnits(updatedFormula.ingredients_list[i].quantity)[1]
+                    if(Constants.units[ing_unit] !== Constants.units[formula_unit])
+                        throw new Error(`Formula quantity for ingredient id ${updatedFormula.ingredients_list[i]._id} can only be ${Constants.units[ing_unit]}-based. Found ${Constants.units[formula_unit]}-based unit: ${formula_unit}`)
+                    updatedFormula.ingredients_list[i].quantity = formula_qty + " " + Constants.units_display[formula_unit]
+                }
+            } catch(err) {
+                res.status(404).json({success: false, message: err.message})
+                return
+            } 
+            
+            Formula.findOne({number: updatedFormula.number}).then(formula_old => {
                 if(formula_old != null && formula_old._id.toString() != formula._id.toString())
                     res.status(404).json({success: false, message: "Formula number is not unique: " + updatedFormula.number})
                 else
                     Formula.findByIdAndUpdate(req.params.id, {$set:req.body})
                     .then(() => res.json({success: true}))
             })
-        })})
+        })
+    })
+})
 
 // @route POST api/formulas/filter/sort/:field/:asc/:pagenumber/:limit
 // @desc gets formulas with many filters

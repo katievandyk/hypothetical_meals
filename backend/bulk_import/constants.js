@@ -69,3 +69,30 @@ module.exports.volume_conv = {
     "l": 33.814,
     "liter": 33.814
 }
+
+// Units to display
+module.exports.units_display = {
+    "oz": "oz.",
+    "ounce": "oz.",
+    "lb": "lb.",
+    "pound": "lb.",
+    "ton": "ton",
+    "g": "g",
+    "gram": "g",
+    "kg": "kg",
+    "kilogram": "kg",
+    "floz": "fl.oz.",
+    "fluidounce": "fl.oz.",
+    "pt": "pt.",
+    "pint": "pt.",
+    "qt": "qt.",
+    "quart": "qt.",
+    "gal": "gal",
+    "gallon": "gal",
+    "ml": "mL",
+    "milliliter": "mL",
+    "l": "L",
+    "liter": "L",
+    "ct": "count",
+    "count": "count",
+}

@@ -16,7 +16,8 @@ import { connect } from 'react-redux';
 import { getIngs, sortIngs, deleteIng, updateIng, getIngSKUs } from '../../actions/ingActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import '../../styles.css'
+import '../../styles.css';
+import {unit_checker} from '../../utils/unitChecker';
 
 class IngredientsEntry extends React.Component {
   state = {
@@ -87,7 +88,7 @@ class IngredientsEntry extends React.Component {
     const field_type = e.target.name;
     const { validate } = this.state
     if (e.target.value.length > 0) {
-      if(field_type === 'edit_name' || field_type === 'edit_package_size'){
+      if(field_type === 'edit_name'){
         validate[field_type] = 'has-success';
       }
       else if(field_type === 'edit_number'){
@@ -97,6 +98,14 @@ class IngredientsEntry extends React.Component {
         }
         else {
           validate[field_type] = 'not-valid-num'
+        }
+      }
+      else if(field_type === 'edit_package_size'){
+        if(unit_checker(e.target.value)){
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid'
         }
       }
       else if(field_type === 'edit_cost_per_package'){
@@ -317,7 +326,7 @@ class IngredientsEntry extends React.Component {
                 <Label for="edit_package_size">Package Size</Label>
                   <Input
                     valid={ this.state.validate.edit_package_size === 'has-success' }
-                    invalid={ this.state.validate.edit_package_size === 'is-empty' }
+                    invalid={ this.state.validate.edit_package_size === 'is-empty' || this.state.validate.edit_package_size === 'not-valid'}
                     type="text"
                     name="edit_package_size"
                     id="edit_package_size"
@@ -325,9 +334,15 @@ class IngredientsEntry extends React.Component {
                     onChange={this.onChange}
                     defaultValue={this.state.edit_package_size}>
                   </Input>
-                  <FormFeedback>
-                    Please input a value.
-                  </FormFeedback>
+                  {this.state.validate.cost_per_package === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid package size (with proper weight, count, or volume units).
+                    </FormFeedback>
+                  )}
               </FormGroup>
               <FormGroup>
                 <Label for="edit_cost_per_package">Cost per Package</Label>
