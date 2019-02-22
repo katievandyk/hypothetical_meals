@@ -8,6 +8,7 @@ import skuReducer from './skuReducer';
 import linesReducer from './linesReducer';
 import importReducer from './importReducer';
 import formulaReducer from './formulaReducer';
+import scheduleReducer from './scheduleReducer';
 
 export default combineReducers({
   ing: ingReducer,
@@ -16,6 +17,7 @@ export default combineReducers({
   lines: linesReducer,
   errors: errorReducer,
   plines: plineReducer,
+  schedule: scheduleReducer,
   skus: skuReducer,
   import: importReducer,
   formulas: formulaReducer
