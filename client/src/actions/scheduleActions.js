@@ -22,13 +22,13 @@ export const setScheduleLoading = () => {
   };
 };
 
-export const getSKUs = (goal_id) => dispatch => {
+export const getGoalSKUs = (goal_id) => dispatch => {
   axios.get(`/api/manufacturingschedule/skus/${goal_id}`).then(res =>{
     dispatch({
       type: GET_GOAL_SKUS,
       payload: res.data
     })
-    ).catch(error =>{
+    }).catch(error => {
       dispatch({
         type: SCHEDULE_ERROR,
         payload: error.response
@@ -42,7 +42,7 @@ export const enableGoal = (goal_id, schedule_id) => dispatch => {
       type: ENABLE_GOAL,
       payload: res.data
     })
-    ).catch(error =>{
+    }).catch(error =>{
       dispatch({
         type: SCHEDULE_ERROR,
         payload: error.response
@@ -56,7 +56,7 @@ export const disableGoal = (goal_id, schedule_id) => dispatch => {
       type: DISABLE_GOAL,
       payload: res.data
     })
-    ).catch(error =>{
+    }).catch(error =>{
       dispatch({
         type: SCHEDULE_ERROR,
         payload: error.response
@@ -70,7 +70,7 @@ export const addActivity  = (activity) => dispatch => {
       type: ADD_ACTIVITY,
       payload: res.data
     })
-    ).catch(error =>{
+    }).catch(error =>{
       dispatch({
         type: SCHEDULE_ERROR,
         payload: error.response
@@ -84,7 +84,7 @@ export const updateActivity  = (activity_id, start) => dispatch => {
       type: UPDATE_ACTIVITY,
       payload: res.data
     })
-    ).catch(error =>{
+    }).catch(error =>{
       dispatch({
         type: SCHEDULE_ERROR,
         payload: error.response

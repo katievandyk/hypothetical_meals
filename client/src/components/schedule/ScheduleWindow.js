@@ -4,6 +4,7 @@ import { Row, Col, Button } from 'reactstrap'
 import ScheduleSidePanel from './ScheduleSidePanel'
 
 import { getLines } from '../../actions/linesActions';
+import { getSchedule } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import '../../styles.css'
@@ -29,6 +30,10 @@ import '../../styles.css'
                 callback(null)
           }
           else {
+            const activity = {
+                name: item.content,
+
+            }
             data.items.push(item)
             callback(item)
           }
@@ -64,6 +69,7 @@ class ScheduleWindow extends React.Component {
 
   componentDidMount() {
     this.props.getLines()
+    this.props.getSchedule()
   }
 
   render() {
@@ -110,6 +116,7 @@ class ScheduleWindow extends React.Component {
 
 ScheduleWindow.propTypes = {
   getLines: PropTypes.func.isRequired,
+  getSchedule: PropTypes.func.isRequired,
   lines: PropTypes.object.isRequired,
 };
 
@@ -117,4 +124,4 @@ const mapStateToProps = (state) => ({
     lines: state.lines
 });
 
-export default connect(mapStateToProps, { getLines })(ScheduleWindow);
+export default connect(mapStateToProps, { getLines, getSchedule })(ScheduleWindow);

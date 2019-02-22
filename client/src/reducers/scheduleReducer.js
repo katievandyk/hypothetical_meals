@@ -3,7 +3,7 @@ import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOA
 
 const initialState = {
   schedule: {},
-  goal_skus: [],
+  goal_skus: {},
   loading: false,
   error_msg: ''
 };
@@ -11,10 +11,10 @@ const initialState = {
 export default function(state = initialState, action) {
   switch(action.type) {
     case GET_SCHEDULE:
+       alert("HERE")
       return {
         ...state,
-        schedule: action.payload.data.results,
-        goal_skus: [],
+        schedule: action.payload,
         loading: false,
         error_msg: ''
       }
@@ -42,6 +42,7 @@ export default function(state = initialState, action) {
           loading: false
      }
     case GET_GOAL_SKUS:
+        console.log(action.payload)
         return {
           ...state,
           goal_skus: action.payload,

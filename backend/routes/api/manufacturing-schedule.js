@@ -15,7 +15,7 @@ const ManufacturingActivity = require('../../models/ManufacturingActivity');
 // @access public
 router.get('/', (req, res) => {
     ManufacturingSchedule
-        .find()
+        .findOne()
         .then(schedule => res.json(schedule))
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });

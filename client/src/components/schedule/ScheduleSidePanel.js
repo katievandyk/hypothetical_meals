@@ -3,6 +3,7 @@ import { Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, Li
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { getGoals } from '../../actions/goalsActions';
+import { getSchedule, getGoalSKUs } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -13,10 +14,12 @@ class ScheduleSidePanel extends React.Component {
     this.toggleActive.bind(this);
     this.state = {
       selectedGoals: [],
+      sku_ranges: []
     }
   }
 
   componentDidMount() {
+    this.props.getSchedule()
     this.props.getGoals(this.props.auth.user_username);
   }
 
@@ -36,6 +39,15 @@ class ScheduleSidePanel extends React.Component {
       this.state.selectedGoals.splice(index, 1);
     }
     this.setState({ selectedGoals: [...this.state.selectedGoals] });
+
+  //  this.props.getGoalSKUs(id)
+
+    this.state.sku_ranges.push({
+        _id: selGoal._id,
+        name: selGoal.name,
+        skus: this.props.goal_skus
+    })
+    console.log(this.props)
   }
 
   render() {
@@ -89,13 +101,18 @@ class ScheduleSidePanel extends React.Component {
 
 ScheduleSidePanel.propTypes = {
   getGoals: PropTypes.func.isRequired,
+  getGoalSKUs: PropTypes.func.isRequired,
+  getSchedule: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
+  goal_skus: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
   goals: state.goals,
+  goal_skus: state.goal_skus,
+  schedule: state.schedule,
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getGoals })(ScheduleSidePanel);
+export default connect(mapStateToProps, { getGoals, getSchedule, getGoalSKUs })(ScheduleSidePanel);
