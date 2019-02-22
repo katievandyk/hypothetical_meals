@@ -48,6 +48,6 @@ const SKUSchema = new Schema({
     }
 });
 
-SKUSchema.index({'$**': 'text'});
+SKUSchema.index({name: 'text'});
 
 module.exports = SKU = mongoose.model('sku', SKUSchema);
