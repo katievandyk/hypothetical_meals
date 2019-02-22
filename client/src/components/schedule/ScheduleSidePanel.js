@@ -3,7 +3,7 @@ import { Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, Li
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { getGoals } from '../../actions/goalsActions';
-import { getSchedule, getGoalSKUs } from '../../actions/scheduleActions';
+import { getSchedule, getGoalSKUs, enableGoal, disableGoal } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -13,7 +13,6 @@ class ScheduleSidePanel extends React.Component {
 
     this.toggleActive.bind(this);
     this.state = {
-      selectedGoals: [],
       sku_ranges: []
     }
   }
@@ -30,28 +29,17 @@ class ScheduleSidePanel extends React.Component {
   }
 
   toggleActive = (id) => {
-    const { goals } = this.props.goals;
-    const selGoal = goals.find(goal => goal._id === id)
-    const index = this.state.selectedGoals.indexOf(selGoal);
+    const index = this.props.schedule.schedule.enabled_goals.findIndex(i => i._id === id)
     if (index < 0) {
-      this.state.selectedGoals.push(selGoal);
+      this.props.enableGoal(id, this.props.schedule.schedule._id)
     } else {
-      this.state.selectedGoals.splice(index, 1);
+      this.props.disableGoal(id, this.props.schedule.schedule._id)
     }
-    this.setState({ selectedGoals: [...this.state.selectedGoals] });
-
-  //  this.props.getGoalSKUs(id)
-
-    this.state.sku_ranges.push({
-        _id: selGoal._id,
-        name: selGoal.name,
-        skus: this.props.goal_skus
-    })
-    console.log(this.props)
   }
 
   render() {
     const { goals } = this.props.goals;
+    const { schedule } = this.props.schedule;
     return (
       <div>
                 <Card>
@@ -70,7 +58,7 @@ class ScheduleSidePanel extends React.Component {
                         <Input placeholder="Enter goal or creator..."/> &nbsp;
                         <ListGroup>
                             {goals.map(({_id, name})=> (
-                                <ListGroupItem key={_id} action active={this.state.selectedGoals.some(goal => goal._id === _id)} tag="button" onClick={() => this.toggleActive(_id)} md={2} >
+                                <ListGroupItem key={_id} action active={schedule.enabled_goals.some(goal => goal._id === _id)} tag="button" onClick={() => this.toggleActive(_id)} md={2} >
                                     {name}
                                 </ListGroupItem>
                             ))}
@@ -80,7 +68,7 @@ class ScheduleSidePanel extends React.Component {
                 <Card>
                 <CardHeader>SKUs for Selected Goals</CardHeader>
                     <CardBody>
-                            {this.state.selectedGoals.map(({_id, name, skus_list})=> (
+                            {goals.map(({_id, name, skus_list})=> (
                                 <div key={_id} style={{paddingBottom: '1.5em'}}>
                                     <Label><h6>{name}</h6></Label>
                                     <ListGroup key={_id}>
@@ -103,6 +91,8 @@ ScheduleSidePanel.propTypes = {
   getGoals: PropTypes.func.isRequired,
   getGoalSKUs: PropTypes.func.isRequired,
   getSchedule: PropTypes.func.isRequired,
+  enableGoal: PropTypes.func.isRequired,
+  disableGoal: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
   goal_skus: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
@@ -115,4 +105,6 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getGoals, getSchedule, getGoalSKUs })(ScheduleSidePanel);
+export default connect(mapStateToProps, { getGoals, enableGoal, disableGoal, getSchedule, getGoalSKUs })(ScheduleSidePanel);
+
+/** active={schedule.enabled_goals.some(goal => goal._id === _id)} **/

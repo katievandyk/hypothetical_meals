@@ -4,10 +4,11 @@ import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOA
 
 export const getSchedule = () => dispatch =>  {
   dispatch(setScheduleLoading());
-  axios.get(`/api/manufacturingschedule`).then(res =>
+  axios.get(`/api/manufacturingschedule`).then(res =>{
     dispatch({
-      type: GET_SCHEDULE
-    })
+      type: GET_SCHEDULE,
+      payload: res.data
+    })}
   ).catch(error =>{
     dispatch({
       type: SCHEDULE_ERROR,
@@ -37,7 +38,7 @@ export const getGoalSKUs = (goal_id) => dispatch => {
 };
 
 export const enableGoal = (goal_id, schedule_id) => dispatch => {
-  axios.post(`/api/manufacturingschedule/enable/:goal_id/:schedule_id`).then(res =>{
+  axios.post(`/api/manufacturingschedule/enable/${goal_id}/${schedule_id}`).then(res =>{
     dispatch({
       type: ENABLE_GOAL,
       payload: res.data
@@ -51,7 +52,7 @@ export const enableGoal = (goal_id, schedule_id) => dispatch => {
 };
 
 export const disableGoal = (goal_id, schedule_id) => dispatch => {
-  axios.post(`/api/manufacturingschedule/disable/:goal_id/:schedule_id`).then(res =>{
+  axios.post(`/api/manufacturingschedule/disable/${goal_id}/${schedule_id}`).then(res =>{
     dispatch({
       type: DISABLE_GOAL,
       payload: res.data
@@ -79,7 +80,7 @@ export const addActivity  = (activity) => dispatch => {
 };
 
 export const updateActivity  = (activity_id, start) => dispatch => {
-  axios.post(`api/manufacturingschedule/update/activity/:activity_id`, start).then(res =>{
+  axios.post(`api/manufacturingschedule/update/activity/${activity_id}`, start).then(res =>{
     dispatch({
       type: UPDATE_ACTIVITY,
       payload: res.data

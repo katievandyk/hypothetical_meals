@@ -3,7 +3,7 @@ import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOA
 
 const initialState = {
   schedule: {},
-  goal_skus: {},
+  goal_skus: [],
   loading: false,
   error_msg: ''
 };
@@ -11,7 +11,6 @@ const initialState = {
 export default function(state = initialState, action) {
   switch(action.type) {
     case GET_SCHEDULE:
-       alert("HERE")
       return {
         ...state,
         schedule: action.payload,
@@ -30,15 +29,17 @@ export default function(state = initialState, action) {
         loading: false
      }
     case ENABLE_GOAL:
+        state.schedule.enabled_goals.push(action.payload)
         return {
           ...state,
-          schedule: state.schedule.enabled_goals.push(action.payload),
+          schedule: state.schedule,
           loading: false
      }
     case DISABLE_GOAL:
+        state.schedule.enabled_goals = state.schedule.enabled_goals.filter( goal => goal._id !== action.payload._id )
         return {
           ...state,
-          schedule: state.schedule.enabled_goals.filter( goal => goal._id !== action.payload._id ),
+          schedule: state.schedule,
           loading: false
      }
     case GET_GOAL_SKUS:
