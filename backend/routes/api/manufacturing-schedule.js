@@ -42,7 +42,7 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
         .findById(req.params.goal_id)
         .then( goal => {
             ManufacturingSchedule
-                .findOneAndUpdate({ 'name': req.params.schedule }, {$push: {enabled_goals: goal}})
+                .findOneAndUpdate({ '_id': req.params.schedule }, {$push: {enabled_goals: goal}})
                 .then(res.json(goal))
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
@@ -58,7 +58,7 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
         .findById(req.params.goal_id)
         .then( goal => {
             ManufacturingSchedule
-                .findOneAndUpdate({ 'name': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
+                .findOneAndUpdate({ '_id': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
                 .then(res.json(goal))
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
