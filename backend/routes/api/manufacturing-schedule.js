@@ -66,12 +66,16 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
         
 })
 
-// @route GET api/manufacturingschedule/skus/:goal_id
-// @desc get all sku's and range for specific goal
+// @route POST api/manufacturingschedule/skus
+// @desc get all sku's and range for an array of goals
 // @access public
-router.get('/skus/:goal_id', (req, res) => {
-    Goal
-        .findById(req.params.goal_id)
+router.post('/skus', (req, res) => {
+    var goals = req.body.goals;
+    var response = [];
+    for(var i=0; i<goals.length; i++) {
+        var goal_id = goals[i];
+        Goal
+        .findById(goal_id)
         .then( goal => {
             var skus = goal.skus_list;
             for( var i = 0; i < skus.length; i++) {
@@ -80,12 +84,16 @@ router.get('/skus/:goal_id', (req, res) => {
                     .findById(skus[i].sku)
                     .then( sku => {
                         var duration = quantity / sku.manufacturing_rate;
-                        res.json({'sku' : sku, 'duration' : duration});
+                        var pair = {'sku' : sku, 'duration' : Math.round(duration)};
+                        response.push(pair);
                     })
                     .catch(err => res.status(404).json({success: false, message: err.message}));
             }
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
+    }
+    res.json(response);
+    
 })
 
 // @route POST api/manufacturingschedule/activity
@@ -122,13 +130,27 @@ router.post('/activity', (req, res) => {
 router.post('/update/activity/:activity_id', (req, res) => {
     ManufacturingActivity
         .findOne({_id : req.params.activity_id}).then( doc => {
-            doc.start = req.body.start;
+            doc = req.body.activity;
             doc.save().then( updatedActivity => {
                 res.json(updatedActivity)
             })
             .catch(err => res.status(404).json({success: false, message: err.message}));
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
+})
+
+// @route POST api/manufacturingschedule/delete/activity
+// @desc deletes all activities that are passed in an array
+// @body pass array of activity id's in req.body.activities
+// @access public
+router.post('/delete/activity', (req, res) => {
+    var activities = req.body.activites;
+    for(var i =0; i<activities.length; i++) {
+        ManufacturingActivity
+            .findByIdAndDelete(activities[i])
+            .catch(err => res.status(404).json({success: false, message: err.message}));
+    }
+    res.json({success: true});
 })
 
 module.exports = router;
