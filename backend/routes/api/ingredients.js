@@ -239,7 +239,7 @@ router.post('/byskus', (req, res) => {
 // @desc gets a list of skus for an ingredient
 // @access public
 router.get('/:id/skus', (req, res) => {
-    Formula.find({ 'ingredients_list._id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} })
+    Formula.find({ 'ingredients_list._id': req.params.id })
         .select('_id')
         .lean()
         .then(formulas => {
