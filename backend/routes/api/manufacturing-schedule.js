@@ -84,7 +84,7 @@ router.post('/skus', (req, res) => {
                     .findById(skus[i].sku)
                     .then( sku => {
                         var duration = quantity / sku.manufacturing_rate;
-                        var pair = {'sku' : sku, 'duration' : duration};
+                        var pair = {'sku' : sku, 'duration' : Math.round(duration)};
                         response.push(pair);
                     })
                     .catch(err => res.status(404).json({success: false, message: err.message}));
