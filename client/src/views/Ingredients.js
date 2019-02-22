@@ -147,7 +147,7 @@ class Ingredients extends Component {
                 </Col>
                 </Row>
                 <Row>
-                  <Col style={{'textAlign': 'right'}}/>
+                  <Col style={{'textAlign': 'left'}}>
                     <div style={{paddingRight:'10px'}}><Button color="success" onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button>{' '}</div>
                     <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
                       <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
@@ -155,9 +155,12 @@ class Ingredients extends Component {
                         Ingredients Dependency Report Generated! <br></br>You can view or export it on the reports page
                       </ModalBody>
                       <ModalFooter><Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button></ModalFooter>
-                    </Modal>{' '}
+                    </Modal>
+                  </Col>
+                  <Col style={{textAlign: 'right'}}>
                   <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export Ingredients</Button>
-                  </Row>
+                  </Col>
+                </Row>
               </Container>
             </div>
           </Provider>

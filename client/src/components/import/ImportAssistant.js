@@ -181,6 +181,7 @@ class ImportAssistant extends Component {
                 <th>Ingr#</th>
                 <th>Name</th>
                 <th>Vendor Info</th>
+                <th>Size</th>
                 <th>Cost</th>
                 <th>Comment</th>
               </tr>
@@ -196,6 +197,7 @@ class ImportAssistant extends Component {
                     <td>{entry['name']}</td>
                     <td>{entry['vendor info']}</td>
                     <td>{entry['cost']}</td>
+                    <td>{entry['package_size']}</td>
                     <td>{entry['comment']}</td>
                   </tr>
                   <tr style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
@@ -203,6 +205,7 @@ class ImportAssistant extends Component {
                     <td>{entry.to_overwrite['number']}</td>
                     <td>{entry.to_overwrite['name']}</td>
                     <td>{entry.to_overwrite['vendor_info']}</td>
+                    <td>{entry.to_overwrite['package_size']}</td>
                     <td>{entry.to_overwrite['cost_per_package']}</td>
                     <td>{entry.to_overwrite['comment']}</td>
                   </tr>
@@ -339,6 +342,7 @@ class ImportAssistant extends Component {
                 <th>Ingr#</th>
                 <th>Name</th>
                 <th>Vendor Info</th>
+                <th>Size</th>
                 <th>Cost</th>
                 <th>Comment</th>
               </tr>
@@ -349,6 +353,7 @@ class ImportAssistant extends Component {
                     <td>{entry['ingr#']}</td>
                     <td>{entry['name']}</td>
                     <td>{entry['vendor info']}</td>
+                    <td>{entry['size']}</td>
                     <td>{entry['cost']}</td>
                     <td>{entry['comment']}</td>
                   </tr>
@@ -457,6 +462,7 @@ class ImportAssistant extends Component {
                 <th>Ingr#</th>
                 <th>Name</th>
                 <th>Vendor Info</th>
+                <th>Size</th>
                 <th>Cost</th>
                 <th>Comment</th>
               </tr>
@@ -467,6 +473,7 @@ class ImportAssistant extends Component {
                     <td>{entry['ingr#']}</td>
                     <td>{entry['name']}</td>
                     <td>{entry['vendor info']}</td>
+                    <td>{entry['size']}</td>
                     <td>{entry['cost']}</td>
                     <td>{entry['comment']}</td>
                   </tr>
@@ -588,11 +595,11 @@ class ImportAssistant extends Component {
                 <tbody>
                   {store.records.map((entry, i)=>(
                     <tr key={i}>
-                      <td>{entry['ingr#']}</td>
+                      <td>{entry['number']}</td>
                       <td>{entry['name']}</td>
-                      <td>{entry['vendor info']}</td>
-                      <td>{entry['size']}</td>
-                      <td>{entry['cost']}</td>
+                      <td>{entry['vendor_info']}</td>
+                      <td>{entry['package_size']}</td>
+                      <td>{entry['cost_per_package']}</td>
                       <td>{entry['comment']}</td>
                     </tr>
                   ))}

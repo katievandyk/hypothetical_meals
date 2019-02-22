@@ -83,6 +83,7 @@ class Formulas extends Component {
                <Col>
                  <IngFilters/>
                </Col>
+               <Col></Col>
                <Col style={{'textAlign': 'right'}}>
                  {this.props.auth.isAdmin && <FormulasAddModal/>}
                </Col>
