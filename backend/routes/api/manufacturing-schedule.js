@@ -72,29 +72,20 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
 router.post('/skus', (req, res) => {
     var goals = req.body.goals;
     var response = [];
-    for(var i=0; i<goals.length; i++) {
-        var goal_id = goals[i];
-        Goal
-        .findById(goal_id)
-        .then( goal => {
-            var skus = goal.skus_list;
-            for( var i = 0; i < skus.length; i++) {
-                var quantity = skus[i].quantity;
-                SKU
-                    .findById(skus[i].sku)
-                    .then( sku => {
-                        var duration = quantity / sku.manufacturing_rate;
-                        var pair = {'sku' : sku, 'duration' : Math.round(duration)};
-                        response.push(pair);
-                    })
-                    .catch(err => res.status(404).json({success: false, message: err.message}));
-            }
+    Promise.all(goals.map(goal_id => {
+        new Promise(function(accept, reject) {
+            Goal
+            .findById(goal_id)
+            .then( goal => {
+                console.log('first');
+                accept(goal)
+            }).catch(reject);
         })
-        .catch(err => res.status(404).json({success: false, message: err.message}));
-    }
-    res.json(response);
-    
+    })).then(console.log('here'))
+          
 })
+
+
 
 // @route POST api/manufacturingschedule/activity
 // @desc posts an activity
