@@ -34,6 +34,8 @@ class ScheduleWindow extends React.Component {
             stack: false,
             start: new Date(),
             end: new Date(1000*60*60*24 + (new Date()).valueOf()),
+            zoomMin: 1000 * 60 * 60 * 24,
+            zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
              editable: {
                 add: true,         // add new items by double tapping
                 updateTime: true,
@@ -84,9 +86,19 @@ class ScheduleWindow extends React.Component {
                 var index = data.items.indexOf(i => i.id === item.id)
                 data.items.splice(index)
                 callback(item)
+            },
+            getWindow: function(props) {
+
             }
           }
        return options;
+  }
+
+  exportReport = () => {
+    const timeline = this.timeline.$el
+    const times = timeline.getWindow();
+    alert(times.start)
+    alert(times.end)
   }
 
   render() {
@@ -101,7 +113,7 @@ class ScheduleWindow extends React.Component {
       <div>
         <Row style={{paddingBottom: '1.5em'}}>
             <Col style={{'textAlign': 'right'}}> </Col>
-            <Button>Manufacturing Schedule Report </Button>
+            <Button onClick={this.exportReport}>Manufacturing Schedule Report </Button>
         </Row>
         <Row>
            <Col md={3}>
@@ -111,6 +123,7 @@ class ScheduleWindow extends React.Component {
             <Timeline
               {...data}
               options = {this.getOptions()}
+              ref={el => (this.timeline = el)}
             />
             </Col>
             </Row>
