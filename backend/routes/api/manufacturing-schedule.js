@@ -7,9 +7,6 @@ const Goal = require('../../models/Goal');
 const ManufacturingLine = require('../../models/ManufacturingLine');
 const ManufacturingActivity = require('../../models/ManufacturingActivity');
 
-
-
-
 // @route GET api/manufacturingschedule
 // @desc get all manufacturing schedules for specific user
 // @access public
@@ -97,8 +94,6 @@ router.post('/skus', (req, res) => {
         res.json(flat)
     })
 })
-
-
 
 // @route POST api/manufacturingschedule/activity
 // @desc posts an activity
