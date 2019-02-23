@@ -268,5 +268,18 @@ function calculate(package_num, package_unit, formula_qty, formula_unit, formula
     return [ing_qty, packages, unit]
 }
 
+// @route GET api/skus/search
+// @desc searches keywords in database
+// @access public
+router.get('/search', (req, res) => {
+    Goal.find({$text: {$search: req.body.keywords}},
+        {score:{$meta: "textScore"}})
+        .lean()
+        .sort({score: {$meta: "textScore"}})
+        .then(search_res => {
+            res.json({success: true, results: search_res});
+        })
+        .catch(err => res.status(404).json({success: false, message: err.message}))});
+
 
 module.exports = router;
