@@ -24,16 +24,19 @@ export default function(state = initialState, action) {
     case ADD_GOAL:
       return {
         ...state,
-        goals: [...state.goals, action.payload]
+        goals: [...state.goals, action.payload],
+        error_msgs: []
       }
     case DELETE_GOAL:
       return {
         ...state,
-        goals: state.goals.filter( goal => goal._id !== action.payload )
+        goals: state.goals.filter( goal => goal._id !== action.payload ),
+        error_msgs: []
       }
     case UPDATE_GOAL:{
       return {
-        ...state
+        ...state,
+        error_msgs: []
       }
     }
     case GOALS_INGQUANTITY:
@@ -45,12 +48,14 @@ export default function(state = initialState, action) {
      case GOAL_EXPORT:
        return {
          ...state,
-         loading: false
+         loading: false,
+         error_msgs: []
        }
      case GOAL_CALCULATOREXPORT:
        return {
          ...state,
-         loading: false
+         loading: false,
+         error_msgs: []
        }
     case GOAL_ERROR:{
       console.log(action.payload);

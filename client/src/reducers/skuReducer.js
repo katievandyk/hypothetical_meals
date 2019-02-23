@@ -14,7 +14,7 @@ const initialState = {
   count: 0,
   page: 1,
   pagelimit: 10,
-  error_msg: '',
+  error_msgs: [],
   bulkedit_skus: [],
   bulkedit_mlines: {}
 };
@@ -26,25 +26,30 @@ export default function(state = initialState, action) {
         ...state,
         skus: action.payload,
         loading: false,
+        error_msgs: []
       }
     case ADD_SKU:
       return {
-        ...state
+        ...state,
+        error_msgs: []
       }
     case DELETE_SKU:
       return {
         ...state,
-        skus: state.skus.filter( sku => sku._id !== action.payload )
+        skus: state.skus.filter( sku => sku._id !== action.payload ),
+        error_msgs: []
       }
     case UPDATE_SKU:{
       return {
-        ...state
+        ...state,
+        error_msgs: []
       }
     }
     case SKUS_LOADING:
       return {
         ...state,
-        loading: true
+        loading: true,
+        error_msgs: []
       }
     case GET_SKUS:{
       if(state.obj.group_pl){
@@ -56,21 +61,23 @@ export default function(state = initialState, action) {
         count: action.payload.count,
         loading: false,
         pagelimit: 10,
-        error_msgs: ''
+        error_msgs: []
       }
     }
     case SKU_GROUP_BY_PL:{
       state.obj.group_pl = action.payload;
       return {
         ...state,
-        obj: state.obj
+        obj: state.obj,
+        error_msgs: []
       }
     }
     case SKU_KW_SEARCH:{
         state.obj.keywords = action.payload;
         return {
           ...state,
-          obj: state.obj
+          obj: state.obj,
+          error_msgs: []
         }
     }
     case SKU_ING_FILTER:{
@@ -81,7 +88,8 @@ export default function(state = initialState, action) {
       }
       return {
         ...state,
-        obj: state.obj
+        obj: state.obj,
+        error_msgs: []
       }
     }
     case SKU_PLINE_FILTER:{
@@ -92,7 +100,8 @@ export default function(state = initialState, action) {
       }
       return {
         ...state,
-        obj: state.obj
+        obj: state.obj,
+        error_msgs: []
       }
     }
     case SKU_SORT:{
@@ -114,30 +123,33 @@ export default function(state = initialState, action) {
         loading: false,
         pagelimit: action.payload.pagelimit,
         page: page_val,
-        error_msg: ''
+        error_msgs: []
       }
     }
     case SKUS_BULK_EDIT:{
       return {
         ...state,
-        bulkedit_skus: action.payload.results
+        bulkedit_skus: action.payload.results,
+        error_msgs: []
       }
     }
     case MLINES_BULK_EDIT:{
       return{
         ...state,
-        bulkedit_mlines: action.payload
+        bulkedit_mlines: action.payload,
+        error_msgs: []
       }
     }
     case BULK_EDIT_MAP:{
       return{
-        ...state
+        ...state,
+        error_msgs: []
       }
     }
     case SKU_ERROR:{
       return {
         ...state,
-        error_msg: action.payload.data.message,
+        error_msgs: [...state.error_msgs, action.payload.data.message],
         loading: false
       }
     }
