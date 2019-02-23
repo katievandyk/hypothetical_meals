@@ -81,7 +81,7 @@ router.post('/', (req, res) => {
                 error_thrown = false
                 results.forEach(result => {
                     if(result._id != newSKU._id) {
-                        if (result.number === newSKU.number) {
+                        if (result.number == newSKU.number) {
                             res.status(404).json({success: false, message: "SKU number is not unique."})
                         }
                         else {
@@ -163,7 +163,7 @@ router.post('/update/:id', (req, res) => {
                 error_thrown = false
                 results.forEach(result => {
                     if(result._id.toString() != sku._id.toString()) {
-                        if (result.number === updatedSku.number) {
+                        if (result.number == updatedSku.number) {
                             res.status(404).json({success: false, message: "SKU number is not unique."})
                         }
                         else {
