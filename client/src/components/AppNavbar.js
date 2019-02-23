@@ -98,8 +98,8 @@ class AppNavbar extends Component {
             </NavItem>): (<div></div>)}
             <UncontrolledDropdown nav
               active={
-                (this.props.location.pathname === '/goals' ||
-                this.props.location.pathname === '/schedule' ||
+                (this.props.location.pathname === '/manufacturinggoals' ||
+                this.props.location.pathname === '/manufacturingschedule' ||
                 this.props.location.pathname === '/manufacturinglines') ?
                 (true) : (false)
               }
@@ -119,9 +119,23 @@ class AppNavbar extends Component {
                  </DropdownItem>
                </DropdownMenu>
              </UncontrolledDropdown>
-            <NavItem>
-              <NavLink tag={RRNavLink} to="/reports" className="nav-link" activeClassName="active">Reports</NavLink>
-            </NavItem>
+            <UncontrolledDropdown nav
+              active={
+              (this.props.location.pathname === '/ingredients-dependency-report' ||
+              this.props.location.pathname === '/manufacturing-schedule-report') ?
+              (true) : (false)
+            }
+              inNavbar >
+              <DropdownToggle nav caret> Reports </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem>
+                  <NavLink tag={RRNavLink} to="/ingredients-dependency-report" className="nav-link" activeClassName="active">Ingredients Dependency Report</NavLink>
+                </DropdownItem>
+                <DropdownItem>
+                  <NavLink tag={RRNavLink} to="/manufacturing-schedule-report" className="nav-link" activeClassName="active">Manufacturing Schedule Report</NavLink>
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
             <NavItem>
               <NavLink tag={RRNavLink} onClick={this.onLogoutClick} to="/login" className="nav-link" activeClassName="active">Sign Out</NavLink>
             </NavItem>

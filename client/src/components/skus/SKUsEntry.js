@@ -208,7 +208,7 @@ class SKUsEntry extends React.Component {
     };
     var allRequiredFields = true;
     var newValidate = this.state.validate;
-    if(newValidate.manufacturing_lines !== 'has-success'){
+    if(newValidate.manufacturing_lines && newValidate.manufacturing_lines !== 'has-success'){
       newValidate.manufacturing_lines = 'not-selected';
       allRequiredFields = false;
     }
@@ -219,6 +219,7 @@ class SKUsEntry extends React.Component {
       this.props.updateSKU(editedSKU,this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
       this.toggle();
     }
+    console.log(newValidate);
 
   };
 

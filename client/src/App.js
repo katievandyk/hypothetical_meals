@@ -7,7 +7,8 @@ import NetID from './views/NetID';
 import Register from './views/Register';
 import Ingredients from './views/Ingredients';
 import ProductLines from './views/ProductLines';
-import Reports from './views/Reports';
+import IngDepReportView from './views/IngDepReportView';
+import MScheduleReport from './views/MScheduleReport';
 import Import from './views/Import';
 import SKU from './views/SKU';
 import MakeAdmin from './views/MakeAdmin';
@@ -76,7 +77,8 @@ class App extends Component {
                       <PrivateRoute path="/sku" component={SKU} />
                       <PrivateRoute path="/formulas" component={Formulas} />
                       <AdminRoute path="/import" component={Import} />
-                      <PrivateRoute path="/reports" component={Reports} />
+                      <PrivateRoute path="/ingredients-dependency-report" component={IngDepReportView} />
+                      <PrivateRoute path="/manufacturing-schedule-report" component={MScheduleReport} />
                     </Switch>
 
                   </div>

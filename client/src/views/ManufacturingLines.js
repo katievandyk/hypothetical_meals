@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
 import LinesEntry from '../components/lines/LinesEntry'
+import LinesAlerts from '../components/lines/LinesAlerts'
 import LinesCreateModal from '../components/lines/LinesCreateModal'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
@@ -18,6 +19,7 @@ class ManufacturingLines extends Component {
             <div>
                 <div>
                     <AppNavbar />
+                    <LinesAlerts />
                 </div>
                 <Container>
                     <Container className="mb-3">

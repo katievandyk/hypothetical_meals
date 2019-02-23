@@ -5,7 +5,7 @@ const initialState = {
   schedule: {},
   goal_skus: [],
   loading: false,
-  error_msg: ''
+  error_msgs: []
 };
 
 export default function(state = initialState, action) {
@@ -15,7 +15,7 @@ export default function(state = initialState, action) {
         ...state,
         schedule: action.payload,
         loading: false,
-        error_msg: ''
+        error_msgs: []
       }
     case SCHEDULE_LOADING:
       return {
