@@ -55,12 +55,13 @@ class ScheduleWindow extends React.Component {
                 item.end = date;
                 const activity = {
                     name: item.content,
-                    sku_id: item.id,
+                    sku_id: item.sku,
                     line_id: item.group,
                     start: item.start,
                     duration: item.duration
                 }
                 this.props.addActivity(activity)
+                data.items.push(item)
                 callback(item)
               }
             }.bind(this),
@@ -92,7 +93,6 @@ class ScheduleWindow extends React.Component {
         group.content = line.name;
         return group;
     })
-
     return (
       <div>
         <Row style={{paddingBottom: '1.5em'}}>
@@ -114,13 +114,14 @@ class ScheduleWindow extends React.Component {
     )
   }
 
-   handleDragStart = (event, _id, name, duration) => {
+   handleDragStart = (event, _id, goal_id, name, duration) => {
     event.dataTransfer.effectAllowed = 'move';
     var item = {
-      id: _id,
+      id: goal_id + _id,
       type:'range',
       content: name,
       className: 'green',
+      sku: _id,
       duration: String(duration)
     };
     event.dataTransfer.setData("text", JSON.stringify(item));

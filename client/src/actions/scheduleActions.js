@@ -67,7 +67,6 @@ export const disableGoal = (goal_id, schedule_id) => dispatch => {
 
 export const addActivity  = (activity) => dispatch => {
   axios.post(`/api/manufacturingschedule/activity`, activity).then(res =>{
-      alert(JSON.stringify(res.data))
     dispatch({
       type: ADD_ACTIVITY,
       payload: res.data

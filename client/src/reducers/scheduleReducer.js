@@ -3,6 +3,7 @@ import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOA
 
 const initialState = {
   schedule: {},
+  activities: [],
   goal_skus: [],
   loading: false,
   error_msg: ''
@@ -23,12 +24,9 @@ export default function(state = initialState, action) {
         loading: true
       }
     case ADD_ACTIVITY:
-      alert(action.payload.line._id)
-      state.schedule.lines_list.find(entry => action.payload.line._id === entry._id).activities.push(action.payload)
       return {
         ...state,
-        schedule: state.schedule,
-        loading: false
+        activities: [...state.activities, action.payload]
      }
     case ENABLE_GOAL:
         state.schedule.enabled_goals.push(action.payload)

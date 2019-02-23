@@ -77,7 +77,6 @@ router.get('/skus', (req, res) => {
             .populate("skus_list.sku")
             .lean()
             .then(goal => {
-                console.log(goal)
                 Formula.populate(goal, {path:"skus_list.sku.formula"}).then(goal => {
                     let skus_list = goal.skus_list.map(skus => {
                         skus.sku.duration = skus.sku.manufacturing_rate*skus.quantity
