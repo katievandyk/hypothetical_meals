@@ -19,9 +19,6 @@ class ScheduleWindow extends React.Component {
   constructor(props) {
     super(props)
     this.getOptions = this.getOptions.bind(this)
-    this.state = {
-      selectedIds: []
-    }
   }
 
   componentDidMount() {
@@ -133,7 +130,7 @@ class ScheduleWindow extends React.Component {
         </Row>
         <Row>
            <Col md={3}>
-                <ScheduleSidePanel handleDragStart={this.handleDragStart}/>
+                <ScheduleSidePanel items={data.items} handleDragStart={this.handleDragStart}/>
            </Col>
             <Col>
             <Timeline
@@ -155,6 +152,7 @@ class ScheduleWindow extends React.Component {
       content: name,
       className: 'green',
       sku: _id,
+      goal: goal_id,
       duration: String(duration)
     };
     event.dataTransfer.setData("text", JSON.stringify(item));
