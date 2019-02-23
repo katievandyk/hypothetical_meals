@@ -75,18 +75,21 @@ router.post('/skus', (req, res) => {
             .populate("skus_list.sku")
             .lean()
             .then(goal => {
-                let skus_list = goal.skus_list.map(skus => {
-                    skus.sku.duration = skus.sku.manufacturing_rate*skus.quantity
-                    let goal_info = {
-                        _id: goal._id,
-                        name: goal.name,
-                        user_username: goal.user_username,
-                        deadline: goal.deadline
-                    }
-                    skus.sku.goal_info = goal_info
-                    return skus.sku;
+                console.log(goal)
+                Formula.populate(goal, {path:"skus_list.sku.formula"}).then(goal => {
+                    let skus_list = goal.skus_list.map(skus => {
+                        skus.sku.duration = skus.sku.manufacturing_rate*skus.quantity
+                        let goal_info = {
+                            _id: goal._id,
+                            name: goal.name,
+                            user_username: goal.user_username,
+                            deadline: goal.deadline
+                        }
+                        skus.sku.goal_info = goal_info
+                        return skus.sku;
+                    })
+                    accept(skus_list)
                 })
-                accept(skus_list)
             }).catch(reject);
         })
     })).then(skus => {
@@ -120,7 +123,6 @@ router.post('/activity', (req, res) => {
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
-    
 })
 
 // @route POST api/manufacturingschedule/update/activity
