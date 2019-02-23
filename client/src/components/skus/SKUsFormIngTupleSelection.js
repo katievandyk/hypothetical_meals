@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getIngs, sortIngs } from '../../actions/ingActions';
 import {unit_checker} from '../../utils/unitChecker';
+import Select from 'react-select';
 
 class SKUsFormIngTupleSelection extends React.Component {
   state={

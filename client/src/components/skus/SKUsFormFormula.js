@@ -147,7 +147,6 @@ class SKUsFormFormula extends React.Component {
   }
 
   onChange = (e) => {
-    var valString = 'has-success';
     var isValid = true;
     this.setState({
       formula_id: e.value,
@@ -188,7 +187,6 @@ class SKUsFormFormula extends React.Component {
   render() {
     var addedFormula = this.props.formulas.added_formula;
     var add_error = this.props.formulas.error_msg;
-    var defaultValue = this.state.selected_value;
     var validate = this.props.validate;
     return(
       <div>
