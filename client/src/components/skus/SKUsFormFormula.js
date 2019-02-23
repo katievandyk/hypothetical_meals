@@ -264,7 +264,7 @@ class SKUsFormFormula extends React.Component {
                   Please input a valid number.
                 </FormFeedback>
           </FormGroup>
-          <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list}/>
+          <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list} validate={this.state.validate.ingredients_list}/>
           <FormGroup>
             <Label for="edit_comment">Comments</Label>
               <Input

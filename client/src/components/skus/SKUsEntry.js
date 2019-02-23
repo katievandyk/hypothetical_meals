@@ -179,7 +179,10 @@ class SKUsEntry extends React.Component {
     const validate_kv = Object.entries(this.state.validate);
     for(var i=0; i < validate_kv.length; i++){
       if(validate_kv[i][1] !== 'has-success'){
-        return false;
+        if(validate_kv[i][0] !== 'manufacturing_lines')
+          return false;
+        else if(validate_kv[i][1] === 'not-selected')
+          return false;
       }
     }
     return true;
@@ -203,8 +206,20 @@ class SKUsEntry extends React.Component {
       manufacturing_rate: this.state.edit_manufacturing_rate,
       comment: this.state.edit_comment
     };
-    this.props.updateSKU(editedSKU,this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
-    this.toggle();
+    var allRequiredFields = true;
+    var newValidate = this.state.validate;
+    if(newValidate.manufacturing_lines !== 'has-success'){
+      newValidate.manufacturing_lines = 'not-selected';
+      allRequiredFields = false;
+    }
+    this.setState({
+      validate: newValidate
+    });
+    if(allRequiredFields){
+      this.props.updateSKU(editedSKU,this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+      this.toggle();
+    }
+
   };
 
   onMLinesListClick = newMlines => {
@@ -455,7 +470,9 @@ class SKUsEntry extends React.Component {
                     </FormFeedback>
                   )}
               </FormGroup>
-              <SKUsFormMLines onLinesChange={this.onLinesChange} defaultValue={this.state.edit_manufacturing_lines}/>
+              <SKUsFormMLines onLinesChange={this.onLinesChange}
+                defaultValue={this.state.edit_manufacturing_lines}
+                validate={this.state.validate.manufacturing_lines}/>
               <FormGroup>
                 <Label for="edit_manufacturing_rate">Manufacturing Rate</Label>
                   <Input

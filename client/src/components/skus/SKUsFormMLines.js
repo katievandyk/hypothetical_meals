@@ -87,6 +87,7 @@ class SKUsFormMLines extends React.Component {
         validate: ['not-selected']
       });
     }
+    this.props.onLinesChange(this.state.lines, false)
   }
 
   onDelEntry = (index) => {
@@ -113,7 +114,6 @@ class SKUsFormMLines extends React.Component {
   genOptions = (lines) => {
     var newOptions = [];
     lines.forEach(function(line){
-      console.log(line);
       var newOption = {value: line._id, label: line.shortname};
       newOptions = [...newOptions, newOption];
     });
@@ -123,7 +123,6 @@ class SKUsFormMLines extends React.Component {
   getDefaultValue = (id) => {
     if(id.length > 0){
       const [line] = this.props.lines.lines.filter(({_id})=> _id === id);
-      console.log(line);
       if(line){
         return {value: id, label: line.shortname};
       }

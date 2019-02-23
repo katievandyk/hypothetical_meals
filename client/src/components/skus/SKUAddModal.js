@@ -119,7 +119,10 @@ class SKUAddModal extends React.Component {
     const validate_kv = Object.entries(this.state.validate);
     for(var i = 0; i < validate_kv.length; i++){
       if(validate_kv[i][1] !== 'has-success'){
-        return false;
+        if(validate_kv[i][0] !== 'manufacturing_lines')
+          return false;
+        else if(validate_kv[i][1] === 'not-selected')
+          return false;
       }
     }
     return true;
@@ -230,7 +233,7 @@ class SKUAddModal extends React.Component {
       val_obj.manufacturing_lines = 'has-success';
     }
     else{
-      val_obj.manufacturing_lines = 'not-selected';
+      val_obj.manufacturing_lines = 'has-danger';
     }
     var newLines = [];
     for(var i = 0; i < lines.length; i ++){
