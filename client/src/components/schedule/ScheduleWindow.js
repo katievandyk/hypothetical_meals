@@ -58,14 +58,16 @@ class ScheduleWindow extends React.Component {
                     callback(null)
               }
               else {
-                const date = moment(item.start);
-                date.add(item.duration, 'h');
-                item.end = date;
+                const startDate = moment(item.start);
+                startDate.subtract(5, 'h');
+                const endDate = moment(item.start);
+                endDate.add(item.duration, 'h');
+                item.end = endDate;
                 const activity = {
                     name: item.content,
                     sku_id: item.sku,
                     line_id: item.group,
-                    start: item.start,
+                    start: startDate,
                     duration: item.duration,
                     sku_goal_id: item.goal
                 }
@@ -89,16 +91,18 @@ class ScheduleWindow extends React.Component {
               }
               else {
                 const date = moment(item.start);
+                alert(date)
                 date.add(item.duration, 'h');
                 item.end = date;
                 const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
                 const newActivity = {
+                    _id: act._id,
                     name: act.name,
-                    sku_id: act.sku._id,
-                    line_id: item.group,
-                    start: item.start,
+                    sku: act.sku._id,
+                    line: item.group,
+                    start: moment(item.start).format('YYYY-mm-ddTHH:MM:ssZ'),
                     duration: act.duration,
-                    sku_goal_id: item.goal
+                    goal_id: item.goal
                 }
                 data.items = data.items.filter(({id}) => id !== item.id)
                 data.items.push(item)
