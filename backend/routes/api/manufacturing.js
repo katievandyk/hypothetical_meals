@@ -171,7 +171,8 @@ function calculateIngredientQuantities(req, res, callback) {
                         unit: one_ing[0].unit}))
 
                 aggregated.forEach(ing => {
-                    ing.quantity = ing.quantity + " " + ing.unit
+                    ing.quantity = (Math.round(ing.quantity  * 100) / 100) + " " + ing.unit
+                    ing.packages = Math.round(ing.packages  * 100) / 100
                     delete ing.unit
                 })
 
