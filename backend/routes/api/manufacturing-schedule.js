@@ -66,12 +66,12 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
 // @route POST api/manufacturingschedule/skus
 // @desc get all sku's and range for an array of goals
 // @access public
-router.post('/skus', (req, res) => {
-    var goals = req.body.goals;
-    Promise.all(goals.map(goal_id => {
+router.get('/skus', (req, res) => {
+    ManufacturingSchedule.findOne().then(schedule => {
+    Promise.all(schedule.enabled_goals.map(_id => {
         return new Promise(function(accept, reject) {
             Goal
-            .findById(goal_id)
+            .findById(_id)
             .populate("skus_list.sku")
             .lean()
             .then(goal => {
@@ -93,6 +93,7 @@ router.post('/skus', (req, res) => {
         let flat = [].concat.apply([], skus);
         res.json(flat)
     })
+  })
 })
 
 // @route POST api/manufacturingschedule/activity

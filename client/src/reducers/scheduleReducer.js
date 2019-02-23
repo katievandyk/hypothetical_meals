@@ -23,9 +23,11 @@ export default function(state = initialState, action) {
         loading: true
       }
     case ADD_ACTIVITY:
+      alert(action.payload.line._id)
+      state.schedule.lines_list.find(entry => action.payload.line._id === entry._id).activities.push(action.payload)
       return {
         ...state,
-        schedule: state.schedule.lines_list.find(entry => action.payload.line._id === entry.line._id).activities.push(action.payload),
+        schedule: state.schedule,
         loading: false
      }
     case ENABLE_GOAL:
@@ -53,7 +55,7 @@ export default function(state = initialState, action) {
           ...state,
      }
     case SCHEDULE_ERROR:{
-      console.log(action.payload);
+      console.log("ERROR");
       return {
         ...state,
         error_msgs: [...state.error_msgs, action.payload.data.message],

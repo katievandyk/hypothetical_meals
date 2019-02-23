@@ -20,6 +20,7 @@ class ScheduleSidePanel extends React.Component {
   componentDidMount() {
     this.props.getSchedule()
     this.props.getGoals(this.props.auth.user_username);
+    this.props.getGoalSKUs()
   }
 
   modal_toggle = () => {
@@ -35,11 +36,13 @@ class ScheduleSidePanel extends React.Component {
     } else {
       this.props.disableGoal(id, this.props.schedule.schedule._id)
     }
+    this.props.getGoalSKUs()
   }
 
   render() {
     const { goals } = this.props.goals;
     const { schedule } = this.props.schedule;
+    const goal_skus = this.props.schedule.goal_skus;
     return (
       <div>
                 <Card>
@@ -67,6 +70,16 @@ class ScheduleSidePanel extends React.Component {
                 </Modal>
                 <Card>
                 <CardHeader>SKUs for Selected Goals</CardHeader>
+                    <CardBody>
+                            {goal_skus.map(({_id, name, goal_info, duration})=> (
+                                <div key={_id} style={{paddingBottom: '1.5em'}}>
+                                    <Label><h6>{goal_info.name}:</h6></Label>
+                                    <ListGroupItem key={_id} md={2} draggable="true" onDragStart={(e) => this.props.handleDragStart(e, _id, name, duration)}>
+                                        {name}
+                                    </ListGroupItem>
+                                </div>
+                         ))}
+                    </CardBody>
                 </Card>
       </div>
     )

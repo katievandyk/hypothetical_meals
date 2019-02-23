@@ -23,8 +23,8 @@ export const setScheduleLoading = () => {
   };
 };
 
-export const getGoalSKUs = (goals) => dispatch => {
-  axios.post(`/api/manufacturingschedule/skus`, {goals: goals}).then(res =>{
+export const getGoalSKUs = () => dispatch => {
+  axios.get(`/api/manufacturingschedule/skus`).then(res =>{
     dispatch({
       type: GET_GOAL_SKUS,
       payload: res.data
@@ -67,6 +67,7 @@ export const disableGoal = (goal_id, schedule_id) => dispatch => {
 
 export const addActivity  = (activity) => dispatch => {
   axios.post(`/api/manufacturingschedule/activity`, activity).then(res =>{
+      alert(JSON.stringify(res.data))
     dispatch({
       type: ADD_ACTIVITY,
       payload: res.data
