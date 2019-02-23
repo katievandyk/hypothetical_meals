@@ -46,7 +46,7 @@ module.exports.parsePLFile = parsePL = function(file) {
 }
 
 function checkPLs(data) {
-    if (data.errors.length != 0) throw data.errors;
+    if (data.errors.length != 0) throw data.errors[0];
     Helpers.checkFileHeaders(data.meta.fields, product_lines_header);
 
     let pl_data = data.data;
@@ -95,7 +95,7 @@ module.exports.parseIngredientFile = parseIng = function(file) {
 }
 
 function uploadIngredients(data) {
-    if (data.errors.length != 0) throw data.errors;
+    if (data.errors.length != 0) throw data.errors[0];
 
     Helpers.checkFileHeaders(data.meta.fields, ingredients_header);
 
@@ -205,7 +205,7 @@ module.exports.parseSkuFile = parseSku = function(file) {
 }
 
 function uploadSKUs(data) {
-    if (data.errors.length != 0) throw data.errors;
+    if (data.errors.length != 0) throw data.errors[0];
     Helpers.checkFileHeaders(data.meta.fields, skus_header);
 
     skus_data = data.data;
@@ -400,7 +400,7 @@ module.exports.parseFormula = parseFormula = function(file) {
 }
 
 function checkFormulas(data) {
-    if (data.errors.length != 0) throw data.errors;
+    if (data.errors.length != 0) throw data.errors[0];
     Helpers.checkFileHeaders(data.meta.fields, formula_header);
 
     let formula_data = data.data;

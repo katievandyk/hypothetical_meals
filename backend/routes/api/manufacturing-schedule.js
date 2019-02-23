@@ -14,7 +14,7 @@ const Constants = require('../../bulk_import/constants')
 // @access public
 router.get('/', (req, res) => {
     ManufacturingSchedule
-        .find()
+        .findOne()
         .then(schedule => res.json(schedule))
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
@@ -27,7 +27,7 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
         .findById(req.params.goal_id)
         .then( goal => {
             ManufacturingSchedule
-                .findOneAndUpdate({ 'name': req.params.schedule }, {$push: {enabled_goals: goal}})
+                .findOneAndUpdate({ '_id': req.params.schedule }, {$push: {enabled_goals: goal}})
                 .then(res.json(goal))
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
@@ -64,16 +64,15 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
 // @route POST api/manufacturingschedule/skus
 // @desc get all sku's and range for an array of goals
 // @access public
-router.post('/skus', (req, res) => {
-    var goals = req.body.goals;
-    Promise.all(goals.map(goal_id => {
+router.get('/skus', (req, res) => {
+    ManufacturingSchedule.findOne().then(schedule => {
+    Promise.all(schedule.enabled_goals.map(_id => {
         return new Promise(function(accept, reject) {
             Goal
-            .findById(goal_id)
+            .findById(_id)
             .populate("skus_list.sku")
             .lean()
             .then(goal => {
-                console.log(goal)
                 Formula.populate(goal, {path:"skus_list.sku.formula"}).then(goal => {
                     let skus_list = goal.skus_list.map(skus => {
                         skus.sku.duration = skus.sku.manufacturing_rate*skus.quantity
@@ -86,7 +85,15 @@ router.post('/skus', (req, res) => {
                         skus.sku.goal_info = goal_info
                         return skus.sku;
                     })
-                    accept(skus_list)
+                    let groupedByGoal = groupByGoal(skus_list)
+                    let final_output = []
+                    Object.values(groupedByGoal).forEach(goal_skus => {
+                        final_output.push({
+                            goal: goal_skus[0].goal_info,
+                            skus: goal_skus
+                        })
+                    })
+                    accept(final_output)
                 })
             }).catch(reject);
         })
@@ -94,11 +101,20 @@ router.post('/skus', (req, res) => {
         let flat = [].concat.apply([], skus);
         res.json(flat)
     })
+  })
 })
+
+function groupByGoal(res) {
+    return res.reduce(function(r,a) {
+        r[a.goal_info._id] = r[a.goal_info._id] || [];
+        r[a.goal_info._id].push(a);
+        return r;
+    }, Object.create(null))
+}
 
 // @route POST api/manufacturingschedule/activity
 // @desc posts an activity
-// @req.body => {name : activity_name, sku_id : sku_id, line_id : line_id, start : YYYY-mm-ddTHH:MM:ssZ, duration : hours, goal : sku.goal_info._id}
+// @req.body => {name : activity_name, sku_id : sku_id, line_id : line_id, start : YYYY-mm-ddTHH:MM:ssZ, duration : hours,goal  : sku.goal_info._id}
 // @access public
 router.post('/activity', (req, res) => {
     SKU
@@ -221,7 +237,8 @@ router.post('/report', (req, res) => {
 
                 let ing_list = Object.values(ingredients)
                 ing_list.forEach(ing => {
-                    ing.quantity = ing.quantity + " " + ing.unit
+                    ing.quantity = (Math.round(ing.quantity * 100) / 100) + " " + ing.unit
+                    ing.packages = (Math.round(ing.packages * 100) / 100)
                     delete ing.unit
                 })
                 res.json({activities: tasks, ingredients: ing_list})

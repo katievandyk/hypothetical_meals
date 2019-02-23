@@ -81,13 +81,13 @@ router.post('/', (req, res) => {
 // @desc delete an ingredient
 // @access public
 router.delete('/:id', (req, res) => {
-    SKU.find({"ingredients_list._id": req.params.id}).lean().then(sku_matches => {
-        Promise.all(sku_matches.map(function(sku) {
+    Formula.find({"ingredients_list._id": req.params.id}).lean().then(formula_matches => {
+        Promise.all(formula_matches.map(function(formula) {
             return new Promise(function(accept, reject) {
-                new_list = sku.ingredients_list.filter(function( obj ) {
+                new_list = formula.ingredients_list.filter(function( obj ) {
                     return obj._id.toString() !== req.params.id;
                 });
-                SKU.findByIdAndUpdate(sku._id, {ingredients_list: new_list}).then(accept).catch(reject)
+                Formula.findByIdAndUpdate(formula._id, {ingredients_list: new_list}).then(accept).catch(reject)
             })
         })).then(results => {
             Ingredient.findById(req.params.id)
@@ -239,7 +239,7 @@ router.post('/byskus', (req, res) => {
 // @desc gets a list of skus for an ingredient
 // @access public
 router.get('/:id/skus', (req, res) => {
-    Formula.find({ 'ingredients_list._id': {$in: req.body.skus.map(function(el) { return mongoose.Types.ObjectId(el) })} })
+    Formula.find({ 'ingredients_list._id': req.params.id })
         .select('_id')
         .lean()
         .then(formulas => {
