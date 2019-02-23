@@ -75,10 +75,6 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
         .catch(err => res.status(404).json({success: false, message: err.message}));
 })
 
-router.post('/test/:goal_id', (req, res) => {
-    
-})
-
 // @route POST api/manufacturingschedule/skus
 // @desc get all sku's and range for an array of goals
 // @access public
@@ -166,15 +162,15 @@ router.post('/update/activity/:activity_id', (req, res) => {
 // @body pass array of activity id's in req.body.activities
 // @access public
 router.post('/delete/activity', (req, res) => {
-    var activities = req.body.activites;
-    Promise.all(activties.map(activity_id => {
+    var activities = req.body.activities;
+    Promise.all(activities.map(activity_id => {
         return new Promise(function(accept, reject) {
-            Activity
+            ManufacturingActivity
                 .findByIdAndDelete(activity_id)
                 .then(accept)
                 .catch(reject)
         })
-    }))
+    })).then(res.json({success: true}))
 })
 
 // @route POST api/manufacturingschedule/report/
