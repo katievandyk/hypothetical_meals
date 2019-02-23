@@ -12,8 +12,7 @@ import moment from 'moment'
 
 
   const data = {
-    items: [],
-    groups: []
+    items: []
    }
 
 class ScheduleWindow extends React.Component {
@@ -21,8 +20,7 @@ class ScheduleWindow extends React.Component {
     super(props)
     this.getOptions = this.getOptions.bind(this)
     this.state = {
-      selectedIds: [],
-      items: []
+      selectedIds: []
     }
   }
 
@@ -45,8 +43,14 @@ class ScheduleWindow extends React.Component {
             orientation: 'top',
             horizontalScroll: true,
             onAdd: function(item, callback) {
-              if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
+             const lines = [];
+             this.props.schedule.goal_skus.find(i => i._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
+             if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                     alert("Move item to a non-overlapping location.")
+                    callback(null)
+              }
+              else if(lines.indexOf(item.group) === -1) {
+                    alert("Move item to a valid manufacturing line.")
                     callback(null)
               }
               else {
