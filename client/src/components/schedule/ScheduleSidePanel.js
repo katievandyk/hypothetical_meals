@@ -20,6 +20,7 @@ class ScheduleSidePanel extends React.Component {
   componentDidMount() {
     this.props.getSchedule()
     this.props.getGoals(this.props.auth.user_username);
+    this.props.getGoalSKUs()
   }
 
   modal_toggle = () => {
@@ -35,11 +36,13 @@ class ScheduleSidePanel extends React.Component {
     } else {
       this.props.disableGoal(id, this.props.schedule.schedule._id)
     }
+    this.props.getGoalSKUs()
   }
 
   render() {
     const { goals } = this.props.goals;
     const { schedule } = this.props.schedule;
+    const goal_skus = this.props.schedule.goal_skus;
     return (
       <div>
                 <Card>
@@ -68,16 +71,12 @@ class ScheduleSidePanel extends React.Component {
                 <Card>
                 <CardHeader>SKUs for Selected Goals</CardHeader>
                     <CardBody>
-                            {goals.map(({_id, name, skus_list})=> (
-                                <div key={_id} style={{paddingBottom: '1.5em'}}>
-                                    <Label><h6>{name}</h6></Label>
-                                    <ListGroup key={_id}>
-                                    {skus_list.map(({_id, sku})=> (
-                                            <ListGroupItem key={_id} md={2} draggable="true" onDragStart={(e) => this.props.handleDragStart(e, sku._id, sku.name)}>
-                                                {sku.name}
-                                            </ListGroupItem>
-                                    ))}
-                                    </ListGroup>
+                            {goal_skus.map(({_id, name, goal_info, duration})=> (
+                                <div key={goal_info._id + _id} style={{paddingBottom: '1.5em'}}>
+                                    <Label><h6>{goal_info.name}:</h6></Label>
+                                    <ListGroupItem key={_id} md={2} draggable="true" onDragStart={(e) => this.props.handleDragStart(e, _id, goal_info._id, name, duration)}>
+                                        {name}
+                                    </ListGroupItem>
                                 </div>
                          ))}
                     </CardBody>
@@ -94,17 +93,13 @@ ScheduleSidePanel.propTypes = {
   enableGoal: PropTypes.func.isRequired,
   disableGoal: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
-  goal_skus: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
   goals: state.goals,
-  goal_skus: state.goal_skus,
   schedule: state.schedule,
   auth: state.auth
 });
 
 export default connect(mapStateToProps, { getGoals, enableGoal, disableGoal, getSchedule, getGoalSKUs })(ScheduleSidePanel);
-
-/** active={schedule.enabled_goals.some(goal => goal._id === _id)} **/

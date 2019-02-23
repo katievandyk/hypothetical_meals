@@ -1,8 +1,9 @@
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
-  ADD_ACTIVITY, UPDATE_ACTIVITY, SCHEDULE_ERROR} from '../actions/types';
+  ADD_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR} from '../actions/types';
 
 const initialState = {
   schedule: {},
+  activities: [],
   goal_skus: [],
   loading: false,
   error_msgs: []
@@ -25,8 +26,16 @@ export default function(state = initialState, action) {
     case ADD_ACTIVITY:
       return {
         ...state,
-        schedule: state.schedule.lines_list.find(entry => action.payload.line._id === entry.line._id).activities.push(action.payload),
-        loading: false
+        activities: [...state.activities, action.payload]
+     }
+    case UPDATE_ACTIVITY:
+        return {
+          ...state,
+     }
+     case DELETE_ACTIVITY:
+        return {
+          ...state,
+          activities: state.activities.filter( act => act._id !== action.payload )
      }
     case ENABLE_GOAL:
         state.schedule.enabled_goals.push(action.payload)
@@ -43,18 +52,13 @@ export default function(state = initialState, action) {
           loading: false
      }
     case GET_GOAL_SKUS:
-        console.log(action.payload)
         return {
           ...state,
           goal_skus: action.payload,
           loading: false
      }
-    case UPDATE_ACTIVITY:
-        return {
-          ...state,
-     }
     case SCHEDULE_ERROR:{
-      console.log(action.payload);
+      console.log("ERROR");
       return {
         ...state,
         error_msgs: [...state.error_msgs, action.payload.data.message],
