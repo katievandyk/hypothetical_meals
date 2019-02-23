@@ -102,7 +102,7 @@ class GoalsEntry extends React.Component {
       edit_id: _id,
       edit_modal: true,
       edit_name: name,
-      edit_date: date,
+      edit_date: date.split('T')[0],
       edit_skus_list: skus_list,
       validDate: 'success',
       validName: 'success'
@@ -179,7 +179,7 @@ class GoalsEntry extends React.Component {
       skus_list: this.state.edit_skus_list,
     };
 
-    this.props.updateGoal(editedGoal, this.props.user_email);
+    this.props.updateGoal(editedGoal, this.props.auth.user_username);
     this.edit_toggle();
   }
 
