@@ -35,7 +35,7 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
         
 })
 
-// @route POST api/manufacturingschedule/disable/:goal_id
+// @route POST api/manufacturingschedule/disable/:goal_id/:schedule
 // @desc disable goal with certain id
 // @access public
 router.post('/disable/:goal_id/:schedule', (req, res) => {
@@ -51,7 +51,7 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
                                 console.log(err);
                             }
                             else {
-                                res.json(activities);
+                                res.json({'activities' : activities, 'goal_id' : req.params.goal_id});
                             }
                         })
                         .catch(err => res.status(404).json({success: false, message: err.message}))
