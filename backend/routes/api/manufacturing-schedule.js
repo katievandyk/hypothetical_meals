@@ -19,6 +19,18 @@ router.get('/', (req, res) => {
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
+// @route GET api/manufacturingschedule/activity
+// @desc get all manufacturing activities for user
+// @access public
+router.get('/activity', (req, res) => {
+    ManufacturingActivity
+        .find()
+        .populate("sku")
+        .populate("line")
+        .then(activity => res.json(activity))
+        .catch(err => res.status(404).json({success: false, message: err.message}));
+});
+
 // @route POST api/manufacturingschedule/enable/:goal_id/:schedule
 // @desc enable goal with certain id
 // @access public

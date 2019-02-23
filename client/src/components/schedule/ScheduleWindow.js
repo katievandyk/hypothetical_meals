@@ -4,7 +4,7 @@ import { Row, Col, Button } from 'reactstrap'
 import ScheduleSidePanel from './ScheduleSidePanel'
 
 import { getLines } from '../../actions/linesActions';
-import { getSchedule, updateActivity, deleteActivity, addActivity } from '../../actions/scheduleActions';
+import { getSchedule, updateActivity, deleteActivity, addActivity, getActivities } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import '../../styles.css'
@@ -12,7 +12,8 @@ import moment from 'moment'
 
 
   const data = {
-    items: []
+    items: [],
+    groups: []
    }
 
 class ScheduleWindow extends React.Component {
@@ -24,6 +25,7 @@ class ScheduleWindow extends React.Component {
   componentDidMount() {
     this.props.getLines()
     this.props.getSchedule()
+    this.props.getActivities()
   }
 
   getOptions() {
@@ -73,7 +75,7 @@ class ScheduleWindow extends React.Component {
                 }
                 this.props.addActivity(activity, (id) => {
                     item.id = id
-                    data.items.push(item)
+                    this.props.getActivities()
                     callback(item)
                 });
               }
@@ -90,23 +92,6 @@ class ScheduleWindow extends React.Component {
                     callback(null)
               }
               else {
-                const date = moment(item.start);
-                alert(date)
-                date.add(item.duration, 'h');
-                item.end = date;
-                const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
-                const newActivity = {
-                    _id: act._id,
-                    name: act.name,
-                    sku: act.sku._id,
-                    line: item.group,
-                    start: moment(item.start).format('YYYY-mm-ddTHH:MM:ssZ'),
-                    duration: act.duration,
-                    goal_id: item.goal
-                }
-                data.items = data.items.filter(({id}) => id !== item.id)
-                data.items.push(item)
-                this.props.updateActivity(newActivity, act._id)
                 callback(item)
               }
             }.bind(this),
@@ -134,6 +119,25 @@ class ScheduleWindow extends React.Component {
         group.id = line._id;
         group.content = line.name;
         return group;
+    })
+    const activities = this.props.schedule.activities;
+    data.items = activities.map(activity =>{
+         const startDate = moment(activity.start).add(5, 'h');
+         const endDate = moment(activity.start).add(5, 'h');
+         endDate.add(activity.duration, 'h');
+         const item = {
+                      id: activity._id,
+                      content: activity.name,
+                      type: 'range',
+                      start: startDate,
+                      end: endDate,
+                      className: 'green',
+                      sku: activity.sku._id,
+                      goal: activity.goal_id,
+                      group: activity.line._id,
+                      duration: activity.duration
+                  };
+        return item;
     })
     return (
       <div>
@@ -176,6 +180,7 @@ class ScheduleWindow extends React.Component {
 ScheduleWindow.propTypes = {
   getLines: PropTypes.func.isRequired,
   getSchedule: PropTypes.func.isRequired,
+  getActivities: PropTypes.func.isRequired,
   addActivity: PropTypes.func.isRequired,
   lines: PropTypes.object.isRequired,
 };
@@ -185,6 +190,27 @@ const mapStateToProps = (state) => ({
     schedule: state.schedule
 });
 
-export default connect(mapStateToProps, { getLines, addActivity, updateActivity, deleteActivity, getSchedule })(ScheduleWindow);
+export default connect(mapStateToProps, { getLines, addActivity, updateActivity, deleteActivity, getActivities, getSchedule })(ScheduleWindow);
 
-/**   this.props.updateActivity({activity: newActivity}, act._id) **/
+/**
+
+                const startDate = moment(item.start);
+                startDate.subtract(5, 'h');
+                const endDate = moment(item.start);
+                endDate.add(item.duration, 'h');
+                item.end = endDate;
+                const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
+                const updatedAct = {
+                    name: act.name,
+                    start: startDate,
+                    duration: act.duration,
+                    _id: act._id,
+                    sku: act.sku._id,
+                    line: act.line._id,
+                    goal_id: act.goal_id
+                }
+                this.props.updateActivity(updatedAct, act._id)
+                this.props.getActivities()
+
+
+                **/
