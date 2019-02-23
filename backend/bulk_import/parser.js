@@ -404,11 +404,22 @@ function checkFormulas(data) {
     Helpers.checkFileHeaders(data.meta.fields, formula_header);
 
     let formula_data = data.data;
-    let formulas = checkFormulaFileDuplicates(formula_data);
-    return Promise.all(formulas.map(preprocessOneFormula));
+
+    return new Promise(function(accept, reject) {
+        Formula.find().select("-_id number").sort({number: -1}).limit(1).then(accept).catch(reject)
+    }).then(max_number => {
+        let start_num
+        if(max_number.length === 0) 
+            start_num = 1
+        else 
+            start_num = max_number[0].number+1
+        let formulas = checkFormulaFileDuplicates(start_num, formula_data);
+        return Promise.all(formulas.map(preprocessOneFormula));
+    })
+    
 }
 
-module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = function(formula_data) {
+module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = function(start_num, formula_data) {
     let i;
     let cur_formula = null
     let formulas = []
@@ -418,13 +429,18 @@ module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = functio
             (cur_formula.name != formula_data[i][formula_fields.name] || 
                 cur_formula.number != formula_data[i][formula_fields.number])) {
             if(cur_formula != null) {
+                if(cur_formula.number.length == 0) {
+                    cur_formula.number = start_num
+                    start_num = start_num + 1
+                }
                 formulas.push(cur_formula)
             }
 
-            if(numbers.includes(formula_data[i][formula_fields.number])) {
+            let actual_number = formula_data[i][formula_fields.number] == 0 ? start_num : formula_data[i][formula_fields.number] 
+            if(numbers.includes(actual_number)) {
                 throw new Error("Duplicate Formula# in file: " + formula_data[i][formula_fields.number]);
             }
-            numbers.push(formula_data[i][formula_fields.number]);
+            numbers.push(actual_number);
             
             cur_formula = {
                 name: formula_data[i][formula_fields.name],
@@ -443,6 +459,10 @@ module.exports.checkFormulaFileDuplicates = checkFormulaFileDuplicates = functio
     }
 
     if(cur_formula != null) {
+        if(cur_formula.number.length == 0) {
+            cur_formula.number = start_num
+            start_num = start_num + 1
+        }
         formulas.push(cur_formula)
     }
 
@@ -487,7 +507,7 @@ module.exports.preprocessOneFormula = preprocessOneFormula = function(formula_en
             let i
             for (i = 0; i < formula_entry.ingredients_list.length; i++) {
                 if(!(ings_res[i])) {
-                    reject(new Error(`Ingr# for formula ${formula_entry.number} not found: ${formula_entry.ingredients_list[i].number}.`))
+                    reject(new Error(`Ingr# for formula ${formula_entry.name} not found: ${formula_entry.ingredients_list[i].number}.`))
                     return;
                 }
                 formula_entry.ingredients_list[i]._id = ings_res[i]._id
@@ -496,7 +516,7 @@ module.exports.preprocessOneFormula = preprocessOneFormula = function(formula_en
                 let formula_qty = Helpers.extractUnits(formula_entry.ingredients_list[i].quantity)[0]
                 let formula_unit = Helpers.extractUnits(formula_entry.ingredients_list[i].quantity)[1]
                 if(Constants.units[ing_unit] !== Constants.units[formula_unit])
-                    reject(new Error(`Formula quantity for formula ${formula_entry.number} can only be ${Constants.units[ing_unit]}-based. Found ${Constants.units[formula_unit]}-based unit: ${formula_unit}`))
+                    reject(new Error(`Formula quantity for formula ${formula_entry.name} can only be ${Constants.units[ing_unit]}-based. Found ${Constants.units[formula_unit]}-based unit: ${formula_unit}`))
                 formula_entry.ingredients_list[i].quantity = formula_qty + " " + Constants.units_display[formula_unit]
             }
             if(!formula_res) {
