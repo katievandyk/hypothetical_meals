@@ -70,29 +70,11 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
 // @desc get all sku's and range for an array of goals
 // @access public
 router.post('/skus', (req, res) => {
-    var goals = req.body.goals;
-    var response = [];
-    for(var i=0; i<goals.length; i++) {
-        var goal_id = goals[i];
         Goal
-        .findById(goal_id)
-        .then( goal => {
-            var skus = goal.skus_list;
-            for( var i = 0; i < skus.length; i++) {
-                var quantity = skus[i].quantity;
-                SKU
-                    .findById(skus[i].sku)
-                    .then( sku => {
-                        var duration = quantity / sku.manufacturing_rate;
-                        var pair = {'sku' : sku, 'duration' : Math.round(duration)};
-                        response.push(pair);
-                    })
-                    .catch(err => res.status(404).json({success: false, message: err.message}));
-            }
-        })
+        .findById(req.body.goals)
+        .lean()
+        .then(goals => res.json([goals]))
         .catch(err => res.status(404).json({success: false, message: err.message}));
-    }
-    res.json(response);
     
 })
 
@@ -144,7 +126,7 @@ router.post('/update/activity/:activity_id', (req, res) => {
 // @body pass array of activity id's in req.body.activities
 // @access public
 router.post('/delete/activity', (req, res) => {
-    var activities = req.body.activites;
+    var activities = req.body.activities;
     for(var i =0; i<activities.length; i++) {
         ManufacturingActivity
             .findByIdAndDelete(activities[i])

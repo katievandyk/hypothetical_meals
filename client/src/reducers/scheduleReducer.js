@@ -43,7 +43,6 @@ export default function(state = initialState, action) {
           loading: false
      }
     case GET_GOAL_SKUS:
-        console.log(action.payload)
         return {
           ...state,
           goal_skus: action.payload,

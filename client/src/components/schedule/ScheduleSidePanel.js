@@ -106,5 +106,3 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { getGoals, enableGoal, disableGoal, getSchedule, getGoalSKUs })(ScheduleSidePanel);
-
-/** active={schedule.enabled_goals.some(goal => goal._id === _id)} **/

@@ -25,6 +25,7 @@ import '../../styles.css'
         orientation: 'top',
         horizontalScroll: true,
         onAdd: function(item, callback) {
+            alert(JSON.stringify(item.start))
           if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                 alert("Move item to a non-overlapping location.")
                 callback(null)
