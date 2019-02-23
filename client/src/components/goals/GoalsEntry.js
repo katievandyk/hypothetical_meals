@@ -179,7 +179,7 @@ class GoalsEntry extends React.Component {
       skus_list: this.state.edit_skus_list,
     };
 
-    this.props.updateGoal(editedGoal, this.props.user_email);
+    this.props.updateGoal(editedGoal, this.props.auth.user_username);
     this.edit_toggle();
   }
 

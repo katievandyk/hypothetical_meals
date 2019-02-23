@@ -62,10 +62,12 @@ export const updateGoal = (goal, user_username) => dispatch => {
       });
       dispatch(setGoalsLoading());
       axios.get('/api/manufacturing/' + user_username).then(res =>
+        {
         dispatch({
           type: GET_GOALS,
           payload: res.data
         })
+      }
       ).catch(error =>{
         dispatch({
           type: GOAL_ERROR,
