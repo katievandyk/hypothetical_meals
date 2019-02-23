@@ -67,20 +67,6 @@ class ScheduleSidePanel extends React.Component {
                 </Modal>
                 <Card>
                 <CardHeader>SKUs for Selected Goals</CardHeader>
-                    <CardBody>
-                            {goals.map(({_id, name, skus_list})=> (
-                                <div key={_id} style={{paddingBottom: '1.5em'}}>
-                                    <Label><h6>{name}</h6></Label>
-                                    <ListGroup key={_id}>
-                                    {skus_list.map(({_id, sku})=> (
-                                            <ListGroupItem key={_id} md={2} draggable="true" onDragStart={(e) => this.props.handleDragStart(e, sku._id, sku.name)}>
-                                                {sku.name}
-                                            </ListGroupItem>
-                                    ))}
-                                    </ListGroup>
-                                </div>
-                         ))}
-                    </CardBody>
                 </Card>
       </div>
     )
@@ -94,13 +80,11 @@ ScheduleSidePanel.propTypes = {
   enableGoal: PropTypes.func.isRequired,
   disableGoal: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
-  goal_skus: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
   goals: state.goals,
-  goal_skus: state.goal_skus,
   schedule: state.schedule,
   auth: state.auth
 });
