@@ -101,9 +101,30 @@ class IngredientsAddModal extends React.Component {
       cost_per_package: this.state.cost_per_package,
       comment: this.state.comment
     };
+    var allRequiredFields = true;
+    var newValidate = this.state.validate;
+    if(newValidate.name !== 'has-success'){
+      newValidate.name = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.package_size !== 'has-success'){
+      newValidate.package_size = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.cost_per_package !== 'has-success'){
+      newValidate.cost_per_package = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(allRequiredFields){
+      this.props.addIng(newIng,this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
+      this.toggle();
+    }
+    else{
+      this.setState({
+        validate: newValidate
+      });
+    }
 
-    this.props.addIng(newIng,this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
-    this.toggle();
   }
 
   render() {

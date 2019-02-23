@@ -103,7 +103,10 @@ class SKUsFormFormula extends React.Component {
     const validate_kv = Object.entries(this.state.validate);
     for(var i=0; i < validate_kv.length; i++){
       if(validate_kv[i][1] !== 'has-success'){
-        return false;
+        if(validate_kv[i][0] !== 'ingredients_list')
+          return false;
+        else if(validate_kv[i][1] === 'not-selected')
+          return false;
       }
     }
     return true;
@@ -120,10 +123,24 @@ class SKUsFormFormula extends React.Component {
       comment: this.state.edit_comment
     };
 
-    this.props.updateFormula(editedFormula, this.props.formulas.sortby,
-      this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit,
-      this.props.formulas.obj);
-    this.edit_toggle();
+    var allRequiredFields = true;
+    var newValidate = this.state.validate;
+    if(newValidate.ingredients_list !== 'has-success'){
+      newValidate.ingredients_list = 'not-selected';
+      allRequiredFields = false;
+    }
+
+    if(allRequiredFields){
+      this.props.updateFormula(editedFormula, this.props.formulas.sortby,
+        this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit,
+        this.props.formulas.obj);
+      this.toggle();
+    }
+    else{
+      this.setState({
+        validate: newValidate
+      });
+    }
   };
 
   onIngListChange = (ing_list, valid) => {
