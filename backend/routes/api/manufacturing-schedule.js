@@ -80,6 +80,13 @@ router.post('/skus', (req, res) => {
             .then(goal => {
                 let skus_list = goal.skus_list.map(skus => {
                     skus.sku.duration = skus.sku.manufacturing_rate*skus.quantity
+                    let goal_info = {
+                        _id: goal._id,
+                        name: goal.name,
+                        user_username: goal.user_username,
+                        deadline: goal.deadline
+                    }
+                    skus.sku.goal_info = goal_info
                     return skus.sku;
                 })
                 accept(skus_list)
