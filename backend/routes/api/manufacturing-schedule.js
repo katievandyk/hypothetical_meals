@@ -71,18 +71,15 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
 // @access public
 router.post('/skus', (req, res) => {
     var goals = req.body.goals;
-    var response = [];
     Promise.all(goals.map(goal_id => {
-        new Promise(function(accept, reject) {
+        return new Promise(function(accept, reject) {
             Goal
             .findById(goal_id)
             .then( goal => {
-                console.log('first');
                 accept(goal)
             }).catch(reject);
         })
-    })).then(console.log('here'))
-          
+    })).then(goals => res.json(goals))
 })
 
 
