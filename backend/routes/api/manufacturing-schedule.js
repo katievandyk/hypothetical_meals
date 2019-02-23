@@ -58,11 +58,25 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
         .then( goal => {
             ManufacturingSchedule
                 .findOneAndUpdate({ 'name': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
-                .then(res.json(goal))
+                .then(
+                    ManufacturingActivity
+                        .find({ 'goal_id' : req.params.goal_id}, function(err, activities){
+                            if(err) {
+                                console.log(err);
+                            }
+                            else {
+                                res.json(activities);
+                            }
+                        })
+                        .catch(err => res.status(404).json({success: false, message: err.message}))
+                )
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
-        
+})
+
+router.post('/test/:goal_id', (req, res) => {
+    
 })
 
 // @route POST api/manufacturingschedule/skus
@@ -102,7 +116,7 @@ router.post('/skus', (req, res) => {
 
 // @route POST api/manufacturingschedule/activity
 // @desc posts an activity
-// @req.body => {name : activity_name, sku_id : sku_id, line_id : line_id, start : YYYY-mm-ddTHH:MM:ssZ, duration : hours}
+// @req.body => {name : activity_name, sku_id : sku_id, line_id : line_id, start : YYYY-mm-ddTHH:MM:ssZ, duration : hours, goal : sku.goal_info._id}
 // @access public
 router.post('/activity', (req, res) => {
     SKU
@@ -117,7 +131,8 @@ router.post('/activity', (req, res) => {
                         sku : sku,
                         line : line,
                         start : req.body.start,
-                        duration : req.body.duration
+                        duration : req.body.duration,
+                        goal_id : req.body.sku_goal_id
                     })
                     activity.save().then(activity => res.json(activity))
                     .catch(err => res.status(404).json({success: false, message: err.message}))
@@ -131,7 +146,13 @@ router.post('/activity', (req, res) => {
 router.post('/update/activity/:activity_id', (req, res) => {
     ManufacturingActivity
         .findOne({_id : req.params.activity_id}).then( doc => {
-            doc = req.body.activity;
+            doc._id = req.body._id;
+            doc.name = req.body.name;
+            doc.sku = req.body.sku;
+            doc.line = req.body.line;
+            doc.start = req.body.start;
+            doc.duration = req.body.duration;
+            doc.goal_id = req.body.goal_id
             doc.save().then( updatedActivity => {
                 res.json(updatedActivity)
             })
