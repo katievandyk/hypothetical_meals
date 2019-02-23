@@ -61,7 +61,7 @@ export const updateGoal = (goal, user_username) => dispatch => {
         payload: res.data
       });
       dispatch(setGoalsLoading());
-      axios.get(`/api/manufacturing/${user_username}`).then(res =>
+      axios.get('/api/manufacturing/' + user_username).then(res =>
         dispatch({
           type: GET_GOALS,
           payload: res.data
