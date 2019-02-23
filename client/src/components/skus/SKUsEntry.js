@@ -231,7 +231,7 @@ class SKUsEntry extends React.Component {
       val_obj.product_line = 'has-success';
     }
     else{
-      val_obj.product_line = 'has-danger';
+      val_obj.product_line = 'is-empty';
     }
     this.setState({
       edit_product_line: prod_line,
@@ -245,7 +245,7 @@ class SKUsEntry extends React.Component {
       val_obj.formula = 'has-success'
     }
     else{
-      val_obj.formula = 'has-danger'
+      val_obj.formula = 'is-empty'
     }
     this.setState({
       edit_formula: formula,
@@ -424,8 +424,15 @@ class SKUsEntry extends React.Component {
                   </FormFeedback>
                 )}
             </FormGroup>
-            <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} defaultValue={this.state.edit_product_line._id}/>
-            <SKUsFormFormula onFormulaChange={this.onFormulaChange} defaultValue={(this.state.edit_formula && this.state.edit_formula._id)? (this.state.edit_formula._id):('')}/>
+            <SKUsFormPLineSelection
+              onProductLineChange={this.onProductLineChange}
+              defaultValue={typeof this.state.edit_product_line === 'object'?
+                (this.state.edit_product_line):({})}
+              validate={this.state.validate.product_line}/>
+            <SKUsFormFormula onFormulaChange={this.onFormulaChange}
+              defaultValue={(this.state.edit_formula && this.state.edit_formula._id)?
+                (this.state.edit_formula):({})}
+              cLISrw={this.state.validate.formula}/>
             <FormGroup>
                 <Label for="edit_formula_scale_factor">Formula Scale Factor</Label>
                   <Input

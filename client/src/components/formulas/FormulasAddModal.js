@@ -8,7 +8,7 @@ import {
   FormGroup,
   FormFeedback,
   Label,
-  Input
+  Input, CustomInput
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
