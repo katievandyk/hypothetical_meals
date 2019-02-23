@@ -3,7 +3,7 @@ import AppNavbar from '../components/AppNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 import ScheduleWindow from '../components/schedule/ScheduleWindow';
-
+import ScheduleAlerts from '../components/schedule/ScheduleAlerts';
 import { Provider } from 'react-redux';
 import store from '../store';
 
@@ -17,6 +17,7 @@ class ManufacturingSchedule extends Component {
             <div>
                 <div>
                     <AppNavbar />
+                    <ScheduleAlerts />
                 </div>
                 <Container>
                     <Container className="mb-3">

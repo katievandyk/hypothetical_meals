@@ -125,7 +125,7 @@ class SKUsFormFormula extends React.Component {
 
     var allRequiredFields = true;
     var newValidate = this.state.validate;
-    if(newValidate.ingredients_list !== 'has-success'){
+    if(newValidate.ingredients_list && newValidate.ingredients_list !== 'has-success'){
       newValidate.ingredients_list = 'not-selected';
       allRequiredFields = false;
     }

@@ -97,7 +97,7 @@ class Ingredients extends Component {
 
 
      if(this.state.navigate){
-       return(<Redirect to="/reports" push={true} />);
+       return(<Redirect to="/ingredients-dependency-report" push={true} />);
      }
         return(
           <Provider store={store}>
@@ -152,7 +152,7 @@ class Ingredients extends Component {
                     <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
                       <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
                       <ModalBody style={{textAlign:'center'}}>
-                        Ingredients Dependency Report Generated! <br></br>You can view or export it on the reports page
+                        Ingredients Dependency Report Generated! <br></br>You can view or export it on the Ingredients Dependency Report page
                       </ModalBody>
                       <ModalFooter><Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button></ModalFooter>
                     </Modal>
