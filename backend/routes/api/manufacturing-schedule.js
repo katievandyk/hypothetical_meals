@@ -167,12 +167,14 @@ router.post('/update/activity/:activity_id', (req, res) => {
 // @access public
 router.post('/delete/activity', (req, res) => {
     var activities = req.body.activites;
-    for(var i =0; i<activities.length; i++) {
-        ManufacturingActivity
-            .findByIdAndDelete(activities[i])
-            .catch(err => res.status(404).json({success: false, message: err.message}));
-    }
-    res.json({success: true});
+    Promise.all(activties.map(activity_id => {
+        return new Promise(function(accept, reject) {
+            Activity
+                .findByIdAndDelete(activity_id)
+                .then(accept)
+                .catch(reject)
+        })
+    }))
 })
 
 // @route POST api/manufacturingschedule/report/
