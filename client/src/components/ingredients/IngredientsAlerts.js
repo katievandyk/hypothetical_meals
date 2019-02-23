@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import {
-  Row, Col, UncontrolledAlert, Alert
+  Row, Col, UncontrolledAlert
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
