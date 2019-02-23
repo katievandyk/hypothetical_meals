@@ -195,11 +195,15 @@ router.post('/report', (req, res) => {
                         return {ingredient: ing._id, quantity: ing_qty, packages: packages, unit: unit} 
                     })
                     if (activity.start >= startTime && activityEnd <= endTime) {
+                        activity.actual_duration = activity.duration
+                        activity.actual_start = activity.start
+                        activity.actual_end = activityEnd
                         tasks.push(activity)
                         addIngredientsToList(ingredients, ing_calcs, 1)
                     }
                     else if(activity.start < endTime && activity.start >= startTime) {
                         activity.actual_duration = (endTime.getTime()- startTime.getTime())/(60.0*60*1000)
+                        activity.actual_start = activity.start 
                         activity.actual_end = endTime
                         tasks.push(activity)
                         addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
@@ -208,6 +212,7 @@ router.post('/report', (req, res) => {
                     else if(activityEnd > startTime && activityEnd <= endTime) {
                         activity.actual_duration = (activityEnd.getTime() - startTime.getTime())/(60.0*60*1000)
                         activity.actual_start = startTime
+                        activity.actual_end = activityEnd
                         tasks.push(activity)
 
                         addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
