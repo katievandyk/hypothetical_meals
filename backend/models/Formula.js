@@ -22,6 +22,6 @@ const FormulaSchema = new Schema({
     }
 });
 
-FormulaSchema.index({'$**': 'text'});
+FormulaSchema.index({name: 'text'});
 
 module.exports = Formula = mongoose.model('formula', FormulaSchema);

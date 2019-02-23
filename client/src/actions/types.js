@@ -32,7 +32,16 @@ export const ADD_LINE = 'ADD_LINE';
 export const UPDATE_LINE = 'UPDATE_LINE';
 export const DELETE_LINE = 'DELETE_LINE';
 export const LINES_LOADING = 'LINES_LOADING';
-export const LINE_ERROR = 'LINE_ERROR'
+export const LINE_ERROR = 'LINE_ERROR';
+// Manufacturing Schedule
+export const GET_SCHEDULE = 'GET_SCHEDULE';
+export const GET_GOAL_SKUS = 'GET_GOAL_SKUS';
+export const ENABLE_GOAL = 'ENABLE_GOAL';
+export const DISABLE_GOAL = 'DISABLE_GOAL';
+export const ADD_ACTIVITY = 'ADD_ACTIVITY';
+export const UPDATE_ACTIVITY = 'UPDATE_ACTIVITY';
+export const SCHEDULE_ERROR = 'SCHEDULE_ERROR';
+export const SCHEDULE_LOADING = 'SCHEDULE_LOADING';
 // Product Lines
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';
