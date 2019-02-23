@@ -89,7 +89,15 @@ router.get('/skus', (req, res) => {
                         skus.sku.goal_info = goal_info
                         return skus.sku;
                     })
-                    accept(skus_list)
+                    let groupedByGoal = groupByGoal(skus_list)
+                    let final_output = []
+                    Object.values(groupedByGoal).forEach(goal_skus => {
+                        final_output.push({
+                            goal: goal_skus[0].goal_info,
+                            skus: goal_skus
+                        })
+                    })
+                    accept(final_output)
                 })
             }).catch(reject);
         })
@@ -99,6 +107,14 @@ router.get('/skus', (req, res) => {
     })
   })
 })
+
+function groupByGoal(res) {
+    return res.reduce(function(r,a) {
+        r[a.goal_info._id] = r[a.goal_info._id] || [];
+        r[a.goal_info._id].push(a);
+        return r;
+    }, Object.create(null))
+}
 
 // @route POST api/manufacturingschedule/activity
 // @desc posts an activity
