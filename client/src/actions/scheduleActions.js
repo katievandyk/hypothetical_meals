@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
-  ADD_ACTIVITY, UPDATE_ACTIVITY, SCHEDULE_ERROR} from './types';
+  ADD_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR} from './types';
 
 export const getSchedule = () => dispatch =>  {
   dispatch(setScheduleLoading());
@@ -21,6 +21,20 @@ export const setScheduleLoading = () => {
   return {
     type: SCHEDULE_LOADING
   };
+};
+
+export const deleteActivity = (id) => dispatch => {
+  axios.post(`/api/manufacturingschedule/delete/activity`, {activities: [id]}).then(res => {
+    dispatch({
+      type: DELETE_ACTIVITY,
+      payload: id
+    })
+  }).catch(error =>{
+    dispatch({
+      type: SCHEDULE_ERROR,
+      payload: error.response
+    })
+  });
 };
 
 export const getGoalSKUs = () => dispatch => {
@@ -65,13 +79,13 @@ export const disableGoal = (goal_id, schedule_id) => dispatch => {
   });
 };
 
-export const addActivity  = (activity) => dispatch => {
+export const addActivity  = (activity, _callback) => dispatch => {
   axios.post(`/api/manufacturingschedule/activity`, activity).then(res =>{
+     _callback(res.data._id)
     dispatch({
       type: ADD_ACTIVITY,
-      payload: res.data
-    })
-    }).catch(error =>{
+      payload: res.data,
+    })    }).catch(error =>{
       dispatch({
         type: SCHEDULE_ERROR,
         payload: error.response
@@ -79,8 +93,8 @@ export const addActivity  = (activity) => dispatch => {
   });
 };
 
-export const updateActivity  = (activity_id, start) => dispatch => {
-  axios.post(`api/manufacturingschedule/update/activity/${activity_id}`, start).then(res =>{
+export const updateActivity  = (activity, activity_id) => dispatch => {
+  axios.post(`api/manufacturingschedule/update/activity/${activity_id}`, activity).then(res =>{
     dispatch({
       type: UPDATE_ACTIVITY,
       payload: res.data

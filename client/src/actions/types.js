@@ -40,6 +40,7 @@ export const ENABLE_GOAL = 'ENABLE_GOAL';
 export const DISABLE_GOAL = 'DISABLE_GOAL';
 export const ADD_ACTIVITY = 'ADD_ACTIVITY';
 export const UPDATE_ACTIVITY = 'UPDATE_ACTIVITY';
+export const DELETE_ACTIVITY = 'DELETE_ACTIVITY'
 export const SCHEDULE_ERROR = 'SCHEDULE_ERROR';
 export const SCHEDULE_LOADING = 'SCHEDULE_LOADING';
 // Product Lines

@@ -39,6 +39,11 @@ class ScheduleSidePanel extends React.Component {
     this.props.getGoalSKUs()
   }
 
+  checkDraggable = (goal_id, sku_id ) => {
+    const items = this.props.items;
+    return !items.some(i => i.goal === goal_id && i.sku === sku_id)
+  }
+
   render() {
     const { goals } = this.props.goals;
     const { schedule } = this.props.schedule;
@@ -71,14 +76,14 @@ class ScheduleSidePanel extends React.Component {
                 <Card>
                 <CardHeader>SKUs for Selected Goals</CardHeader>
                     <CardBody>
-                            {goal_skus.map(({_id, name, goal_info, duration})=> (
-                                <div key={goal_info._id + _id} style={{paddingBottom: '1.5em'}}>
-                                    <Label><h6>{goal_info.name}:</h6></Label>
-                                    <ListGroupItem key={_id} md={2} draggable="true" onDragStart={(e) => this.props.handleDragStart(e, _id, goal_info._id, name, duration)}>
-                                        {name}
-                                    </ListGroupItem>
-                                </div>
-                         ))}
+                            {goal_skus.map(({_id, name, goal_info, duration}) =>
+                                    (<div key={goal_info._id + _id} style={{paddingBottom: '1.5em'}}>
+                                        <Label><h6>{goal_info.name}:</h6></Label>
+                                        <ListGroupItem key={_id} md={2} draggable={this.checkDraggable(goal_info._id, _id)} color= {(!this.checkDraggable(goal_info._id, _id)) ? "success" : "default"} onDragStart={(e) => this.props.handleDragStart(e, _id, goal_info._id, name, duration)}>
+                                            {name}
+                                        </ListGroupItem>
+                                    </div>)
+                         )}
                     </CardBody>
                 </Card>
       </div>

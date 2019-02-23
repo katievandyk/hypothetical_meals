@@ -4,7 +4,7 @@ import { Row, Col, Button } from 'reactstrap'
 import ScheduleSidePanel from './ScheduleSidePanel'
 
 import { getLines } from '../../actions/linesActions';
-import { getSchedule, addActivity } from '../../actions/scheduleActions';
+import { getSchedule, updateActivity, deleteActivity, addActivity } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import '../../styles.css'
@@ -19,9 +19,6 @@ class ScheduleWindow extends React.Component {
   constructor(props) {
     super(props)
     this.getOptions = this.getOptions.bind(this)
-    this.state = {
-      selectedIds: []
-    }
   }
 
   componentDidMount() {
@@ -34,6 +31,8 @@ class ScheduleWindow extends React.Component {
             stack: false,
             start: new Date(),
             end: new Date(1000*60*60*24 + (new Date()).valueOf()),
+            zoomMin: 1000 * 60 * 60 * 24,
+            zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
              editable: {
                 add: true,         // add new items by double tapping
                 updateTime: true,
@@ -62,31 +61,58 @@ class ScheduleWindow extends React.Component {
                     sku_id: item.sku,
                     line_id: item.group,
                     start: item.start,
-                    duration: item.duration
+                    duration: item.duration,
+                    sku_goal_id: item.goal
                 }
-                this.props.addActivity(activity)
-                data.items.push(item)
-                callback(item)
+                this.props.addActivity(activity, (id) => {
+                    item.id = id
+                    data.items.push(item)
+                    callback(item)
+                });
               }
             }.bind(this),
             onMove: function(item, callback) {
-              if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
+             const lines = [];
+             this.props.schedule.goal_skus.find(i => i._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
+             if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                     alert("Move item to a non-overlapping location.")
                     callback(null)
               }
+              else if(lines.indexOf(item.group) === -1) {
+                    alert("Move item to a valid manufacturing line.")
+                    callback(null)
+              }
               else {
-                const index = data.items.findIndex(i => i.id === item.id)
-                if(index > -1) data.items[index] = item;
+                const date = moment(item.start);
+                date.add(item.duration, 'h');
+                item.end = date;
+                data.items.push(item)
+                const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
+                const newActivity = {
+                    name: act.name,
+                    sku_id: act.sku._id,
+                    line_id: item.group,
+                    start: item.start,
+                    duration: act.duration
+                }
                 callback(item)
               }
-            },
+            }.bind(this),
             onRemove: function(item, callback) {
-                var index = data.items.indexOf(i => i.id === item.id)
-                data.items.splice(index)
+                const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
+                this.props.deleteActivity(act._id)
+                data.items = data.items.filter(({id}) => id !== item.id)
                 callback(item)
-            }
+            }.bind(this),
           }
        return options;
+  }
+
+  exportReport = () => {
+    const timeline = this.timeline.$el
+    const times = timeline.getWindow();
+    alert(times.start)
+    alert(times.end)
   }
 
   render() {
@@ -101,16 +127,17 @@ class ScheduleWindow extends React.Component {
       <div>
         <Row style={{paddingBottom: '1.5em'}}>
             <Col style={{'textAlign': 'right'}}> </Col>
-            <Button>Manufacturing Schedule Report </Button>
+            <Button onClick={this.exportReport}>Manufacturing Schedule Report </Button>
         </Row>
         <Row>
            <Col md={3}>
-                <ScheduleSidePanel handleDragStart={this.handleDragStart}/>
+                <ScheduleSidePanel items={data.items} handleDragStart={this.handleDragStart}/>
            </Col>
             <Col>
             <Timeline
               {...data}
               options = {this.getOptions()}
+              ref={el => (this.timeline = el)}
             />
             </Col>
             </Row>
@@ -126,6 +153,7 @@ class ScheduleWindow extends React.Component {
       content: name,
       className: 'green',
       sku: _id,
+      goal: goal_id,
       duration: String(duration)
     };
     event.dataTransfer.setData("text", JSON.stringify(item));
@@ -145,4 +173,6 @@ const mapStateToProps = (state) => ({
     schedule: state.schedule
 });
 
-export default connect(mapStateToProps, { getLines, addActivity, getSchedule })(ScheduleWindow);
+export default connect(mapStateToProps, { getLines, addActivity, updateActivity, deleteActivity, getSchedule })(ScheduleWindow);
+
+/**   this.props.updateActivity({activity: newActivity}, act._id) **/

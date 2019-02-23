@@ -19,20 +19,6 @@ router.get('/', (req, res) => {
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
-// @route POST api/manufacturingschedule
-// @desc create a manufacturing schedule
-// @access public
-router.post('/', (req, res) => {
-    newSchedule = new ManufacturingSchedule({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name
-    })
-    newSchedule
-        .save()
-        .then(schedule => res.json(schedule))
-        .catch(err => res.status(404).json({success: false, message: err.message}));
-});
-
 // @route POST api/manufacturingschedule/enable/:goal_id/:schedule
 // @desc enable goal with certain id
 // @access public
@@ -57,12 +43,22 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
         .findById(req.params.goal_id)
         .then( goal => {
             ManufacturingSchedule
-                .findOneAndUpdate({ '_id': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
-                .then(res.json(goal))
+                .findOneAndUpdate({ 'name': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
+                .then(
+                    ManufacturingActivity
+                        .find({ 'goal_id' : req.params.goal_id}, function(err, activities){
+                            if(err) {
+                                console.log(err);
+                            }
+                            else {
+                                res.json(activities);
+                            }
+                        })
+                        .catch(err => res.status(404).json({success: false, message: err.message}))
+                )
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
-        
 })
 
 // @route POST api/manufacturingschedule/skus
@@ -118,7 +114,7 @@ function groupByGoal(res) {
 
 // @route POST api/manufacturingschedule/activity
 // @desc posts an activity
-// @req.body => {name : activity_name, sku_id : sku_id, line_id : line_id, start : YYYY-mm-ddTHH:MM:ssZ, duration : hours}
+// @req.body => {name : activity_name, sku_id : sku_id, line_id : line_id, start : YYYY-mm-ddTHH:MM:ssZ, duration : hours,goal  : sku.goal_info._id}
 // @access public
 router.post('/activity', (req, res) => {
     SKU
@@ -133,7 +129,8 @@ router.post('/activity', (req, res) => {
                         sku : sku,
                         line : line,
                         start : req.body.start,
-                        duration : req.body.duration
+                        duration : req.body.duration,
+                        goal_id : req.body.sku_goal_id
                     })
                     activity.save().then(activity => res.json(activity))
                     .catch(err => res.status(404).json({success: false, message: err.message}))
@@ -147,7 +144,13 @@ router.post('/activity', (req, res) => {
 router.post('/update/activity/:activity_id', (req, res) => {
     ManufacturingActivity
         .findOne({_id : req.params.activity_id}).then( doc => {
-            doc = req.body.activity;
+            doc._id = req.body._id;
+            doc.name = req.body.name;
+            doc.sku = req.body.sku;
+            doc.line = req.body.line;
+            doc.start = req.body.start;
+            doc.duration = req.body.duration;
+            doc.goal_id = req.body.goal_id
             doc.save().then( updatedActivity => {
                 res.json(updatedActivity)
             })
@@ -162,12 +165,14 @@ router.post('/update/activity/:activity_id', (req, res) => {
 // @access public
 router.post('/delete/activity', (req, res) => {
     var activities = req.body.activities;
-    for(var i =0; i<activities.length; i++) {
-        ManufacturingActivity
-            .findByIdAndDelete(activities[i])
-            .catch(err => res.status(404).json({success: false, message: err.message}));
-    }
-    res.json({success: true});
+    Promise.all(activities.map(activity_id => {
+        return new Promise(function(accept, reject) {
+            ManufacturingActivity
+                .findByIdAndDelete(activity_id)
+                .then(accept)
+                .catch(reject)
+        })
+    })).then(res.json({success: true}))
 })
 
 // @route POST api/manufacturingschedule/report/
