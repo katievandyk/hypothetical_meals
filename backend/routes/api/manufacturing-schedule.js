@@ -216,7 +216,8 @@ router.post('/report', (req, res) => {
 
                 let ing_list = Object.values(ingredients)
                 ing_list.forEach(ing => {
-                    ing.quantity = ing.quantity + " " + ing.unit
+                    ing.quantity = (Math.round(ing.quantity * 100) / 100) + " " + ing.unit
+                    ing.packages = (Math.round(ing.packages * 100) / 100)
                     delete ing.unit
                 })
                 res.json({activities: tasks, ingredients: ing_list})
