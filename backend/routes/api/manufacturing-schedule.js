@@ -75,11 +75,20 @@ router.post('/skus', (req, res) => {
         return new Promise(function(accept, reject) {
             Goal
             .findById(goal_id)
-            .then( goal => {
-                accept(goal)
+            .populate("skus_list.sku")
+            .lean()
+            .then(goal => {
+                let skus_list = goal.skus_list.map(skus => {
+                    skus.sku.duration = skus.sku.manufacturing_rate*skus.quantity
+                    return skus.sku;
+                })
+                accept(skus_list)
             }).catch(reject);
         })
-    })).then(goals => res.json(goals))
+    })).then(skus => {
+        let flat = [].concat.apply([], skus);
+        res.json(flat)
+    })
 })
 
 
