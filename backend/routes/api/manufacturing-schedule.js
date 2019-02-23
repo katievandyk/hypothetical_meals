@@ -19,20 +19,6 @@ router.get('/', (req, res) => {
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
-// @route POST api/manufacturingschedule
-// @desc create a manufacturing schedule
-// @access public
-router.post('/', (req, res) => {
-    newSchedule = new ManufacturingSchedule({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name
-    })
-    newSchedule
-        .save()
-        .then(schedule => res.json(schedule))
-        .catch(err => res.status(404).json({success: false, message: err.message}));
-});
-
 // @route POST api/manufacturingschedule/enable/:goal_id/:schedule
 // @desc enable goal with certain id
 // @access public
