@@ -61,7 +61,8 @@ class ScheduleWindow extends React.Component {
                     sku_id: item.sku,
                     line_id: item.group,
                     start: item.start,
-                    duration: item.duration
+                    duration: item.duration,
+                    sku_goal_id: item.goal
                 }
                 this.props.addActivity(activity, (id) => {
                     item.id = id
