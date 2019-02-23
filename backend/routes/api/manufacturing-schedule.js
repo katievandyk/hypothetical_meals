@@ -7,9 +7,6 @@ const Goal = require('../../models/Goal');
 const ManufacturingLine = require('../../models/ManufacturingLine');
 const ManufacturingActivity = require('../../models/ManufacturingActivity');
 
-
-
-
 // @route GET api/manufacturingschedule
 // @desc get all manufacturing schedules for specific user
 // @access public
@@ -70,12 +67,32 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
 // @desc get all sku's and range for an array of goals
 // @access public
 router.post('/skus', (req, res) => {
-        Goal
-        .findById(req.body.goals)
-        .lean()
-        .then(goals => res.json([goals]))
-        .catch(err => res.status(404).json({success: false, message: err.message}));
-    
+    var goals = req.body.goals;
+    Promise.all(goals.map(goal_id => {
+        return new Promise(function(accept, reject) {
+            Goal
+            .findById(goal_id)
+            .populate("skus_list.sku")
+            .lean()
+            .then(goal => {
+                let skus_list = goal.skus_list.map(skus => {
+                    skus.sku.duration = skus.sku.manufacturing_rate*skus.quantity
+                    let goal_info = {
+                        _id: goal._id,
+                        name: goal.name,
+                        user_username: goal.user_username,
+                        deadline: goal.deadline
+                    }
+                    skus.sku.goal_info = goal_info
+                    return skus.sku;
+                })
+                accept(skus_list)
+            }).catch(reject);
+        })
+    })).then(skus => {
+        let flat = [].concat.apply([], skus);
+        res.json(flat)
+    })
 })
 
 // @route POST api/manufacturingschedule/activity
