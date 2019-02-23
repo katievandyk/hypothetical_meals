@@ -31,6 +31,11 @@ class ScheduleWindow extends React.Component {
             stack: false,
             start: new Date(),
             end: new Date(1000*60*60*24 + (new Date()).valueOf()),
+            hiddenDates: [{
+                start: '2017-03-04 18:00:00',
+                end: '2017-03-05 08:00:00',
+                repeat: 'daily'
+            }],
             zoomMin: 1000 * 60 * 60 * 24,
             zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
              editable: {
@@ -86,15 +91,18 @@ class ScheduleWindow extends React.Component {
                 const date = moment(item.start);
                 date.add(item.duration, 'h');
                 item.end = date;
-                data.items.push(item)
                 const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
                 const newActivity = {
                     name: act.name,
                     sku_id: act.sku._id,
                     line_id: item.group,
                     start: item.start,
-                    duration: act.duration
+                    duration: act.duration,
+                    sku_goal_id: item.goal
                 }
+                data.items = data.items.filter(({id}) => id !== item.id)
+                data.items.push(item)
+                this.props.updateActivity(newActivity, act._id)
                 callback(item)
               }
             }.bind(this),
