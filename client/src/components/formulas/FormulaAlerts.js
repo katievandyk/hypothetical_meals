@@ -10,24 +10,21 @@ import PropTypes from 'prop-types';
 class FormulaAlerts extends Component {
 
   render(){
-    const error_msg = this.props.formulas.error_msg;
-    if(error_msg.length > 0){
+    const errors = this.props.formulas.error_msgs;
       return (
         <Row>
         <Col></Col>
         <Col md={9}>
-          <UncontrolledAlert color="danger">
+        {errors.map((value, i) => (
+          <UncontrolledAlert key={i} className={(i !== errors.length - 1) ? ("hidden"):("")} color="danger">
           <h4>ERROR</h4>
-          {error_msg}
+          {value}
           </UncontrolledAlert>
+        ))}
         </Col>
         <Col></Col>
         </Row>
       );
-    }
-    else{
-      return null;
-    }
   }
 }
 

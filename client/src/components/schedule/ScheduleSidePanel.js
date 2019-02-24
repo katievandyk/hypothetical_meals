@@ -76,13 +76,15 @@ class ScheduleSidePanel extends React.Component {
                 <Card>
                 <CardHeader>SKUs for Selected Goals</CardHeader>
                     <CardBody>
-                            {goal_skus.map(({_id, name, goal_info, duration}) =>
-                                    (<div key={goal_info._id + _id} style={{paddingBottom: '1.5em'}}>
-                                        <Label><h6>{goal_info.name}:</h6></Label>
-                                        <ListGroupItem key={_id} md={2} draggable={this.checkDraggable(goal_info._id, _id)} color= {(!this.checkDraggable(goal_info._id, _id)) ? "success" : "default"} onDragStart={(e) => this.props.handleDragStart(e, _id, goal_info._id, name, duration)}>
+                            {goal_skus.map(({goal, skus}) =>
+                                <div key={goal._id} style={{paddingBottom: '1.5em'}}>
+                                        <Label><h6>{goal.name}</h6></Label>
+                                        {skus.map(({name, duration, _id}) =>
+                                        <ListGroupItem key={_id} md={2} draggable={this.checkDraggable(goal._id, _id)} color= {(!this.checkDraggable(goal._id, _id)) ? "success" : "default"} onDragStart={(e) => this.props.handleDragStart(e, _id, goal._id, name, duration)}>
                                             {name}
                                         </ListGroupItem>
-                                    </div>)
+                                        )}
+                                 </div>
                          )}
                     </CardBody>
                 </Card>

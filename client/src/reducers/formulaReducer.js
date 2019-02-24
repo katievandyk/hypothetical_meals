@@ -9,7 +9,7 @@ const initialState = {
   page: 1,
   pagelimit:10,
   count: 0,
-  error_msg: '',
+  error_msgs: [],
   obj: {},
   sortby: 'name',
   sortdir: 'asc',
@@ -30,7 +30,7 @@ export default function(state = initialState, action) {
         page: action.payload.page,
         pagelimit: action.payload.pagelimit,
         loading: false,
-        error_msg: ''
+        error_msgs: []
       }
     case FORMULAS_LOADING:
       return {
@@ -40,21 +40,24 @@ export default function(state = initialState, action) {
     case ADD_FORMULA:
       return {
         ...state,
-        added_formula: action.payload
+        added_formula: action.payload,
+        error_msgs: []
       }
     case DELETE_FORMULA:
       return {
         ...state,
-        formulas: state.formulas.filter( formula => formula._id !== action.payload )
+        formulas: state.formulas.filter( formula => formula._id !== action.payload ),
+        error_msgs: []
       }
     case UPDATE_FORMULA:
       return {
-        ...state
+        ...state,
+        error_msgs: []
       }
      case FORMULA_ERROR:{
        return {
          ...state,
-         error_msg: action.payload.data.message,
+         error_msgs: [...state.error_msgs, action.payload.data.message],
          loading: false,
          added_formula: {}
        }

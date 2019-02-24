@@ -80,6 +80,9 @@ module.exports.checkFileHeaders = function(actual_header, expected_header) {
 
 module.exports.getIngredientFilterResult = getIngredientFilterResult = function(req, res, callback) {
     var skus = req.body.skus == null ? [] : req.body.skus;
+    let number = null
+    if (isNumeric(req.body.keywords))
+        number = parseFloat(req.body.keywords)
     SKU.find({_id: {$in: skus.map(function(el) { return mongoose.Types.ObjectId(el) })}})
     .populate("formula")
     .lean()
@@ -93,7 +96,7 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
         var ingredientFindPromise = Ingredient.find();
         var ingredientCountPromise = Ingredient.find();
 
-        if (req.body.keywords != null) {
+        if (req.body.keywords != null && number == null) {
             ingredientFindPromise = Ingredient.find({$text: {
                 $search: req.body.keywords,
                 $caseSensitive: false,
@@ -111,9 +114,9 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
             ingredientCountPromise = ingredientCountPromise.where({_id: {$in: onlyIds}});
         }
         
-        if(req.body.number != null) {
-            ingredientFindPromise = ingredientFindPromise.where({"number": req.body.number})
-            ingredientCountPromise = ingredientCountPromise.where({"number": req.body.number})
+        if(number != null) {
+            ingredientFindPromise = ingredientFindPromise.where({"number": number})
+            ingredientCountPromise = ingredientCountPromise.where({"number": number})
         }
 
         callback(req, res, ingredientFindPromise, ingredientCountPromise)
@@ -121,10 +124,14 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
 }
 
 module.exports.getFormulasFilterResult = getFormulasFilterResult = function(req, res, callback) {
+    let number = null
+    if (isNumeric(req.body.keywords))
+        number = parseFloat(req.body.keywords)
+
     var formulasFindPromise = Formula.find();
     var formulasCountPromise = Formula.find();
 
-    if (req.body.keywords != null) {
+    if (req.body.keywords != null && number == null) {
         formulasFindPromise = Formula.find(
             {$text: {$search: req.body.keywords,
                 $caseSensitive: false,
@@ -146,9 +153,9 @@ module.exports.getFormulasFilterResult = getFormulasFilterResult = function(req,
                 req.body.ingredients}});
     }
 
-    if(req.body.number != null) {
-        formulasFindPromise = formulasFindPromise.where({"number": req.body.number})
-        formulasCountPromise = formulasCountPromise.where({"number": req.body.number})
+    if(number != null) {
+        formulasFindPromise = formulasFindPromise.where({"number": number})
+        formulasCountPromise = formulasCountPromise.where({"number": number})
     }
     formulasFindPromise = formulasFindPromise.populate("ingredients_list._id")
 
@@ -179,6 +186,10 @@ module.exports.ingredientDependencyReportCsv = ingredientDependencyReportCsv = f
 }
 
 module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, callback) {
+    let number = null
+    if (isNumeric(req.body.keywords))
+        number = parseFloat(req.body.keywords)
+
     var skuFindPromise = SKU.find();
     let skuCountPromise = SKU.find();
 
@@ -186,7 +197,7 @@ module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, call
     .select("_id")
     .lean()
     .then(formulas => {
-        if (req.body.keywords != null) {
+        if (req.body.keywords != null && number == null) {
             skuFindPromise = SKU.find(
                 {$text: {$search: req.body.keywords,
                     $caseSensitive: false,
@@ -218,18 +229,18 @@ module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, call
                         function(el) { return mongoose.Types.ObjectId(el) }) }});
         }
     
-        if(req.body.number != null) {
+        if(number != null) {
             skuFindPromise = skuFindPromise.where({
                 $or:[ 
-                    {"number": req.body.number},
-                    {"case_number": req.body.number},
-                    {"unit_number": req.body.number}
+                    {"number": number},
+                    {"case_number": number},
+                    {"unit_number": number}
                 ]})
                 skuCountPromise = skuCountPromise.where({
                 $or:[ 
-                    {"number": req.body.number},
-                    {"case_number": req.body.number},
-                    {"unit_number": req.body.number}
+                    {"number": number},
+                    {"case_number": number},
+                    {"unit_number": number}
                 ]})
         }
     

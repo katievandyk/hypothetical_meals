@@ -21,13 +21,13 @@ class SKUFilters extends React.Component {
   }
 
   onChange = (e) => {
-    var newIngFilters = [];
+    var newSKUFilters = [];
     e.forEach(function(option){
-      newIngFilters = [...newIngFilters, option.value];
+      newSKUFilters = [...newSKUFilters, option.value];
     });
     var newObj = this.props.ing.obj;
     if(e.length > 0){
-      newObj['skus'] = newIngFilters;
+      newObj['skus'] = newSKUFilters;
     }
     else {
       delete newObj['skus'];
@@ -39,7 +39,7 @@ class SKUFilters extends React.Component {
   render() {
     var skus = this.props.skus.skus;
     return (
-      <div>Ingredient Filters:
+      <div>SKU Filters:
         <Select isMulti={true} options={this.genOptions(skus)} onChange={this.onChange} />
       </div>
     );

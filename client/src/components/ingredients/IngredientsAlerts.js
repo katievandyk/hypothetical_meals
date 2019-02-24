@@ -8,26 +8,22 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 class IngredientsAlerts extends Component {
-
   render(){
-    const error_msg = this.props.ing.error_msg;
-    if(error_msg.length > 0){
-      return (
-        <Row>
-        <Col></Col>
-        <Col md={9}>
-          <UncontrolledAlert color="danger">
-          <h4>ERROR</h4>
-          {error_msg}
-          </UncontrolledAlert>
-        </Col>
-        <Col></Col>
-        </Row>
-      );
-    }
-    else{
-      return null;
-    }
+    const errors = this.props.ing.error_msgs;
+    return (
+      <Row>
+      <Col></Col>
+      <Col md={9}>
+      {errors.map((value, i) => (
+        <UncontrolledAlert className={(i !== errors.length - 1) ? ("hidden"):("")} key={i} color="danger">
+        <h4>ERROR</h4>
+        {value}
+        </UncontrolledAlert>
+      ))}
+      </Col>
+      <Col></Col>
+      </Row>
+    );
   }
 }
 

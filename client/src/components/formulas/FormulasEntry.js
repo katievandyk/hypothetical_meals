@@ -55,7 +55,7 @@ class FormulasEntry extends React.Component {
   componentDidMount() {
     this.props.sortFormulas(this.props.formulas.sortby,
       this.props.formulas.sortdir, this.props.formulas.page,
-      this.props.formulas.pagelimit, this.props.formulas.obj);
+      10, this.props.formulas.obj);
   }
 
   onDeleteClick = id => {
@@ -113,7 +113,10 @@ class FormulasEntry extends React.Component {
     const validate_kv = Object.entries(this.state.validate);
     for(var i=0; i < validate_kv.length; i++){
       if(validate_kv[i][1] !== 'has-success'){
-        return false;
+        if(validate_kv[i][0] !== 'ingredients_list')
+          return false;
+        else if(validate_kv[i][1] === 'not-selected')
+          return false;
       }
     }
     return true;
@@ -129,11 +132,25 @@ class FormulasEntry extends React.Component {
       ingredients_list: this.state.edit_ingredients_list,
       comment: this.state.edit_comment
     };
+    var allRequiredFields = true;
+    var newValidate = this.state.validate;
+    if(newValidate.ingredients_list && newValidate.ingredients_list !== 'has-success'){
+      newValidate.ingredients_list = 'not-selected';
+      allRequiredFields = false;
+    }
 
-    this.props.updateFormula(editedFormula, this.props.formulas.sortby,
-      this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit,
-      this.props.formulas.obj);
-    this.toggle();
+    if(allRequiredFields){
+      this.props.updateFormula(editedFormula, this.props.formulas.sortby,
+        this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit,
+        this.props.formulas.obj);
+      this.toggle();
+    }
+    else{
+      this.setState({
+        validate: newValidate
+      });
+    }
+
   };
 
   onIngListChange = (ing_list, valid) => {
@@ -357,7 +374,7 @@ class FormulasEntry extends React.Component {
                     Please input a valid number.
                   </FormFeedback>
             </FormGroup>
-            <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list}/>
+            <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list} validate={this.state.validate.ingredients_list}/>
             <FormGroup>
               <Label for="edit_comment">Comments</Label>
                 <Input

@@ -7,10 +7,10 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-class PLinesAlerts extends Component {
+class LinesAlerts extends Component {
 
   render(){
-    const errors = this.props.plines.error_msgs;
+    const errors = this.props.lines.error_msgs;
       return (
         <Row>
         <Col></Col>
@@ -28,12 +28,12 @@ class PLinesAlerts extends Component {
   }
 }
 
-PLinesAlerts.propTypes = {
-  plines: PropTypes.object.isRequired
+LinesAlerts.propTypes = {
+  lines: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  plines: state.plines
+  lines: state.lines
 });
 
-export default connect(mapStateToProps)(PLinesAlerts);
+export default connect(mapStateToProps)(LinesAlerts);
