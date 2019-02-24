@@ -187,12 +187,11 @@ class SKUAddModal extends React.Component {
       newValidate.manufacturing_rate = 'is-empty';
       allRequiredFields = false;
     }
-
     this.setState({
       validate: newValidate
     });
 
-    if(allRequiredFields){
+    if(allRequiredFields && this.allValidated()){
       this.props.addSKU(newSKU, this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
       this.toggle();
     }

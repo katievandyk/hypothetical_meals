@@ -215,7 +215,7 @@ class SKUsEntry extends React.Component {
     this.setState({
       validate: newValidate
     });
-    if(allRequiredFields){
+    if(allRequiredFields && this.allValidated()){
       this.props.updateSKU(editedSKU,this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
       this.toggle();
     }

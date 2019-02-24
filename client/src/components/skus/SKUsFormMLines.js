@@ -30,6 +30,7 @@ class SKUsFormMLines extends React.Component {
         validate: tmpVal
       });
     }
+    this.props.onLinesChange(tmpArray, true);
   }
 
   allValid = (validState=this.state.validate) => {
