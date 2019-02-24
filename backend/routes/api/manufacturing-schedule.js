@@ -19,17 +19,15 @@ router.get('/', (req, res) => {
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
-// @route POST api/manufacturingschedule
-// @desc create a manufacturing schedule
+// @route GET api/manufacturingschedule/activity
+// @desc get all manufacturing activities for user
 // @access public
-router.post('/', (req, res) => {
-    newSchedule = new ManufacturingSchedule({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name
-    })
-    newSchedule
-        .save()
-        .then(schedule => res.json(schedule))
+router.get('/activity', (req, res) => {
+    ManufacturingActivity
+        .find()
+        .populate("sku")
+        .populate("line")
+        .then(activity => res.json(activity))
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
@@ -46,7 +44,7 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
-        
+
 })
 
 // @route POST api/manufacturingschedule/disable/:goal_id
@@ -57,12 +55,22 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
         .findById(req.params.goal_id)
         .then( goal => {
             ManufacturingSchedule
-                .findOneAndUpdate({ '_id': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
-                .then(res.json(goal))
+                .findOneAndUpdate({ 'name': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
+                .then(
+                    ManufacturingActivity
+                        .find({ 'goal_id' : req.params.goal_id}, function(err, activities){
+                            if(err) {
+                                console.log(err);
+                            }
+                            else {
+                                res.json(activities);
+                            }
+                        })
+                        .catch(err => res.status(404).json({success: false, message: err.message}))
+                )
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
-        
 })
 
 // @route POST api/manufacturingschedule/skus
@@ -79,7 +87,7 @@ router.get('/skus', (req, res) => {
             .then(goal => {
                 Formula.populate(goal, {path:"skus_list.sku.formula"}).then(goal => {
                     let skus_list = goal.skus_list.map(skus => {
-                        skus.sku.duration = skus.sku.manufacturing_rate*skus.quantity
+                        skus.sku.duration = Math.ceil(skus.sku.manufacturing_rate*skus.quantity)
                         let goal_info = {
                             _id: goal._id,
                             name: goal.name,
@@ -89,7 +97,15 @@ router.get('/skus', (req, res) => {
                         skus.sku.goal_info = goal_info
                         return skus.sku;
                     })
-                    accept(skus_list)
+                    let groupedByGoal = groupByGoal(skus_list)
+                    let final_output = []
+                    Object.values(groupedByGoal).forEach(goal_skus => {
+                        final_output.push({
+                            goal: goal_skus[0].goal_info,
+                            skus: goal_skus
+                        })
+                    })
+                    accept(final_output)
                 })
             }).catch(reject);
         })
@@ -100,9 +116,17 @@ router.get('/skus', (req, res) => {
   })
 })
 
+function groupByGoal(res) {
+    return res.reduce(function(r,a) {
+        r[a.goal_info._id] = r[a.goal_info._id] || [];
+        r[a.goal_info._id].push(a);
+        return r;
+    }, Object.create(null))
+}
+
 // @route POST api/manufacturingschedule/activity
 // @desc posts an activity
-// @req.body => {name : activity_name, sku_id : sku_id, line_id : line_id, start : YYYY-mm-ddTHH:MM:ssZ, duration : hours}
+// @req.body => {name : activity_name, sku_id : sku_id, line_id : line_id, start : YYYY-mm-ddTHH:MM:ssZ, duration : hours,goal  : sku.goal_info._id}
 // @access public
 router.post('/activity', (req, res) => {
     SKU
@@ -117,7 +141,8 @@ router.post('/activity', (req, res) => {
                         sku : sku,
                         line : line,
                         start : req.body.start,
-                        duration : req.body.duration
+                        duration : req.body.duration,
+                        goal_id : req.body.sku_goal_id
                     })
                     activity.save().then(activity => res.json(activity))
                     .catch(err => res.status(404).json({success: false, message: err.message}))
@@ -131,7 +156,13 @@ router.post('/activity', (req, res) => {
 router.post('/update/activity/:activity_id', (req, res) => {
     ManufacturingActivity
         .findOne({_id : req.params.activity_id}).then( doc => {
-            doc = req.body.activity;
+            doc._id = req.body._id;
+            doc.name = req.body.name;
+            doc.sku = req.body.sku;
+            doc.line = req.body.line;
+            doc.start = req.body.start;
+            doc.duration = req.body.duration;
+            doc.goal_id = req.body.goal_id
             doc.save().then( updatedActivity => {
                 res.json(updatedActivity)
             })
@@ -146,21 +177,23 @@ router.post('/update/activity/:activity_id', (req, res) => {
 // @access public
 router.post('/delete/activity', (req, res) => {
     var activities = req.body.activities;
-    for(var i =0; i<activities.length; i++) {
-        ManufacturingActivity
-            .findByIdAndDelete(activities[i])
-            .catch(err => res.status(404).json({success: false, message: err.message}));
-    }
-    res.json({success: true});
+    Promise.all(activities.map(activity_id => {
+        return new Promise(function(accept, reject) {
+            ManufacturingActivity
+                .findByIdAndDelete(activity_id)
+                .then(accept)
+                .catch(reject)
+        })
+    })).then(res.json({success: true}))
 })
 
 // @route POST api/manufacturingschedule/report/
 // @desc generates the information for the reports
-// @body 
+// @body
 // - start: starting time of the schedule
 // - end: ending time of the schedule
 // - line_id: id of the manufacturing line
-// @returns 
+// @returns
 router.post('/report', (req, res) => {
     var startTime = new Date(req.body.start)
     var endTime = new Date(req.body.end)
@@ -192,7 +225,7 @@ router.post('/report', (req, res) => {
                         let ing_qty = calculations[0]
                         let packages = calculations[1]
                         let unit = calculations[2]
-                        return {ingredient: ing._id, quantity: ing_qty, packages: packages, unit: unit} 
+                        return {ingredient: ing._id, quantity: ing_qty, packages: packages, unit: unit}
                     })
                     if (activity.start >= startTime && activityEnd <= endTime) {
                         activity.actual_duration = activity.duration
@@ -207,7 +240,7 @@ router.post('/report', (req, res) => {
                         activity.actual_end = endTime
                         tasks.push(activity)
                         addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
-                        
+
                     }
                     else if(activityEnd > startTime && activityEnd <= endTime) {
                         activity.actual_duration = (activityEnd.getTime() - startTime.getTime())/(60.0*60*1000)
@@ -237,7 +270,7 @@ router.post('/report', (req, res) => {
 
 function addIngredientsToList(ingredients, ing_calcs, part) {
     const reducer = (accumulator, currentValue) => {
-        
+
         if (currentValue.ingredient._id in accumulator) {
             accumulator[currentValue.ingredient._id].quantity = accumulator[currentValue.ingredient._id].quantity + currentValue.quantity * part
             accumulator[currentValue.ingredient._id].packages = accumulator[currentValue.ingredient._id].packages + currentValue.packages * part
@@ -255,13 +288,13 @@ function calculate(package_num, package_unit, formula_qty, formula_unit, formula
     if(Constants.units[package_unit] == "weight" && Constants.units[formula_unit] == "weight") {
         formula_qty_converted = formula_qty * Constants.weight_conv[formula_unit] / Constants.weight_conv[package_unit] * formula_scale_factor * sku_quantity
         ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
+        packages = (Math.round(formula_qty_converted/package_num * 100) / 100)
         unit = package_unit
     }
     else if(Constants.units[package_unit] == "volume" && Constants.units[formula_unit] == "volume") {
         formula_qty_converted = formula_qty * Constants.volume_conv[formula_unit] / Constants.volume_conv[package_unit] * formula_scale_factor * sku_quantity
         ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
+        packages = (Math.round(formula_qty_converted/package_num * 100) / 100)
         unit = package_unit
     }
     else { // count
@@ -272,6 +305,19 @@ function calculate(package_num, package_unit, formula_qty, formula_unit, formula
     }
     return [ing_qty, packages, unit]
 }
+
+// @route GET api/manufacturingschedule/search
+// @desc searches keywords in database
+// @access public
+router.get('/search', (req, res) => {
+    Goal.find({$text: {$search: req.body.keywords}},
+        {score:{$meta: "textScore"}})
+        .lean()
+        .sort({score: {$meta: "textScore"}})
+        .then(search_res => {
+            res.json({success: true, results: search_res});
+        })
+        .catch(err => res.status(404).json({success: false, message: err.message}))});
 
 
 module.exports = router;
