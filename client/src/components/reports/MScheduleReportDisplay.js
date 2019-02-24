@@ -12,9 +12,6 @@ import 'jspdf-autotable';
 import * as jsPDF from 'jspdf';
 
 class MScheduleReportDisplay extends React.Component {
-  constructor(props){
-    super(props);
-  }
 
   getPercent = (duration, actual_duration) => {
     return (Math.floor((duration/actual_duration) * 100) + "%");
