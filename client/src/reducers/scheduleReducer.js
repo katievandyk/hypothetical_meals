@@ -34,13 +34,8 @@ export default function(state = initialState, action) {
         activities: [...state.activities, action.payload]
      }
     case UPDATE_ACTIVITY:
-            alert(JSON.stringify(state.activities))
-        const index = state.activities.findIndex((act => act._id === action.payload._id));
-        state.activities[index] = action.payload
-        alert(JSON.stringify(state.activities))
         return {
           ...state,
-          activities: state.activities
      }
      case DELETE_ACTIVITY:
         return {

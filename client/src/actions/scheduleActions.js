@@ -114,10 +114,22 @@ export const updateActivity  = (activity, activity_id) => dispatch => {
       type: UPDATE_ACTIVITY,
       payload: res.data
     })
-    }).catch(error =>{
+    dispatch(setScheduleLoading());
+    axios.get(`/api/manufacturingschedule/activity`).then(res =>
       dispatch({
-        type: SCHEDULE_ERROR,
-        payload: error.response
+        type: GET_ACTIVITY,
+        payload: res.data
       })
-  });
+    ).catch(error =>{
+         dispatch({
+           type: SCHEDULE_ERROR,
+           payload: error.response
+         })
+       });
+     }).catch(error =>{
+       dispatch({
+         type: SCHEDULE_ERROR,
+         payload: error.response
+       })
+     });
 };

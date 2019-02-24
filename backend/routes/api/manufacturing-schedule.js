@@ -44,7 +44,7 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
-        
+
 })
 
 // @route POST api/manufacturingschedule/disable/:goal_id
@@ -189,11 +189,11 @@ router.post('/delete/activity', (req, res) => {
 
 // @route POST api/manufacturingschedule/report/
 // @desc generates the information for the reports
-// @body 
+// @body
 // - start: starting time of the schedule
 // - end: ending time of the schedule
 // - line_id: id of the manufacturing line
-// @returns 
+// @returns
 router.post('/report', (req, res) => {
     var startTime = new Date(req.body.start)
     var endTime = new Date(req.body.end)
@@ -225,7 +225,7 @@ router.post('/report', (req, res) => {
                         let ing_qty = calculations[0]
                         let packages = calculations[1]
                         let unit = calculations[2]
-                        return {ingredient: ing._id, quantity: ing_qty, packages: packages, unit: unit} 
+                        return {ingredient: ing._id, quantity: ing_qty, packages: packages, unit: unit}
                     })
                     if (activity.start >= startTime && activityEnd <= endTime) {
                         tasks.push(activity)
@@ -236,7 +236,7 @@ router.post('/report', (req, res) => {
                         activity.actual_end = endTime
                         tasks.push(activity)
                         addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
-                        
+
                     }
                     else if(activityEnd > startTime && activityEnd <= endTime) {
                         activity.actual_duration = (activityEnd.getTime() - startTime.getTime())/(60.0*60*1000)
@@ -261,7 +261,7 @@ router.post('/report', (req, res) => {
 
 function addIngredientsToList(ingredients, ing_calcs, part) {
     const reducer = (accumulator, currentValue) => {
-        
+
         if (currentValue.ingredient._id in accumulator) {
             accumulator[currentValue.ingredient._id].quantity = accumulator[currentValue.ingredient._id].quantity + currentValue.quantity * part
             accumulator[currentValue.ingredient._id].packages = accumulator[currentValue.ingredient._id].packages + currentValue.packages * part
@@ -279,13 +279,13 @@ function calculate(package_num, package_unit, formula_qty, formula_unit, formula
     if(Constants.units[package_unit] == "weight" && Constants.units[formula_unit] == "weight") {
         formula_qty_converted = formula_qty * Constants.weight_conv[formula_unit] / Constants.weight_conv[package_unit] * formula_scale_factor * sku_quantity
         ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
+        packages = (Math.round(formula_qty_converted/package_num * 100) / 100)
         unit = package_unit
     }
     else if(Constants.units[package_unit] == "volume" && Constants.units[formula_unit] == "volume") {
         formula_qty_converted = formula_qty * Constants.volume_conv[formula_unit] / Constants.volume_conv[package_unit] * formula_scale_factor * sku_quantity
         ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
+        packages = (Math.round(formula_qty_converted/package_num * 100) / 100)
         unit = package_unit
     }
     else { // count
