@@ -10,7 +10,8 @@ ECE 458 design project.
 ```
 module.exports = {
     mongoURI: <INSERT URI>,
-    secretOrKey: "secret"
+    secretOrKey: "secret",
+    dbName: <INSERT MONGODB DATABASE NAME>
 };
 ```
 4. Run `npm start` in the root directory.
@@ -24,7 +25,8 @@ Create a `configs.js` file in the `./backend` directory using the following temp
 ```
 module.exports = {
     mongoURI: <INSERT URI>,
-    secretOrKey: "secret"
+    secretOrKey: "secret",
+    dbName: <INSERT MONGODB DATABASE NAME>
 };
 ```
 
