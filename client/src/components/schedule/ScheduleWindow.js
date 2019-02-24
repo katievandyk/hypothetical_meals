@@ -2,7 +2,7 @@ import React  from 'react'
 import Timeline from 'react-visjs-timeline'
 import { Row, Col, Button } from 'reactstrap'
 import ScheduleSidePanel from './ScheduleSidePanel'
-
+import CreateScheduleReport from './CreateScheduleReport'
 import { getLines } from '../../actions/linesActions';
 import { getSchedule, updateActivity, deleteActivity, addActivity } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
@@ -110,13 +110,6 @@ class ScheduleWindow extends React.Component {
        return options;
   }
 
-  exportReport = () => {
-    const timeline = this.timeline.$el
-    const times = timeline.getWindow();
-    alert(times.start)
-    alert(times.end)
-  }
-
   render() {
     const { lines } = this.props.lines;
     data.groups = lines.map(line =>{
@@ -129,7 +122,7 @@ class ScheduleWindow extends React.Component {
       <div>
         <Row style={{paddingBottom: '1.5em'}}>
             <Col style={{'textAlign': 'right'}}> </Col>
-            <Button onClick={this.exportReport}>Manufacturing Schedule Report </Button>
+            <CreateScheduleReport/>
         </Row>
         <Row>
            <Col md={3}>
