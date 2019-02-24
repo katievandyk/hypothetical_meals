@@ -64,7 +64,7 @@ module.exports.extractUnits = extractUnits =  function(str) {
     let unit = match[2]
 
     let replace_regex = /(\.|\s)/
-    unit = unit.replace(new RegExp(replace_regex, "g"), "").replace(/s$/, "").toLowerCase();
+    unit = unit.replace(new RegExp(replace_regex, "g"), "").toLowerCase().replace(/s$/, "");
 
     return [num, unit]
 }
