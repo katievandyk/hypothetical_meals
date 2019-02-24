@@ -27,8 +27,17 @@ class MScheduleReportDisplay extends React.Component {
     doc.text(20, 40, "Manufacturing Schedule Report");
     docPos = 60;
     doc.setFontSize(14);
-    doc.text(20, 60, "Manufacturing Tasks");
-    docPos = 70;
+    var lineName = (report.info && report.info.line) ? (report.info.line.name):("");
+    var startDate = (report.info) ? (report.info.start):("");
+    var endDate = (report.info) ? (report.info.end):("");;
+    doc.text(20, docPos, "Line: " + lineName);
+    docPos = docPos + 20;
+    doc.text(20, docPos, "Start: " + startDate);
+    docPos = docPos + 20;
+    doc.text(20, docPos, "End: " + endDate);
+    docPos = docPos + 20;
+    doc.text(20, docPos, "Manufacturing Tasks:");
+    docPos = docPos + 10;
     var sku;
     var sku_res;
     var formula;
@@ -67,7 +76,7 @@ class MScheduleReportDisplay extends React.Component {
           doc.autoTable(formula_res.columns, formula_res.data, { margin: { top: 10, left: 20, right: 20, bottom: 50 }, startY: docPos});
           docPos = doc.autoTableEndPosY() + 10;
         }
-        doc.text(20, docPos, "Ingredients");
+        doc.text(20, docPos, "Ingredients: ");
         docPos = docPos + 10;
         ing = document.getElementById("ing_toPDF" + i)
         ing_res = doc.autoTableHtmlToJson(ing);
@@ -78,7 +87,7 @@ class MScheduleReportDisplay extends React.Component {
         });
 
     doc.setFontSize(14);
-    doc.text(20, docPos + 10, "Ingredients Needed");
+    doc.text(20, docPos + 10, "Ingredients Needed:");
     docPos = docPos + 20;
     var ingSum = document.getElementById("ing_summary_toPDF")
     var ingSum_res = doc.autoTableHtmlToJson(ingSum);
@@ -94,7 +103,14 @@ class MScheduleReportDisplay extends React.Component {
         <div>
           <Container>
             <h1>Manufacturing Schedule Report</h1>
-            <h3>Manufacturing Tasks</h3>
+            {[report.info].map(({line, start, end}, i) => (
+              <div key={i}>
+              <h3>Line: {line.name}</h3>
+              <h3>Start: {start}</h3>
+              <h3>End: {end}</h3>
+              </div>
+            ))}
+            <h3>Manufacturing Tasks: </h3>
             {report.activities.map(({_id, name, sku,start, duration,
               actual_duration, actual_start, actual_end}, i) => (
                 <div key={_id}>
@@ -197,7 +213,7 @@ class MScheduleReportDisplay extends React.Component {
                 </div>
               ))}
               {report.activities.length === 0 && <div>No Manufacturing Tasks</div>}
-            <h3>Ingredients Needed</h3>
+            <h3>Ingredients Needed: </h3>
             {report.ingredients.length > 0 &&
               <Table id="ing_summary_toPDF" responsive size="sm">
                 <thead>

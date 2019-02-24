@@ -89,7 +89,7 @@ class CreateScheduleReport extends Component {
     }
     if(allRequiredFields){
       var startString = this.state.startDate.format('YYYY-MM-DD') + "T08:00:00.000Z";
-      var endString = this.state.startDate.format('YYYY-MM-DD') + "T18:00:00.000Z";
+      var endString = this.state.endDate.format('YYYY-MM-DD') + "T18:00:00.000Z";
       const newObj = {line_id: this.state.line_id, start: startString, end: endString}
       this.props.genScheduleReport(newObj);
       this.toggle();
