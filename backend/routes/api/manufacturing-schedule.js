@@ -225,7 +225,11 @@ router.post('/report', (req, res) => {
                     ing.packages = (Math.round(ing.packages * 100) / 100)
                     delete ing.unit
                 })
-                res.json({activities: tasks, ingredients: ing_list})
+
+                let req_info = {line: req.body.line_id, start: req.body.start, end: req.body.end}
+                ManufacturingLine.populate(req_info, {path: "line"}).then(info => {
+                    res.json({info: req_info, activities: tasks, ingredients: ing_list})
+                }) 
             })
         })
     })
