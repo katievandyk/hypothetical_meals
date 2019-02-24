@@ -302,7 +302,7 @@ function calculate(package_num, package_unit, formula_qty, formula_unit, formula
     return [ing_qty, packages, unit]
 }
 
-// @route GET api/skus/search
+// @route GET api/manufacturingschedule/search
 // @desc searches keywords in database
 // @access public
 router.get('/search', (req, res) => {
