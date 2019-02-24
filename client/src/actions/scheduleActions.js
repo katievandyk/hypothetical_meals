@@ -1,12 +1,27 @@
 import axios from 'axios';
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
-  ADD_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR} from './types';
+  ADD_ACTIVITY,GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR, SCHEDULE_REPORT} from './types';
 
 export const getSchedule = () => dispatch =>  {
   dispatch(setScheduleLoading());
   axios.get(`/api/manufacturingschedule`).then(res =>{
     dispatch({
       type: GET_SCHEDULE,
+      payload: res.data
+    })}
+  ).catch(error =>{
+    dispatch({
+      type: SCHEDULE_ERROR,
+      payload: error.response
+    })
+  });
+};
+
+export const getActivities = () => dispatch =>  {
+  dispatch(setScheduleLoading());
+  axios.get(`/api/manufacturingschedule/activity`).then(res =>{
+    dispatch({
+      type: GET_ACTIVITY,
       payload: res.data
     })}
   ).catch(error =>{
@@ -99,10 +114,36 @@ export const updateActivity  = (activity, activity_id) => dispatch => {
       type: UPDATE_ACTIVITY,
       payload: res.data
     })
-    }).catch(error =>{
+    dispatch(setScheduleLoading());
+    axios.get(`/api/manufacturingschedule/activity`).then(res =>
       dispatch({
-        type: SCHEDULE_ERROR,
-        payload: error.response
+        type: GET_ACTIVITY,
+        payload: res.data
       })
+    ).catch(error =>{
+         dispatch({
+           type: SCHEDULE_ERROR,
+           payload: error.response
+         })
+       });
+     }).catch(error =>{
+       dispatch({
+         type: SCHEDULE_ERROR,
+         payload: error.response
+       })
+     });
+};
+
+export const genScheduleReport = (obj) => dispatch =>  {
+  axios.post(`/api/manufacturingschedule/report`, obj).then(res =>{
+    dispatch({
+      type: SCHEDULE_REPORT,
+      payload: res.data
+    })}
+  ).catch(error =>{
+    dispatch({
+      type: SCHEDULE_ERROR,
+      payload: error.response
+    })
   });
 };

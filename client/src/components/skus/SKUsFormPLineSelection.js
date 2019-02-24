@@ -1,52 +1,59 @@
 import React from 'react';
 import {
-  FormGroup, FormFeedback, Input, Label
+  FormGroup, Label
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getPLines } from '../../actions/plineActions';
+import Select from 'react-select';
 
 class SKUsFormPLineSelection extends React.Component {
-  state = {
-    validate: ''
-  }
   componentDidMount() {
     this.props.getPLines(1, -1);
   }
 
   onChange = (e) => {
-    var valString = 'has-success';
-    var isValid = true;
-    if(e.target.value === 'select'){
-      valString = 'on-select';
-      isValid = false;
+    this.props.onProductLineChange(e.value, true);
+  }
+
+  classNameValue = () => {
+    if(this.props.validate === 'is-empty'){
+      return "isInvalid";
     }
-    this.setState({
-      validate: valString
+    else if(this.props.validate === 'has-success'){
+      return "isValid";
+    }
+    else
+      return "";
+  }
+
+  genOptions = (plines) => {
+    var newOptions = [];
+    plines.forEach(function(pline){
+      var newOption = {value: pline._id, label: pline.name};
+      newOptions = [...newOptions, newOption];
     });
-    this.props.onProductLineChange(e.target.value, isValid);
+    return newOptions;
   }
 
   render() {
+    var defaultValue = "";
+    if(this.props.defaultValue){
+      defaultValue = {value: this.props.defaultValue._id, label: this.props.defaultValue.name}
+    }
+    var validate = this.props.validate;
     return(<FormGroup>
-      <Label for="product_line">Product Line</Label>
-        <Input
-          valid={this.state.validate === 'has-success'}
-          invalid={this.state.validate === 'on-select'}
-          type="select"
-          name="product_line"
-          id="product_line"
-          placeholder="Select the Product Line"
-          onChange={this.onChange.bind(this)}
-          defaultValue={this.props.defaultValue}>
-          <option key='select' value='select'>Select Product Line</option>
-          {this.props.plines.plines.map(({_id, name }) => (
-          <option key={_id} value={_id} name={name}>{name}</option>
-        ))}
-        </Input>
-        <FormFeedback>
+        <Label for="product_line">Product Line</Label>
+        <Select
+          className={this.classNameValue()}
+          classNamePrefix="react-select"
+          options={this.genOptions(this.props.plines.plines)}
+          onChange={this.onChange}
+          placeholder="Select Product Line"
+          defaultValue={defaultValue}/>
+        <div style={{display:'block'}} className={validate === 'is-empty'? ("invalid-feedback"):("hidden")}>
           Select a valid product line from the dropdown list.
-        </FormFeedback>
+        </div>
     </FormGroup>
   );
   }
@@ -57,7 +64,8 @@ SKUsFormPLineSelection.propTypes = {
   getPLines: PropTypes.func.isRequired,
   plines: PropTypes.object.isRequired,
   onProductLineChange: PropTypes.func.isRequired,
-  defaultValue: PropTypes.string
+  defaultValue: PropTypes.object,
+  validate: PropTypes.string
 };
 
 const mapStateToProps = state => ({

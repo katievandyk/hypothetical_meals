@@ -16,7 +16,7 @@ const initialState = {
   count: 0,
   report: [],
   report_obj: {},
-  error_msg: ''
+  error_msgs: []
 };
 
 export default function(state = initialState, action) {
@@ -28,7 +28,7 @@ export default function(state = initialState, action) {
         count: action.payload.count,
         loading: false,
         pagelimit: 10,
-        error_msg: ''
+        error_msgs: []
       }}
     case ADD_ING:
       return {
@@ -94,7 +94,7 @@ export default function(state = initialState, action) {
         page: page_val,
         pagelimit: action.payload.pagelimit,
         loading: false,
-        error_msg: ''
+        error_msgs: []
       }}
     case GEN_INGDEP_REPORT:{
       return {
@@ -112,7 +112,7 @@ export default function(state = initialState, action) {
     case ING_ERROR:{
       return {
         ...state,
-        error_msg: action.payload.data.message,
+        error_msgs: [...state.error_msgs, action.payload.data.message],
         loading: false
       }
     }

@@ -9,10 +9,12 @@ import { sortFormulas, updateFormula } from '../../actions/formulaActions';
 import SKUsFormIngTupleSelection from './SKUsFormIngTupleSelection';
 import FormulasAddModal from '../formulas/FormulasAddModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Select from 'react-select';
 
 class SKUsFormFormula extends React.Component {
   state = {
     validate: {},
+    selected_value: '',
     validateFormula: '',
     ing_list: [],
     edit_id: '',
@@ -29,7 +31,8 @@ class SKUsFormFormula extends React.Component {
     this.props.sortFormulas('name', 'asc', 1, -1, {});
     if(this.props.defaultValue){
       this.setState({
-        formula_id: this.props.defaultValue
+        formula_id: this.props.defaultValue._id,
+        selected_value: {value: this.props.defaultValue._id, label: this.props.defaultValue.name}
       });
     }
   }
@@ -100,7 +103,10 @@ class SKUsFormFormula extends React.Component {
     const validate_kv = Object.entries(this.state.validate);
     for(var i=0; i < validate_kv.length; i++){
       if(validate_kv[i][1] !== 'has-success'){
-        return false;
+        if(validate_kv[i][0] !== 'ingredients_list')
+          return false;
+        else if(validate_kv[i][1] === 'not-selected')
+          return false;
       }
     }
     return true;
@@ -117,10 +123,24 @@ class SKUsFormFormula extends React.Component {
       comment: this.state.edit_comment
     };
 
-    this.props.updateFormula(editedFormula, this.props.formulas.sortby,
-      this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit,
-      this.props.formulas.obj);
-    this.edit_toggle();
+    var allRequiredFields = true;
+    var newValidate = this.state.validate;
+    if(newValidate.ingredients_list && newValidate.ingredients_list !== 'has-success'){
+      newValidate.ingredients_list = 'not-selected';
+      allRequiredFields = false;
+    }
+
+    if(allRequiredFields){
+      this.props.updateFormula(editedFormula, this.props.formulas.sortby,
+        this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit,
+        this.props.formulas.obj);
+      this.toggle();
+    }
+    else{
+      this.setState({
+        validate: newValidate
+      });
+    }
   };
 
   onIngListChange = (ing_list, valid) => {
@@ -144,19 +164,14 @@ class SKUsFormFormula extends React.Component {
   }
 
   onChange = (e) => {
-    var valString = 'has-success';
     var isValid = true;
-    if(e.target.value === 'select'){
-      valString = 'on-select';
-      isValid = false;
-    }
     this.setState({
-      validateFormula: valString,
-      formula_id: e.target.value,
+      formula_id: e.value,
       add_error: false,
-      use_added: false
+      use_added: false,
+      selected_value: e
     });
-    this.props.onFormulaChange(e.target.value, isValid);
+    this.props.onFormulaChange(e.value, isValid);
   }
 
   getAddedFormula = () => {
@@ -166,33 +181,47 @@ class SKUsFormFormula extends React.Component {
       });
     }
 
+  classNameValue = () => {
+    if(this.props.validate === 'is-empty'){
+      return "isInvalid";
+    }
+    else if(this.props.validate === 'has-success' || this.state.use_added){
+      return "isValid";
+    }
+    else
+      return "";
+  }
+
+  genOptions = (formulas) => {
+    var newOptions = [];
+    formulas.forEach(function(formula){
+      var newOption = {value: formula._id, label: formula.name};
+      newOptions = [...newOptions, newOption];
+    });
+    return newOptions;
+  }
+
   render() {
     var addedFormula = this.props.formulas.added_formula;
     var add_error = this.props.formulas.error_msg;
+    var validate = this.props.validate;
     return(
       <div>
       <FormGroup>
         <Label for="formula">Formula</Label>
         <Row>
           <Col md={6} style={{paddingRight: 0}}>
-          <Input
-            valid={this.state.validateFormula === 'has-success'}
-            invalid={this.state.validateFormula === 'on-select'}
-            type="select"
+          <Select
+            className={this.classNameValue()}
+            classNamePrefix="react-select"
+            options={this.genOptions(this.props.formulas.formulas)}
+            onChange={this.onChange}
             name="formula"
-            id="formula"
-            placeholder="Select the Formula"
-            onChange={this.onChange.bind(this)}
-            value={(this.state.use_added && addedFormula._id)? (addedFormula._id):(this.props.defaultValue)}
-            ref={Input => this.formula = Input}>
-            <option key='select' value='select'>Select Formula</option>
-            {this.props.formulas.formulas.map(({_id, name}) => (
-            <option key={_id} value={_id} data='t' name={name}>{name}</option>
-          ))}
-          </Input>
-          <FormFeedback>
+            placeholder="Select Formula"
+            value={(this.state.use_added && addedFormula._id)? ({value: addedFormula._id, label: addedFormula.name}):(this.state.selected_value)}/>
+          <div style={{display:'block'}} className={validate === 'is-empty'? ("invalid-feedback"):("hidden")}>
             Select a valid formula from the dropdown list.
-          </FormFeedback>
+          </div>
           </Col>
           <Col md={1} style={{paddingLeft: 0}}>
           {(this.state.formula_id.length > 0 || this.state.use_added) &&
@@ -212,7 +241,7 @@ class SKUsFormFormula extends React.Component {
         </Row>
         <Row>
         <Col><div style={{color: 'red'}}>
-          {(this.state.add_error && add_error.length > 0) ? ('ADD ERROR: ' + add_error):('')}
+          {(this.state.add_error && this.state.add_error.length > 0) ? ('ADD ERROR: ' + add_error):('')}
         </div>
         </Col>
         </Row>
@@ -252,7 +281,7 @@ class SKUsFormFormula extends React.Component {
                   Please input a valid number.
                 </FormFeedback>
           </FormGroup>
-          <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list}/>
+          <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list} validate={this.state.validate.ingredients_list}/>
           <FormGroup>
             <Label for="edit_comment">Comments</Label>
               <Input
@@ -283,7 +312,8 @@ SKUsFormFormula.propTypes = {
   updateFormula: PropTypes.func.isRequired,
   formulas: PropTypes.object.isRequired,
   onFormulaChange: PropTypes.func.isRequired,
-  defaultValue: PropTypes.string
+  defaultValue: PropTypes.object,
+  validate: PropTypes.string
 };
 
 const mapStateToProps = state => ({

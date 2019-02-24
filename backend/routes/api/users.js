@@ -179,6 +179,7 @@ router.post("/login", (req, res) => {
     User.findOne({ username: req.body.username }).then(user => {
         if (!user) {
           makeNetidAdmin(req.body.username, res);
+          return
         }
         if(user.isAdmin) {
           return res.status(400).json({ username: "User is already an admin"});

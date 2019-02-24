@@ -119,7 +119,10 @@ class SKUAddModal extends React.Component {
     const validate_kv = Object.entries(this.state.validate);
     for(var i = 0; i < validate_kv.length; i++){
       if(validate_kv[i][1] !== 'has-success'){
-        return false;
+        if(validate_kv[i][0] !== 'manufacturing_lines')
+          return false;
+        else if(validate_kv[i][1] === 'not-selected')
+          return false;
       }
     }
     return true;
@@ -142,9 +145,57 @@ class SKUAddModal extends React.Component {
       manufacturing_rate: this.state.manufacturing_rate,
       comment: this.state.comment
     };
+    var allRequiredFields = true;
+    var newValidate = this.state.validate;
+    if(newValidate.name !== 'has-success'){
+      newValidate.name = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.case_number !== 'has-success'){
+      newValidate.case_number = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.unit_number !== 'has-success'){
+      newValidate.unit_number = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.unit_size !== 'has-success'){
+      newValidate.unit_size = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.product_line !== 'has-success'){
+      newValidate.product_line = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.count_per_case !== 'has-success'){
+      newValidate.count_per_case = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.formula !== 'has-success'){
+      newValidate.formula = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.formula_scale_factor !== 'has-success'){
+      newValidate.formula_scale_factor = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.manufacturing_lines !== 'has-success'){
+      newValidate.manufacturing_lines = 'not-selected';
+      allRequiredFields = false;
+    }
+    if(newValidate.manufacturing_rate !== 'has-success'){
+      newValidate.manufacturing_rate = 'is-empty';
+      allRequiredFields = false;
+    }
+    this.setState({
+      validate: newValidate
+    });
 
-    this.props.addSKU(newSKU, this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
-    this.toggle();
+    if(allRequiredFields && this.allValidated()){
+      this.props.addSKU(newSKU, this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
+      this.toggle();
+    }
+
   }
 
   onProductLineChange = (prod_line, valid) => {
@@ -153,7 +204,7 @@ class SKUAddModal extends React.Component {
       val_obj.product_line = 'has-success'
     }
     else{
-      val_obj.product_line = 'has-danger'
+      val_obj.product_line = 'is-empty'
     }
     this.setState({
       product_line: prod_line,
@@ -167,7 +218,7 @@ class SKUAddModal extends React.Component {
       val_obj.formula = 'has-success'
     }
     else{
-      val_obj.formula = 'has-danger'
+      val_obj.formula = 'is-empty'
     }
     this.setState({
       formula: formula,
@@ -321,8 +372,8 @@ class SKUAddModal extends React.Component {
                   </FormFeedback>
                 )}
             </FormGroup>
-            <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange}/>
-            <SKUsFormFormula onFormulaChange={this.onFormulaChange}/>
+            <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} validate={this.state.validate.product_line}/>
+            <SKUsFormFormula onFormulaChange={this.onFormulaChange} validate={this.state.validate.formula}/>
               <FormGroup>
                 <Label for="formula_scale_factor">Formula Scale Factor</Label>
                   <Input
@@ -345,7 +396,7 @@ class SKUAddModal extends React.Component {
                     </FormFeedback>
                   )}
               </FormGroup>
-              <SKUsFormMLines onLinesChange={this.onLinesChange} />
+              <SKUsFormMLines onLinesChange={this.onLinesChange} validate={this.state.validate.manufacturing_lines}/>
               <FormGroup>
                 <Label for="manufacturing_rate">Manufacturing Rate</Label>
                   <Input

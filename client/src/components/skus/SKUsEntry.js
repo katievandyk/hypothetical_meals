@@ -179,7 +179,10 @@ class SKUsEntry extends React.Component {
     const validate_kv = Object.entries(this.state.validate);
     for(var i=0; i < validate_kv.length; i++){
       if(validate_kv[i][1] !== 'has-success'){
-        return false;
+        if(validate_kv[i][0] !== 'manufacturing_lines')
+          return false;
+        else if(validate_kv[i][1] === 'not-selected')
+          return false;
       }
     }
     return true;
@@ -203,8 +206,21 @@ class SKUsEntry extends React.Component {
       manufacturing_rate: this.state.edit_manufacturing_rate,
       comment: this.state.edit_comment
     };
-    this.props.updateSKU(editedSKU,this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
-    this.toggle();
+    var allRequiredFields = true;
+    var newValidate = this.state.validate;
+    if(newValidate.manufacturing_lines && newValidate.manufacturing_lines !== 'has-success'){
+      newValidate.manufacturing_lines = 'not-selected';
+      allRequiredFields = false;
+    }
+    this.setState({
+      validate: newValidate
+    });
+    if(allRequiredFields && this.allValidated()){
+      this.props.updateSKU(editedSKU,this.props.skus.sortby, this.props.skus.sortdir, this.props.skus.page, this.props.skus.pagelimit, this.props.skus.obj);
+      this.toggle();
+    }
+    console.log(newValidate);
+
   };
 
   onMLinesListClick = newMlines => {
@@ -231,7 +247,7 @@ class SKUsEntry extends React.Component {
       val_obj.product_line = 'has-success';
     }
     else{
-      val_obj.product_line = 'has-danger';
+      val_obj.product_line = 'is-empty';
     }
     this.setState({
       edit_product_line: prod_line,
@@ -245,7 +261,7 @@ class SKUsEntry extends React.Component {
       val_obj.formula = 'has-success'
     }
     else{
-      val_obj.formula = 'has-danger'
+      val_obj.formula = 'is-empty'
     }
     this.setState({
       edit_formula: formula,
@@ -424,8 +440,15 @@ class SKUsEntry extends React.Component {
                   </FormFeedback>
                 )}
             </FormGroup>
-            <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} defaultValue={this.state.edit_product_line._id}/>
-            <SKUsFormFormula onFormulaChange={this.onFormulaChange} defaultValue={(this.state.edit_formula && this.state.edit_formula._id)? (this.state.edit_formula._id):('')}/>
+            <SKUsFormPLineSelection
+              onProductLineChange={this.onProductLineChange}
+              defaultValue={typeof this.state.edit_product_line === 'object'?
+                (this.state.edit_product_line):({})}
+              validate={this.state.validate.product_line}/>
+            <SKUsFormFormula onFormulaChange={this.onFormulaChange}
+              defaultValue={(this.state.edit_formula && this.state.edit_formula._id)?
+                (this.state.edit_formula):({})}
+              cLISrw={this.state.validate.formula}/>
             <FormGroup>
                 <Label for="edit_formula_scale_factor">Formula Scale Factor</Label>
                   <Input
@@ -448,7 +471,9 @@ class SKUsEntry extends React.Component {
                     </FormFeedback>
                   )}
               </FormGroup>
-              <SKUsFormMLines onLinesChange={this.onLinesChange} defaultValue={this.state.edit_manufacturing_lines}/>
+              <SKUsFormMLines onLinesChange={this.onLinesChange}
+                defaultValue={this.state.edit_manufacturing_lines}
+                validate={this.state.validate.manufacturing_lines}/>
               <FormGroup>
                 <Label for="edit_manufacturing_rate">Manufacturing Rate</Label>
                   <Input

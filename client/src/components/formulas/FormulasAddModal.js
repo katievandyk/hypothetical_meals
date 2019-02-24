@@ -43,7 +43,10 @@ class FormulasAddModal extends React.Component {
     const validate_kv = Object.entries(this.state.validate);
     for(var i = 0; i < validate_kv.length; i++){
       if(validate_kv[i][1] !== 'has-success'){
-        return false;
+        if(validate_kv[i][0] !== 'ingredients_list')
+          return false;
+        else if(validate_kv[i][1] === 'not-selected')
+          return false;
       }
     }
     return true;
@@ -80,13 +83,31 @@ class FormulasAddModal extends React.Component {
       ingredients_list: this.state.ingredients_list,
       comment: this.state.comment
     };
-    this.props.addFormula(newFormula,this.props.formulas.sortby,
-      this.props.formulas.sortdir, 1, this.props.formulas.pagelimit,
-      this.props.formulas.obj);
-    if(this.props.getAddedFormula){
-      this.props.getAddedFormula();
+    var allRequiredFields = true;
+    var newValidate = this.state.validate;
+    if(newValidate.name !== 'has-success'){
+      newValidate.name = 'is-empty';
+      allRequiredFields = false;
     }
-    this.toggle();
+    if(newValidate.ingredients_list !== 'has-success'){
+      newValidate.ingredients_list = 'not-selected';
+      allRequiredFields = false;
+    }
+    if(allRequiredFields && this.allValidate()){
+      this.props.addFormula(newFormula,this.props.formulas.sortby,
+        this.props.formulas.sortdir, 1, this.props.formulas.pagelimit,
+        this.props.formulas.obj);
+      if(this.props.getAddedFormula){
+        this.props.getAddedFormula();
+      }
+      this.toggle();
+    }
+    else{
+      this.setState({
+        validate: newValidate
+      });
+    }
+
   }
 
   onIngListChange = (ing_list, valid) => {
@@ -149,7 +170,7 @@ class FormulasAddModal extends React.Component {
                     Please input a valid number.
                   </FormFeedback>
             </FormGroup>
-            <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list}/>
+            <SKUsFormIngTupleSelection onIngListChange={this.onIngListChange} defaultValue={this.state.edit_ingredients_list} validate={this.state.validate.ingredients_list}/>
             <FormGroup>
               <Label for="comment">Comments</Label>
                 <Input

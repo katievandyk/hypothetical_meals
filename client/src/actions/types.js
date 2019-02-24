@@ -39,10 +39,12 @@ export const GET_GOAL_SKUS = 'GET_GOAL_SKUS';
 export const ENABLE_GOAL = 'ENABLE_GOAL';
 export const DISABLE_GOAL = 'DISABLE_GOAL';
 export const ADD_ACTIVITY = 'ADD_ACTIVITY';
+export const GET_ACTIVITY = 'GET_ACTIVITY';
 export const UPDATE_ACTIVITY = 'UPDATE_ACTIVITY';
 export const DELETE_ACTIVITY = 'DELETE_ACTIVITY'
 export const SCHEDULE_ERROR = 'SCHEDULE_ERROR';
 export const SCHEDULE_LOADING = 'SCHEDULE_LOADING';
+export const SCHEDULE_REPORT = 'SCHEDULE_REPORT';
 // Product Lines
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';
