@@ -67,7 +67,7 @@ router.post('/', (req, res) => {
                     let formula_qty = Helper.extractUnits(formulaObj.ingredients_list[i].quantity)[0]
                     let formula_unit = Helper.extractUnits(formulaObj.ingredients_list[i].quantity)[1]
                     if(Constants.units[ing_unit] !== Constants.units[formula_unit])
-                        throw new Error(`Formula quantity for ingredient id ${formulaObj.ingredients_list[i]._id} can only be ${Constants.units[ing_unit]}-based. Found ${Constants.units[formula_unit]}-based unit: ${formula_unit}`)
+                        throw new Error(`Formula quantity for ingredient ${ings_res[i].name} can only be ${Constants.units[ing_unit]}-based. Found ${Constants.units[formula_unit]}-based unit: ${formula_unit}`)
                     formulaObj.ingredients_list[i].quantity = formula_qty + " " + Constants.units_display[formula_unit]
                 }
             } catch(err) {
