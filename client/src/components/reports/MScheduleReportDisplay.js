@@ -47,7 +47,7 @@ class MScheduleReportDisplay extends React.Component {
         docPos = docPos + 10;
         var percent = "";
         if(actual_duration !== duration){
-          percent = Math.floor((duration/actual_duration) * 100) + "%";
+          percent = " (" + Math.floor((duration/actual_duration) * 100) + "%)";
         }
         doc.text(20, docPos, "Duration: " + actual_duration + percent);
         docPos = docPos + 10;
@@ -56,7 +56,7 @@ class MScheduleReportDisplay extends React.Component {
         sku = document.getElementById("sku_toPDF" + i)
         sku_res = doc.autoTableHtmlToJson(sku);
         if(sku_res){
-          doc.autoTable(sku_res.columns, sku_res.data, { margin: { top: 50, left: 20, right: 20, bottom: 0 }, startY: docPos});
+          doc.autoTable(sku_res.columns, sku_res.data, { margin: { top: 10, left: 20, right: 20, bottom: 50 }, startY: docPos});
           docPos = doc.autoTableEndPosY() + 10;
         }
         doc.text(20, docPos, "Formula: ");
@@ -64,7 +64,7 @@ class MScheduleReportDisplay extends React.Component {
         formula = document.getElementById("formula_toPDF" + i)
         formula_res = doc.autoTableHtmlToJson(formula);
         if(formula_res){
-          doc.autoTable(formula_res.columns, formula_res.data, { margin: { top: 50, left: 20, right: 20, bottom: 0 }, startY: docPos});
+          doc.autoTable(formula_res.columns, formula_res.data, { margin: { top: 10, left: 20, right: 20, bottom: 50 }, startY: docPos});
           docPos = doc.autoTableEndPosY() + 10;
         }
         doc.text(20, docPos, "Ingredients");
@@ -72,7 +72,7 @@ class MScheduleReportDisplay extends React.Component {
         ing = document.getElementById("ing_toPDF" + i)
         ing_res = doc.autoTableHtmlToJson(ing);
         if(ing_res){
-          doc.autoTable(ing_res.columns, ing_res.data, { margin: { top: 50, left: 20, right: 20, bottom: 0 }, startY: docPos});
+          doc.autoTable(ing_res.columns, ing_res.data, { margin: { top: 10, left: 20, right: 20, bottom: 50 }, startY: docPos});
           docPos = doc.autoTableEndPosY() + 20;
         }
         });
@@ -83,319 +83,12 @@ class MScheduleReportDisplay extends React.Component {
     var ingSum = document.getElementById("ing_summary_toPDF")
     var ingSum_res = doc.autoTableHtmlToJson(ingSum);
     if(ingSum_res)
-      doc.autoTable(ingSum_res.columns, ingSum_res.data, { margin: { top: 50, left: 20, right: 20, bottom: 0 }, startY: docPos});
+      doc.autoTable(ingSum_res.columns, ingSum_res.data, { margin: { top: 10, left: 20, right: 20, bottom: 50 }, startY: docPos});
     doc.save('schedule_report.pdf'); //Download the rendered PDF.
   }
 
   render() {
-    const report_actual = this.props.schedule.report;
-    console.log(report_actual);
-    const report = {
-    "activities": [
-        {
-            "_id": "5c716d5a80842f2c1f861d82",
-            "name": "Cheese Pizza",
-            "sku": {
-                "_id": "5c6f8489ebd992042fa91c3b",
-                "name": "Cheese Pizza",
-                "number": 12347,
-                "case_number": "190989928447",
-                "unit_number": "909899284471",
-                "unit_size": "1 count",
-                "count_per_case": 20,
-                "product_line": "5c6f831aebd992042fa91c38",
-                "comment": "",
-                "formula": {
-                    "_id": "5c6f8250ebd992042fa91c35",
-                    "name": "Pizza Veg",
-                    "number": 1001,
-                    "ingredients_list": [
-                        {
-                            "quantity": "2 count",
-                            "_id": {
-                                "_id": "5c6db99def0a93f16f030489",
-                                "name": "Tomatoes",
-                                "number": 117,
-                                "vendor_info": "Red Nation",
-                                "package_size": "5 count",
-                                "cost_per_package": 5.24,
-                                "comment": "",
-                                "__v": 0
-                            }
-                        },
-                        {
-                            "quantity": "2.1 oz.",
-                            "_id": {
-                                "_id": "5c6f80744e943e03e9b28344",
-                                "name": "Mozzarella",
-                                "number": 888897,
-                                "vendor_info": "Krafts",
-                                "package_size": "15 oz.",
-                                "cost_per_package": 5.17,
-                                "comment": "",
-                                "__v": 0
-                            }
-                        },
-                        {
-                            "quantity": "5 oz.",
-                            "_id": {
-                                "_id": "5c6db989ef0a93f16f030471",
-                                "name": "Flour",
-                                "number": 888893,
-                                "vendor_info": "Utah Vendors",
-                                "package_size": "70 lb.",
-                                "cost_per_package": 100,
-                                "comment": "white",
-                                "__v": 0
-                            }
-                        },
-                        {
-                            "quantity": ".5 oz.",
-                            "_id": {
-                                "_id": "5c6db99def0a93f16f030480",
-                                "name": "Baking Soda",
-                                "number": 111,
-                                "vendor_info": "Hammer",
-                                "package_size": "2 oz.",
-                                "cost_per_package": 1.17,
-                                "comment": "",
-                                "__v": 0
-                            }
-                        }
-                    ],
-                    "comment": "veg pizza",
-                    "__v": 0
-                },
-                "formula_scale_factor": 3,
-                "manufacturing_lines": [
-                    {
-                        "_id": "5c70eb83b7219b281f71c802"
-                    },
-                    {
-                        "_id": "5c70eb91b7219b281f71c804"
-                    }
-                ],
-                "manufacturing_rate": 5.7,
-                "__v": 0
-            },
-            "line": "5c70eb83b7219b281f71c802",
-            "start": "2019-03-01T05:00:00.000Z",
-            "duration": 302.1,
-            "__v": 0,
-            "actual_duration": 302.1,
-            "actual_start": "2019-03-01T05:00:00.000Z",
-            "actual_end": "2019-03-13T19:06:00.000Z"
-        },
-        {
-            "_id": "5c716d6180842f2c1f861d83",
-            "name": "Chicken Pizza",
-            "sku": {
-                "_id": "5c6f8489ebd992042fa91c3c",
-                "name": "Chicken Pizza",
-                "number": 6395,
-                "case_number": "098992844719",
-                "unit_number": "098992844719",
-                "unit_size": "1 plate",
-                "count_per_case": 7,
-                "product_line": "5c6f8469ebd992042fa91c39",
-                "comment": "",
-                "formula": {
-                    "_id": "5c6f8250ebd992042fa91c37",
-                    "name": "Stir Fry",
-                    "number": 1003,
-                    "ingredients_list": [
-                        {
-                            "quantity": "20 g",
-                            "_id": {
-                                "_id": "5c6db989ef0a93f16f03046f",
-                                "name": "Soy Sauce",
-                                "number": 91,
-                                "vendor_info": "Kikoman",
-                                "package_size": "8 oz.",
-                                "cost_per_package": 3.42,
-                                "comment": "asian",
-                                "__v": 0
-                            }
-                        },
-                        {
-                            "quantity": "10 count",
-                            "_id": {
-                                "_id": "5c6f8a17b80d6005e6a04e00",
-                                "name": "Mangos",
-                                "number": 110,
-                                "vendor_info": "Thai Garden",
-                                "package_size": "1 count",
-                                "cost_per_package": 3.5,
-                                "comment": "",
-                                "__v": 0
-                            }
-                        },
-                        {
-                            "quantity": "17 lb.",
-                            "_id": {
-                                "_id": "5c6db99def0a93f16f030481",
-                                "name": "Chicken",
-                                "number": 114,
-                                "vendor_info": "Chicken Farm",
-                                "package_size": "0.5 lb.",
-                                "cost_per_package": 10.12,
-                                "comment": "",
-                                "__v": 0
-                            }
-                        },
-                        {
-                            "quantity": "2 gal",
-                            "_id": {
-                                "_id": "5c6db99def0a93f16f030484",
-                                "name": "Canola Oil",
-                                "number": 116,
-                                "vendor_info": "Cornadsf",
-                                "package_size": "20 fl.oz.",
-                                "cost_per_package": 8.15,
-                                "comment": "",
-                                "__v": 0
-                            }
-                        }
-                    ],
-                    "comment": "",
-                    "__v": 0
-                },
-                "formula_scale_factor": 2.4,
-                "manufacturing_lines": [
-                    {
-                        "_id": "5c70eb83b7219b281f71c802"
-                    },
-                    {
-                        "_id": "5c70eb91b7219b281f71c804"
-                    }
-                ],
-                "manufacturing_rate": 10,
-                "__v": 0
-            },
-            "line": "5c70eb83b7219b281f71c802",
-            "start": "2019-04-01T04:00:00.000Z",
-            "duration": 540,
-            "__v": 0,
-            "actual_duration": 1045,
-            "actual_start": "2019-04-01T04:00:00.000Z",
-            "actual_end": "2019-04-13T15:00:00.000Z"
-        }
-    ],
-    "ingredients": [
-        {
-            "ingredient": {
-                "_id": "5c6db99def0a93f16f030489",
-                "name": "Tomatoes",
-                "number": 117,
-                "vendor_info": "Red Nation",
-                "package_size": "5 count",
-                "cost_per_package": 5.24,
-                "comment": "",
-                "__v": 0
-            },
-            "quantity": "318 count",
-            "packages": 63.6
-        },
-        {
-            "ingredient": {
-                "_id": "5c6f80744e943e03e9b28344",
-                "name": "Mozzarella",
-                "number": 888897,
-                "vendor_info": "Krafts",
-                "package_size": "15 oz.",
-                "cost_per_package": 5.17,
-                "comment": "",
-                "__v": 0
-            },
-            "quantity": "333.9 oz",
-            "packages": 22.26
-        },
-        {
-            "ingredient": {
-                "_id": "5c6db989ef0a93f16f030471",
-                "name": "Flour",
-                "number": 888893,
-                "vendor_info": "Utah Vendors",
-                "package_size": "70 lb.",
-                "cost_per_package": 100,
-                "comment": "white",
-                "__v": 0
-            },
-            "quantity": "49.69 lb",
-            "packages": 0.71
-        },
-        {
-            "ingredient": {
-                "_id": "5c6db99def0a93f16f030480",
-                "name": "Baking Soda",
-                "number": 111,
-                "vendor_info": "Hammer",
-                "package_size": "2 oz.",
-                "cost_per_package": 1.17,
-                "comment": "",
-                "__v": 0
-            },
-            "quantity": "79.5 oz",
-            "packages": 39.75
-        },
-        {
-            "ingredient": {
-                "_id": "5c6db989ef0a93f16f03046f",
-                "name": "Soy Sauce",
-                "number": 91,
-                "vendor_info": "Kikoman",
-                "package_size": "8 oz.",
-                "cost_per_package": 3.42,
-                "comment": "asian",
-                "__v": 0
-            },
-            "quantity": "91.43 oz",
-            "packages": 11.43
-        },
-        {
-            "ingredient": {
-                "_id": "5c6f8a17b80d6005e6a04e00",
-                "name": "Mangos",
-                "number": 110,
-                "vendor_info": "Thai Garden",
-                "package_size": "1 count",
-                "cost_per_package": 3.5,
-                "comment": "",
-                "__v": 0
-            },
-            "quantity": "1296 count",
-            "packages": 1296
-        },
-        {
-            "ingredient": {
-                "_id": "5c6db99def0a93f16f030481",
-                "name": "Chicken",
-                "number": 114,
-                "vendor_info": "Chicken Farm",
-                "package_size": "0.5 lb.",
-                "cost_per_package": 10.12,
-                "comment": "",
-                "__v": 0
-            },
-            "quantity": "2203.2 lb",
-            "packages": 4406.4
-        },
-        {
-            "ingredient": {
-                "_id": "5c6db99def0a93f16f030484",
-                "name": "Canola Oil",
-                "number": 116,
-                "vendor_info": "Cornadsf",
-                "package_size": "20 fl.oz.",
-                "cost_per_package": 8.15,
-                "comment": "",
-                "__v": 0
-            },
-            "quantity": "33177.6 floz",
-            "packages": 1658.88
-        }
-    ]
-};
+    const report = this.props.schedule.report;
     if(Object.keys(report).length > 0){
       return (
         <div>
