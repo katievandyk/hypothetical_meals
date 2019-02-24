@@ -81,7 +81,6 @@
       border-color: black;
 }
 
-    /* create a custom sized dot at the bottom of the red item */
  .vis-item.red {
       background-color: red;
       border-color: black;

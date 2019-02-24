@@ -27,6 +27,7 @@ router.get('/activity', (req, res) => {
         .find()
         .populate("sku")
         .populate("line")
+        .populate("goal_id")
         .then(activity => res.json(activity))
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });

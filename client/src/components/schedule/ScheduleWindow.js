@@ -50,6 +50,7 @@ class ScheduleWindow extends React.Component {
             horizontalScroll: true,
             onAdd: function(item, callback) {
              const lines = [];
+             const goal = this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).goal
              this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).skus.find(elem => elem._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
              if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                     alert("Move item to a non-overlapping location.")
@@ -82,6 +83,7 @@ class ScheduleWindow extends React.Component {
             }.bind(this),
             onMove: function(item, callback) {
              const lines = [];
+             const goal = this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).goal
               this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).skus.find(elem => elem._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
               if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                     alert("Move item to a non-overlapping location.")
@@ -90,6 +92,9 @@ class ScheduleWindow extends React.Component {
               else if(lines.indexOf(item.group) === -1) {
                     alert("Move item to a valid manufacturing line.")
                     callback(null)
+              }
+              else if(goal.deadline > item.end) {
+                    item.className = 'red'
               }
               else {
                 const startDate = moment(item.start);
@@ -105,7 +110,7 @@ class ScheduleWindow extends React.Component {
                     _id: act._id,
                     sku: act.sku._id,
                     line: item.group,
-                    goal_id: act.goal_id
+                    goal_id: act.goal_id._id
                 }
                 this.props.updateActivity(updatedAct, act._id)
                 callback(item)
@@ -128,6 +133,11 @@ class ScheduleWindow extends React.Component {
     alert(times.end)
   }
 
+  addDeadlines = () => {
+    const timeline = this.timeline.$el
+    timeline.addCustomTime(this.props.schedule.goal_skus[0].deadline);
+  }
+
   render() {
     const { lines } = this.props.lines;
     data.groups = lines.map(line =>{
@@ -137,19 +147,23 @@ class ScheduleWindow extends React.Component {
         return group;
     })
     const activities = this.props.schedule.activities;
+    var className = 'green'
     data.items = activities.map(activity =>{
          const startDate = moment(activity.start).add(5, 'h');
          const endDate = moment(activity.start).add(5, 'h');
          endDate.add(activity.duration, 'h');
+         if(moment(activity.goal_id.deadline) <= moment(endDate)) {
+            className = 'red'
+         }
          const item = {
                       id: activity._id,
                       content: activity.name,
                       type: 'range',
                       start: startDate,
                       end: endDate,
-                      className: 'green',
+                      className: className,
                       sku: activity.sku._id,
-                      goal: activity.goal_id,
+                      goal: activity.goal_id._id,
                       group: activity.line._id,
                       duration: activity.duration
                   };
@@ -208,26 +222,3 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { getLines, addActivity, updateActivity, deleteActivity, getActivities, getSchedule })(ScheduleWindow);
-
-/**
-
-                const startDate = moment(item.start);
-                startDate.subtract(5, 'h');
-                const endDate = moment(item.start);
-                endDate.add(item.duration, 'h');
-                item.end = endDate;
-                const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
-                const updatedAct = {
-                    name: act.name,
-                    start: startDate,
-                    duration: act.duration,
-                    _id: act._id,
-                    sku: act.sku._id,
-                    line: act.line._id,
-                    goal_id: act.goal_id
-                }
-                this.props.updateActivity(updatedAct, act._id)
-                this.props.getActivities()
-
-
-                **/
