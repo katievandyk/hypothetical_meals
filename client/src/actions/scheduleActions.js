@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
-  ADD_ACTIVITY, GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR} from './types';
+  ADD_ACTIVITY,GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR, SCHEDULE_REPORT} from './types';
 
 export const getSchedule = () => dispatch =>  {
   dispatch(setScheduleLoading());
@@ -132,4 +132,18 @@ export const updateActivity  = (activity, activity_id) => dispatch => {
          payload: error.response
        })
      });
+};
+
+export const genScheduleReport = (obj) => dispatch =>  {
+  axios.post(`/api/manufacturingschedule/report`, obj).then(res =>{
+    dispatch({
+      type: SCHEDULE_REPORT,
+      payload: res.data
+    })}
+  ).catch(error =>{
+    dispatch({
+      type: SCHEDULE_ERROR,
+      payload: error.response
+    })
+  });
 };

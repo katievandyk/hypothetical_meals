@@ -22,4 +22,6 @@ const GoalSchema = new Schema({
     },
 });
 
+GoalSchema.index({'$**': 'text'});
+
 module.exports = Goal = mongoose.model('goal', GoalSchema);
