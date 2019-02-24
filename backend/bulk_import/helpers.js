@@ -82,7 +82,7 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
     var skus = req.body.skus == null ? [] : req.body.skus;
     let number = null
     if (isNumeric(req.body.keywords))
-        number = parseFloat(req.body.keywords)
+        number = req.body.keywords
     SKU.find({_id: {$in: skus.map(function(el) { return mongoose.Types.ObjectId(el) })}})
     .populate("formula")
     .lean()
@@ -126,7 +126,7 @@ module.exports.getIngredientFilterResult = getIngredientFilterResult = function(
 module.exports.getFormulasFilterResult = getFormulasFilterResult = function(req, res, callback) {
     let number = null
     if (isNumeric(req.body.keywords))
-        number = parseFloat(req.body.keywords)
+        number = req.body.keywords
 
     var formulasFindPromise = Formula.find();
     var formulasCountPromise = Formula.find();
@@ -188,7 +188,7 @@ module.exports.ingredientDependencyReportCsv = ingredientDependencyReportCsv = f
 module.exports.getSKUFilterResult = getSKUFilterResult = function(req, res, callback) {
     let number = null
     if (isNumeric(req.body.keywords))
-        number = parseFloat(req.body.keywords)
+        number = req.body.keywords
 
     var skuFindPromise = SKU.find();
     let skuCountPromise = SKU.find();
