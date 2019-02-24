@@ -115,7 +115,7 @@ class IngredientsAddModal extends React.Component {
       newValidate.cost_per_package = 'is-empty';
       allRequiredFields = false;
     }
-    if(allRequiredFields){
+    if(allRequiredFields && this.allValidated()){
       this.props.addIng(newIng,this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
       this.toggle();
     }

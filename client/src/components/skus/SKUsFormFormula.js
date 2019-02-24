@@ -241,7 +241,7 @@ class SKUsFormFormula extends React.Component {
         </Row>
         <Row>
         <Col><div style={{color: 'red'}}>
-          {(this.state.add_error && add_error.length > 0) ? ('ADD ERROR: ' + add_error):('')}
+          {(this.state.add_error && this.state.add_error.length > 0) ? ('ADD ERROR: ' + add_error):('')}
         </div>
         </Col>
         </Row>

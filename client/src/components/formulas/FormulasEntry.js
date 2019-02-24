@@ -139,7 +139,7 @@ class FormulasEntry extends React.Component {
       allRequiredFields = false;
     }
 
-    if(allRequiredFields){
+    if(allRequiredFields && this.allValidated()){
       this.props.updateFormula(editedFormula, this.props.formulas.sortby,
         this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit,
         this.props.formulas.obj);

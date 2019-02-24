@@ -93,7 +93,7 @@ class FormulasAddModal extends React.Component {
       newValidate.ingredients_list = 'not-selected';
       allRequiredFields = false;
     }
-    if(allRequiredFields){
+    if(allRequiredFields && this.allValidate()){
       this.props.addFormula(newFormula,this.props.formulas.sortby,
         this.props.formulas.sortdir, 1, this.props.formulas.pagelimit,
         this.props.formulas.obj);
