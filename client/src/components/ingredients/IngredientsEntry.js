@@ -16,7 +16,8 @@ import { connect } from 'react-redux';
 import { getIngs, sortIngs, deleteIng, updateIng, getIngSKUs } from '../../actions/ingActions';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import '../../styles.css'
+import '../../styles.css';
+import {unit_checker} from '../../utils/unitChecker';
 
 class IngredientsEntry extends React.Component {
   state = {
@@ -87,7 +88,7 @@ class IngredientsEntry extends React.Component {
     const field_type = e.target.name;
     const { validate } = this.state
     if (e.target.value.length > 0) {
-      if(field_type === 'edit_name' || field_type === 'edit_package_size'){
+      if(field_type === 'edit_name'){
         validate[field_type] = 'has-success';
       }
       else if(field_type === 'edit_number'){
@@ -99,6 +100,14 @@ class IngredientsEntry extends React.Component {
           validate[field_type] = 'not-valid-num'
         }
       }
+      else if(field_type === 'edit_package_size'){
+        if(unit_checker(e.target.value)){
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid'
+        }
+      }
       else if(field_type === 'edit_cost_per_package'){
         const numRex = /^[1-9]\d*(\.\d+)?$/mg
         if (numRex.test(e.target.value)) {
@@ -108,7 +117,7 @@ class IngredientsEntry extends React.Component {
           validate[field_type] = 'not-valid'
         }
       }
-    } else if(field_type !== 'comment' && field_type !== 'vendor_info' && field_type !== 'number'){
+    } else if(field_type !== 'edit_comment' && field_type !== 'edit_vendor_info' && field_type !== 'edit_number'){
       validate[e.target.name] = 'is-empty';
     }
     this.setState({ validate });
@@ -136,6 +145,32 @@ class IngredientsEntry extends React.Component {
     this.props.getIngSKUs(id);
   };
 
+  getSortIcon = (field) =>{
+    if(this.props.ing.sortby === field && this.props.ing.sortdir === 'desc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-down"/>
+    }
+    else if(this.props.ing.sortby === field && this.props.ing.sortdir === 'asc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-up"/>
+    }
+    else{
+      return <FontAwesomeIcon icon = "sort"/>
+    }
+  }
+
+  sortCol = (field, e) => {
+    if(this.props.ing.sortby === field){
+      if(this.props.ing.sortdir === 'asc'){
+        this.props.sortIngs(field, 'desc', 1, this.props.ing.pagelimit, this.props.ing.obj);
+      }
+      else{
+        this.props.sortIngs(field, 'asc', 1, this.props.ing.pagelimit, this.props.ing.obj);
+      }
+    }
+    else{
+      this.props.sortIngs(field, 'asc', 1, this.props.ing.pagelimit, this.props.ing.obj);
+    }
+  }
+
   render() {
     const { ings } = this.props.ing;
     const loading = this.props.ing.loading;
@@ -153,11 +188,31 @@ class IngredientsEntry extends React.Component {
         <Table responsive size="sm">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>#</th>
-              <th>Vendor's Info</th>
-              <th>Package Size</th>
-              <th>Cost/Package</th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'name')}>
+                Name{' '}
+                {this.getSortIcon('name')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'number')}>
+                Ingr#{' '}
+                  {this.getSortIcon('number')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'vendor_info')}>
+                Vendor's Info{' '}
+                  {this.getSortIcon('vendor_info')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'package_size')}>
+                Package Size{' '}
+                  {this.getSortIcon('package_size')}
+              </th>
+              <th style={{cursor:'pointer'}}
+                onClick={this.sortCol.bind(this, 'cost_per_package')}>
+                Cost/Package{' '}
+                  {this.getSortIcon('cost_per_package')}
+              </th>
               <th>SKUs</th>
               <th>Comments</th>
               {this.props.auth.isAdmin &&
@@ -186,7 +241,7 @@ class IngredientsEntry extends React.Component {
                       <FontAwesomeIcon icon="list"/>
                       </Button>
                     </td>
-                    <td> {comment} </td>
+                    <td style={{wordBreak:'break-all'}}> {comment} </td>
                     {this.props.auth.isAdmin &&
                       <td>
                         <Button size="sm" color="link"
@@ -271,7 +326,7 @@ class IngredientsEntry extends React.Component {
                 <Label for="edit_package_size">Package Size</Label>
                   <Input
                     valid={ this.state.validate.edit_package_size === 'has-success' }
-                    invalid={ this.state.validate.edit_package_size === 'is-empty' }
+                    invalid={ this.state.validate.edit_package_size === 'is-empty' || this.state.validate.edit_package_size === 'not-valid'}
                     type="text"
                     name="edit_package_size"
                     id="edit_package_size"
@@ -279,9 +334,15 @@ class IngredientsEntry extends React.Component {
                     onChange={this.onChange}
                     defaultValue={this.state.edit_package_size}>
                   </Input>
-                  <FormFeedback>
-                    Please input a value.
-                  </FormFeedback>
+                  {this.state.validate.cost_per_package === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid package size (with proper weight, count, or volume units).
+                    </FormFeedback>
+                  )}
               </FormGroup>
               <FormGroup>
                 <Label for="edit_cost_per_package">Cost per Package</Label>
@@ -328,8 +389,8 @@ class IngredientsEntry extends React.Component {
           <ModalHeader toggle={this.sku_toggle}>SKUs that use Ingredient: {this.props.ing.ing_skus.length}</ModalHeader>
           <ModalBody>
             <ListGroup>
-              {this.props.ing.ing_skus.map(({_id, name, unit_size, count_per_case}) => (
-              <ListGroupItem key={_id}> <div>{name + ": " + unit_size + " * " + count_per_case}</div> </ListGroupItem>
+              {this.props.ing.ing_skus.map(({_id, name, number, unit_size, count_per_case}) => (
+              <ListGroupItem key={_id}> <div>{name + ": " + unit_size + " * " + count_per_case + " (SKU#: " + number +")"}</div> </ListGroupItem>
               ))}
             </ListGroup>
           </ModalBody>

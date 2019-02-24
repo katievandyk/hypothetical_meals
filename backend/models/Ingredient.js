@@ -31,6 +31,6 @@ const IngredientSchema = new Schema({
     }
 });
 
-IngredientSchema.index({'$**': 'text'});
+IngredientSchema.index({name: 'text'});
 
 module.exports = Ingredient = mongoose.model('ingredient', IngredientSchema);

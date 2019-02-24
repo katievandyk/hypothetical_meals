@@ -12,10 +12,14 @@ const GoalSchema = new Schema({
             sku: { type: Schema.Types.ObjectId, ref: 'sku' },
             quantity: Number
     }],
-    user_email: {
+    user_username: {
         type: String,
         required: true
-    }
+    },
+    deadline: {
+        type: Date,
+        required: true
+    },
 });
 
 module.exports = Goal = mongoose.model('goal', GoalSchema);

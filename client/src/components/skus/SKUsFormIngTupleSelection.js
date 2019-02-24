@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getIngs, sortIngs } from '../../actions/ingActions';
+import {unit_checker} from '../../utils/unitChecker';
+import Select from 'react-select';
 
 class SKUsFormIngTupleSelection extends React.Component {
   state={
@@ -29,6 +31,7 @@ class SKUsFormIngTupleSelection extends React.Component {
         validate: tmpVal
       });
     }
+    this.props.onIngListChange(tmpArray, true);
   }
 
   allValid = (validState=this.state.validate) => {
@@ -42,24 +45,25 @@ class SKUsFormIngTupleSelection extends React.Component {
     return isValid;
   }
 
-  onChangeIngredient = (index, e) => {
+  onChangeIngredient = (index) => e => {
     const newIngTuples = this.state.ing_tuples;
     var newVal = this.state.validate;
     if(this.state.validate[index].quantity.length < 1) {
       newVal[index].quantity = 'not-valid';
     }
-    if(e.target.value.length > 0){
+    if(e.value.length > 0){
       var ingNotPresent = true;
       for(var i = 0; i < newIngTuples.length; i ++){
-        if(newIngTuples[i]._id === e.target.value){
+        if(newIngTuples[i]._id === e.value){
           ingNotPresent = false;
         }
       }
       if(ingNotPresent){
-        newIngTuples[index]._id = e.target.value;
+        newIngTuples[index]._id = e.value;
         newVal[index].ing = 'has-success';
       }
       else{
+        newIngTuples[index]._id = e.value;
         newVal[index].ing = 'already-selected'
       }
       this.setState({
@@ -78,14 +82,17 @@ class SKUsFormIngTupleSelection extends React.Component {
 
 
   onChangeQuantity = (index, e) => {
-    const numRex = /^(?!0\d)\d*(\.\d+)?$/mg
     const newIngTuples = this.state.ing_tuples;
     newIngTuples[index].quantity = e.target.value;
     var newVal = this.state.validate;
+    var isRightUnit = false;
+    if(e.target.value.length > 0){
+      isRightUnit = unit_checker(e.target.value);
+    }
     if(this.state.validate[index].ing === ''){
       newVal[index].ing = 'not-selected';
     }
-    if (numRex.test(e.target.value) && e.target.value.length > 0) {
+    if (isRightUnit && e.target.value.length > 0) {
       newVal[index].quantity = 'has-success';
       this.setState({
         ing_tuples: newIngTuples,
@@ -105,15 +112,16 @@ class SKUsFormIngTupleSelection extends React.Component {
     if(this.state.ing_tuples.length > 0) {
       this.setState({
         ing_tuples: [...this.state.ing_tuples, {_id:'', quantity:''}],
-        validate: [...this.state.validate, {ing:'', quantity:''}]
+        validate: [...this.state.validate, {ing:'not-selected', quantity:''}]
       });
     }
     else {
       this.setState({
         ing_tuples: [{_id:'', quantity:''}],
-        validate: [{ing:'', quantity:''}]
+        validate: [{ing:'not-selected', quantity:''}]
       });
     }
+    this.props.onIngListChange(this.state.ing_tuples, false);
   }
 
   onDelEntry = (index) => {
@@ -126,8 +134,45 @@ class SKUsFormIngTupleSelection extends React.Component {
     this.props.onIngListChange(reduced_tuples, this.allValid(reduced_val));
   }
 
+  classNameValue = (index) => {
+    if(this.state.validate[index].ing === 'already-selected' || (this.state.validate[index].ing === 'not-selected' && this.props.validate === 'not-selected')){
+      return "isInvalid";
+    }
+    else if(this.state.validate[index].ing === 'has-success'){
+      return "isValid";
+    }
+    else
+      return "";
+  }
+
+  genOptions = (ings) => {
+    var newOptions = [];
+    ings.forEach(function(ing){
+      var newOption = {value: ing._id, label: ing.name};
+      newOptions = [...newOptions, newOption];
+    });
+    return newOptions;
+  }
+
+  getDefaultValue = (id) => {
+    if(id.length > 0){
+      const [ing] = this.props.ing.ings.filter(({_id})=> _id === id);
+      if(ing){
+        return {value: id, label: ing.name};
+      }
+      else {
+        return '';
+      }
+    }
+    else{
+      return '';
+    }
+
+  }
+
   render() {
-    const ing_tuples = this.state.ing_tuples;
+    var ing_tuples = this.state.ing_tuples;
+    var validate = this.props.validate;
     return(
       <div>
         <Row>
@@ -139,7 +184,7 @@ class SKUsFormIngTupleSelection extends React.Component {
         <Row key={index}>
           <Col md={6}>
             <FormGroup>
-              <Input
+              {/*<Input
                 valid={this.state.validate[index].ing === 'has-success'}
                 invalid={this.state.validate[index].ing === 'not-selected' || this.state.validate[index].ing === 'already-selected'}
                 type="select"
@@ -147,7 +192,7 @@ class SKUsFormIngTupleSelection extends React.Component {
                 id="ingredient_name"
                 placeholder="Select the Ingredient"
                 onChange={this.onChangeIngredient.bind(this, index)}
-                defaultValue={_id}>
+                value={_id}>
                 <option value=''>Select Ingredient</option>
                 {this.props.ing.ings.map(({_id, name }) => (
                 <option key={_id} value={_id} name={name}>{name}</option>
@@ -161,7 +206,20 @@ class SKUsFormIngTupleSelection extends React.Component {
                 <FormFeedback>
                   This ingredient has already been added. Please select a different ingredient from the dropdown.
                 </FormFeedback>
-              )}
+              )}*/}
+              <Select
+                className={this.classNameValue(index)}
+                classNamePrefix="react-select"
+                options={this.genOptions(this.props.ing.ings)}
+                onChange={this.onChangeIngredient(index)}
+                placeholder="Select Ingredient"
+                value={this.getDefaultValue(_id)}/>
+              <div style={{display:'block'}} className={(validate === 'not-selected' && this.state.validate[index].ing === 'not-selected')? ("invalid-feedback"):("hidden")}>
+                Please select a valid ingredient from the dropdown.
+              </div>
+              <div style={{display:'block'}} className={(this.state.validate[index].ing === 'already-selected')? ("invalid-feedback"):("hidden")}>
+                This ingredient has already been added. Please select a different ingredient from the dropdown.
+              </div>
             </FormGroup>
           </Col>
           <Col md={4}>
@@ -174,11 +232,11 @@ class SKUsFormIngTupleSelection extends React.Component {
                 id="ingredient_quantity"
                 placeholder="Quantity"
                 onChange={this.onChangeQuantity.bind(this, index)}
-                defaultValue={quantity}>
+                value={quantity}>
 
               </Input>
               <FormFeedback>
-                Please enter a valid quantity.
+                Please enter a valid quantity (with proper weight, count, or volume units).
               </FormFeedback>
             </FormGroup>
           </Col >

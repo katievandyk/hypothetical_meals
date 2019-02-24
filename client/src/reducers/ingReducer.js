@@ -110,7 +110,6 @@ export default function(state = initialState, action) {
       }
     }
     case ING_ERROR:{
-      console.log(action.payload);
       return {
         ...state,
         error_msgs: [...state.error_msgs, action.payload.data.message],

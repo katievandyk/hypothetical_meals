@@ -19,7 +19,6 @@ import { sortIngs, genIngDepReport } from '../actions/ingActions';
 
 import {
   Container, Row, Col, Button,
-  ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem,
   Modal, ModalBody, ModalHeader, ModalFooter
 } from 'reactstrap';
 
@@ -79,46 +78,6 @@ class Ingredients extends Component {
        this.props.ing.page, 10, this.props.ing.obj);
   }
 
-  sortClick = type => {
-    this.setState({
-      sortby: type
-    });
-    switch(type) {
-      case "name-asc":
-        this.props.sortIngs('name', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      case "name-desc":
-        this.props.sortIngs('name', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      case "number-asc":
-        this.props.sortIngs('number', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      case "number-desc":
-        this.props.sortIngs('number', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      case "vendor-asc":
-        this.props.sortIngs('vendor_info', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      case "vendor-desc":
-        this.props.sortIngs('vendor_info', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      case "package-asc":
-        this.props.sortIngs('package_size', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      case "package-desc":
-        this.props.sortIngs('package_size', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      case "cost-asc":
-        this.props.sortIngs('cost_per_package', 'asc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      case "cost-desc":
-        this.props.sortIngs('cost_per_package', 'desc', this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-        break;
-      default:
-        break;
-    }
-
-  }
 
    render() {
      var results = 0;
@@ -138,7 +97,7 @@ class Ingredients extends Component {
 
 
      if(this.state.navigate){
-       return(<Redirect to="/reports" push={true} />);
+       return(<Redirect to="/ingredients-dependency-report" push={true} />);
      }
         return(
           <Provider store={store}>
@@ -159,72 +118,6 @@ class Ingredients extends Component {
                     <SKUFilters/>
                   </Col>
                   <Col style={{'textAlign': 'right'}}>
-                    <ButtonDropdown style={{'display': 'inline-block'}} isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-                      <DropdownToggle caret>
-                        Sort by: {this.state.sortby}
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem header>FIELDS</DropdownItem>
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "name-asc")}
-                          className={this.state.sortby === 'name-asc'? "active" : ""}>
-                          Name {' '}
-                          <FontAwesomeIcon icon = "sort-alpha-down"/>
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "name-desc")}
-                          className={this.state.sortby === 'name-desc'? "active" : ""}>
-                          Name {' '}
-                          <FontAwesomeIcon icon = "sort-alpha-up"/>
-                        </DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "number-asc")}
-                          className={this.state.sortby === 'number-asc'? "active" : ""}>
-                          Number {' '}
-                          <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "number-desc")}
-                          className={this.state.sortby === 'number-desc'? "active" : ""}>
-                          Number {' '}
-                          <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "vendor-asc")}
-                          className={this.state.sortby === 'vendor-asc'? "active" : ""}>
-                          Vendor's Info {' '}
-                          <FontAwesomeIcon icon = "sort-alpha-down"/>
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "vendor-desc")}
-                          className={this.state.sortby === 'vendor-desc'? "active" : ""}>
-                          Vendor's Info {' '}
-                          <FontAwesomeIcon icon = "sort-alpha-up"/>
-                        </DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "package-asc")}
-                          className={this.state.sortby === 'package-asc'? "active" : ""}>
-                          Package Size {' '}
-                          <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "package-desc")}
-                          className={this.state.sortby === 'package-desc'? "active" : ""}>
-                          Package Size {' '}
-                          <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
-                        <DropdownItem divider />
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "cost-asc")}
-                          className={this.state.sortby === 'cost-asc'? "active" : ""}>
-                          Cost per Package {' '}
-                          <FontAwesomeIcon icon = "sort-numeric-down"/></DropdownItem>
-                        <DropdownItem
-                          onClick={this.sortClick.bind(this, "cost-desc")}
-                          className={this.state.sortby === 'cost-desc'? "active" : ""}>
-                          Cost per Package {' '}
-                          <FontAwesomeIcon icon = "sort-numeric-up"/></DropdownItem>
-                      </DropdownMenu>
-                    </ButtonDropdown> {' '}
                     {this.props.auth.isAdmin ? (<IngredientsAddModal/>): (<div></div>)}
                   </Col>
                 </Row>
@@ -254,17 +147,20 @@ class Ingredients extends Component {
                 </Col>
                 </Row>
                 <Row>
-                  <Col style={{'textAlign': 'right'}}/>
+                  <Col style={{'textAlign': 'left'}}>
                     <div style={{paddingRight:'10px'}}><Button color="success" onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button>{' '}</div>
                     <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
                       <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
                       <ModalBody style={{textAlign:'center'}}>
-                        Ingredients Dependency Report Generated! <br></br>You can view or export it on the reports page
+                        Ingredients Dependency Report Generated! <br></br>You can view or export it on the Ingredients Dependency Report page
                       </ModalBody>
                       <ModalFooter><Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button></ModalFooter>
-                    </Modal>{' '}
+                    </Modal>
+                  </Col>
+                  <Col style={{textAlign: 'right'}}>
                   <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export Ingredients</Button>
-                  </Row>
+                  </Col>
+                </Row>
               </Container>
             </div>
           </Provider>

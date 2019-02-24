@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
 import IngDepReport from '../components/reports/IngDepReport';
 
-class Reports extends Component {
+class IngDepReportView extends Component {
    render() {
      return(
        <div>
@@ -13,4 +13,4 @@ class Reports extends Component {
    }
 }
 
-export default Reports;
+export default IngDepReportView;

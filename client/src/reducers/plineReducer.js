@@ -29,17 +29,20 @@ export default function(state = initialState, action) {
     case ADD_PLINE:
       return {
         ...state,
-        plines: [action.payload, state.plines]
+        plines: [action.payload, state.plines],
+        error_msgs: []
       }
     case DELETE_PLINE:
       return {
         ...state,
-        plines: state.plines.filter( pline => pline._id !== action.payload )
+        plines: state.plines.filter( pline => pline._id !== action.payload ),
+        error_msgs: []
       }
     case UPDATE_PLINE:
       return {
         ...state,
-        plines: [action.payload, state.plines]
+        plines: [action.payload, state.plines],
+        error_msgs: []
       }
      case PLINE_ERROR:{
        console.log(action.payload);

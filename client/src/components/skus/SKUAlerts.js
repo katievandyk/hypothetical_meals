@@ -8,23 +8,22 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 class SKUAlerts extends Component {
-
   render(){
     const errors = this.props.skus.error_msgs;
-    return (
-      <Row>
-      <Col></Col>
-      <Col md={9}>
-      {errors.map((value, i) => (
-        <UncontrolledAlert key={i} color="danger">
-        <h4>ERROR</h4>
-        {value}
-        </UncontrolledAlert>
-      ))}
-      </Col>
-      <Col></Col>
-      </Row>
-    );
+      return (
+        <Row>
+        <Col></Col>
+        <Col md={9}>
+        {errors.map((value, i) => (
+          <UncontrolledAlert key={i} className={(i !== errors.length - 1) ? ("hidden"):("")} color="danger">
+          <h4>ERROR</h4>
+          {value}
+          </UncontrolledAlert>
+        ))}
+        </Col>
+        <Col></Col>
+        </Row>
+      );
   }
 }
 

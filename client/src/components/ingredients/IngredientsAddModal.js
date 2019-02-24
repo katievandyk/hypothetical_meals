@@ -13,6 +13,7 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { addIng, sortIngs } from '../../actions/ingActions';
+import {unit_checker} from '../../utils/unitChecker';
 
 class IngredientsAddModal extends React.Component {
   state = {
@@ -54,7 +55,7 @@ class IngredientsAddModal extends React.Component {
     const field_type = e.target.name;
     const { validate } = this.state
     if (e.target.value.length > 0) {
-      if(field_type === 'name' || field_type === 'package_size'){
+      if(field_type === 'name'){
         validate[field_type] = 'has-success';
       }
       else if(field_type === 'number'){
@@ -64,6 +65,14 @@ class IngredientsAddModal extends React.Component {
         }
         else {
           validate[field_type] = 'not-valid-num'
+        }
+      }
+      else if(field_type === 'package_size'){
+        if(unit_checker(e.target.value)){
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid'
         }
       }
       else if(field_type === 'cost_per_package'){
@@ -92,9 +101,30 @@ class IngredientsAddModal extends React.Component {
       cost_per_package: this.state.cost_per_package,
       comment: this.state.comment
     };
+    var allRequiredFields = true;
+    var newValidate = this.state.validate;
+    if(newValidate.name !== 'has-success'){
+      newValidate.name = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.package_size !== 'has-success'){
+      newValidate.package_size = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.cost_per_package !== 'has-success'){
+      newValidate.cost_per_package = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(allRequiredFields){
+      this.props.addIng(newIng,this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
+      this.toggle();
+    }
+    else{
+      this.setState({
+        validate: newValidate
+      });
+    }
 
-    this.props.addIng(newIng,this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
-    this.toggle();
   }
 
   render() {
@@ -157,16 +187,22 @@ class IngredientsAddModal extends React.Component {
               <Label for="package_size">Package Size</Label>
                 <Input
                   valid={ this.state.validate.package_size === 'has-success' }
-                  invalid={ this.state.validate.package_size === 'is-empty' }
+                  invalid={ this.state.validate.package_size === 'is-empty' || this.state.validate.package_size === 'not-valid'}
                   type="text"
                   name="package_size"
                   id="package_size"
                   placeholder="Add the Package Size"
                   onChange={this.onChange}>
                 </Input>
-                <FormFeedback>
-                  Please input a value.
-                </FormFeedback>
+                {this.state.validate.cost_per_package === 'is-empty' ? (
+                  <FormFeedback>
+                    Please input a value.
+                  </FormFeedback>
+                ):(
+                  <FormFeedback>
+                    Please input a valid package size (with proper weight, count, or volume units).
+                  </FormFeedback>
+                )}
             </FormGroup>
             <FormGroup>
               <Label for="cost_per_package">Cost per Package</Label>

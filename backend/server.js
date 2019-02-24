@@ -31,10 +31,11 @@ mongoose
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
-// Passport middleware
-app.use(passport.initialize());
 // Passport config
 require("./config/passport")(passport);
+// Passport middleware
+app.use(passport.initialize());
+
 // Passport User Routes
 app.use("/api/users", users);
 
@@ -48,6 +49,9 @@ app.use('/api/ingredients', ingredients);
 const productLines = require('./routes/api/product-lines');
 app.use('/api/productlines', productLines);
 
+const manufacturingLines = require('./routes/api/manufacturing-lines');
+app.use('/api/manufacturinglines', manufacturingLines);
+
 const skus = require('./routes/api/skus');
 app.use('/api/skus', skus);
 
@@ -59,6 +63,12 @@ app.use('/api/bulk-export', bulkexport);
 
 const manufacturing= require('./routes/api/manufacturing');
 app.use('/api/manufacturing', manufacturing);
+
+const formula = require('./routes/api/formulas');
+app.use('/api/formulas', formula);
+
+const manufacturingSchedule = require('./routes/api/manufacturing-schedule');
+app.use('/api/manufacturingschedule', manufacturingSchedule);
 
 var env = process.env.NODE_ENV || 'dev';
 
