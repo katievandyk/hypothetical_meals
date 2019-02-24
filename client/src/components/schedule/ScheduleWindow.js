@@ -43,6 +43,11 @@ class ScheduleWindow extends React.Component {
             editable: this.props.auth.isAdmin,
             orientation: 'top',
             horizontalScroll: true,
+            tooltipOnItemUpdateTime: {
+                  template: function(item) {
+                    return '<div><b>Start:</b>' + item.start + ' <br /><b>End:</b>: ' + item.end +'<br /><b>Deadline:</b>' + item.deadline + '/<div>'
+                  }
+              },
             onAdd: function(item, callback) {
              const lines = [];
              this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).skus.find(elem => elem._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
@@ -115,7 +120,7 @@ class ScheduleWindow extends React.Component {
                 this.props.deleteActivity(act._id)
                 data.items = data.items.filter(({id}) => id !== item.id)
                 callback(item)
-            }.bind(this),
+            }.bind(this)
           }
        return options;
   }
@@ -161,7 +166,8 @@ class ScheduleWindow extends React.Component {
                       sku: activity.sku._id,
                       goal: activity.goal_id._id,
                       group: activity.line._id,
-                      duration: activity.duration
+                      duration: activity.duration,
+                      deadline: activity.goal_id.deadline,
                   };
         return item;
     })
