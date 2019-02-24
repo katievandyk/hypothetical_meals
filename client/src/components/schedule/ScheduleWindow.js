@@ -40,17 +40,11 @@ class ScheduleWindow extends React.Component {
             }],
             zoomMin: 1000 * 60 * 60 * 24,
             zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
-             editable: {
-                add: true,         // add new items by double tapping
-                updateTime: true,
-                updateGroup: true, // drag items from one group to another
-                remove: true       // delete an item by tapping the delete button top right
-              },
+            editable: this.props.auth.isAdmin,
             orientation: 'top',
             horizontalScroll: true,
             onAdd: function(item, callback) {
              const lines = [];
-             const goal = this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).goal
              this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).skus.find(elem => elem._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
              if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                     alert("Move item to a non-overlapping location.")
@@ -149,15 +143,17 @@ class ScheduleWindow extends React.Component {
     const activities = this.props.schedule.activities;
     var className = 'green'
     data.items = activities.map(activity =>{
+         var content = activity.name
          const startDate = moment(activity.start).add(5, 'h');
          const endDate = moment(activity.start).add(5, 'h');
          endDate.add(activity.duration, 'h');
          if(moment(activity.goal_id.deadline) <= moment(endDate)) {
             className = 'red'
+            content = activity.name + ' -Past Due'
          }
          const item = {
                       id: activity._id,
-                      content: activity.name,
+                      content: content,
                       type: 'range',
                       start: startDate,
                       end: endDate,
@@ -214,10 +210,12 @@ ScheduleWindow.propTypes = {
   addActivity: PropTypes.func.isRequired,
   updateActivity: PropTypes.func.isRequired,
   lines: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
     lines: state.lines,
+    auth: state.auth,
     schedule: state.schedule
 });
 

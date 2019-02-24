@@ -50,6 +50,8 @@ class ScheduleSidePanel extends React.Component {
     const goal_skus = this.props.schedule.goal_skus;
     return (
       <div>
+      {this.props.auth.isAdmin ?
+              ( <div>
                 <Card>
                     <CardHeader onClick={this.modal_toggle}>
                         <Row>&nbsp; &nbsp;
@@ -59,6 +61,8 @@ class ScheduleSidePanel extends React.Component {
                         </Row>
                     </CardHeader>
                 </Card> &nbsp;
+                </div>
+                ) : (<div></div>)}
                 <Modal isOpen={this.state.modal} toggle={this.modal_toggle} >
                     <ModalHeader>Set Active Manufacturing Lines</ModalHeader>
                     <CardBody>
