@@ -51,7 +51,7 @@ export default function(state = initialState, action) {
           loading: false
      }
     case DISABLE_GOAL:
-        state.schedule.enabled_goals = state.schedule.enabled_goals.filter( goal => goal._id !== action.payload._id )
+        state.schedule.enabled_goals = state.schedule.enabled_goals.filter( goal => goal._id !== action.payload.goal_id )
         return {
           ...state,
           schedule: state.schedule,
