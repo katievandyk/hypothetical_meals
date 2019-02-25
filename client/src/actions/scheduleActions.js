@@ -194,9 +194,12 @@ export const genScheduleReport = (obj) => dispatch =>  {
     })
   });
 };
-export const genWarning = (warning_msgs) => dispatch => {
-  dispatch({
-    type: SCHEDULE_WARNING,
-    payload: warning_msgs
-  })
+
+export const genWarning = (obj) => dispatch => {
+  axios.post(`/api/manufacturingschedule/warnings`, obj).then(res =>{
+    dispatch({
+      type: SCHEDULE_WARNING,
+      payload: res.data
+    })}
+  );
 }
