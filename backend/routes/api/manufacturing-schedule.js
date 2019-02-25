@@ -27,6 +27,7 @@ router.get('/activity', (req, res) => {
         .find()
         .populate("sku")
         .populate("line")
+        .populate("goal_id")
         .then(activity => res.json(activity))
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
@@ -40,7 +41,32 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
         .then( goal => {
             ManufacturingSchedule
                 .findOneAndUpdate({ '_id': req.params.schedule }, {$push: {enabled_goals: goal}})
-                .then(res.json(goal))
+                .then(
+                    ManufacturingActivity
+                        .find({ 'goal_id' : req.params.goal_id})
+                        .then( activities => {
+                            Promise.all(activities.map(activity => {
+                                return new Promise(function(accept, reject) {
+                                    activity.orphan=false;
+                                    activity.save().then(accept).catch(reject);
+                                })
+                            })).then(
+                                ManufacturingActivity.find({orphan:true}).then(orphans => {
+                                    res.json({'activities' : orphans.filter(function(item) {
+                                        activities.forEach(activity => {
+                                            if(activity._id === item._id){
+                                                return false;
+                                            }
+                                            else {
+                                                return true;
+                                            }
+                                        })
+                                    }), 'goal' : goal});
+                                })
+                            )
+                        })
+                        .catch(err => res.status(404).json({success: false, message: err.message}))
+                )
                 .catch(err => res.status(404).json({success: false, message: err.message}));
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
@@ -51,7 +77,7 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
 // @desc disable goal with certain id
 // @access public
 // Returns json of activities and goal_id, where activities is an array of orphaned activities
-// Each activity has activity.orphan = true
+// Each activity has activity.orphan = true;
 router.post('/disable/:goal_id/:schedule', (req, res) => {
     Goal
         .findById(req.params.goal_id)
@@ -60,16 +86,18 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
                 .findOneAndUpdate({ '_id': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
                 .then(
                     ManufacturingActivity
-                        .find({ 'goal_id' : req.params.goal_id}, function(err, activities){
-                            if(err) {
-                                console.log(err);
-                            }
-                            else {
-                                activities.forEach( activity => {
-                                    activity.orphan = true;
+                        .find({ 'goal_id' : req.params.goal_id})
+                        .then( activities => {
+                            Promise.all(activities.map(activity => {
+                                return new Promise(function(accept, reject) {
+                                    activity.orphan=true;
+                                    activity.save().then(accept).catch(reject);
                                 })
-                                res.json({'activities' : activities, 'goal_id' : req.params.goal_id});
-                            }
+                            })).then(
+                                ManufacturingActivity.find({orphan:true}).then(old_orphans => {
+                                    res.json({'activities' : old_orphans.concat(activities), 'goal_id' : req.params.goal_id});
+                                })
+                            )
                         })
                         .catch(err => res.status(404).json({success: false, message: err.message}))
                 )
@@ -146,8 +174,10 @@ router.post('/activity', (req, res) => {
                         sku : sku,
                         line : line,
                         start : req.body.start,
+                        end : req.body.end,
                         duration : req.body.duration,
-                        goal_id : req.body.sku_goal_id
+                        durationModified: false,
+                        goal_id : req.body.goal_id
                     })
                     activity.save().then(activity => res.json(activity))
                     .catch(err => res.status(404).json({success: false, message: err.message}))
@@ -166,8 +196,12 @@ router.post('/update/activity/:activity_id', (req, res) => {
             doc.sku = req.body.sku;
             doc.line = req.body.line;
             doc.start = req.body.start;
+            doc.end = req.body.end;
             doc.duration = req.body.duration;
+            doc.durationModified = req.body.durationModified;
             doc.goal_id = req.body.goal_id
+            doc.orphan = req.body.orphan;
+
             doc.save().then( updatedActivity => {
                 res.json(updatedActivity)
             })
