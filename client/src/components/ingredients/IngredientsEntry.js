@@ -47,7 +47,7 @@ class IngredientsEntry extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getIngs();
+    this.props.sortIngs('name', 'asc', 1, -1, {});
   }
 
   onDeleteClick = id => {
@@ -135,9 +135,10 @@ class IngredientsEntry extends React.Component {
       cost_per_package: this.state.edit_cost_per_package,
       comment: this.state.edit_comment
     };
-
-    this.props.updateIng(editedIng, this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
-    this.toggle();
+    if(this.allValidated()){
+      this.props.updateIng(editedIng, this.props.ing.sortby, this.props.ing.sortdir, this.props.ing.page, this.props.ing.pagelimit, this.props.ing.obj);
+      this.toggle();
+    }
   };
 
   onSKUListClick = id => {
@@ -273,7 +274,7 @@ class IngredientsEntry extends React.Component {
         <Modal isOpen={this.state.modal} toggle={this.toggle}>
           <ModalHeader toggle={this.toggle}> Edit Ingredient </ModalHeader>
           <ModalBody>
-            <Form onSubmit={this.onEditSubmit}>
+            <Form>
               <FormGroup>
                 <Label for="edit_name">Name</Label>
                   <Input
@@ -378,7 +379,7 @@ class IngredientsEntry extends React.Component {
                   </Input>
               </FormGroup>
               <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-              <Button color="dark" className={this.allValidated() ? (''):('disabled')} type="submit" block>
+              <Button disabled={this.allValidated()} color="dark" className={this.allValidated() ? (''):('disabled')} onClick={this.onEditSubmit} block>
                     Submit Ingredient Edits
                   </Button>
                 </div>

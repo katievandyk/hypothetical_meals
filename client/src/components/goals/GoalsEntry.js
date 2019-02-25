@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CalculatorEntry from './CalculatorEntry';
 import CalculatorExport from './CalculatorExport';
 import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
-import GoalsSKUSearch from '../../components/goals/GoalsSKUSearch';
 import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
 
 import 'jspdf-autotable';
@@ -37,7 +36,8 @@ class GoalsEntry extends React.Component {
         skuSel: '',
         validNum: '',
         validName: '',
-        validDate: ''
+        validDate: '',
+        sku_valid: ''
       };
     }
 
@@ -110,12 +110,12 @@ class GoalsEntry extends React.Component {
   };
 
    onAddSKU = e => {
-       var skus  = this.state.edit_skus_list
+       var skus  = this.state.edit_skus_list;
        if(this.state.validNum === 'failure' || this.state.quantity.length === 0) alert("Please enter a valid numeric quantity.")
        else if(this.state.skuSel.length === 0 || skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
        else {
            skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
-           this.setState({ edit_skus_list: skus })
+           this.setState({ edit_skus_list: skus, sku_valid: '' });
            this.skulist_toggle()
        }
    }
@@ -159,12 +159,13 @@ class GoalsEntry extends React.Component {
 
    skuCallback = (dataFromChild) => {
        this.setState({
-            skuSel: dataFromChild
+            skuSel: dataFromChild,
+            sku_valid: 'success'
           });
    }
 
   onDeleteClickSKU = sku => {
-       var skus  = this.state.edit_skus_list
+       var skus  = this.state.edit_skus_list;
        skus.splice(skus.indexOf(sku), 1)
        this.setState({
             edit_skus_list: skus
@@ -333,7 +334,6 @@ class GoalsEntry extends React.Component {
                         <Row>
                             <Col md={6}><GoalsProductLineFilter/></Col>
                             <Col style={{'textAlign': 'right'}}/>
-                            <Col md={4}> <GoalsSKUSearch/> </Col>
                         </Row>
                     </FormGroup>
                     <FormGroup>
@@ -346,8 +346,8 @@ class GoalsEntry extends React.Component {
                 </Form>
              </ModalBody>
              <ModalFooter>
-                <Button onClick={this.onAddSKU}>Save</Button>
-                <Button onClick={this.skulist_toggle}>Cancel</Button>
+                <Button disabled={this.state.validNum === 'failure' || this.state.sku_valid !== 'success'} onClick={this.onAddSKU}>Save</Button>
+              <Button onClick={this.skulist_toggle}>Cancel</Button>
              </ModalFooter>
         </Modal>
        </div>

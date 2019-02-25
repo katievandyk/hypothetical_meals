@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
-import IngDepReport from '../components/reports/IngDepReport';
+import MScheduleReportDisplay from '../components/reports/MScheduleReportDisplay';
 
 class MScheduleReport extends Component {
    render() {
      return(
        <div>
          <AppNavbar />
-         <IngDepReport />
+         <MScheduleReportDisplay />
        </div>
      );
    }

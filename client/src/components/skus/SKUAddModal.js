@@ -187,12 +187,11 @@ class SKUAddModal extends React.Component {
       newValidate.manufacturing_rate = 'is-empty';
       allRequiredFields = false;
     }
-
     this.setState({
       validate: newValidate
     });
 
-    if(allRequiredFields){
+    if(allRequiredFields && this.allValidated()){
       this.props.addSKU(newSKU, this.props.skus.sortby, this.props.skus.sortdir, 1, this.props.skus.pagelimit, this.props.skus.obj);
       this.toggle();
     }
@@ -431,7 +430,7 @@ class SKUAddModal extends React.Component {
                 </Input>
             </FormGroup>
             <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-            <Button className={this.allValidated() ? (''):('disabled')} color="dark" onClick={this.onSubmit.bind(this)} block>
+            <Button disabled={this.allValidated()} className={this.allValidated() ? (''):('disabled')} color="dark" onClick={this.onSubmit.bind(this)} block>
                   Add SKU
                 </Button>
               </div>

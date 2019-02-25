@@ -30,6 +30,7 @@ export default function(state = initialState, action) {
         page: action.payload.page,
         pagelimit: action.payload.pagelimit,
         loading: false,
+        obj: action.payload.obj,
         error_msgs: []
       }
     case FORMULAS_LOADING:

@@ -37,7 +37,7 @@ class LinesEntry extends React.Component {
 
    onSubmit = e => {
      if(this.state.validName !== 'success') alert("Please enter a unique name for your goal.")
-     else if(this.state.validShortName !== 'success') alert("Please enter a valid short name.")
+     else if(this.state.validShortName !== 'success') alert(this.state.validShortName)
      else {
          const newLine = {
            id: this.state.edit_id,
@@ -69,10 +69,14 @@ class LinesEntry extends React.Component {
         var lines  = this.props.lines.lines
         this.setState({ edit_shortname: e.target.value })
         var valid = '';
-        if (e.target.value.length > 0 && e.target.value.length <= 5 && lines.find(elem => elem.shortname === e.target.value) == null) {
-          valid = 'success'
+        var unique = lines.find(elem => elem.shortname === e.target.value) == null
+        if (e.target.value.length > 0 && e.target.value.length <= 5) {
+          if (unique)
+            valid = 'success'
+          else 
+            valid = 'Please enter a unique short name.'
         } else {
-          valid = 'failure'
+          valid = 'Please enter a valid short name.'
         }
         this.setState({ validShortName: valid })
    }
@@ -155,7 +159,7 @@ class LinesEntry extends React.Component {
                             </Col>
                             <Col md={2}>
                                 <Label>Short Name</Label>
-                                <Input type="zipcode" valid={this.state.validShortName === 'success'} invalid={this.state.validShortName === 'failure'} value={this.state.edit_shortname} onChange={this.onShortNameChange}/>
+                                <Input type="zipcode" valid={this.state.validShortName === 'success'} invalid={this.state.validShortName !== 'success'} value={this.state.edit_shortname} onChange={this.onShortNameChange}/>
                             </Col>
                             </Row>
                           </FormGroup>

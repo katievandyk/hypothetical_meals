@@ -93,7 +93,7 @@ class FormulasAddModal extends React.Component {
       newValidate.ingredients_list = 'not-selected';
       allRequiredFields = false;
     }
-    if(allRequiredFields){
+    if(allRequiredFields && this.allValidated()){
       this.props.addFormula(newFormula,this.props.formulas.sortby,
         this.props.formulas.sortdir, 1, this.props.formulas.pagelimit,
         this.props.formulas.obj);
@@ -182,7 +182,7 @@ class FormulasAddModal extends React.Component {
                 </Input>
             </FormGroup>
             <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-            <Button color="dark" className={this.allValidated() ? (''):('disabled')} onClick={this.onSubmit} block>
+            <Button disabled={this.allValidated()} color="dark" className={this.allValidated() ? (''):('disabled')} onClick={this.onSubmit} block>
                   Add Formula
                 </Button>
               </div>

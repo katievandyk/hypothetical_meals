@@ -36,7 +36,6 @@ class ScheduleSidePanel extends React.Component {
     } else {
       this.props.disableGoal(id, this.props.schedule.schedule._id)
     }
-    this.props.getGoalSKUs()
   }
 
   checkDraggable = (goal_id, sku_id ) => {

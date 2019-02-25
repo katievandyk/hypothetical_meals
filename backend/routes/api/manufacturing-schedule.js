@@ -48,15 +48,17 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
 
 })
 
-// @route POST api/manufacturingschedule/disable/:goal_id
+// @route POST api/manufacturingschedule/disable/:goal_id/:schedule
 // @desc disable goal with certain id
 // @access public
+// Returns json of activities and goal_id, where activities is an array of orphaned activities
+// Each activity has activity.orphan = true
 router.post('/disable/:goal_id/:schedule', (req, res) => {
     Goal
         .findById(req.params.goal_id)
         .then( goal => {
             ManufacturingSchedule
-                .findOneAndUpdate({ 'name': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
+                .findOneAndUpdate({ '_id': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
                 .then(
                     ManufacturingActivity
                         .find({ 'goal_id' : req.params.goal_id}, function(err, activities){
@@ -64,7 +66,10 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
                                 console.log(err);
                             }
                             else {
-                                res.json(activities);
+                                activities.forEach( activity => {
+                                    activity.orphan = true;
+                                })
+                                res.json({'activities' : activities, 'goal_id' : req.params.goal_id});
                             }
                         })
                         .catch(err => res.status(404).json({success: false, message: err.message}))
@@ -88,7 +93,7 @@ router.get('/skus', (req, res) => {
             .then(goal => {
                 Formula.populate(goal, {path:"skus_list.sku.formula"}).then(goal => {
                     let skus_list = goal.skus_list.map(skus => {
-                        skus.sku.duration = skus.sku.manufacturing_rate*skus.quantity
+                        skus.sku.duration = Math.ceil(skus.sku.manufacturing_rate*skus.quantity)
                         let goal_info = {
                             _id: goal._id,
                             name: goal.name,
@@ -259,7 +264,11 @@ router.post('/report', (req, res) => {
                     ing.packages = (Math.round(ing.packages * 100) / 100)
                     delete ing.unit
                 })
-                res.json({activities: tasks, ingredients: ing_list})
+
+                let req_info = {line: req.body.line_id, start: req.body.start, end: req.body.end}
+                ManufacturingLine.populate(req_info, {path: "line"}).then(info => {
+                    res.json({info: req_info, activities: tasks, ingredients: ing_list})
+                }) 
             })
         })
     })
@@ -302,6 +311,19 @@ function calculate(package_num, package_unit, formula_qty, formula_unit, formula
     }
     return [ing_qty, packages, unit]
 }
+
+// @route GET api/manufacturingschedule/search
+// @desc searches keywords in database
+// @access public
+router.get('/search', (req, res) => {
+    Goal.find({$text: {$search: req.body.keywords}},
+        {score:{$meta: "textScore"}})
+        .lean()
+        .sort({score: {$meta: "textScore"}})
+        .then(search_res => {
+            res.json({success: true, results: search_res});
+        })
+        .catch(err => res.status(404).json({success: false, message: err.message}))});
 
 
 module.exports = router;

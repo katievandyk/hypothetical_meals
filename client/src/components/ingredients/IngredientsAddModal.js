@@ -115,7 +115,7 @@ class IngredientsAddModal extends React.Component {
       newValidate.cost_per_package = 'is-empty';
       allRequiredFields = false;
     }
-    if(allRequiredFields){
+    if(allRequiredFields && this.allValidated()){
       this.props.addIng(newIng,this.props.ing.sortby, this.props.ing.sortdir, 1, this.props.ing.pagelimit, this.props.ing.obj);
       this.toggle();
     }
@@ -236,7 +236,7 @@ class IngredientsAddModal extends React.Component {
                 </Input>
             </FormGroup>
             <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-            <Button color="dark" className={this.allValidated() ? (''):('disabled')} type="submit" block>
+            <Button disabled={this.allValidated()} color="dark" className={this.allValidated() ? (''):('disabled')} type="submit" block>
                   Add Ingredient
                 </Button>
               </div>

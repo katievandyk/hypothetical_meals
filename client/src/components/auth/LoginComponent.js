@@ -11,13 +11,21 @@ Row, Col, Button} from 'reactstrap';
 class LoginComponent extends Component {
   constructor() {
     super();
+    var env = process.env.NODE_ENV;
+    var url;
+    if(env==='production') {
+      url = "https://oauth.oit.duke.edu/oauth/authorize.php?client_id=hypo-meal&client_secret=secret&redirect_uri=https%3A%2F%2F45gr8.colab.duke.edu%2Fnetid&response_type=token&state=1129&scope=basic"
+    }
+    else {
+      url = "https://oauth.oit.duke.edu/oauth/authorize.php?client_id=hypo-meal&client_secret=secret&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fnetid&response_type=token&state=1129&scope=basic"
+    }  
     this.state = {
       isLoggedIn: false,
       isAdmin: false,
       username: "",
       password: "",
       tokenHash: "",
-      url: "https://oauth.oit.duke.edu/oauth/authorize.php?client_id=hypo-meal&client_secret=secret&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fnetid&response_type=token&state=1129&scope=basic",
+      url: url,
       errors: {}
     };
   }
