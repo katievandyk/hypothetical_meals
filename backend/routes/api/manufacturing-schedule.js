@@ -374,7 +374,7 @@ router.post('/warnings', (req, res) => {
             activityEnd = new Date(activity.end)
             windowStart = new Date(req.body.start)
             windowEnd = new Date(req.body.end)
-            if(windowStart >= activityEnd || activityStart <= windowEnd) {
+            if((activityStart <= windowEnd && windowStart <= activityStart) || (activityEnd >= windowStart && activityEnd <= windowEnd) || (activityStart <= windowStart && activityEnd >= windowEnd)) {
                 activityDeadline = new Date(activity.goal_id.deadline)
                   if(activity.durationModified) {
                       warnings.push('Activity ' + activity.name + ' has its range manually changed to ' + activity.duration + '.')
