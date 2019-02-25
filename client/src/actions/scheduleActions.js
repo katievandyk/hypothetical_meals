@@ -184,9 +184,9 @@ export const genScheduleReport = (obj) => dispatch =>  {
   });
 };
 
-export const genWarning = (msg) => dispatch => {
+export const genWarning = (warning_msgs) => dispatch => {
   dispatch({
     type: SCHEDULE_WARNING,
-    payload: msg
+    payload: warning_msgs
   })
 }
