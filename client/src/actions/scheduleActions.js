@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
-  ADD_ACTIVITY,GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR, SCHEDULE_REPORT, SCHEDULE_KW_SEARCH} from './types';
-import xios from 'axios';
+  ADD_ACTIVITY,GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR,
+  SCHEDULE_REPORT, SCHEDULE_WARNING, SCHEDULE_KW_SEARCH} from './types';
 
 export const getSchedule = () => dispatch =>  {
   dispatch(setScheduleLoading());
@@ -100,6 +100,17 @@ export const disableGoal = (goal_id, schedule_id) => dispatch => {
       payload: res.data
     })
     dispatch(setScheduleLoading());
+    axios.get(`/api/manufacturingschedule/activity`).then(res =>
+      dispatch({
+        type: GET_ACTIVITY,
+        payload: res.data
+      })
+    ).catch(error =>{
+         dispatch({
+           type: SCHEDULE_ERROR,
+           payload: error.response
+         })
+       });
     axios.get(`/api/manufacturingschedule/skus`).then(res =>
       dispatch({
         type: GET_GOAL_SKUS,
@@ -111,12 +122,12 @@ export const disableGoal = (goal_id, schedule_id) => dispatch => {
            payload: error.response
          })
        });
-    }).catch(error =>{
-      dispatch({
-        type: SCHEDULE_ERROR,
-        payload: error.response
-      })
-  });
+     }).catch(error =>{
+       dispatch({
+         type: SCHEDULE_ERROR,
+         payload: error.response
+       })
+     });
 };
 
 export const addActivity  = (activity, _callback) => dispatch => {
@@ -172,5 +183,9 @@ export const genScheduleReport = (obj) => dispatch =>  {
     })
   });
 };
-
-
+export const genWarning = (warning_msgs) => dispatch => {
+  dispatch({
+    type: SCHEDULE_WARNING,
+    payload: warning_msgs
+  })
+}
