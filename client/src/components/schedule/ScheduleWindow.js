@@ -20,6 +20,11 @@ class ScheduleWindow extends React.Component {
     super(props)
     this.getOptions = this.getOptions.bind(this)
     this.calculateEndDate = this.calculateEndDate.bind(this)
+    this.maintainZoom.bind(this)
+    this.state = {
+        windowStart: new Date(),
+        windowEnd: new Date(1000*60*60*24 + (new Date()).valueOf()),
+    }
   }
 
   componentDidMount() {
@@ -31,8 +36,8 @@ class ScheduleWindow extends React.Component {
   getOptions() {
      const  options = {
             stack: false,
-            start: new Date(),
-            end: new Date(1000*60*60*24 + (new Date()).valueOf()),
+            start: this.state.windowStart,
+            end: this.state.windowEnd,
             zoomMin: 1000 * 60 * 60 * 24,
             zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
             editable: this.props.auth.isAdmin,
@@ -81,6 +86,7 @@ class ScheduleWindow extends React.Component {
                     this.props.getActivities()
                     callback(item)
                 });
+                this.maintainZoom();
               }
             }.bind(this),
             onMove: function(item, callback) {
@@ -127,16 +133,19 @@ class ScheduleWindow extends React.Component {
                 this.props.deleteActivity(act._id)
                 data.items = data.items.filter(({id}) => id !== item.id)
                 callback(item)
+                this.maintainZoom();
             }.bind(this)
           }
        return options;
   }
 
-  exportReport = () => {
-    const timeline = this.timeline.$el
-    const times = timeline.getWindow();
-    alert(times.start)
-    alert(times.end)
+  maintainZoom = () => {
+      const timeline = this.timeline.$el
+      const times = timeline.getWindow();
+      this.setState({
+            windowStart: times.start,
+            windowEnd: times.end
+     })
   }
 
   calculateEndDate = (startDate, duration) => {
