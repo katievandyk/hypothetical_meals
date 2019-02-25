@@ -27,6 +27,7 @@ router.get('/activity', (req, res) => {
         .find()
         .populate("sku")
         .populate("line")
+        .populate("goal_id")
         .then(activity => res.json(activity))
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
@@ -173,8 +174,10 @@ router.post('/activity', (req, res) => {
                         sku : sku,
                         line : line,
                         start : req.body.start,
+                        end : req.body.end,
                         duration : req.body.duration,
-                        goal_id : req.body.sku_goal_id
+                        durationModified: false,
+                        goal_id : req.body.goal_id
                     })
                     activity.save().then(activity => res.json(activity))
                     .catch(err => res.status(404).json({success: false, message: err.message}))
@@ -193,7 +196,9 @@ router.post('/update/activity/:activity_id', (req, res) => {
             doc.sku = req.body.sku;
             doc.line = req.body.line;
             doc.start = req.body.start;
+            doc.end = req.body.end;
             doc.duration = req.body.duration;
+            doc.durationModified = req.body.durationModified;
             doc.goal_id = req.body.goal_id
             doc.save().then( updatedActivity => {
                 res.json(updatedActivity)
