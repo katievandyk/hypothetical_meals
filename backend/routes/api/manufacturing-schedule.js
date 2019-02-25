@@ -277,6 +277,7 @@ router.post('/report', (req, res) => {
                         addIngredientsToList(ingredients, ing_calcs, 1)
                     }
                     else if(activity.start < endTime && activity.start >= startTime) {
+                        console.log("here2")
                         var diff =  Math.floor((endTime.getTime()- activity.start.getTime()) / 86400000);
                         activity.actual_duration = (endTime.getTime()- activity.start.getTime()- diff*50400000)/(60.0*60*1000)
                         
@@ -291,6 +292,16 @@ router.post('/report', (req, res) => {
                         activity.actual_duration = (activity.end.getTime() - startTime.getTime()-diff*50400000)/(60.0*60*1000)
                         activity.actual_start = startTime
                         activity.actual_end = activity.end
+                        tasks.push(activity)
+
+                        addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
+                    }
+                    else {
+                        var diff =  Math.floor((endTime.getTime()- startTime.getTime()) / 86400000);
+                        activity.actual_duration = (endTime.getTime() - startTime.getTime()-diff*50400000)/(60.0*60*1000)
+
+                        activity.actual_start = startTime
+                        activity.actual_end = endTime
                         tasks.push(activity)
 
                         addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
