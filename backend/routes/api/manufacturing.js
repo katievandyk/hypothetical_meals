@@ -4,7 +4,7 @@ const router = express.Router();
 const Papa = require('papaparse');
 const Helpers = require('../../bulk_import/helpers')
 const Constants = require('../../bulk_import/constants')
-
+const ManufacturingActivity = require('../../models/ManufacturingActivity');
 // Goal Model
 const Goal = require('../../models/Goal');
 const round = require('mongo-round');
@@ -44,6 +44,12 @@ router.delete('/:id', (req, res) => {
         .then(goal => goal.remove().then(
             () => res.json({success: true}))
         ).catch(err => res.status(404).json({success: false, message: err.message}))
+
+    ManufacturingActivity.find({line: req.params.id}).then(activities => {
+        activities.forEach(activity => {
+             ManufacturingActivity.findByIdAndDelete(activity._id).then().catch(err => console.log(err));
+        });
+     })
 });
 
 // @route POST api/manufacturing/update/:id

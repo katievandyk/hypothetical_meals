@@ -28,6 +28,10 @@ const ManufacturingActivitySchema = new Schema({
     goal_id: {
         type: String,
         required: true
+    },
+    orphan: {
+        type: Boolean,
+        default: false
     }
 });
 
