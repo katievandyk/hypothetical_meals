@@ -184,17 +184,17 @@ class ScheduleWindow extends React.Component {
          var content = activity.name
          const startDate = moment(activity.start).add(5, 'h');
          const endDate = moment(activity.end).add(5, 'h');
-         if(activity.orphan) {
-            className= 'gray'
-            content = activity.name + ' -Orphan'
-         }
-         else if(activity.durationModified) {
+         if(activity.durationModified) {
             className = 'orange'
             content = activity.name + ' -Range Changed'
          }
-         else if(moment(activity.goal_id.deadline) <= moment(endDate)) {
+         if(moment(activity.goal_id.deadline) <= moment(endDate)) {
             className = 'red'
             content = activity.name + ' -Past Due'
+         }
+         if(activity.orphan) {
+            className= 'gray'
+            content = activity.name + ' -Orphan'
          }
          else className = 'green'
          const item = {
