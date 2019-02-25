@@ -8,7 +8,8 @@ const initialState = {
   loading: false,
   error_msgs: [],
   report: {},
-  obj: {}
+  obj: {},
+  goals: []
 };
 
 export default function(state = initialState, action) {
@@ -79,13 +80,7 @@ export default function(state = initialState, action) {
         loading: false
       }
     }
-    case SCHEDULE_KW_SEARCH:{
-      state.obj.keywords = action.payload;
-      return {
-        ...state,
-        obj: state.obj
-      }
-    }
+
     default:
       return state;
   }

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
-  ADD_ACTIVITY,GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR, SCHEDULE_REPORT} from './types';
+  ADD_ACTIVITY,GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR, SCHEDULE_REPORT, SCHEDULE_KW_SEARCH} from './types';
+import xios from 'axios';
 
 export const getSchedule = () => dispatch =>  {
   dispatch(setScheduleLoading());
@@ -147,3 +148,5 @@ export const genScheduleReport = (obj) => dispatch =>  {
     })
   });
 };
+
+

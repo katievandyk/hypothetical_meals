@@ -1,9 +1,9 @@
 import React  from 'react'
-import { InputGroup, InputGroupAddon, Button, Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
+import { InputGroupAddon, Button, Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ScheduleKeywordSearch from 'ScheduleKeywordSearch';
-import { getGoals } from '../../actions/goalsActions';
-import { getSchedule, getGoalSKUs, enableGoal, disableGoal } from '../../actions/scheduleActions';
+import ScheduleKeywordSearch from '../../components/schedule/ScheduleKeywordSearch';
+import { getAllGoals, searchSchedulebyKW } from '../../actions/goalsActions';
+import { getSchedule, getGoalSKUs, enableGoal, disableGoal, setScheduleLoading } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -13,13 +13,33 @@ class ScheduleSidePanel extends React.Component {
 
     this.toggleActive.bind(this);
     this.state = {
-      sku_ranges: []
+      sku_ranges: [],
+      keywords: ''
+    }
+  }
+
+  onChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+    if(e.target.value.length === 0){
+
+    };
+  }
+
+  searchKW = () => {
+    var newObj = this.props.schedule.obj;
+    if(this.state.keywords.length > 0){
+      this.props.searchSchedulebyKW(this.state.keywords);
+    }
+    else{
+      this.props.getAllGoals();
     }
   }
 
   componentDidMount() {
     this.props.getSchedule()
-    this.props.getGoals(this.props.auth.user_username);
+    this.props.getAllGoals();
     this.props.getGoalSKUs()
   }
 
@@ -63,7 +83,7 @@ class ScheduleSidePanel extends React.Component {
                     <ModalHeader>Set Active Manufacturing Lines</ModalHeader>
                     <CardBody>
                         <Label>Goals Search</Label>
-                        <Input placeholder="Enter goal or creator..." name="keywords" onChange={this.onChange}/> &nbsp;
+                        <Input placeholder="Keyword Search" name="keywords" onChange={this.onChange}/>
                         <InputGroupAddon addonType="append"><Button onClick={this.searchKW}><FontAwesomeIcon icon = "search"/></Button></InputGroupAddon>
                         <ListGroup>
                             {goals.map(({_id, name})=> (
@@ -95,9 +115,12 @@ class ScheduleSidePanel extends React.Component {
 }
 
 ScheduleSidePanel.propTypes = {
-  getGoals: PropTypes.func.isRequired,
+  getAllGoals: PropTypes.func.isRequired,
   getGoalSKUs: PropTypes.func.isRequired,
   getSchedule: PropTypes.func.isRequired,
+  setScheduleLoading: PropTypes.func.isRequired,
+  searchSchedulebyKW: PropTypes.func.isRequired,
+  schedule: PropTypes.object.isRequired,
   enableGoal: PropTypes.func.isRequired,
   disableGoal: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
@@ -110,4 +133,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getGoals, enableGoal, disableGoal, getSchedule, getGoalSKUs })(ScheduleSidePanel);
+export default connect(mapStateToProps, { getAllGoals, enableGoal, disableGoal, getSchedule, getGoalSKUs, searchSchedulebyKW, setScheduleLoading })(ScheduleSidePanel);

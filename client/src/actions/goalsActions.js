@@ -1,11 +1,27 @@
 import axios from 'axios';
-import { GET_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR } from './types';
+import { GET_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, 
+  GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR, SCHEDULE_KW_SEARCH } from './types';
 
 const FileDownload = require('js-file-download');
 
 export const getGoals = (user_username) => dispatch =>  {
   dispatch(setGoalsLoading());
   axios.get('/api/manufacturing/' + user_username).then(res =>
+    dispatch({
+      type: GET_GOALS,
+      payload: res.data
+    })
+  ).catch(error =>{
+    dispatch({
+      type: GOAL_ERROR,
+      payload: error.response
+    })
+  });
+};
+
+export const getAllGoals = () => dispatch =>  {
+  dispatch(setGoalsLoading());
+  axios.get('/api/manufacturing/').then(res =>
     dispatch({
       type: GET_GOALS,
       payload: res.data
@@ -114,4 +130,18 @@ export const deleteGoal = (goal_id) => dispatch => {
     return {
         type: GOAL_CALCULATOREXPORT
     };
+  };
+
+  export const searchSchedulebyKW = keywords => dispatch => {
+    axios.post('/api/manufacturingschedule/search', {keywords : keywords}).then(res => {
+      dispatch({
+        type: SCHEDULE_KW_SEARCH,
+        payload: res.data.results
+      });
+    }).catch(error =>{
+      dispatch({
+        type: GOAL_ERROR,
+        payload: error.response
+      })
+    });
   };
