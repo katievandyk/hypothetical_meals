@@ -11,6 +11,7 @@ class ScheduleAlerts extends Component {
 
   render(){
     const errors = this.props.schedule.error_msgs;
+    const warnings = this.props.schedule.warning_msgs;
       return (
         <Row>
         <Col></Col>
@@ -18,6 +19,12 @@ class ScheduleAlerts extends Component {
         {errors.map((value, i) => (
           <UncontrolledAlert key={i} className={(i !== errors.length - 1) ? ("hidden"):("")} color="danger">
           <h4>ERROR</h4>
+          {value}
+          </UncontrolledAlert>
+        ))}
+        {warnings.map((value, i) => (
+          <UncontrolledAlert key={i} className={(i !== errors.length - 1) ? ("hidden"):("")} color="warning">
+          <h4>WARNING</h4>
           {value}
           </UncontrolledAlert>
         ))}

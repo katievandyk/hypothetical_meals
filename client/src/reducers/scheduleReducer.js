@@ -7,6 +7,7 @@ const initialState = {
   goal_skus: [],
   loading: false,
   error_msgs: [],
+  warning_msgs: [],
   report: {}
 };
 
