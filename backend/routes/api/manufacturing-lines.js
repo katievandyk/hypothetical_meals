@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 
 const ManufacturingLine = require('../../models/ManufacturingLine');
+const ManufacturingActivity = require('../../models/ManufacturingActivity');
 const Parser = require('../../bulk_import/parser')
 
 // @route GET api/manufacturinglines
@@ -99,6 +100,11 @@ router.delete('/:id', (req, res) => {
                     () => res.json({success: true}))
                 ).catch(err => res.status(404).json({success: false, message: err.message}))
         }).catch(err => res.status(404).json({success: false, message: err.message}))
+    })
+    ManufacturingActivity.find({line: req.params.id}).then(activities => {
+        activities.forEach(activity => {
+            ManufacturingActivity.findByIdAndDelete(activity._id).then().catch(err => console.log(err));
+        });
     })
 });
 

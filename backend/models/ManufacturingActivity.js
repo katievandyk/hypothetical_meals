@@ -37,6 +37,10 @@ const ManufacturingActivitySchema = new Schema({
         type: String,
         ref: 'goal',
         required: true
+    },
+    orphan: {
+        type: Boolean,
+        default: false
     }
 });
 
