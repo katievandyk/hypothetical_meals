@@ -179,7 +179,8 @@ class ScheduleWindow extends React.Component {
         return group;
     })
     const activities = this.props.schedule.activities;
-    var className = ''
+    var className = 'green'
+    var warnings = []
     data.items = activities.map(activity =>{
          var content = activity.name
          const startDate = moment(activity.start).add(5, 'h');
@@ -187,16 +188,18 @@ class ScheduleWindow extends React.Component {
          if(activity.durationModified) {
             className = 'orange'
             content = activity.name + ' -Range Changed'
+            warnings.push('Activity ' + activity.name + ' has its range manually changed to, ' + activity.duration)
          }
          if(moment(activity.goal_id.deadline) <= moment(endDate)) {
             className = 'red'
             content = activity.name + ' -Past Due'
+            warnings.push('Activity ' + activity.name + ' is scheduled past its deadline, ' + activity.goal_id.deadline)
          }
          if(activity.orphan) {
             className= 'gray'
             content = activity.name + ' -Orphan'
+            warnings.push('Activity ' + activity.name + ' is an orphan of goal, ' + activity.goal_id.name)
          }
-         else className = 'green'
          const item = {
                       id: activity._id,
                       content: content,
