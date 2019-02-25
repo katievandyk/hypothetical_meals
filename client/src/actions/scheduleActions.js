@@ -72,6 +72,18 @@ export const enableGoal = (goal_id, schedule_id) => dispatch => {
       type: ENABLE_GOAL,
       payload: res.data
     })
+    dispatch(setScheduleLoading());
+    axios.get(`/api/manufacturingschedule/skus`).then(res =>
+      dispatch({
+        type: GET_GOAL_SKUS,
+        payload: res.data
+      })
+    ).catch(error =>{
+         dispatch({
+           type: SCHEDULE_ERROR,
+           payload: error.response
+         })
+       });
     }).catch(error =>{
       dispatch({
         type: SCHEDULE_ERROR,
@@ -86,6 +98,18 @@ export const disableGoal = (goal_id, schedule_id) => dispatch => {
       type: DISABLE_GOAL,
       payload: res.data
     })
+    dispatch(setScheduleLoading());
+    axios.get(`/api/manufacturingschedule/skus`).then(res =>
+      dispatch({
+        type: GET_GOAL_SKUS,
+        payload: res.data
+      })
+    ).catch(error =>{
+         dispatch({
+           type: SCHEDULE_ERROR,
+           payload: error.response
+         })
+       });
     }).catch(error =>{
       dispatch({
         type: SCHEDULE_ERROR,

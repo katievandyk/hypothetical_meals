@@ -21,12 +21,21 @@ const ManufacturingActivitySchema = new Schema({
         type: Date,
         required: true,
     },
+    end: {
+        type: Date,
+        required: true,
+    },
     duration: {
         type: Number, //Number of hours
         required: true
     },
+    durationModified: {
+        type: Boolean,
+        required: true
+    },
     goal_id: {
         type: String,
+        ref: 'goal',
         required: true
     },
     orphan: {
