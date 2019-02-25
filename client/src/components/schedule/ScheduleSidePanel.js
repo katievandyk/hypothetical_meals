@@ -1,5 +1,5 @@
 import React  from 'react'
-import { InputGroupAddon, Button, Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
+import { InputGroup, InputGroupAddon, Button, Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAllGoals, searchSchedulebyKW } from '../../actions/goalsActions';
 import { getSchedule, getGoalSKUs, enableGoal, disableGoal, setScheduleLoading } from '../../actions/scheduleActions';
@@ -81,8 +81,10 @@ class ScheduleSidePanel extends React.Component {
                     <ModalHeader>Set Active Manufacturing Lines</ModalHeader>
                     <CardBody>
                         <Label>Goals Search</Label>
-                        <Input placeholder="Keyword Search" name="keywords" onChange={this.onChange}/>
-                        <InputGroupAddon addonType="append"><Button onClick={this.searchKW}><FontAwesomeIcon icon = "search"/></Button></InputGroupAddon>
+                        <InputGroup>
+                          <Input placeholder="Keyword Search" name="keywords" onChange={this.onChange}/>
+                          <InputGroupAddon addonType="append"><Button onClick={this.searchKW}><FontAwesomeIcon icon = "search"/></Button></InputGroupAddon>
+                        </InputGroup>
                         <ListGroup>
                             {goals.map(({_id, name})=> (
                                 <ListGroupItem key={_id} action active={schedule.enabled_goals.some(goal => goal._id === _id)} tag="button" onClick={() => this.toggleActive(_id)} md={2} >
