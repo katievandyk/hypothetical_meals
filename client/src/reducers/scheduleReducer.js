@@ -1,5 +1,6 @@
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
-  ADD_ACTIVITY, GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR, SCHEDULE_REPORT, SCHEDULE_KW_SEARCH} from '../actions/types';
+  ADD_ACTIVITY, GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR,
+  SCHEDULE_REPORT, SCHEDULE_WARNING, SCHEDULE_KW_SEARCH} from '../actions/types';
 
 const initialState = {
   schedule: {},
@@ -7,9 +8,10 @@ const initialState = {
   goal_skus: [],
   loading: false,
   error_msgs: [],
-  report: {},
   obj: {},
-  goals: []
+  goals: [],
+  warning_msgs: [],
+  report: {}
 };
 
 export default function(state = initialState, action) {
@@ -46,7 +48,7 @@ export default function(state = initialState, action) {
           activities: state.activities.filter( act => act._id !== action.payload)
      }
     case ENABLE_GOAL:
-        state.schedule.enabled_goals.push(action.payload)
+        state.schedule.enabled_goals.push(action.payload.goal)
         return {
           ...state,
           schedule: state.schedule,
@@ -77,7 +79,16 @@ export default function(state = initialState, action) {
       return {
         ...state,
         error_msgs: [...state.error_msgs, action.payload.data.message],
-        loading: false
+        loading: false,
+        warning_msgs: []
+      }
+    }
+    case SCHEDULE_WARNING:{
+      return {
+        ...state,
+        error_msgs: [],
+        loading: false,
+        warning_msgs: action.payload
       }
     }
 

@@ -20,6 +20,11 @@ class ScheduleWindow extends React.Component {
     super(props)
     this.getOptions = this.getOptions.bind(this)
     this.calculateEndDate = this.calculateEndDate.bind(this)
+    this.maintainZoom.bind(this)
+    this.state = {
+        windowStart: new Date(),
+        windowEnd: new Date(1000*60*60*24 + (new Date()).valueOf()),
+    }
   }
 
   componentDidMount() {
@@ -31,8 +36,8 @@ class ScheduleWindow extends React.Component {
   getOptions() {
      const  options = {
             stack: false,
-            start: new Date(),
-            end: new Date(1000*60*60*24 + (new Date()).valueOf()),
+            start: this.state.windowStart,
+            end: this.state.windowEnd,
             zoomMin: 1000 * 60 * 60 * 24,
             zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
             editable: this.props.auth.isAdmin,
@@ -79,6 +84,7 @@ class ScheduleWindow extends React.Component {
                     this.props.getActivities()
                     callback(item)
                 });
+                this.maintainZoom();
               }
             }.bind(this),
             onMove: function(item, callback) {
@@ -101,7 +107,7 @@ class ScheduleWindow extends React.Component {
                 // find differences in duration
                 const newDuration = this.calculateDuration(moment(item.start), moment(item.end))
                 // properly format start and end dates
-                item.end = this.calculateEndDate(moment(item.start), item.duration)
+                item.end = this.calculateEndDate(moment(item.start), newDuration)
                 const startDate = moment(item.start);
                 startDate.subtract(5, 'h');
                 const endDate = moment(item.end);
@@ -110,6 +116,7 @@ class ScheduleWindow extends React.Component {
                     name: act.name,
                     start: startDate,
                     end: endDate,
+                    orphan: act.orphan,
                     duration: newDuration,
                     durationModified: (newDuration !== act.duration),
                     _id: act._id,
@@ -126,16 +133,19 @@ class ScheduleWindow extends React.Component {
                 this.props.deleteActivity(act._id)
                 data.items = data.items.filter(({id}) => id !== item.id)
                 callback(item)
+                this.maintainZoom();
             }.bind(this)
           }
        return options;
   }
 
-  exportReport = () => {
-    const timeline = this.timeline.$el
-    const times = timeline.getWindow();
-    alert(times.start)
-    alert(times.end)
+  maintainZoom = () => {
+      const timeline = this.timeline.$el
+      const times = timeline.getWindow();
+      this.setState({
+            windowStart: times.start,
+            windowEnd: times.end
+     })
   }
 
   calculateEndDate = (startDate, duration) => {
@@ -153,9 +163,10 @@ class ScheduleWindow extends React.Component {
   }
 
   calculateDuration = (startDate, endDate) => {
+    // TODO need to set default start/end date hours if they fall onto hidden dates
     var hours = moment.duration(endDate.diff(startDate)).asHours();
     var days = Math.floor(moment.duration(endDate.diff(startDate)).asDays());
-    var duration = hours - days*14 - 5;
+    var duration = hours - days*14;
     return duration;
   }
 
@@ -173,7 +184,11 @@ class ScheduleWindow extends React.Component {
          var content = activity.name
          const startDate = moment(activity.start).add(5, 'h');
          const endDate = moment(activity.end).add(5, 'h');
-         if(activity.durationModified) {
+         if(activity.orphan) {
+            className= 'gray'
+            content = activity.name + ' -Orphan'
+         }
+         else if(activity.durationModified) {
             className = 'orange'
             content = activity.name + ' -Range Changed'
          }
