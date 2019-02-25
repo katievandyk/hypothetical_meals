@@ -1,7 +1,7 @@
 import React  from 'react'
-import { Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
+import { InputGroup, InputGroupAddon, Button, Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import ScheduleKeywordSearch from 'ScheduleKeywordSearch';
 import { getGoals } from '../../actions/goalsActions';
 import { getSchedule, getGoalSKUs, enableGoal, disableGoal } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
@@ -63,7 +63,8 @@ class ScheduleSidePanel extends React.Component {
                     <ModalHeader>Set Active Manufacturing Lines</ModalHeader>
                     <CardBody>
                         <Label>Goals Search</Label>
-                        <Input placeholder="Enter goal or creator..."/> &nbsp;
+                        <Input placeholder="Enter goal or creator..." name="keywords" onChange={this.onChange}/> &nbsp;
+                        <InputGroupAddon addonType="append"><Button onClick={this.searchKW}><FontAwesomeIcon icon = "search"/></Button></InputGroupAddon>
                         <ListGroup>
                             {goals.map(({_id, name})=> (
                                 <ListGroupItem key={_id} action active={schedule.enabled_goals.some(goal => goal._id === _id)} tag="button" onClick={() => this.toggleActive(_id)} md={2} >

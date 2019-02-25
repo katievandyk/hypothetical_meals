@@ -1,5 +1,5 @@
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
-  ADD_ACTIVITY, GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR, SCHEDULE_REPORT} from '../actions/types';
+  ADD_ACTIVITY, GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR, SCHEDULE_REPORT, SCHEDULE_KW_SEARCH} from '../actions/types';
 
 const initialState = {
   schedule: {},
@@ -7,7 +7,8 @@ const initialState = {
   goal_skus: [],
   loading: false,
   error_msgs: [],
-  report: {}
+  report: {},
+  obj: {}
 };
 
 export default function(state = initialState, action) {
@@ -78,8 +79,16 @@ export default function(state = initialState, action) {
         loading: false
       }
     }
+    case SCHEDULE_KW_SEARCH:{
+      state.obj.keywords = action.payload;
+      return {
+        ...state,
+        obj: state.obj
+      }
+    }
     default:
       return state;
   }
+
 
 }

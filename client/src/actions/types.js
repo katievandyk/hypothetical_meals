@@ -45,6 +45,7 @@ export const DELETE_ACTIVITY = 'DELETE_ACTIVITY'
 export const SCHEDULE_ERROR = 'SCHEDULE_ERROR';
 export const SCHEDULE_LOADING = 'SCHEDULE_LOADING';
 export const SCHEDULE_REPORT = 'SCHEDULE_REPORT';
+export const SCHEDULE_KW_SEARCH = 'SCHEDULE_KW_SEARCH';
 // Product Lines
 export const GET_PLINES = 'GET_PLINES';
 export const ADD_PLINE = 'ADD_PLINE';
