@@ -13,7 +13,7 @@ const round = require('mongo-round');
 // @route GET api/manufacturing/
 // @desc get all goals for all users
 // @access public
-router.get('/:user_username', (req, res) => {
+router.get('/', (req, res) => {
     Goal
         .find()
         .populate({ path: 'skus_list.sku'})
