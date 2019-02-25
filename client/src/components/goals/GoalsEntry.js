@@ -333,7 +333,6 @@ class GoalsEntry extends React.Component {
                         <Row>
                             <Col md={6}><GoalsProductLineFilter/></Col>
                             <Col style={{'textAlign': 'right'}}/>
-                            <Col md={4}> <GoalsSKUSearch/> </Col>
                         </Row>
                     </FormGroup>
                     <FormGroup>
