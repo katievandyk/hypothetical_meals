@@ -101,7 +101,7 @@ class ScheduleWindow extends React.Component {
                 // find differences in duration
                 const newDuration = this.calculateDuration(moment(item.start), moment(item.end))
                 // properly format start and end dates
-                item.end = this.calculateEndDate(moment(item.start), item.duration)
+                item.end = this.calculateEndDate(moment(item.start), newDuration)
                 const startDate = moment(item.start);
                 startDate.subtract(5, 'h');
                 const endDate = moment(item.end);
@@ -153,9 +153,11 @@ class ScheduleWindow extends React.Component {
   }
 
   calculateDuration = (startDate, endDate) => {
+    // TODO need to set default start/end date hours if they fall onto hidden dates
     var hours = moment.duration(endDate.diff(startDate)).asHours();
     var days = Math.floor(moment.duration(endDate.diff(startDate)).asDays());
-    var duration = hours - days*14 - 5;
+    var duration = hours - days*14;
+    alert('hours: ' + hours + 'days: ' + days + 'duration: ' + duration)
     return duration;
   }
 
