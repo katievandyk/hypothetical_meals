@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 import '../../styles.css'
 import moment from 'moment'
 
-
   const data = {
     items: [],
     groups: []
@@ -20,6 +19,7 @@ class ScheduleWindow extends React.Component {
   constructor(props) {
     super(props)
     this.getOptions = this.getOptions.bind(this)
+    this.calculateEndDate = this.calculateEndDate.bind(this)
   }
 
   componentDidMount() {
@@ -33,16 +33,16 @@ class ScheduleWindow extends React.Component {
             stack: false,
             start: new Date(),
             end: new Date(1000*60*60*24 + (new Date()).valueOf()),
-            hiddenDates: [{
-                start: '2017-03-04 18:00:00',
-                end: '2017-03-05 08:00:00',
-                repeat: 'daily'
-            }],
             zoomMin: 1000 * 60 * 60 * 24,
             zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
             editable: this.props.auth.isAdmin,
             orientation: 'top',
             horizontalScroll: true,
+            hiddenDates: [{
+                start: '2017-03-04 18:00:00',
+                end: '2017-03-05 08:00:00',
+                repeat: 'daily'
+            }],
             tooltipOnItemUpdateTime: {
                   template: function(item) {
                     return '<div><b>Start:</b>' + item.start + ' <br /><b>End:</b>: ' + item.end +'<br /><b>Deadline:</b>' + item.deadline + '/<div>'
@@ -62,9 +62,7 @@ class ScheduleWindow extends React.Component {
               else {
                 const startDate = moment(item.start);
                 startDate.subtract(5, 'h');
-                const endDate = moment(item.start);
-                endDate.add(item.duration, 'h');
-                item.end = endDate;
+                item.end = this.calculateEndDate(moment(item.start), item.duration)
                 const activity = {
                     name: item.content,
                     sku_id: item.sku,
@@ -98,9 +96,7 @@ class ScheduleWindow extends React.Component {
               else {
                 const startDate = moment(item.start);
                 startDate.subtract(5, 'h');
-                const endDate = moment(item.start);
-                endDate.add(item.duration, 'h');
-                item.end = endDate;
+                item.end = this.calculateEndDate(moment(item.start), item.duration)
                 const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
                 const updatedAct = {
                     name: act.name,
@@ -132,9 +128,18 @@ class ScheduleWindow extends React.Component {
     alert(times.end)
   }
 
-  addDeadlines = () => {
-    const timeline = this.timeline.$el
-    timeline.addCustomTime(this.props.schedule.goal_skus[0].deadline);
+  calculateEndDate = (startDate, duration) => {
+    var daystoAdd = Math.floor(duration/10)
+    var hours = startDate.hour() + (duration % 10);
+    if(hours > 18) {
+        daystoAdd++;
+        hours = hours - 10;
+    }
+    var endDate = startDate;
+    endDate.add(daystoAdd, 'd')
+    endDate.set({ hour: parseInt(hours) })
+    const res = moment(endDate).add(5, 'h')
+    return res
   }
 
   render() {
@@ -150,8 +155,7 @@ class ScheduleWindow extends React.Component {
     data.items = activities.map(activity =>{
          var content = activity.name
          const startDate = moment(activity.start).add(5, 'h');
-         const endDate = moment(activity.start).add(5, 'h');
-         endDate.add(activity.duration, 'h');
+         const endDate = this.calculateEndDate(moment(activity.start), activity.duration)
          if(moment(activity.goal_id.deadline) <= moment(endDate)) {
             className = 'red'
             content = activity.name + ' -Past Due'
