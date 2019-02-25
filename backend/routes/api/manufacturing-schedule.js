@@ -149,6 +149,7 @@ router.post('/activity', (req, res) => {
                         start : req.body.start,
                         end : req.body.end,
                         duration : req.body.duration,
+                        durationModified: false,
                         goal_id : req.body.goal_id
                     })
                     activity.save().then(activity => res.json(activity))
@@ -170,6 +171,7 @@ router.post('/update/activity/:activity_id', (req, res) => {
             doc.start = req.body.start;
             doc.end = req.body.end;
             doc.duration = req.body.duration;
+            doc.durationModified = req.body.durationModified;
             doc.goal_id = req.body.goal_id
             doc.save().then( updatedActivity => {
                 res.json(updatedActivity)

@@ -60,16 +60,19 @@ class ScheduleWindow extends React.Component {
                     callback(null)
               }
               else {
+                item.end = this.calculateEndDate(moment(item.start), item.duration)
                 const startDate = moment(item.start);
                 startDate.subtract(5, 'h');
-                item.end = this.calculateEndDate(moment(item.start), item.duration)
+                const endDate = moment(item.end);
+                endDate.subtract(5, 'h');
                 const activity = {
                     name: item.content,
                     sku_id: item.sku,
                     line_id: item.group,
                     start: startDate,
+                    end: endDate,
                     duration: item.duration,
-                    sku_goal_id: item.goal
+                    goal_id: item.goal
                 }
                 this.props.addActivity(activity, (id) => {
                     item.id = id
@@ -79,8 +82,8 @@ class ScheduleWindow extends React.Component {
               }
             }.bind(this),
             onMove: function(item, callback) {
-             const lines = [];
-             const goal = this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).goal
+              const lines = [];
+              const goal = this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).goal
               this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).skus.find(elem => elem._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
               if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                     alert("Move item to a non-overlapping location.")
@@ -94,14 +97,21 @@ class ScheduleWindow extends React.Component {
                     item.className = 'red'
               }
               else {
+                const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
+                // find differences in duration
+                const newDuration = this.calculateDuration(moment(item.start), moment(item.end))
+                // properly format start and end dates
+                item.end = this.calculateEndDate(moment(item.start), item.duration)
                 const startDate = moment(item.start);
                 startDate.subtract(5, 'h');
-                item.end = this.calculateEndDate(moment(item.start), item.duration)
-                const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
+                const endDate = moment(item.end);
+                endDate.subtract(5, 'h');
                 const updatedAct = {
                     name: act.name,
                     start: startDate,
-                    duration: act.duration,
+                    end: endDate,
+                    duration: newDuration,
+                    durationModified: (newDuration !== act.duration),
                     _id: act._id,
                     sku: act.sku._id,
                     line: item.group,
@@ -142,6 +152,13 @@ class ScheduleWindow extends React.Component {
     return res
   }
 
+  calculateDuration = (startDate, endDate) => {
+    var hours = moment.duration(endDate.diff(startDate)).asHours();
+    var days = Math.floor(moment.duration(endDate.diff(startDate)).asDays());
+    var duration = hours - days*14 - 5;
+    return duration;
+  }
+
   render() {
     const { lines } = this.props.lines;
     data.groups = lines.map(line =>{
@@ -151,15 +168,20 @@ class ScheduleWindow extends React.Component {
         return group;
     })
     const activities = this.props.schedule.activities;
-    var className = 'green'
+    var className = ''
     data.items = activities.map(activity =>{
          var content = activity.name
          const startDate = moment(activity.start).add(5, 'h');
-         const endDate = this.calculateEndDate(moment(activity.start), activity.duration)
-         if(moment(activity.goal_id.deadline) <= moment(endDate)) {
+         const endDate = moment(activity.end).add(5, 'h');
+         if(activity.durationModified) {
+            className = 'orange'
+            content = activity.name + ' -Range Changed'
+         }
+         else if(moment(activity.goal_id.deadline) <= moment(endDate)) {
             className = 'red'
             content = activity.name + ' -Past Due'
          }
+         else className = 'green'
          const item = {
                       id: activity._id,
                       content: content,

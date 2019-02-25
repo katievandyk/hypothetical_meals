@@ -29,6 +29,10 @@ const ManufacturingActivitySchema = new Schema({
         type: Number, //Number of hours
         required: true
     },
+    durationModified: {
+        type: Boolean,
+        required: true
+    },
     goal_id: {
         type: String,
         ref: 'goal',
