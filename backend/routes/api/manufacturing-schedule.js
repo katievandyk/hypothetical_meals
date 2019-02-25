@@ -248,8 +248,6 @@ router.post('/report', (req, res) => {
                 let tasks = []
                 var ingredients = []
                 activities.forEach(activity => {
-                    let activityEnd = new Date(activity.start)
-                    activityEnd.setTime(activityEnd.getTime()+(activity.duration*60*60*1000))
                     let sku_quantity = 1.0 * activity.duration / activity.sku.manufacturing_rate
                     let ing_calcs = activity.sku.formula.ingredients_list.map(ing => {
                         extracted_ps = Helpers.extractUnits(ing._id.package_size)
@@ -266,29 +264,39 @@ router.post('/report', (req, res) => {
                         let unit = calculations[2]
                         return {ingredient: ing._id, quantity: ing_qty, packages: packages, unit: unit}
                     })
-                    if (activity.start >= startTime && activityEnd <= endTime) {
+                    if (activity.start >= startTime && activity.end <= endTime) {
+                        var diff =  Math.floor((activity.end.getTime()- activity.start.getTime()) / 86400000);
+                        console.log("difference: " + diff)
+                        var duration = (activity.end.getTime()- activity.start.getTime()- (diff)*50400000)/(60.0*60*1000)
+                        console.log(activity.end.getTime() + " " + activity.start.getTime() + " " + diff)
+                        console.log(duration)
                         activity.actual_duration = activity.duration
                         activity.actual_start = activity.start
-                        activity.actual_end = activityEnd
+                        activity.actual_end = activity.end
                         tasks.push(activity)
                         addIngredientsToList(ingredients, ing_calcs, 1)
                     }
                     else if(activity.start < endTime && activity.start >= startTime) {
-                        activity.actual_duration = (endTime.getTime()- startTime.getTime())/(60.0*60*1000)
+                        var diff =  Math.floor((endTime.getTime()- activity.start.getTime()) / 86400000);
+                        activity.actual_duration = (endTime.getTime()- activity.start.getTime()- diff*50400000)/(60.0*60*1000)
+                        
                         activity.actual_start = activity.start 
                         activity.actual_end = endTime
                         tasks.push(activity)
                         addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
 
                     }
-                    else if(activityEnd > startTime && activityEnd <= endTime) {
-                        activity.actual_duration = (activityEnd.getTime() - startTime.getTime())/(60.0*60*1000)
+                    else if(activity.end > startTime && activity.end <= endTime) {
+                        var diff =  Math.floor((activity.end.getTime()- startTime.getTime()) / 86400000);
+                        activity.actual_duration = (activity.end.getTime() - startTime.getTime()-diff*50400000)/(60.0*60*1000)
                         activity.actual_start = startTime
-                        activity.actual_end = activityEnd
+                        activity.actual_end = activity.end
                         tasks.push(activity)
 
                         addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
                     }
+
+                     
                 })
 
                 let ing_list = Object.values(ingredients)
