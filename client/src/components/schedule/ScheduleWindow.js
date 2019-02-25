@@ -1,6 +1,6 @@
 import React  from 'react'
 import Timeline from 'react-visjs-timeline'
-import { Row, Col, Button } from 'reactstrap'
+import { Row, Col} from 'reactstrap'
 import ScheduleSidePanel from './ScheduleSidePanel'
 import CreateScheduleReport from './CreateScheduleReport'
 import { getLines } from '../../actions/linesActions';

@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CalculatorEntry from './CalculatorEntry';
 import CalculatorExport from './CalculatorExport';
 import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
-import GoalsSKUSearch from '../../components/goals/GoalsSKUSearch';
 import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
 
 import 'jspdf-autotable';
