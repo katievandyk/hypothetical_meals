@@ -158,7 +158,7 @@ class PLinesEntry extends React.Component {
                   </FormFeedback>
               </FormGroup>
               <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.state.validate.nameState === 'has-danger' ? (''):('hidden')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-              <Button color="dark" className={this.state.validate.nameState === 'has-danger'?('disabled'): ('')} type="submit" block>
+              <Button color="dark" disabled={this.state.validate.nameState === 'has-danger'} className={this.state.validate.nameState === 'has-danger'?('disabled'): ('')} type="submit" block>
                     Submit Product Line Edit
                   </Button></div>
             </Form>

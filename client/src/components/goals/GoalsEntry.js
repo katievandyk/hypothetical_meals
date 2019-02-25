@@ -36,7 +36,8 @@ class GoalsEntry extends React.Component {
         skuSel: '',
         validNum: '',
         validName: '',
-        validDate: ''
+        validDate: '',
+        sku_valid: ''
       };
     }
 
@@ -114,7 +115,7 @@ class GoalsEntry extends React.Component {
        else if(this.state.skuSel.length === 0 || skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
        else {
            skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
-           this.setState({ edit_skus_list: skus });
+           this.setState({ edit_skus_list: skus, sku_valid: '' });
            this.skulist_toggle()
        }
    }
@@ -158,7 +159,8 @@ class GoalsEntry extends React.Component {
 
    skuCallback = (dataFromChild) => {
        this.setState({
-            skuSel: dataFromChild
+            skuSel: dataFromChild,
+            sku_valid: 'success'
           });
    }
 
@@ -344,8 +346,8 @@ class GoalsEntry extends React.Component {
                 </Form>
              </ModalBody>
              <ModalFooter>
-                <Button onClick={this.onAddSKU}>Save</Button>
-                <Button onClick={this.skulist_toggle}>Cancel</Button>
+                <Button disabled={this.state.validNum === 'failure' || this.state.sku_valid !== 'success'} onClick={this.onAddSKU}>Save</Button>
+              <Button onClick={this.skulist_toggle}>Cancel</Button>
              </ModalFooter>
         </Modal>
        </div>

@@ -379,7 +379,7 @@ class IngredientsEntry extends React.Component {
                   </Input>
               </FormGroup>
               <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-              <Button color="dark" className={this.allValidated() ? (''):('disabled')} onClick={this.onEditSubmit} block>
+              <Button disabled={this.allValidated()} color="dark" className={this.allValidated() ? (''):('disabled')} onClick={this.onEditSubmit} block>
                     Submit Ingredient Edits
                   </Button>
                 </div>

@@ -33,7 +33,7 @@ class GoalsSKUDropdown extends React.Component {
     if(this.state.validName === 'failure'){
       return "isInvalid";
     }
-    else if(this.props.validName === 'success'){
+    else if(this.state.validName === 'success'){
       return "isValid";
     }
     else
