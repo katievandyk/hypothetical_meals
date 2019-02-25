@@ -110,6 +110,7 @@ class ScheduleWindow extends React.Component {
                     name: act.name,
                     start: startDate,
                     end: endDate,
+                    orphan: act.orphan,
                     duration: newDuration,
                     durationModified: (newDuration !== act.duration),
                     _id: act._id,
@@ -175,7 +176,11 @@ class ScheduleWindow extends React.Component {
          var content = activity.name
          const startDate = moment(activity.start).add(5, 'h');
          const endDate = moment(activity.end).add(5, 'h');
-         if(activity.durationModified) {
+         if(activity.orphan) {
+            className= 'gray'
+            content = activity.name + ' -Orphan'
+         }
+         else if(activity.durationModified) {
             className = 'orange'
             content = activity.name + ' -Range Changed'
          }

@@ -44,7 +44,7 @@ export default function(state = initialState, action) {
           activities: state.activities.filter( act => act._id !== action.payload)
      }
     case ENABLE_GOAL:
-        state.schedule.enabled_goals.push(action.payload)
+        state.schedule.enabled_goals.push(action.payload.goal)
         return {
           ...state,
           schedule: state.schedule,
