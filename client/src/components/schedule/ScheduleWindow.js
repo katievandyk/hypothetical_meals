@@ -132,13 +132,6 @@ class ScheduleWindow extends React.Component {
        return options;
   }
 
-  exportReport = () => {
-    const timeline = this.timeline.$el
-    const times = timeline.getWindow();
-    alert(times.start)
-    alert(times.end)
-  }
-
   calculateEndDate = (startDate, duration) => {
     var daystoAdd = Math.floor(duration/10)
     var hours = startDate.hour() + (duration % 10);
@@ -158,7 +151,6 @@ class ScheduleWindow extends React.Component {
     var hours = moment.duration(endDate.diff(startDate)).asHours();
     var days = Math.floor(moment.duration(endDate.diff(startDate)).asDays());
     var duration = hours - days*14;
-    alert('hours: ' + hours + 'days: ' + days + 'duration: ' + duration)
     return duration;
   }
 
