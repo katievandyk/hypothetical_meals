@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
   ADD_ACTIVITY,GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR,
-  SCHEDULE_REPORT, SCHEDULE_WARNING, SCHEDULE_KW_SEARCH} from './types';
+  SCHEDULE_REPORT, SCHEDULE_WARNING} from './types';
 
 export const getSchedule = () => dispatch =>  {
   dispatch(setScheduleLoading());

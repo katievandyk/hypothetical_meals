@@ -1,7 +1,6 @@
 import React  from 'react'
 import { InputGroupAddon, Button, Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ScheduleKeywordSearch from '../../components/schedule/ScheduleKeywordSearch';
 import { getAllGoals, searchSchedulebyKW } from '../../actions/goalsActions';
 import { getSchedule, getGoalSKUs, enableGoal, disableGoal, setScheduleLoading } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
@@ -22,13 +21,9 @@ class ScheduleSidePanel extends React.Component {
     this.setState({
       [e.target.name]: e.target.value
     });
-    if(e.target.value.length === 0){
-
-    };
   }
 
   searchKW = () => {
-    var newObj = this.props.schedule.obj;
     if(this.state.keywords.length > 0){
       this.props.searchSchedulebyKW(this.state.keywords);
     }
