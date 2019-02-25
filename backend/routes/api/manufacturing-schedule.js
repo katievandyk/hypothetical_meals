@@ -50,12 +50,14 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
 // @route POST api/manufacturingschedule/disable/:goal_id/:schedule
 // @desc disable goal with certain id
 // @access public
+// Returns json of activities and goal_id, where activities is an array of orphaned activities
+// Each activity has activity.orphan = true
 router.post('/disable/:goal_id/:schedule', (req, res) => {
     Goal
         .findById(req.params.goal_id)
         .then( goal => {
             ManufacturingSchedule
-                .findOneAndUpdate({ 'name': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
+                .findOneAndUpdate({ '_id': req.params.schedule }, {$pull: {enabled_goals: {_id : goal._id}}})
                 .then(
                     ManufacturingActivity
                         .find({ 'goal_id' : req.params.goal_id}, function(err, activities){
@@ -63,6 +65,9 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
                                 console.log(err);
                             }
                             else {
+                                activities.forEach( activity => {
+                                    activity.orphan = true;
+                                })
                                 res.json({'activities' : activities, 'goal_id' : req.params.goal_id});
                             }
                         })
