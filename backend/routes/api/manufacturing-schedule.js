@@ -358,5 +358,38 @@ router.get('/search', (req, res) => {
         })
         .catch(err => res.status(404).json({success: false, message: err.message}))});
 
+// @route POST api/manufacturingschedule/activity
+// @desc get all manufacturing activities for user
+// @access public
+router.post('/warnings', (req, res) => {
+    ManufacturingActivity
+        .find()
+        .populate("sku")
+        .populate("line")
+        .populate("goal_id")
+        .then(activities => {
+            let warnings = [];
+            activities.forEach(activity => {
+            activityStart = new Date(activity.start)
+            activityEnd = new Date(activity.end)
+            windowStart = new Date(req.body.start)
+            windowEnd = new Date(req.body.end)
+            if(windowStart <= activityEnd && activityStart <= windowEnd) {
+                activityDeadline = new Date(activity.goal_id.deadline)
+                  if(activity.durationModified) {
+                      warnings.push('Activity ' + activity.name + ' has its range manually changed to ' + activity.duration + '.')
+                   }
+                   if(activityDeadline <= activityEnd) {
+                      warnings.push('Activity ' + activity.name + ' is scheduled past its deadline, ' + activity.goal_id.deadline + '.')
+                   }
+                   if(activity.orphan) {
+                      warnings.push('Activity ' + activity.name + ' is an orphan of goal, ' + activity.goal_id.name + '.')
+                   }
+               }
+            })
+            res.json(warnings)
+        })
+        .catch(err => res.status(404).json({success: false, message: err.message}));
+});
 
 module.exports = router;
