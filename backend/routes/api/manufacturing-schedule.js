@@ -61,7 +61,7 @@ router.post('/enable/:goal_id/:schedule', (req, res) => {
                                                 return true;
                                             }
                                         })
-                                    }), 'goal_id' : req.params.goal_id});
+                                    }), 'goal' : goal});
                                 })
                             )
                         })
@@ -200,6 +200,8 @@ router.post('/update/activity/:activity_id', (req, res) => {
             doc.duration = req.body.duration;
             doc.durationModified = req.body.durationModified;
             doc.goal_id = req.body.goal_id
+            doc.orphan = req.body.orphan;
+
             doc.save().then( updatedActivity => {
                 res.json(updatedActivity)
             })
