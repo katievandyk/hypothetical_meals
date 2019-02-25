@@ -85,6 +85,17 @@ export const enableGoal = (goal_id, schedule_id) => dispatch => {
            payload: error.response
          })
        });
+      axios.get(`/api/manufacturingschedule/activity`).then(res =>
+        dispatch({
+          type: GET_ACTIVITY,
+          payload: res.data
+        })
+      ).catch(error =>{
+           dispatch({
+             type: SCHEDULE_ERROR,
+             payload: error.response
+           })
+         });
     }).catch(error =>{
       dispatch({
         type: SCHEDULE_ERROR,
@@ -183,7 +194,6 @@ export const genScheduleReport = (obj) => dispatch =>  {
     })
   });
 };
-
 export const genWarning = (warning_msgs) => dispatch => {
   dispatch({
     type: SCHEDULE_WARNING,
