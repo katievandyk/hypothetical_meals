@@ -22,12 +22,16 @@ class ScheduleAlerts extends Component {
           {value}
           </UncontrolledAlert>
         ))}
-        {warnings.map((value, i) => (
-          <UncontrolledAlert key={i} className={(i !== warnings.length - 1) ? ("hidden"):("")} color="warning">
+        {(warnings.length > 0)?(
+          <UncontrolledAlert color="warning">
           <h4>WARNING</h4>
-          {value}
-          </UncontrolledAlert>
-        ))}
+          {warnings.map((value, i) => (
+          <div>
+            {value}
+          </div>
+            ))}
+          </UncontrolledAlert>):("")
+        }
         </Col>
         <Col></Col>
         </Row>

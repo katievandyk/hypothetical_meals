@@ -1,4 +1,5 @@
-import {GET_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_EXPORT, GOAL_CALCULATOREXPORT, GOAL_ERROR} from '../actions/types';
+import {GET_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_EXPORT, GOAL_CALCULATOREXPORT, 
+  GOAL_ERROR, SCHEDULE_KW_SEARCH} from '../actions/types';
 
 const initialState = {
    goals: [],
@@ -63,6 +64,13 @@ export default function(state = initialState, action) {
         ...state,
         error_msgs: [...state.error_msgs, action.payload.data.message],
         loading: false
+      }
+    }
+    case SCHEDULE_KW_SEARCH:{
+      return {
+        ...state,
+        goals: action.payload,
+        error_msgs: []
       }
     }
     default:

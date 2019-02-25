@@ -8,6 +8,8 @@ const initialState = {
   goal_skus: [],
   loading: false,
   error_msgs: [],
+  obj: {},
+  goals: [],
   warning_msgs: [],
   report: {}
 };
@@ -86,11 +88,13 @@ export default function(state = initialState, action) {
         ...state,
         error_msgs: [],
         loading: false,
-        warning_msgs: [...state.warning_msgs, action.payload]
+        warning_msgs: action.payload
       }
     }
+
     default:
       return state;
   }
+
 
 }
