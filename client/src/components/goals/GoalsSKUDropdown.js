@@ -1,18 +1,23 @@
 import React from 'react';
 import Select from 'react-select';
+import PropTypes from 'prop-types';
 
 class GoalsSKUDropdown extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       dropdownOpen: false,
-      valid: ''
+      validName: '',
+      selected:{}
     };
   }
 
-  changeValue(e) {
-    const { skus } = this.props.skus
-    var selSku = skus.find((sku) => sku._id === e.value)
+  changeValue = (e) =>{
+    var skus = [];
+    if(this.props.skus){
+      skus = this.props.skus.skus;
+    }
+    var selSku = skus.find((sku) => sku._id === e.value);
     var valid = '';
     if(selSku != null && this.props.skus_list.find(elem => elem.sku._id === e.value) == null) {
       valid = 'success'
@@ -21,7 +26,7 @@ class GoalsSKUDropdown extends React.Component {
     else {
       valid = 'failure'
     }
-    this.setState({ validName: valid })
+    this.setState({ validName: valid, selected: e })
   }
 
   classNameValue = () => {
@@ -45,7 +50,7 @@ class GoalsSKUDropdown extends React.Component {
   }
 
   render() {
-    const { skus } = this.props.skus;
+    var skus = this.props.skus.skus;
     return (
       <Select
         className={this.classNameValue()}
@@ -59,5 +64,9 @@ class GoalsSKUDropdown extends React.Component {
   }
 }
 
+GoalsSKUDropdown.propTypes = {
+  skus: PropTypes.object.isRequired,
+  skus_list: PropTypes.array.isRequired
+};
 
 export default GoalsSKUDropdown;
