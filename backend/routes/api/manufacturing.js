@@ -9,6 +9,17 @@ const ManufacturingActivity = require('../../models/ManufacturingActivity');
 const Goal = require('../../models/Goal');
 const round = require('mongo-round');
 
+
+// @route GET api/manufacturing/
+// @desc get all goals for all users
+// @access public
+router.get('/', (req, res) => {
+    Goal
+        .find()
+        .populate({ path: 'skus_list.sku'})
+        .lean()
+        .then(goal => res.json(goal))
+});
 // @route GET api/manufacturing/:user_username
 // @desc get all goals for specific user
 // @access public

@@ -183,7 +183,6 @@ export const genScheduleReport = (obj) => dispatch =>  {
     })
   });
 };
-
 export const genWarning = (warning_msgs) => dispatch => {
   dispatch({
     type: SCHEDULE_WARNING,
