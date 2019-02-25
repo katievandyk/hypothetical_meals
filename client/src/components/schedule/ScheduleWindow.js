@@ -187,17 +187,17 @@ class ScheduleWindow extends React.Component {
          const endDate = moment(activity.end).add(5, 'h');
          if(activity.durationModified) {
             className = 'orange'
-            content = activity.name + ' -Range Changed'
+            content = activity.name + ' - Range Changed'
             warnings.push('Activity ' + activity.name + ' has its range manually changed to, ' + activity.duration)
          }
          if(moment(activity.goal_id.deadline) <= moment(endDate)) {
             className = 'red'
-            content = activity.name + ' -Past Due'
+            content = activity.name + ' - Past Due'
             warnings.push('Activity ' + activity.name + ' is scheduled past its deadline, ' + activity.goal_id.deadline)
          }
          if(activity.orphan) {
             className= 'gray'
-            content = activity.name + ' -Orphan'
+            content = activity.name + ' - Orphan'
             warnings.push('Activity ' + activity.name + ' is an orphan of goal, ' + activity.goal_id.name)
          }
          const item = {
