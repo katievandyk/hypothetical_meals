@@ -32,6 +32,10 @@ class ScheduleWindow extends React.Component {
     this.props.getLines()
     this.props.getSchedule()
     this.props.getActivities()
+    this.props.genWarning({
+        start: this.state.windowStart,
+        end: this.state.windowEnd
+    })
   }
 
   getOptions() {
@@ -68,7 +72,6 @@ class ScheduleWindow extends React.Component {
               else {
                 item.end = this.calculateEndDate(moment(item.start), item.duration)
                 const startDate = moment(item.start);
-                alert(startDate)
                 startDate.subtract(5, 'h');
                 const endDate = moment(item.end);
                 endDate.subtract(5, 'h');
@@ -87,7 +90,7 @@ class ScheduleWindow extends React.Component {
                     callback(item)
                 });
                 this.maintainZoom();
-                this.addWarnings(activity);
+             //   this.addWarnings();
               }
             }.bind(this),
             onMove: function(item, callback) {
@@ -125,7 +128,8 @@ class ScheduleWindow extends React.Component {
                     goal_id: act.goal_id._id
                 }
                 this.props.updateActivity(updatedAct, act._id)
-                this.addWarnings(updatedAct);
+                this.maintainZoom();
+             //   this.addWarnings();
                 callback(item)
               }
             }.bind(this),
@@ -149,18 +153,15 @@ class ScheduleWindow extends React.Component {
      })
   }
 
-  addWarnings = (activity) => {
-         var warnings = ''
-         if(activity.durationModified) {
-            warnings += ('Activity ' + activity.name + ' has its range manually changed to ' + activity.duration + '.\n')
-         }
-         if(moment(activity.goal_id.deadline) <= moment(activity.endDate)) {
-            warnings += ('Activity ' + activity.name + ' is scheduled past its deadline.')
-         }
-         if(activity.orphan) {
-            warnings += ('Activity ' + activity.name + ' is an orphan of goal, ' + activity.goal_id.name + '.')
-         }
-         this.props.genWarning(warnings)
+  addWarnings = () => {
+      const timeline = this.timeline.$el
+      const times = timeline.getWindow();
+      const obj = {
+        start: times.start,
+        end: times.end
+      }
+      this.props.genWarning(obj)
+      this.maintainZoom()
   }
 
   calculateEndDate = (startDate, duration) => {
@@ -241,6 +242,7 @@ class ScheduleWindow extends React.Component {
               {...data}
               options = {this.getOptions()}
               ref={el => (this.timeline = el)}
+              rangechangedHandler={this.addWarnings}
             />
             </Col>
             </Row>
