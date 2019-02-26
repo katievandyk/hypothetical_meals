@@ -1,6 +1,6 @@
 import React  from 'react'
 import Timeline from 'react-visjs-timeline'
-import { Button, Row, Col} from 'reactstrap'
+import { Modal, ModalHeader, ModalBody, Button, Row, Col} from 'reactstrap'
 import ScheduleSidePanel from './ScheduleSidePanel'
 import CreateScheduleReport from './CreateScheduleReport'
 import { getLines } from '../../actions/linesActions';
@@ -24,10 +24,11 @@ class ScheduleWindow extends React.Component {
     this.maintainZoom = this.maintainZoom.bind(this)
     this.zoomOut = this.zoomOut.bind(this)
     this.zoomIn = this.zoomIn.bind(this)
+    this.toggle = this.toggle.bind(this)
     this.state = {
+        modal: false,
         windowStart: new Date(),
-        windowEnd: new Date(1000*60*60*24*3 + (new Date()).valueOf()),
-        warnings: []
+        windowEnd: new Date(1000*60*60*24*3 + (new Date()).valueOf())
     }
   }
 
@@ -39,6 +40,12 @@ class ScheduleWindow extends React.Component {
         start: this.state.windowStart,
         end: this.state.windowEnd
     })
+  }
+
+  toggle() {
+    this.setState({
+      modal: !this.state.modal,
+    });
   }
 
   getOptions() {
@@ -303,13 +310,20 @@ class ScheduleWindow extends React.Component {
               rangechangedHandler={this.addWarnings}
             />
             <div id="zoombar">
-                <div className="menu" style={{left: '50%'}}>
+                <div className="menu" style={{left: '40%'}}>
                     <Button onClick={this.zoomOut}><FontAwesomeIcon icon="search-minus"/></Button>&nbsp;
-                    <Button onClick={this.zoomIn}><FontAwesomeIcon icon="search-plus"/></Button>
+                    <Button onClick={this.zoomIn}><FontAwesomeIcon icon="search-plus"/></Button>&nbsp;
+                    <Button onClick={this.toggle}><FontAwesomeIcon icon="question-circle"/></Button>
                 </div>
             </div>
             </Col>
             </Row>
+        <Modal size="lg" isOpen={this.state.modal} toggle={this.toggle}>
+          <ModalHeader>Help</ModalHeader>
+          <ModalBody>
+               Hi
+          </ModalBody>
+        </Modal>
       </div>
     )
   }
