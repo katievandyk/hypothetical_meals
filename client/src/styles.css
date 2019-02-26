@@ -104,8 +104,20 @@
 }
 
 .vis-label .vis-inner {
-  height: 120px;
+  height: 60px;
 }
+
+ #zoombar {
+    position: relative;
+ }
+
+ .menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    z-index: 9999;
+ }
 
 .vis-item .vis-onUpdateTime-tooltip {
   width: fit-content!important;
