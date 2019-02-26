@@ -234,6 +234,13 @@ class ScheduleWindow extends React.Component {
     return endDate
   }
 
+  selectedItem = (_id) => {
+    const [item] = data.items.filter(function(item){
+      return item.sku === _id
+    });
+    this.setState({windowStart: item.start, windowEnd: item.end});
+  }
+
   render() {
     const { lines } = this.props.lines;
     data.groups = lines.map(line =>{
@@ -283,7 +290,7 @@ class ScheduleWindow extends React.Component {
         </Row>
         <Row>
            <Col md={3}>
-                <ScheduleSidePanel items={data.items} handleDragStart={this.handleDragStart}/>
+                <ScheduleSidePanel items={data.items} handleDragStart={this.handleDragStart} selectedItem={this.selectedItem}/>
            </Col>
             <Col>
             <Timeline

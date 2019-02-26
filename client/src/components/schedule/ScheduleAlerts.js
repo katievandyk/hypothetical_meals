@@ -26,7 +26,7 @@ class ScheduleAlerts extends Component {
           <UncontrolledAlert color="warning">
           <h4>WARNING</h4>
           {warnings.map((value, i) => (
-          <div>
+          <div key={i}>
             {value}
           </div>
             ))}

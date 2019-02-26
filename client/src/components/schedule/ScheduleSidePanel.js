@@ -60,8 +60,23 @@ class ScheduleSidePanel extends React.Component {
     return !items.some(i => i.goal === goal_id && i.sku === sku_id)
   }
 
+  getColor = (goal_id, sku_id) => {
+    const items = this.props.items;
+    const item = items.filter(i => i.goal === goal_id && i.sku === sku_id);
+    if(item.length > 0){
+      if(item[0].className === 'green')
+        return 'success';
+      if(item[0].className === 'red')
+        return 'danger';
+      if(item[0].className === 'orange')
+        return 'warning';
+    }
+    else {
+      return 'default';
+    }
+  }
+
   getLineString = (sku_lines, lines) => {
-    console.log(sku_lines);
     var line_str = "";
     sku_lines.forEach(function(s_line, i){
       var [sel_line] = lines.filter(line => line._id === s_line._id);
@@ -72,6 +87,10 @@ class ScheduleSidePanel extends React.Component {
         line_str = line_str + ", "
     })
     return line_str;
+  }
+
+  onSKUClick = (sku_id, e) => {
+    this.props.selectedItem(sku_id);
   }
 
   render() {
@@ -123,8 +142,12 @@ class ScheduleSidePanel extends React.Component {
                                 <div key={goal._id} style={{paddingBottom: '1.5em'}}>
                                         <Label><h6>{goal.name}</h6></Label>
                                         {skus.map(({name, manufacturing_lines, duration, _id}) =>
-                                        <ListGroupItem key={_id} md={2} draggable={this.checkDraggable(goal._id, _id)} color= {(!this.checkDraggable(goal._id, _id)) ? "success" : "default"} onDragStart={(e) => this.props.handleDragStart(e, _id, goal._id, name, duration)}>
-                                            <div>{name}</div>
+                                        <ListGroupItem key={_id} md={2}
+                                          draggable={this.checkDraggable(goal._id, _id)}
+                                          color= {(!this.checkDraggable(goal._id, _id)) ? this.getColor(goal._id, _id) : "default"}
+                                          onDragStart={(e) => this.props.handleDragStart(e, _id, goal._id, name, duration)}
+                                          onClick={this.onSKUClick.bind(this, _id)}>
+                                            <div id="schedule_sku_name">{name}</div>
                                               <div style={{fontSize: '0.8em'}}> Lines: {manufacturing_lines ? (this.getLineString(manufacturing_lines, lines)):("")}</div>
                                         </ListGroupItem>
                                         )}
@@ -138,6 +161,7 @@ class ScheduleSidePanel extends React.Component {
 }
 
 ScheduleSidePanel.propTypes = {
+  selectedItem: PropTypes.func,
   getAllGoals: PropTypes.func.isRequired,
   getLines: PropTypes.func.isRequired,
   getGoalSKUs: PropTypes.func.isRequired,
