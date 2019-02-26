@@ -58,8 +58,8 @@ module.exports.weight_conv = {
 module.exports.volume_conv = {
     "floz": 1.0,
     "fluidounce": 1.0,
-    "pt": 19.2152,
-    "pint": 19.2152,
+    "pt": 16,
+    "pint": 16,
     "qt": 32.0,
     "quart": 32.0,
     "gal": 128.0,
