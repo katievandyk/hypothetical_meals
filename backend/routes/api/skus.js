@@ -111,11 +111,21 @@ router.delete('/:id', (req, res) => {
                 Goal.findByIdAndUpdate(goal._id, {skus_list: new_list}).then(accept).catch(reject)
             })
         })).then(results => {
-            res.json({success: true})
-            SKU.findById(req.params.id)
-            .then(sku => sku.remove().then(
-                () => res.json({success: true}))
-            )
+            ManufacturingActivity.find({"sku" : req.params.id}).lean()
+            .then(activity_matches => {
+                Promise.all(activity_matches.map(function(activity) {
+                    return new Promise(function(accept, reject) {
+                        ManufacturingActivity.findById(activity._id)
+                        .then(a => a.remove().then(accept).catch(reject))
+                    })
+                }))
+            })
+            .then(result => {
+                SKU.findById(req.params.id)
+                .then(sku => sku.remove().then(
+                    () => res.json({success: true}))
+                )
+            }).catch(err => res.status(404).json({success: false, message: err.message}))
         })
     }).catch(err => res.status(404).json({success: false, message: err.message}))
 });
@@ -160,7 +170,7 @@ router.post('/update/:id', (req, res) => {
                 {number: updatedSku.number},
                 {case_number: updatedSku.case_number}
             ]}).then(results => {
-                error_thrown = false
+                var error_thrown = false
                 results.forEach(result => {
                     if(result._id.toString() != sku._id.toString()) {
                         if (result.number == updatedSku.number) {
@@ -173,9 +183,15 @@ router.post('/update/:id', (req, res) => {
                     }
                 })
 
-                if(!error_thrown)
-                    SKU.findByIdAndUpdate(req.params.id, {$set:req.body})
-                    .then(() => res.json({success: true}))
+                ManufacturingActivity.find({"sku": req.params.id}).then(activity => {
+                    if(activity.length > 0 && updatedSku.manufacturing_rate != sku.manufacturing_rate)
+                        throw new Error("Cannot update manufacturing rate for a sku that's scheduled.")
+                })
+                .then(() => {
+                    if(!error_thrown)
+                        SKU.findByIdAndUpdate(req.params.id, {$set:req.body})
+                        .then(() => res.json({success: true}))
+                }).catch(err => res.status(404).json({success: false, message: err.message}))
             })
         })})
 

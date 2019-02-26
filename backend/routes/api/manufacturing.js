@@ -51,25 +51,28 @@ router.post('/', (req, res) => {
 // @desc delete a goal
 // @access public
 router.delete('/:id', (req, res) => {
-   Goal.findById(req.params.id)
-        .then(goal => goal.remove().then(
-            () => res.json({success: true}))
-        ).catch(err => res.status(404).json({success: false, message: err.message}))
+    ManufacturingActivity.find({goal_id: req.params.id}).then(activities => {
+        Promise.all(activities.map(activity => {
+            return new Promise(function(accept, reject) {
+                ManufacturingActivity.findByIdAndDelete(activity._id).then(accept).catch(reject);
+            })
+        })).then(() => {
+            ManufacturingSchedule.findOne().lean().then(schedule => {
+                var newGoals = []
+                newGoals = schedule.enabled_goals.filter(goal => {
+                    return goal._id.toString() !== req.params.id.toString()
+                });
 
-    ManufacturingActivity.find({line: req.params.id}).then(activities => {
-        activities.forEach(activity => {
-             ManufacturingActivity.findByIdAndDelete(activity._id).then().catch(err => console.log(err));
-        });
+                ManufacturingSchedule.findByIdAndUpdate(schedule._id, {$set:{enabled_goals: newGoals}})
+                .then(() => {
+                    Goal.findById(req.params.id)
+                    .then(goal => goal.remove().then(
+                        () => res.json({success: true})
+                    ))
+                })
+            })
+        })
      })
-
-    ManufacturingSchedule.findOne().then(schedule => {
-        var newGoals = []
-        newGoals = schedule.enabled_goals.filter(goal => {
-            return goal._id === req.params.id
-        });
-        schedule.enabled_goals = newGoals;
-        schedule.save().then().catch(err => console.log(err));
-    }).catch(err => console.log(err))
 });
 
 // @route POST api/manufacturing/update/:id
@@ -83,19 +86,25 @@ router.post('/update/:id', (req, res) => {
         }
         else {
             removedSKUs = goal.skus_list.filter( item => {
-                return req.body.skus_list.indexOf(item) === -1;
+                return !req.body.skus_list.some(new_list => new_list._id.toString() === item._id.toString())
             })
-            Goal.findByIdAndUpdate(req.params.id, {$set:req.body})
-            .then(
-                removedSKUs.forEach(sku => {
-                ManufacturingActivity.findOneAndRemove({sku: remSku.sku}).then(act => console.log(act))
-                .catch(err => console.log(err))
-            }))
-            .then(() => res.json({success: true}))
-            .catch(err => res.status(404).json({success: false, message: err.message}))
+            Promise.all(removedSKUs.map(remSku => {
+                return new Promise(function(accept, reject) {
+                    ManufacturingActivity.findOne({sku: remSku.sku, goal_id: goal._id})
+                    .then(activity => {
+                        if(activity)
+                            ManufacturingActivity.findByIdAndDelete(activity._id).then(accept).catch(reject)
+                        else
+                            accept()
+                    })
+                })
+            })).then(() => {
+                Goal.findByIdAndUpdate(req.params.id, {$set:req.body})
+                .then(() => res.json({success: true}))
+                .catch(err => res.status(404).json({success: false, message: err.message}))
+            })
         }
-    }).catch(err => res.status(404).json({success: false, message: err.message}))
-    
+    })
 });
 
 // @route GET api/manufacturing/export/:id
