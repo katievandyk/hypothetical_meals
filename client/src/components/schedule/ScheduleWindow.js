@@ -26,7 +26,7 @@ class ScheduleWindow extends React.Component {
     this.zoomIn = this.zoomIn.bind(this)
     this.state = {
         windowStart: new Date(),
-        windowEnd: new Date(1000*60*60*24 + (new Date()).valueOf()),
+        windowEnd: new Date(1000*60*60*24*3 + (new Date()).valueOf()),
         warnings: []
     }
   }
@@ -235,12 +235,12 @@ class ScheduleWindow extends React.Component {
 
   zoomOut = () => {
       const timeline = this.timeline.$el
-      timeline.zoomOut(.2)
+      timeline.zoomOut(1)
   }
 
   zoomIn = () => {
       const timeline = this.timeline.$el
-      timeline.zoomIn(.2)
+      timeline.zoomIn(1)
   }
 
   render() {
