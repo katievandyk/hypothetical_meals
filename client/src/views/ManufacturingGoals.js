@@ -19,18 +19,9 @@ import { Container, Row, Col} from 'reactstrap';
 
 class ManufacturingGoals extends Component {
 
-  constructor(props) {
-    super(props);
-        this.refresh = this.refresh.bind(this);
-    }
-
   componentDidMount() {
       this.props.getGoals(this.props.auth.user_email);
   }
-
-   refresh = () => {
-       window.location.reload();
-   }
 
    render() {
         return(
@@ -48,7 +39,7 @@ class ManufacturingGoals extends Component {
                    <Row>
                       <Col> Click on a goal to view its ingredients. </Col>
                       <Col style={{'textAlign': 'right'}}> </Col>
-                      <GoalsCreateModal refresh={this.refresh} buttonLabel="Create Goal"/> &nbsp;
+                      <GoalsCreateModal buttonLabel="Create Goal"/> &nbsp;
                       <GoalsExport goals={this.props.goals}/>
                    </Row>
                 </Container>
