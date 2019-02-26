@@ -61,6 +61,11 @@ router.delete('/:id', (req, res) => {
              ManufacturingActivity.findByIdAndDelete(activity._id).then().catch(err => console.log(err));
         });
      })
+
+    ManufacturingSchedule.findOne().then(schedule => {
+        schedule.enabled_goals.filter(goal => goal._id !== req.params.id);
+        schedule.save().then().catch(err => console.log(err));
+    }).catch(err => console.log(err))
 });
 
 // @route POST api/manufacturing/update/:id
