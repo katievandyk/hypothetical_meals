@@ -57,18 +57,32 @@ export const getGoalsIngQuantity = (goal) => dispatch =>  {
 
 
 export const addGoal = (goal) => dispatch =>  {
-  axios.post(`/api/manufacturing`, goal).then(res =>
+  axios.post(`/api/manufacturing`, goal).then(res => {
     dispatch({
       type: ADD_GOAL,
       payload: res.data
-    })
+    });
+    dispatch(setGoalsLoading());
+    axios.get('/api/manufacturing/' + goal.user_username).then(res =>
+        {
+        dispatch({
+          type: GET_GOALS,
+          payload: res.data
+        })
+      }
+      ).catch(error =>{
+        dispatch({
+          type: GOAL_ERROR,
+          payload: error.response
+        })
+      });
+    }
   ).catch(error =>{
     dispatch({
       type: GOAL_ERROR,
       payload: error.response
-    })
-  });
-};
+    })});
+}
 
 export const updateGoal = (goal, user_username) => dispatch => {
   axios.post(`/api/manufacturing/update/${goal.id}`, goal).then(res => {

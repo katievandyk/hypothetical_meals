@@ -194,6 +194,7 @@ class GoalsEntry extends React.Component {
 
   render() {
     const { goals } = this.props.goals;
+    console.log(goals);
     return (
         <div>
             <Table>
@@ -212,7 +213,7 @@ class GoalsEntry extends React.Component {
                       <td>
                         <Button color="link"
                         onClick={this.calculator_clicked.bind(this, _id)}
-                        style={{'color':'black'}}>
+                        >
                         {name}
                         </Button>
                       </td>
