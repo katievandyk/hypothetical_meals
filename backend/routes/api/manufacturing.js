@@ -63,9 +63,11 @@ router.delete('/:id', (req, res) => {
      })
 
     ManufacturingSchedule.findOne().then(schedule => {
-        schedule.enabled_goals = schedule.enabled_goals.filter(goal => {
-            return goal._id !== req.body.id
+        var newGoals = []
+        newGoals = schedule.enabled_goals.filter(goal => {
+            return goal._id === req.params.id
         });
+        schedule.enabled_goals = newGoals;
         schedule.save().then().catch(err => console.log(err));
     }).catch(err => console.log(err))
 });
@@ -74,17 +76,61 @@ router.delete('/:id', (req, res) => {
 // @desc updates a goal
 // @access public
 router.post('/update/:id', (req, res) => {
+    console.log('in update')
+    var removedSKUs = [];
     Goal.findOne({name: req.body.name}).then(goal => {
         if(goal !== null && req.params.id != goal._id) {
             res.status(404).json({success: false, message: "Goal name is not unique: " + req.body.name})
         }
         else {
+            removedSKUs = goal.skus_list.filter( item => {
+                return req.body.skus_list.indexOf(item) === -1;
+            })
+            console.log(req.body.skus_list)
+            console.log(goal.skus_list)
+            console.log(removedSKUs)
             Goal.findByIdAndUpdate(req.params.id, {$set:req.body})
+            .then(
+                removedSKUs.forEach(sku => {
+                console.log('in foreach')
+                console.log(sku)
+                ManufacturingActivity.findOneAndDelete({'sku._id' : sku._id}).then(act => console.log(act))
+                .catch(err => console.log(err))
+            }))
             .then(() => res.json({success: true}))
             .catch(err => res.status(404).json({success: false, message: err.message}))
         }
     }).catch(err => res.status(404).json({success: false, message: err.message}))
+    
 });
+
+// router.post('/update/:id', (req, res) => {
+//     console.log('in update')
+//     var removedSKUs = [];
+//     Goal.findOne({name: req.body.name}).then(goal => {
+//         if(goal !== null && req.params.id != goal._id) {
+//             res.status(404).json({success: false, message: "Goal name is not unique: " + req.body.name})
+//         }
+//         else {
+//             removedSKUs = goal.skus_list.filter( item => {
+//                 return req.body.skus_list.indexOf(item) === -1;
+//             })
+//             console.log(req.body.skus_list)
+//             console.log(goal.skus_list)
+//             console.log(removedSKUs)
+//             Goal.findById(req.params.id)
+//             .then(
+//                 removedSKUs.forEach(sku => {
+//                 console.log('in foreach')
+//                 console.log(sku)
+//                 ManufacturingActivity.findOneAndDelete({'sku._id' : sku._id}).then(act => console.log(act))
+//                 .catch(err => console.log(err))
+//             }))
+//             .then(() => res.json({success: true}))
+//             .catch(err => res.status(404).json({success: false, message: err.message}))
+//         }
+//     }).catch(err => res.status(404).json({success: false, message: err.message}))
+// })
 
 // @route GET api/manufacturing/export/:id
 // @desc export a goal
