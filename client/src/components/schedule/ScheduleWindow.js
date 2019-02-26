@@ -53,9 +53,6 @@ class ScheduleWindow extends React.Component {
                 end: '2017-03-05 08:00:00',
                 repeat: 'daily'
             }],
-            moment: function (date) {
-              return moment(date).utc('-05:00');
-            },
             tooltipOnItemUpdateTime: {
                   template: function(item) {
                     return '<div><b>Start:</b>' + item.start + ' <br /><b>End:</b>: ' + item.end +'<br /><b>Deadline:</b>' + item.deadline + '/<div>'
