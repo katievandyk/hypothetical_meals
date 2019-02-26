@@ -118,7 +118,7 @@ class ScheduleWindow extends React.Component {
                     end: endDate,
                     orphan: act.orphan,
                     duration: newDuration,
-                    durationModified: (newDuration !== act.duration),
+                    durationModified: (newDuration !== act.duration) || act.durationModified,
                     _id: act._id,
                     sku: act.sku._id,
                     line: item.group,
