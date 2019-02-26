@@ -326,7 +326,7 @@ class ScheduleWindow extends React.Component {
               container = {document.getElementById('zoombar')}
               rangechangedHandler={this.addWarnings}
             />
-            <div id="zoombar">
+            <div className={(this.state.modal) ? "hidden" : ""}>
                 <div className="menu" style={{left: '40%'}}>
                     <Button onClick={this.zoomOut}><FontAwesomeIcon icon="search-minus"/></Button>&nbsp;
                     <Button onClick={this.zoomIn}><FontAwesomeIcon icon="search-plus"/></Button>&nbsp;
@@ -338,7 +338,19 @@ class ScheduleWindow extends React.Component {
         <Modal size="lg" isOpen={this.state.modal} toggle={this.toggle}>
           <ModalHeader>Help</ModalHeader>
           <ModalBody>
-               Hi
+            <h4>Adding Items</h4>
+            <p><b>Enable and disable goals</b> by clicking the edit icon on the top-left panel.</p>
+            <p><b>Add a SKU</b> to the schedule by clicking and dragging from the available options in the bottom-left panel.</p>
+            <p><b>Click</b> an item in the left panel to go shortcut to it in the schedule.</p>
+            <p></p><p></p>
+            <h4>Navigating the Schedule</h4>
+            To <b>zoom</b>, icons at the bottom of the timeline or click and pinch. To <b>move left and right</b> in time, click and drag.
+            <p></p><p></p>
+            <h4>Color Meanings</h4>
+             <p>A <font color="red"><b>red</b></font> activity means that it has been scheduled <b>past its due date</b>.</p>
+             <p>A <font color="gray"><b>gray</b></font> activity means that its <b>goal has been disabled</b>.</p>
+             <p>An <font color="orange"><b>orange</b></font> activity means that its <b>range has been changed</b> by an admin.</p>
+             <p>A <font color="green"><b>green</b></font> activity is <b>properly scheduled</b>.</p>
           </ModalBody>
         </Modal>
       </div>
