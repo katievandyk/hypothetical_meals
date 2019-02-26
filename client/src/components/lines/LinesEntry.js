@@ -104,7 +104,7 @@ class LinesEntry extends React.Component {
   };
 
   render() {
-    const{ lines } = this.props.lines
+    const { lines } = this.props.lines
     return (
         <div>
             <Table>
@@ -113,8 +113,8 @@ class LinesEntry extends React.Component {
                   <th>Name</th>
                   <th>Short Name</th>
                   <th>Comment</th>
-                  <th>Edit</th>
-                  <th>Delete</th>
+                  <th className={(this.props.auth.isAdmin) ? "" : "hidden"}>Edit</th>
+                  <th className={(this.props.auth.isAdmin) ? "" : "hidden"}>Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -129,14 +129,14 @@ class LinesEntry extends React.Component {
                       <td>
                         {comment}
                       </td>
-                      <td>
+                      <td className={(this.props.auth.isAdmin) ? "" : "hidden"}>
                         <Button size="sm" color="link"
                         onClick={e => this.onEditClick(_id, name, shortname, comment)}
                         style={{'color':'black'}}>
                         <FontAwesomeIcon icon="edit"/>
                         </Button>
                       </td>
-                      <td>
+                      <td className={(this.props.auth.isAdmin) ? "" : "hidden"}>
                         <Button size="sm" color="link"
                         onClick={this.onDeleteClick.bind(this, _id)}
                         style={{'color':'black'}}>
@@ -184,11 +184,13 @@ LinesEntry.propTypes = {
   getLines: PropTypes.func.isRequired,
   lines: PropTypes.object.isRequired,
   updateLine: PropTypes.func.isRequired,
-  deleteLine: PropTypes.func.isRequired
+  deleteLine: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
-    lines: state.lines
+    lines: state.lines,
+    auth: state.auth
 });
 
 export default connect(mapStateToProps, { getLines, updateLine, deleteLine })(LinesEntry);
