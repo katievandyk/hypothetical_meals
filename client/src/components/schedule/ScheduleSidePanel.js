@@ -2,6 +2,7 @@ import React  from 'react'
 import { InputGroup, InputGroupAddon, Button, Col, Row, Modal, ModalHeader, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Input, Label } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAllGoals, searchSchedulebyKW } from '../../actions/goalsActions';
+import { getLines } from '../../actions/linesActions';
 import { getSchedule, getGoalSKUs, enableGoal, disableGoal, setScheduleLoading } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -33,9 +34,10 @@ class ScheduleSidePanel extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getSchedule()
+    this.props.getSchedule();
     this.props.getAllGoals();
-    this.props.getGoalSKUs()
+    this.props.getGoalSKUs();
+    this.props.getLines();
   }
 
   modal_toggle = () => {
@@ -58,10 +60,25 @@ class ScheduleSidePanel extends React.Component {
     return !items.some(i => i.goal === goal_id && i.sku === sku_id)
   }
 
+  getLineString = (sku_lines, lines) => {
+    console.log(sku_lines);
+    var line_str = "";
+    sku_lines.forEach(function(s_line, i){
+      var [sel_line] = lines.filter(line => line._id === s_line._id);
+      if(sel_line){
+        line_str = line_str + sel_line.shortname;
+      }
+      if(i !== sku_lines.length - 1)
+        line_str = line_str + ", "
+    })
+    return line_str;
+  }
+
   render() {
     const { goals } = this.props.goals;
     const { schedule } = this.props.schedule;
     const goal_skus = this.props.schedule.goal_skus;
+    const lines = this.props.lines.lines;
     return (
       <div>
       {this.props.auth.isAdmin ?
@@ -74,6 +91,11 @@ class ScheduleSidePanel extends React.Component {
                             <FontAwesomeIcon icon = "edit"/>
                         </Row>
                     </CardHeader>
+                    <CardBody>
+                      {goal_skus.map(({goal}) =>
+                        <div key={goal._id}>{goal.name}</div>
+                      )}
+                    </CardBody>
                 </Card> &nbsp;
                 </div>
                 ) : (<div></div>)}
@@ -100,9 +122,10 @@ class ScheduleSidePanel extends React.Component {
                             {goal_skus.map(({goal, skus}) =>
                                 <div key={goal._id} style={{paddingBottom: '1.5em'}}>
                                         <Label><h6>{goal.name}</h6></Label>
-                                        {skus.map(({name, duration, _id}) =>
+                                        {skus.map(({name, manufacturing_lines, duration, _id}) =>
                                         <ListGroupItem key={_id} md={2} draggable={this.checkDraggable(goal._id, _id)} color= {(!this.checkDraggable(goal._id, _id)) ? "success" : "default"} onDragStart={(e) => this.props.handleDragStart(e, _id, goal._id, name, duration)}>
-                                            {name}
+                                            <div>{name}</div>
+                                              <div style={{fontSize: '0.8em'}}> Lines: {manufacturing_lines ? (this.getLineString(manufacturing_lines, lines)):("")}</div>
                                         </ListGroupItem>
                                         )}
                                  </div>
@@ -116,6 +139,7 @@ class ScheduleSidePanel extends React.Component {
 
 ScheduleSidePanel.propTypes = {
   getAllGoals: PropTypes.func.isRequired,
+  getLines: PropTypes.func.isRequired,
   getGoalSKUs: PropTypes.func.isRequired,
   getSchedule: PropTypes.func.isRequired,
   setScheduleLoading: PropTypes.func.isRequired,
@@ -130,7 +154,8 @@ ScheduleSidePanel.propTypes = {
 const mapStateToProps = (state) => ({
   goals: state.goals,
   schedule: state.schedule,
-  auth: state.auth
+  auth: state.auth,
+  lines: state.lines
 });
 
-export default connect(mapStateToProps, { getAllGoals, enableGoal, disableGoal, getSchedule, getGoalSKUs, searchSchedulebyKW, setScheduleLoading })(ScheduleSidePanel);
+export default connect(mapStateToProps, { getLines, getAllGoals, enableGoal, disableGoal, getSchedule, getGoalSKUs, searchSchedulebyKW, setScheduleLoading })(ScheduleSidePanel);
