@@ -85,23 +85,36 @@ router.post('/update/:id', (req, res) => {
             res.status(404).json({success: false, message: "Goal name is not unique: " + req.body.name})
         }
         else {
-            removedSKUs = goal.skus_list.filter( item => {
-                return !req.body.skus_list.some(new_list => new_list._id.toString() === item._id.toString())
+            var removedSKUs = goal.skus_list.filter( item => {
+                return !req.body.skus_list.some(new_list => new_list.sku._id.toString() === item.sku.toString())
             })
-            Promise.all(removedSKUs.map(remSku => {
-                return new Promise(function(accept, reject) {
-                    ManufacturingActivity.findOne({sku: remSku.sku, goal_id: goal._id})
-                    .then(activity => {
-                        if(activity)
-                            ManufacturingActivity.findByIdAndDelete(activity._id).then(accept).catch(reject)
-                        else
-                            accept()
+            var updatedSKUQtys = req.body.skus_list.filter(item => {
+                old_entry = goal.skus_list.filter(e => e.sku.toString() === item.sku._id.toString())
+                if(old_entry.length > 0)
+                    return old_entry[0].quantity != item.quantity
+                else
+                    return false
+            }).map(sku => sku.sku._id)
+            ManufacturingActivity.find({sku : {$in: updatedSKUQtys}}).then(activities => {
+                if(activities.length > 0)
+                    res.status(404).json({success: false, message: `SKU quantity cannot be updated because an activity for it has already been created.`})
+                else {
+                    Promise.all(removedSKUs.map(remSku => {
+                        return new Promise(function(accept, reject) {
+                            ManufacturingActivity.findOne({sku: remSku.sku, goal_id: goal._id})
+                            .then(activity => {
+                                if(activity)
+                                    ManufacturingActivity.findByIdAndDelete(activity._id).then(accept).catch(reject)
+                                else
+                                    accept()
+                            })
+                        })
+                    })).then(() => {
+                        Goal.findByIdAndUpdate(req.params.id, {$set:req.body})
+                        .then(() => res.json({success: true}))
+                        .catch(err => res.status(404).json({success: false, message: err.message}))
                     })
-                })
-            })).then(() => {
-                Goal.findByIdAndUpdate(req.params.id, {$set:req.body})
-                .then(() => res.json({success: true}))
-                .catch(err => res.status(404).json({success: false, message: err.message}))
+                }
             })
         }
     })

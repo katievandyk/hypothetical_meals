@@ -118,3 +118,27 @@
     margin: 5px;
     z-index: 9999;
  }
+
+.vis-item .vis-onUpdateTime-tooltip {
+  width: fit-content!important;
+  text-align: left!important;
+}
+
+.vis-item:hover .vis-onUpdateTime-tooltip{
+  visibility: visible;
+}
+
+.vis-item-visible-frame .vis-onUpdateTime-tooltip{
+  visibility: hidden;
+}
+
+.vis-item:hover {
+  cursor: pointer;
+}
+
+.list-group-item-danger #schedule_sku_name:hover,
+.list-group-item-success #schedule_sku_name:hover,
+.list-group-item-warning #schedule_sku_name:hover {
+  cursor:pointer;
+  text-decoration: underline;
+}
