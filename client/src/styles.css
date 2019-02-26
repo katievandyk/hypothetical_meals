@@ -106,3 +106,15 @@
 .vis-label .vis-inner {
   height: 120px;
 }
+
+ #zoombar {
+    position: relative;
+ }
+
+ .menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 5px;
+    z-index: 9999;
+ }

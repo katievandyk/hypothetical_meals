@@ -1,6 +1,6 @@
 import React  from 'react'
 import Timeline from 'react-visjs-timeline'
-import { Row, Col} from 'reactstrap'
+import { Button, Row, Col} from 'reactstrap'
 import ScheduleSidePanel from './ScheduleSidePanel'
 import CreateScheduleReport from './CreateScheduleReport'
 import { getLines } from '../../actions/linesActions';
@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import '../../styles.css'
 import moment from 'moment'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
   const data = {
     items: [],
@@ -20,7 +21,9 @@ class ScheduleWindow extends React.Component {
     super(props)
     this.getOptions = this.getOptions.bind(this)
     this.calculateEndDate = this.calculateEndDate.bind(this)
-    this.maintainZoom.bind(this)
+    this.maintainZoom = this.maintainZoom.bind(this)
+    this.zoomOut = this.zoomOut.bind(this)
+    this.zoomIn = this.zoomIn.bind(this)
     this.state = {
         windowStart: new Date(),
         windowEnd: new Date(1000*60*60*24 + (new Date()).valueOf()),
@@ -230,6 +233,16 @@ class ScheduleWindow extends React.Component {
     return endDate
   }
 
+  zoomOut = () => {
+      const timeline = this.timeline.$el
+      timeline.zoomOut(.2)
+  }
+
+  zoomIn = () => {
+      const timeline = this.timeline.$el
+      timeline.zoomIn(.2)
+  }
+
   render() {
     const { lines } = this.props.lines;
     data.groups = lines.map(line =>{
@@ -286,8 +299,15 @@ class ScheduleWindow extends React.Component {
               {...data}
               options = {this.getOptions()}
               ref={el => (this.timeline = el)}
+              container = {document.getElementById('zoombar')}
               rangechangedHandler={this.addWarnings}
             />
+            <div id="zoombar">
+                <div className="menu" style={{left: '50%'}}>
+                    <Button onClick={this.zoomOut}><FontAwesomeIcon icon="search-minus"/></Button>&nbsp;
+                    <Button onClick={this.zoomIn}><FontAwesomeIcon icon="search-plus"/></Button>
+                </div>
+            </div>
             </Col>
             </Row>
       </div>
