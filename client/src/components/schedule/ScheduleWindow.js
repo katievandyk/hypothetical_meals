@@ -48,6 +48,9 @@ class ScheduleWindow extends React.Component {
             editable: this.props.auth.isAdmin,
             orientation: 'top',
             horizontalScroll: true,
+        tooltip: {
+            followMouse: true
+        },
             hiddenDates: [{
                 start: '2017-03-04 18:00:00',
                 end: '2017-03-05 08:00:00',
@@ -237,8 +240,8 @@ class ScheduleWindow extends React.Component {
     var className = 'green'
     data.items = activities.map(activity =>{
          var content = activity.name
-         const startDate = moment(activity.start);
-         const endDate = moment(activity.end);
+         const startDate = moment(activity.start)
+         const endDate = moment(activity.end)
          if(activity.durationModified) {
             className = 'orange'
             content = activity.name + ' - Range Changed'

@@ -18,7 +18,7 @@ class LoginComponent extends Component {
     }
     else {
       url = "https://oauth.oit.duke.edu/oauth/authorize.php?client_id=hypo-meal&client_secret=secret&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fnetid&response_type=token&state=1129&scope=basic"
-    }  
+    }
     this.state = {
       isLoggedIn: false,
       isAdmin: false,
@@ -89,7 +89,7 @@ return (
             })}></Input>
             <span style={{'color': 'red'}}>
               {errors.username}
-              {errors.username}
+              {errors.usernamenotfound}
             </span>
           </FormGroup>
           <FormGroup>

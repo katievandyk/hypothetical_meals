@@ -508,7 +508,7 @@ class SKUsEntry extends React.Component {
                 </Input>
             </FormGroup>
             <div><p style={{'fontSize':'0.8em', marginBottom: '0px'}} className={this.allValidated() ? ('hidden'):('')}>There are fields with errors. Please go back and fix these fields to submit.</p>
-            <Button color="dark" disabled={this.allValidated()} className={this.allValidated() ?(''): ('disabled')} type="submit" block>
+            <Button color="dark" disabled={!this.allValidated()} className={this.allValidated() ?(''): ('disabled')} type="submit" block>
                   Submit SKU Edits
                 </Button>
             </div>
