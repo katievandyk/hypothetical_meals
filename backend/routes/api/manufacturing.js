@@ -63,7 +63,9 @@ router.delete('/:id', (req, res) => {
      })
 
     ManufacturingSchedule.findOne().then(schedule => {
-        schedule.enabled_goals.filter(goal => goal._id !== req.params.id);
+        schedule.enabled_goals = schedule.enabled_goals.filter(goal => {
+            return goal._id !== req.body.id
+        });
         schedule.save().then().catch(err => console.log(err));
     }).catch(err => console.log(err))
 });
