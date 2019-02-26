@@ -106,3 +106,16 @@
 .vis-label .vis-inner {
   height: 120px;
 }
+
+.vis-item .vis-onUpdateTime-tooltip {
+  width: fit-content!important;
+  text-align: left!important;
+}
+
+.vis-item:hover .vis-onUpdateTime-tooltip{
+  visibility: visible;
+}
+
+.vis-item-visible-frame .vis-onUpdateTime-tooltip{
+  visibility: hidden;
+}

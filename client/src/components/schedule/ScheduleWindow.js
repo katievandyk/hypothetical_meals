@@ -48,9 +48,9 @@ class ScheduleWindow extends React.Component {
             editable: this.props.auth.isAdmin,
             orientation: 'top',
             horizontalScroll: true,
-        tooltip: {
-            followMouse: true
-        },
+            visibleFrameTemplate: function(item) {
+              return '<div class="vis-onUpdateTime-tooltip" ><div><b>Start:</b>' + item.start + ' </div><div><b>End:</b> ' + item.end +'</div><div><b>Deadline:</b>' + moment(item.deadline).toLocaleString() + '</div><div>'
+            },
             hiddenDates: [{
                 start: '2017-03-04 18:00:00',
                 end: '2017-03-05 08:00:00',
@@ -58,7 +58,7 @@ class ScheduleWindow extends React.Component {
             }],
             tooltipOnItemUpdateTime: {
                   template: function(item) {
-                    return '<div><b>Start:</b>' + item.start + ' <br /><b>End:</b>: ' + item.end +'<br /><b>Deadline:</b>' + item.deadline + '/<div>'
+                    return '<div><div><b>Start:</b>' + item.start + ' </div><div><b>End:</b> ' + item.end +'</div><div><b>Deadline:</b>' + moment(item.deadline).toLocaleString() + '</div><div>'
                   }
               },
             onAdd: function(item, callback) {
@@ -97,8 +97,8 @@ class ScheduleWindow extends React.Component {
             }.bind(this),
             onMove: function(item, callback) {
               const lines = [];
-              const goal = this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).goal
-              this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).skus.find(elem => elem._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
+              const goal = this.props.schedule.goal_skus.find(elem => elem.goal && elem.goal._id === item.goal).goal
+              this.props.schedule.goal_skus.find(elem => elem.goal && elem.goal._id === item.goal).skus.find(elem => elem._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
               if(data.items.find(i => ( ((i.start <= item.end && item.start <= i.end) || (item.start <= i.end && i.start <= item.end)) && (i.id !== item.id)  && (i.id !== item.id) && (i.group === item.group)))) {
                     alert("Move item to a non-overlapping location.")
                     callback(null)
@@ -122,7 +122,7 @@ class ScheduleWindow extends React.Component {
                     _id: act._id,
                     sku: act.sku._id,
                     line: item.group,
-                    goal_id: act.goal_id._id
+                    goal_id: act.goal_id._id,
                 }
                 this.props.updateActivity(updatedAct, act._id)
                 this.maintainZoom();
@@ -265,7 +265,7 @@ class ScheduleWindow extends React.Component {
                       goal: activity.goal_id._id,
                       group: activity.line._id,
                       duration: activity.duration,
-                      deadline: activity.goal_id.deadline,
+                      deadline: activity.goal_id.deadline
                   };
         return item;
     })
