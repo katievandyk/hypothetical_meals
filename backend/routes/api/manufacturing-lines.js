@@ -95,16 +95,29 @@ router.delete('/:id', (req, res) => {
                 SKU.findByIdAndUpdate(sku._id, {manufacturing_lines: new_list}).then(accept).catch(reject)
             })
         })).then(results => {
-            ManufacturingLine.findById(req.params.id)
-                .then(ml => ml.remove().then(
-                    () => res.json({success: true}))
-                ).catch(err => res.status(404).json({success: false, message: err.message}))
+            // Delete all manufacturing activities on the line
+            ManufacturingActivity.find({line: req.params.id}).then(activities => {
+                Promise.all(activities.map(activity => {
+                    return new Promise(function(accept, reject) {
+                        ManufacturingActivity.findByIdAndDelete(activity._id).then(accept).catch(reject);
+                    })
+                }));
+            }).then(result => {
+                return new Promise(function(accept, reject) {
+                    ManufacturingSchedule.findOne().then(schedule => {
+                        new_list = schedule.lines_list.filter(function( obj ) {
+                            return obj.line.toString() !== req.params.id;
+                        });
+                        ManufacturingSchedule.findByIdAndUpdate(schedule._id, {lines_list: new_list}).then(accept).catch(reject)
+                })})
+                .then(result => {
+                    ManufacturingLine.findById(req.params.id)
+                    .then(ml => ml.remove().then(
+                        () => res.json({success: true}))
+                    ).catch(err => res.status(404).json({success: false, message: err.message}))
+                })
+            })
         }).catch(err => res.status(404).json({success: false, message: err.message}))
-    })
-    ManufacturingActivity.find({line: req.params.id}).then(activities => {
-        activities.forEach(activity => {
-            ManufacturingActivity.findByIdAndDelete(activity._id).then().catch(err => console.log(err));
-        });
     })
 });
 

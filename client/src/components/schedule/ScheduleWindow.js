@@ -92,6 +92,7 @@ class ScheduleWindow extends React.Component {
                     this.props.getActivities()
                     callback(item)
                 });
+                this.addWarnings();
                 this.maintainZoom();
               }
             }.bind(this),
@@ -118,13 +119,14 @@ class ScheduleWindow extends React.Component {
                     end: endDate,
                     orphan: act.orphan,
                     duration: newDuration,
-                    durationModified: (newDuration !== act.duration),
+                    durationModified: (newDuration !== act.duration) || act.durationModified,
                     _id: act._id,
                     sku: act.sku._id,
                     line: item.group,
                     goal_id: act.goal_id._id,
                 }
                 this.props.updateActivity(updatedAct, act._id)
+                this.addWarnings();
                 this.maintainZoom();
                 callback(item)
               }
@@ -237,8 +239,8 @@ class ScheduleWindow extends React.Component {
         return group;
     })
     const activities = this.props.schedule.activities;
-    var className = 'green'
     data.items = activities.map(activity =>{
+         var className = 'green'
          var content = activity.name
          const startDate = moment(activity.start)
          const endDate = moment(activity.end)
