@@ -121,14 +121,17 @@ class ScheduleSidePanel extends React.Component {
                 <Modal isOpen={this.state.modal} toggle={this.modal_toggle} >
                     <ModalHeader>Set Active Manufacturing Lines</ModalHeader>
                     <CardBody>
-                        <Label>Goals Search</Label>
+                        <div style={{fontSize:'0.8em', paddingBottom: '1em'}}>Change which goals are active by clicking them in this list. Goals which are active are displayed in blue. Use the search bar to view specific goals.
+                          </div>
+                        <Label>Goals Search <em>(by name or by user)</em></Label>
                         <InputGroup>
                           <Input placeholder="Keyword Search" name="keywords" onChange={this.onChange}/>
                           <InputGroupAddon addonType="append"><Button onClick={this.searchKW}><FontAwesomeIcon icon = "search"/></Button></InputGroupAddon>
                         </InputGroup>
+                        <Label style={{paddingTop: '1em'}}>List of Goals <em>(Active Goals are Blue)</em></Label>
                         <ListGroup>
                             {goals.map(({_id, name})=> (
-                                <ListGroupItem key={_id} action active={schedule.enabled_goals && schedule.enabled_goals.some(goal => goal._id === _id)} tag="button" onClick={() => this.toggleActive(_id)} md={2} >
+                                <ListGroupItem key={_id} action color={(schedule.enabled_goals && schedule.enabled_goals.some(goal => goal._id === _id))?("info"):("")} tag="button" onClick={() => this.toggleActive(_id)} md={2} >
                                     {name}
                                 </ListGroupItem>
                             ))}
