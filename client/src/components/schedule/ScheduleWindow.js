@@ -53,6 +53,9 @@ class ScheduleWindow extends React.Component {
                 end: '2017-03-05 08:00:00',
                 repeat: 'daily'
             }],
+            moment: function (date) {
+              return moment(date).utc('-05:00');
+            },
             tooltipOnItemUpdateTime: {
                   template: function(item) {
                     return '<div><b>Start:</b>' + item.start + ' <br /><b>End:</b>: ' + item.end +'<br /><b>Deadline:</b>' + item.deadline + '/<div>'
@@ -70,11 +73,11 @@ class ScheduleWindow extends React.Component {
                     callback(null)
               }
               else {
-                item.end = this.calculateEndDate(moment(item.start), item.duration)
-                const startDate = moment(item.start);
-                startDate.subtract(5, 'h');
-                const endDate = moment(item.end);
-                endDate.subtract(5, 'h');
+                const startDate =this.adjustStartDate(moment(item.start));
+                item.end = this.calculateEndDate(moment(startDate), item.duration)
+                const endDate = this.adjustEndDate(moment(item.end));
+
+                this.calculateDuration(startDate, endDate)
                 const activity = {
                     name: item.content,
                     sku_id: item.sku,
@@ -90,7 +93,6 @@ class ScheduleWindow extends React.Component {
                     callback(item)
                 });
                 this.maintainZoom();
-             //   this.addWarnings();
               }
             }.bind(this),
             onMove: function(item, callback) {
@@ -108,13 +110,9 @@ class ScheduleWindow extends React.Component {
               else {
                 const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
                 // find differences in duration
-                const newDuration = this.calculateDuration(moment(item.start), moment(item.end))
-                // properly format start and end dates
-                item.end = this.calculateEndDate(moment(item.start), newDuration)
-                const startDate = moment(item.start);
-                startDate.subtract(5, 'h');
-                const endDate = moment(item.end);
-                endDate.subtract(5, 'h');
+                const startDate = this.adjustStartDate(moment(item.start));
+                const endDate = this.adjustEndDate(moment(item.end))
+                const newDuration = this.calculateDuration(moment(startDate), endDate)
                 const updatedAct = {
                     name: act.name,
                     start: startDate,
@@ -129,7 +127,6 @@ class ScheduleWindow extends React.Component {
                 }
                 this.props.updateActivity(updatedAct, act._id)
                 this.maintainZoom();
-             //   this.addWarnings();
                 callback(item)
               }
             }.bind(this),
@@ -166,16 +163,32 @@ class ScheduleWindow extends React.Component {
 
   calculateEndDate = (startDate, duration) => {
     var daystoAdd = Math.floor(duration/10)
-    var hours = startDate.hour() + (duration % 10);
-    if(hours > 18) {
+    var hours = startDate.hour() + (duration % 10)
+    if(startDate.hour() + (duration % 10) > 18) {
         daystoAdd++;
-        hours = hours - 10;
+        hours = startDate.hour() + (duration % 10) - 10;
     }
-    var endDate = startDate;
+    var endDate = moment(startDate);
     endDate.add(daystoAdd, 'd')
-    endDate.set({ hour: parseInt(hours) })
-    const res = moment(endDate).add(5, 'h')
-    return res
+
+    var ds = moment("03-10-2019", "MM-DD-YYYY");
+    var ds2 = moment("11-03-2019","MM-DD-YYYY");
+    if(startDate.isBefore(ds) && endDate.isAfter(ds) && endDate.isBefore(ds2)) {
+      hours++;
+      if (hours > 18) {
+        endDate.add(1,'d')
+        hours = 9
+      }
+    }
+    else if(startDate.isAfter(ds) && startDate.isBefore(ds2) && endDate.isAfter(ds2)) {
+      hours--;
+      if (hours < 8) {
+        endDate.subtract(1, 'd')
+        hours = 17
+      }
+    }
+    endDate.set({ hour: hours })
+    return endDate
   }
 
   calculateDuration = (startDate, endDate) => {
@@ -185,7 +198,40 @@ class ScheduleWindow extends React.Component {
     var hours = moment.duration(endDate.diff(startDate)).asHours();
     var days = Math.floor(moment.duration(endDate.diff(startDate)).asDays());
     var duration = hours - days*14;
+
+    var diff = Math.floor((endDate.valueOf()-startDate.valueOf())/86400000)
+    var duration2 = (endDate.valueOf()- startDate.valueOf()- (diff)*50400000)/(60.0*60*1000)
     return duration;
+  }
+
+  adjustStartDate = (startDate) => {
+    if(startDate.get('hour') < 8) {
+      startDate.hour(8)
+      startDate.minute(0)
+      startDate.second(0)
+    }
+    else if(startDate.get('hour') >= 18) {
+      startDate.add(1, 'd')
+      startDate.hour(8)
+      startDate.minute(0)
+      startDate.second(0)
+    }
+    return startDate
+  }
+
+  adjustEndDate = (endDate) => {
+    if(endDate.get('hour') < 8) {
+      endDate.hour(18)
+      endDate.minute(0)
+      endDate.second(0)
+      endDate.subtract(1,'d')
+    }
+    else if(endDate.get('hour') >= 18) {
+      endDate.hour(18)
+      endDate.minute(0)
+      endDate.second(0)
+    }
+    return endDate
   }
 
   render() {
@@ -200,8 +246,8 @@ class ScheduleWindow extends React.Component {
     var className = 'green'
     data.items = activities.map(activity =>{
          var content = activity.name
-         const startDate = moment(activity.start).add(5, 'h');
-         const endDate = moment(activity.end).add(5, 'h');
+         const startDate = moment(activity.start);
+         const endDate = moment(activity.end);
          if(activity.durationModified) {
             className = 'orange'
             content = activity.name + ' - Range Changed'
