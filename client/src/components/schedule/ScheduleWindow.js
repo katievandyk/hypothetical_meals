@@ -48,9 +48,9 @@ class ScheduleWindow extends React.Component {
             editable: this.props.auth.isAdmin,
             orientation: 'top',
             horizontalScroll: true,
-        tooltip: {
-            followMouse: true
-        },
+            tooltip: {
+                followMouse: true
+            },
             hiddenDates: [{
                 start: '2017-03-04 18:00:00',
                 end: '2017-03-05 08:00:00',
