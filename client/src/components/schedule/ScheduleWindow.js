@@ -1,6 +1,6 @@
 import React  from 'react'
 import Timeline from 'react-visjs-timeline'
-import { Row, Col} from 'reactstrap'
+import { Modal, ModalHeader, ModalBody, Button, Row, Col} from 'reactstrap'
 import ScheduleSidePanel from './ScheduleSidePanel'
 import CreateScheduleReport from './CreateScheduleReport'
 import { getLines } from '../../actions/linesActions';
@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import '../../styles.css'
 import moment from 'moment'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
   const data = {
     items: [],
@@ -20,11 +21,14 @@ class ScheduleWindow extends React.Component {
     super(props)
     this.getOptions = this.getOptions.bind(this)
     this.calculateEndDate = this.calculateEndDate.bind(this)
-    this.maintainZoom.bind(this)
+    this.maintainZoom = this.maintainZoom.bind(this)
+    this.zoomOut = this.zoomOut.bind(this)
+    this.zoomIn = this.zoomIn.bind(this)
+    this.toggle = this.toggle.bind(this)
     this.state = {
+        modal: false,
         windowStart: new Date(),
-        windowEnd: new Date(1000*60*60*24 + (new Date()).valueOf()),
-        warnings: []
+        windowEnd: new Date(1000*60*60*24*3 + (new Date()).valueOf())
     }
   }
 
@@ -36,6 +40,12 @@ class ScheduleWindow extends React.Component {
         start: this.state.windowStart,
         end: this.state.windowEnd
     })
+  }
+
+  toggle() {
+    this.setState({
+      modal: !this.state.modal,
+    });
   }
 
   getOptions() {
@@ -234,6 +244,16 @@ class ScheduleWindow extends React.Component {
     return endDate
   }
 
+  zoomOut = () => {
+      const timeline = this.timeline.$el
+      timeline.zoomOut(1)
+  }
+
+  zoomIn = () => {
+      const timeline = this.timeline.$el
+      timeline.zoomIn(1)
+   }
+
   selectedItem = (_id) => {
     const [item] = data.items.filter(function(item){
       return item.sku === _id
@@ -297,10 +317,24 @@ class ScheduleWindow extends React.Component {
               {...data}
               options = {this.getOptions()}
               ref={el => (this.timeline = el)}
+              container = {document.getElementById('zoombar')}
               rangechangedHandler={this.addWarnings}
             />
+            <div id="zoombar">
+                <div className="menu" style={{left: '40%'}}>
+                    <Button onClick={this.zoomOut}><FontAwesomeIcon icon="search-minus"/></Button>&nbsp;
+                    <Button onClick={this.zoomIn}><FontAwesomeIcon icon="search-plus"/></Button>&nbsp;
+                    <Button onClick={this.toggle}><FontAwesomeIcon icon="question-circle"/></Button>
+                </div>
+            </div>
             </Col>
             </Row>
+        <Modal size="lg" isOpen={this.state.modal} toggle={this.toggle}>
+          <ModalHeader>Help</ModalHeader>
+          <ModalBody>
+               Hi
+          </ModalBody>
+        </Modal>
       </div>
     )
   }
