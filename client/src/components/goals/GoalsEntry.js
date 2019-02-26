@@ -297,13 +297,13 @@ class GoalsEntry extends React.Component {
                               </tr>
                             </thead>
                             <tbody>
-                               {this.state.edit_skus_list.map(({sku, quantity}) => (
+                               {this.state.edit_skus_list.map(({sku, quantity}, i) => (
                                    <tr key={sku._id}>
                                       <td> {sku.name}: {sku.unit_size} * {sku.count_per_case} </td>
                                       <td> {quantity} </td>
                                       <td>
                                         <Button size="sm" color="link"
-                                        onClick={this.onDeleteClickSKU.bind(this, sku)}
+                                        onClick={this.onDeleteClickSKU.bind(this, this.state.edit_skus_list[i])}
                                         style={{'color':'black'}}>
                                         <FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "times"/>
                                         </Button>

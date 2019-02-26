@@ -162,7 +162,10 @@ class GoalsCreateModal extends React.Component {
                <Form>
                  <FormGroup>
                      <Label>Manufacturing Goal Name</Label>
-                     <Input valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.name} onChange={this.onNameChange}/>
+                     <Input valid={this.state.validName === 'success'} 
+                       invalid={this.state.validName === 'failure'} value={this.state.name}
+                       onChange={this.onNameChange}
+                       placeholder="Add Manufacturing Goal Name"/>
                  </FormGroup>
                  <FormGroup>
                       <Label>Manufacturing Goal Deadline</Label>
@@ -178,13 +181,13 @@ class GoalsCreateModal extends React.Component {
                               </tr>
                             </thead>
                             <tbody>
-                               {this.state.skus_list.map(({sku, quantity}) => (
+                               {this.state.skus_list.map(({sku, quantity}, i) => (
                                    <tr key={sku._id}>
                                       <td> {sku.name}: {sku.unit_size} * {sku.count_per_case} </td>
                                       <td> {quantity} </td>
                                       <td>
                                         <Button size="sm" color="link"
-                                        onClick={this.onDeleteClick.bind(this, sku)}
+                                        onClick={this.onDeleteClick.bind(this, this.state.skus_list[i])}
                                         style={{'color':'black'}}>
                                         <FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "times"/>
                                         </Button>

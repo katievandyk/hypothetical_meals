@@ -47,7 +47,7 @@ class IngredientsEntry extends React.Component {
   }
 
   componentDidMount() {
-    this.props.sortIngs('name', 'asc', 1, -1, {});
+    this.props.sortIngs('name', 'asc', 1, 10, {});
   }
 
   onDeleteClick = id => {

@@ -10,11 +10,12 @@ import '../../styles.css'
 import { exportIngDepReport } from '../../actions/exportActions';
 import 'jspdf-autotable';
 import * as jsPDF from 'jspdf';
+import moment from 'moment';
 
 class MScheduleReportDisplay extends React.Component {
 
   getPercent = (duration, actual_duration) => {
-    return (Math.floor((duration/actual_duration) * 100) + "%");
+    return (Math.floor((actual_duration/duration) * 100) + "%");
   }
 
   exportPDF = (report, e) => {
@@ -26,12 +27,13 @@ class MScheduleReportDisplay extends React.Component {
     doc.setFontSize(14);
     var lineName = (report.info && report.info.line) ? (report.info.line.name):("");
     var startDate = (report.info) ? (report.info.start):("");
+    //var startDateStr = startDate;
     var endDate = (report.info) ? (report.info.end):("");;
     doc.text(20, docPos, "Line: " + lineName);
     docPos = docPos + 20;
-    doc.text(20, docPos, "Start: " + startDate);
+    doc.text(20, docPos, "Start: " + moment(startDate).format("MM-DD-YY"));
     docPos = docPos + 20;
-    doc.text(20, docPos, "End: " + endDate);
+    doc.text(20, docPos, "End: " + moment(endDate).format("MM-DD-YY"));
     docPos = docPos + 20;
     doc.text(20, docPos, "Manufacturing Tasks:");
     docPos = docPos + 10;
@@ -47,19 +49,19 @@ class MScheduleReportDisplay extends React.Component {
       actual_duration, actual_start, actual_end}, i){
         doc.text(20, docPos, (i+1)+". " + name);
         docPos = docPos + 10;
-        doc.text(20, docPos, "Start: " + actual_start);
+        doc.text(20, docPos, "Start: " + moment(actual_start).toLocaleString());
         docPos = docPos + 10;
-        doc.text(20, docPos, "End: " + actual_end);
+        doc.text(20, docPos, "End: " + moment(actual_end).toLocaleString());
         docPos = docPos + 10;
         var percent = "";
         if(actual_duration !== duration){
-          percent = " (" + Math.floor((duration/actual_duration) * 100) + "%)";
+          percent = " (" + Math.floor((actual_duration/duration) * 100) + "%)";
         }
         doc.text(20, docPos, "Duration: " + actual_duration + percent);
         docPos = docPos + 10;
         doc.text(20, docPos, "SKU: ");
         docPos = docPos + 10;
-        sku = document.getElementById("sku_toPDF" + i)
+        sku = document.getElementById("sku_toPDF" + i);
         sku_res = doc.autoTableHtmlToJson(sku);
         if(sku_res){
           doc.autoTable(sku_res.columns, sku_res.data, { margin: { top: 10, left: 20, right: 20, bottom: 50 }, startY: docPos});
@@ -81,6 +83,7 @@ class MScheduleReportDisplay extends React.Component {
           doc.autoTable(ing_res.columns, ing_res.data, { margin: { top: 10, left: 20, right: 20, bottom: 50 }, startY: docPos});
           docPos = doc.autoTableEndPosY() + 20;
         }
+        return;
         });
 
     doc.setFontSize(14);
@@ -103,8 +106,8 @@ class MScheduleReportDisplay extends React.Component {
             {[report.info].map(({line, start, end}, i) => (
               <div key={i}>
               <h3>Line: {line.name}</h3>
-              <h3>Start: {start}</h3>
-              <h3>End: {end}</h3>
+              <h3>Start: {moment(start).format("MM-DD-YY")}</h3>
+              <h3>End: {moment(end).format("MM-DD-YY")}</h3>
               </div>
             ))}
             <h3>Manufacturing Tasks: </h3>
@@ -113,10 +116,10 @@ class MScheduleReportDisplay extends React.Component {
                 <div key={_id}>
                   <h5>{i + 1}. {name}</h5>
                   <div>
-                    <b>Start: </b>{actual_start}
+                    <b>Start: </b>{moment(actual_start).toLocaleString()}
                   </div>
                   <div>
-                    <b>End: </b>{actual_end}
+                    <b>End: </b>{moment(actual_end).toLocaleString()}
                   </div>
                   <div>
                     <b>Duration: </b> {actual_duration}

@@ -4,7 +4,7 @@ import { Row, Col} from 'reactstrap'
 import ScheduleSidePanel from './ScheduleSidePanel'
 import CreateScheduleReport from './CreateScheduleReport'
 import { getLines } from '../../actions/linesActions';
-import { getSchedule, updateActivity, deleteActivity, addActivity, getActivities } from '../../actions/scheduleActions';
+import { getSchedule, genWarning, updateActivity, deleteActivity, addActivity, getActivities } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import '../../styles.css'
@@ -24,6 +24,7 @@ class ScheduleWindow extends React.Component {
     this.state = {
         windowStart: new Date(),
         windowEnd: new Date(1000*60*60*24 + (new Date()).valueOf()),
+        warnings: []
     }
   }
 
@@ -31,6 +32,10 @@ class ScheduleWindow extends React.Component {
     this.props.getLines()
     this.props.getSchedule()
     this.props.getActivities()
+    this.props.genWarning({
+        start: this.state.windowStart,
+        end: this.state.windowEnd
+    })
   }
 
   getOptions() {
@@ -88,6 +93,7 @@ class ScheduleWindow extends React.Component {
                     callback(item)
                 });
                 this.maintainZoom();
+             //   this.addWarnings();
               }
             }.bind(this),
             onMove: function(item, callback) {
@@ -101,9 +107,6 @@ class ScheduleWindow extends React.Component {
               else if(lines.indexOf(item.group) === -1) {
                     alert("Move item to a valid manufacturing line.")
                     callback(null)
-              }
-              else if(goal.deadline > item.end) {
-                    item.className = 'red'
               }
               else {
                 const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
@@ -128,6 +131,8 @@ class ScheduleWindow extends React.Component {
                     goal_id: act.goal_id._id
                 }
                 this.props.updateActivity(updatedAct, act._id)
+                this.maintainZoom();
+             //   this.addWarnings();
                 callback(item)
               }
             }.bind(this),
@@ -149,6 +154,17 @@ class ScheduleWindow extends React.Component {
             windowStart: times.start,
             windowEnd: times.end
      })
+  }
+
+  addWarnings = () => {
+      const timeline = this.timeline.$el
+      const times = timeline.getWindow();
+      const obj = {
+        start: times.start,
+        end: times.end
+      }
+      this.props.genWarning(obj)
+      this.maintainZoom()
   }
 
   calculateEndDate = (startDate, duration) => {
@@ -232,9 +248,10 @@ class ScheduleWindow extends React.Component {
         return group;
     })
     const activities = this.props.schedule.activities;
-    var className = ''
+    var className = 'green'
     data.items = activities.map(activity =>{
          var content = activity.name
+<<<<<<< HEAD
          const startDate = moment(activity.start);
          const endDate = moment(activity.end);
          if(activity.orphan) {
@@ -242,14 +259,22 @@ class ScheduleWindow extends React.Component {
             content = activity.name + ' -Orphan'
          }
          else if(activity.durationModified) {
+=======
+         const startDate = moment(activity.start).add(5, 'h');
+         const endDate = moment(activity.end).add(5, 'h');
+         if(activity.durationModified) {
+>>>>>>> b06aa8f716a6f286d02771fce2fd199af84a45a2
             className = 'orange'
-            content = activity.name + ' -Range Changed'
+            content = activity.name + ' - Range Changed'
          }
-         else if(moment(activity.goal_id.deadline) <= moment(endDate)) {
+         if(moment(activity.goal_id.deadline) <= moment(endDate)) {
             className = 'red'
-            content = activity.name + ' -Past Due'
+            content = activity.name + ' - Past Due'
          }
-         else className = 'green'
+         if(activity.orphan) {
+            className= 'gray'
+            content = activity.name + ' - Orphan'
+         }
          const item = {
                       id: activity._id,
                       content: content,
@@ -280,6 +305,7 @@ class ScheduleWindow extends React.Component {
               {...data}
               options = {this.getOptions()}
               ref={el => (this.timeline = el)}
+              rangechangedHandler={this.addWarnings}
             />
             </Col>
             </Row>
@@ -309,6 +335,7 @@ ScheduleWindow.propTypes = {
   getActivities: PropTypes.func.isRequired,
   addActivity: PropTypes.func.isRequired,
   updateActivity: PropTypes.func.isRequired,
+  genWarning: PropTypes.func.isRequired,
   lines: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
@@ -319,4 +346,4 @@ const mapStateToProps = (state) => ({
     schedule: state.schedule
 });
 
-export default connect(mapStateToProps, { getLines, addActivity, updateActivity, deleteActivity, getActivities, getSchedule })(ScheduleWindow);
+export default connect(mapStateToProps, { getLines, addActivity, updateActivity, deleteActivity, getActivities, getSchedule, genWarning })(ScheduleWindow);

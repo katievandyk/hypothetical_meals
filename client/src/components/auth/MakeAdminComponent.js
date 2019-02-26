@@ -3,6 +3,7 @@ import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { makeAdmin } from "../../actions/authActions";
+import {Alert} from 'reactstrap';
 import classnames from "classnames";
 
 import {Form, FormGroup, Label, Input, Container,
@@ -12,7 +13,8 @@ class MakeAdminComponent extends Component {
     super();
     this.state = {
       username: "",
-      errors: {}
+      errors: {},
+      userCreated_alert: false
     };
   }
 
@@ -23,10 +25,18 @@ componentWillReceiveProps(nextProps) {
       });
     }
   }
+  toggle = () => {
+    this.setState({
+      userCreated_alert: !this.userCreated_alert
+    })
+  }
 onChange = e => {
     this.setState({ [e.target.id]: e.target.value });
   };
 onSubmit = e => {
+  this.setState({
+    userCreated_alert: !this.state.errors.username
+  });
     e.preventDefault();
 const adminUser = {
       username: this.state.username,
@@ -63,6 +73,14 @@ return (
           </Form>
           </Col>
           <Col></Col>
+          </Row>
+          <Row>
+            <Col>
+            </Col>
+            <Col>
+              <Alert toggle={this.toggle} isOpen={this.state.userCreated_alert && !errors.username}> Admin User {this.state.username} created! </Alert>
+            </Col>
+            <Col></Col>
           </Row>
           </Container>
       </div>
