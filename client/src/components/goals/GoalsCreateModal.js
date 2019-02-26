@@ -141,7 +141,6 @@ class GoalsCreateModal extends React.Component {
     this.setState({
       modal: !this.state.modal
     });
-    if(this.state.modal) this.props.refresh();
   }
 
   skulist_toggle() {
