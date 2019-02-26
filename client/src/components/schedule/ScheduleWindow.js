@@ -201,6 +201,7 @@ class ScheduleWindow extends React.Component {
     var hours = moment.duration(endDate.diff(startDate)).asHours();
     var days = Math.floor(moment.duration(endDate.diff(startDate)).asDays());
     var duration = hours - days*14;
+    console.log('duration is ' + duration)
     return duration;
   }
 
