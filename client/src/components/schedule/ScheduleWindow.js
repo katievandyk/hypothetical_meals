@@ -113,10 +113,6 @@ class ScheduleWindow extends React.Component {
                 const startDate = this.adjustStartDate(moment(item.start));
                 const endDate = this.adjustEndDate(moment(item.end))
                 const newDuration = this.calculateDuration(moment(startDate), endDate)
-                // properly format start and end dates
-                // item.end = this.calculateEndDate(moment(startDate), newDuration)
-                
-                // const endDate = moment(item.end);
                 const updatedAct = {
                     name: act.name,
                     start: startDate,
@@ -200,7 +196,6 @@ class ScheduleWindow extends React.Component {
     var hours = moment.duration(endDate.diff(startDate)).asHours();
     var days = Math.floor(moment.duration(endDate.diff(startDate)).asDays());
     var duration = hours - days*14;
-    alert('hours: ' + hours + 'days: ' + days + 'duration: ' + duration)
 
     var diff = Math.floor((endDate.valueOf()-startDate.valueOf())/86400000)
     var duration2 = (endDate.valueOf()- startDate.valueOf()- (diff)*50400000)/(60.0*60*1000)
@@ -249,19 +244,9 @@ class ScheduleWindow extends React.Component {
     var className = 'green'
     data.items = activities.map(activity =>{
          var content = activity.name
-<<<<<<< HEAD
          const startDate = moment(activity.start);
          const endDate = moment(activity.end);
-         if(activity.orphan) {
-            className= 'gray'
-            content = activity.name + ' -Orphan'
-         }
-         else if(activity.durationModified) {
-=======
-         const startDate = moment(activity.start).add(5, 'h');
-         const endDate = moment(activity.end).add(5, 'h');
          if(activity.durationModified) {
->>>>>>> b06aa8f716a6f286d02771fce2fd199af84a45a2
             className = 'orange'
             content = activity.name + ' - Range Changed'
          }
