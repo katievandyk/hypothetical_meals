@@ -90,7 +90,6 @@ class ScheduleWindow extends React.Component {
                     callback(item)
                 });
                 this.maintainZoom();
-             //   this.addWarnings();
               }
             }.bind(this),
             onMove: function(item, callback) {
@@ -129,7 +128,6 @@ class ScheduleWindow extends React.Component {
                 }
                 this.props.updateActivity(updatedAct, act._id)
                 this.maintainZoom();
-             //   this.addWarnings();
                 callback(item)
               }
             }.bind(this),
