@@ -87,7 +87,7 @@ class ScheduleSidePanel extends React.Component {
                         </InputGroup>
                         <ListGroup>
                             {goals.map(({_id, name})=> (
-                                <ListGroupItem key={_id} action active={schedule.enabled_goals.some(goal => goal._id === _id)} tag="button" onClick={() => this.toggleActive(_id)} md={2} >
+                                <ListGroupItem key={_id} action active={schedule.enabled_goals && schedule.enabled_goals.some(goal => goal._id === _id)} tag="button" onClick={() => this.toggleActive(_id)} md={2} >
                                     {name}
                                 </ListGroupItem>
                             ))}

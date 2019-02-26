@@ -109,10 +109,9 @@ class ScheduleWindow extends React.Component {
               }
               else {
                 const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
-                // find differences in duration
+                const newDuration = this.calculateDuration(moment(item.start), moment(item.end))
                 const startDate = this.adjustStartDate(moment(item.start));
-                const endDate = this.adjustEndDate(moment(item.end))
-                const newDuration = this.calculateDuration(moment(startDate), endDate)
+                const endDate = this.calculateEndDate(startDate, newDuration)
                 const updatedAct = {
                     name: act.name,
                     start: startDate,
@@ -196,9 +195,6 @@ class ScheduleWindow extends React.Component {
     var hours = moment.duration(endDate.diff(startDate)).asHours();
     var days = Math.floor(moment.duration(endDate.diff(startDate)).asDays());
     var duration = hours - days*14;
-
-    var diff = Math.floor((endDate.valueOf()-startDate.valueOf())/86400000)
-    var duration2 = (endDate.valueOf()- startDate.valueOf()- (diff)*50400000)/(60.0*60*1000)
     return duration;
   }
 

@@ -161,7 +161,7 @@ class GoalsCreateModal extends React.Component {
                <Form>
                  <FormGroup>
                      <Label>Manufacturing Goal Name</Label>
-                     <Input valid={this.state.validName === 'success'} 
+                     <Input valid={this.state.validName === 'success'}
                        invalid={this.state.validName === 'failure'} value={this.state.name}
                        onChange={this.onNameChange}
                        placeholder="Add Manufacturing Goal Name"/>

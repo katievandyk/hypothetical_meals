@@ -14,7 +14,7 @@ const ManufacturingScheduleSchema = new Schema({
         }]
     }],
     enabled_goals: [{
-        goal: {type: Schema.Types.ObjectId, ref: 'goal'}
+        goal: {type: Schema.Types.ObjectId, ref: 'goal'},
     }]
 });
 
