@@ -110,7 +110,11 @@ class ScheduleWindow extends React.Component {
               }
               else {
                 const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
-                const newDuration = this.calculateDuration(moment(item.start), moment(item.end))
+                var newDuration = this.calculateDuration(moment(item.start), moment(item.end))
+                if(newDuration < 0) {
+                  alert("Cannot create negative duration")
+                  newDuration=item.duration
+                }
                 const startDate = this.adjustStartDate(moment(item.start));
                 const endDate = this.calculateEndDate(startDate, newDuration)
                 const updatedAct = {
