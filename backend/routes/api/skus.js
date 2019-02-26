@@ -165,35 +165,49 @@ router.post('/update/:id', (req, res) => {
             return;
         }
 
-        SKU.find({
-            $or: [
-                {number: updatedSku.number},
-                {case_number: updatedSku.case_number}
-            ]}).then(results => {
-                var error_thrown = false
-                results.forEach(result => {
-                    if(result._id.toString() != sku._id.toString()) {
-                        if (result.number == updatedSku.number) {
-                            res.status(404).json({success: false, message: "SKU number is not unique."})
-                        }
-                        else {
-                            res.status(404).json({success: false, message: "SKU Case UPC# is not unique."})
-                        }
-                        error_thrown = true
-                    }
-                })
+        var deletedMLs = sku.manufacturing_lines.filter(item => {
+            return !updatedSku.manufacturing_lines.some(newMl => newMl._id.toString() === item._id.toString())
+        }).map(ml => ml._id)
 
-                ManufacturingActivity.find({"sku": req.params.id}).then(activity => {
-                    if(activity.length > 0 && updatedSku.manufacturing_rate != sku.manufacturing_rate)
-                        throw new Error("Cannot update manufacturing rate for a sku that's scheduled.")
+        ManufacturingActivity.find({sku: sku._id, line: {$in: deletedMLs}})
+        .then(results => {
+            Promise.all(results.map(activity => {
+                return new Promise(function(accept, reject) {
+                    ManufacturingActivity.findByIdAndDelete(activity._id).then(accept).catch(reject)
                 })
-                .then(() => {
-                    if(!error_thrown)
-                        SKU.findByIdAndUpdate(req.params.id, {$set:req.body})
-                        .then(() => res.json({success: true}))
+            })).then(
+                SKU.find({
+                $or: [
+                    {number: updatedSku.number},
+                    {case_number: updatedSku.case_number}
+                ]}).then(results => {
+                    var error_thrown = false
+                    results.forEach(result => {
+                        if(result._id.toString() != sku._id.toString()) {
+                            if (result.number == updatedSku.number) {
+                                res.status(404).json({success: false, message: "SKU number is not unique."})
+                            }
+                            else {
+                                res.status(404).json({success: false, message: "SKU Case UPC# is not unique."})
+                            }
+                            error_thrown = true
+                        }
+                    })
+    
+                    ManufacturingActivity.find({"sku": req.params.id}).then(activity => {
+                        if(activity.length > 0 && updatedSku.manufacturing_rate != sku.manufacturing_rate)
+                            throw new Error("Cannot update manufacturing rate for a sku that's scheduled.")
+                    })
+                    .then(() => {
+                        if(!error_thrown)
+                            SKU.findByIdAndUpdate(req.params.id, {$set:req.body})
+                            .then(() => res.json({success: true}))
+                    }).catch(err => res.status(404).json({success: false, message: err.message}))
                 }).catch(err => res.status(404).json({success: false, message: err.message}))
-            })
-        })})
+            ).catch(err => res.status(404).json({success: false, message: err.message}))
+        })
+    })
+})
 
 // @route GET api/skus/search
 // @desc searches keywords in database

@@ -114,7 +114,7 @@ class GoalsEntry extends React.Component {
        if(this.state.validNum === 'failure' || this.state.quantity.length === 0) alert("Please enter a valid numeric quantity.")
        else if(this.state.skuSel.length === 0 || skus.find(elem => elem.sku._id === this.state.skuSel._id) != null) alert("Please use a unique SKU.")
        else {
-           skus.push({sku: this.state.skuSel, quantity: this.state.quantity});
+           skus = [...skus, {sku: this.state.skuSel, quantity: this.state.quantity}];
            this.setState({ edit_skus_list: skus, sku_valid: '' });
            this.skulist_toggle()
        }
@@ -166,7 +166,7 @@ class GoalsEntry extends React.Component {
 
   onDeleteClickSKU = sku => {
        var skus  = this.state.edit_skus_list;
-       skus.splice(skus.indexOf(sku), 1)
+       skus = skus.filter(function(sku_in_skus){return sku_in_skus !== sku});
        this.setState({
             edit_skus_list: skus
           });
@@ -194,7 +194,6 @@ class GoalsEntry extends React.Component {
 
   render() {
     const { goals } = this.props.goals;
-    console.log(goals);
     return (
         <div>
             <Table>
