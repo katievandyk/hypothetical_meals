@@ -206,7 +206,7 @@ class ScheduleWindow extends React.Component {
     var hours = moment.duration(endDate.diff(startDate)).asHours();
     var days;
     if(startDate.year() !== endDate.year()) {
-      days = Math.floor(moment.duration(endDate.diff(startDate)).asDays()); 
+      days = Math.floor(moment.duration(endDate.diff(startDate)).asDays());
     }
     else {
       days = endDate.dayOfYear() - startDate.dayOfYear();
@@ -301,8 +301,7 @@ class ScheduleWindow extends React.Component {
                       goal: activity.goal_id._id,
                       group: activity.line._id,
                       duration: activity.duration,
-                      deadline: activity.goal_id.deadline,
-                      title: '<div class="vis-onUpdateTime-tooltip" ><div><b>Start:</b>' + moment(startDate).toLocaleString() + ' </div><div><b>End:</b> ' + moment(endDate).toLocaleString() +'</div><div><b>Deadline:</b>' + moment(activity.goal_id.deadline).toLocaleString() + '</div><div>'
+                      deadline: activity.goal_id.deadline
                   };
         return item;
     })
