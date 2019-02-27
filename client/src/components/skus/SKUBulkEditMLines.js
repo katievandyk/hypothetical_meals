@@ -28,13 +28,8 @@ class SKUBulkEditMLines extends React.Component {
   }
 
   mline_select_toggle = () => {
-    var sel_skus = this.state.selected_skus;
-    if(this.state.mline_select_modal){
-      sel_skus = []
-    }
     this.setState({
       mline_select_modal: !this.state.mline_select_modal,
-      selected_skus: sel_skus,
       selected_mlines: []
     });
   }
@@ -45,8 +40,11 @@ class SKUBulkEditMLines extends React.Component {
     });
   }
 
-  onBulkEditClick = () => {
+  onBulkEditClick = (bulkedit_skus, e) => {
     this.props.getSKUsforBulkEdit(this.props.skus.obj);
+    this.setState({
+      selected_skus: bulkedit_skus
+    });
     this.sku_select_toggle();
   }
 
@@ -113,18 +111,18 @@ class SKUBulkEditMLines extends React.Component {
     });
   }
 
-  onMapClick = () => {
+  onMapClick = (bulkedit_skus, e) => {
     var new_selected_skus = [];
     if(this.state.selected_skus.length > 0){
       new_selected_skus = this.state.selected_skus;
     }
     else {
-      new_selected_skus = this.props.skus.bulkedit_skus;
+      new_selected_skus = bulkedit_skus;
     }
     this.setState({
-      showAllSKUs: false,
-      selected_skus: new_selected_skus
-    })
+      selected_skus: new_selected_skus,
+      showAllSKUs: false
+    });
     var sku_ids = [];
     new_selected_skus.forEach(function(sku){
       sku_ids = [...sku_ids, sku._id]
@@ -193,7 +191,7 @@ class SKUBulkEditMLines extends React.Component {
       var edit_skus = Object.values(bulkedit_skus).flat();
       return(
         <div style={{display:'inline-block'}}>
-          <Button id="bulkedit_button" color="success" onClick={this.onBulkEditClick}>
+          <Button id="bulkedit_button" color="success" onClick={this.onBulkEditClick.bind(this, edit_skus)}>
           Bulk Edit SKUs' Mfg. Lines
           </Button>
           <Popover trigger="hover" placement="bottom" isOpen={this.state.popOverOpen} target="bulkedit_button" toggle={this.popover_toggle}>
@@ -238,7 +236,7 @@ class SKUBulkEditMLines extends React.Component {
               <Button onClick={this.onCancelClick}>
               Cancel
               </Button>
-              <Button color="success" onClick={this.onMapClick}>
+              <Button color="success" onClick={this.onMapClick.bind(this, edit_skus)}>
               Map Selected SKUs to Mfg. Lines
               </Button>
             </ModalFooter>
@@ -311,7 +309,7 @@ class SKUBulkEditMLines extends React.Component {
     else{
       return(
         <div style={{display:'inline-block'}}>
-          <Button id="bulkedit_button" color="success" onClick={this.onBulkEditClick}>
+          <Button id="bulkedit_button" color="success" onClick={this.onBulkEditClick.bind(this, bulkedit_skus)}>
           Bulk Edit SKUs' Mfg. Lines
           </Button>
           <Popover trigger="hover" placement="bottom" isOpen={this.state.popOverOpen} target="bulkedit_button" toggle={this.popover_toggle}>
@@ -356,7 +354,7 @@ class SKUBulkEditMLines extends React.Component {
               <Button onClick={this.onCancelClick}>
               Cancel
               </Button>
-              <Button color="success" onClick={this.onMapClick}>
+              <Button color="success" onClick={this.onMapClick.bind(this, bulkedit_skus)}>
               Map Selected SKUs to Mfg. Lines
               </Button>
             </ModalFooter>
