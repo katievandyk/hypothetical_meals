@@ -89,8 +89,8 @@ class ScheduleSidePanel extends React.Component {
     return line_str;
   }
 
-  onSKUClick = (sku_id, e) => {
-    this.props.selectedItem(sku_id);
+  onSKUClick = (sku_id, goal_id, e) => {
+    this.props.selectedItem(sku_id, goal_id);
   }
 
   render() {
@@ -149,7 +149,7 @@ class ScheduleSidePanel extends React.Component {
                                           draggable={this.checkDraggable(goal._id, _id)}
                                           color= {(!this.checkDraggable(goal._id, _id)) ? this.getColor(goal._id, _id) : "default"}
                                           onDragStart={(e) => this.props.handleDragStart(e, _id, goal._id, name, duration)}
-                                          onClick={this.onSKUClick.bind(this, _id)}>
+                                          onClick={this.onSKUClick.bind(this, _id, goal._id)}>
                                             <div id="schedule_sku_name">{name}</div>
                                               <div style={{fontSize: '0.8em'}}> Lines: {manufacturing_lines ? (this.getLineString(manufacturing_lines, lines)):("")}</div>
                                         </ListGroupItem>

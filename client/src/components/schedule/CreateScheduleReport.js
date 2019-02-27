@@ -132,6 +132,7 @@ class CreateScheduleReport extends Component {
               <DateRangePicker
               startDate={this.state.startDate}
               startDateId="start_date_id"
+              isOutsideRange={() => false}
               endDate={this.state.endDate} // momentPropTypes.momentObj or null,
               endDateId="end_date_id" // PropTypes.string.isRequired,
               onDatesChange={({ startDate, endDate }) => this.setState({ startDate, endDate })} // PropTypes.func.isRequired,

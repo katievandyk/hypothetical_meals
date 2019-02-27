@@ -255,9 +255,9 @@ class ScheduleWindow extends React.Component {
       timeline.zoomIn(1)
    }
 
-  selectedItem = (_id) => {
+  selectedItem = (_id, goal_id) => {
     const [item] = data.items.filter(function(item){
-      return item.sku === _id
+      return (item.sku === _id && item.goal === goal_id)
     });
     if(item){
       this.setState({windowStart: item.start, windowEnd: item.end});
