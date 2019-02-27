@@ -1,7 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
-import GoalsSKUSearch from '../../components/goals/GoalsSKUSearch';
 import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
 
 import { addGoal }  from '../../actions/goalsActions';
@@ -131,7 +130,6 @@ class GoalsCreateForm extends React.Component {
             <Row style={{ marginBottom: 6, marginTop: 20 }}>
                 <GoalsProductLineFilter/>
                 <Col style={{'textAlign': 'right'}}/>
-                <GoalsSKUSearch/>
             </Row>
             <Row>
             <InputGroup>
