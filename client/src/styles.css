@@ -128,6 +128,10 @@
   visibility: visible;
 }
 
+.vis-item:active .vis-item-visible-frame .vis-onUpdateTime-tooltip{
+  visibility: hidden;
+}
+
 .vis-item-visible-frame .vis-onUpdateTime-tooltip{
   visibility: hidden;
 }

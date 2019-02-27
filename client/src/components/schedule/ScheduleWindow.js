@@ -66,11 +66,6 @@ class ScheduleWindow extends React.Component {
                 end: '2017-03-05 08:00:00',
                 repeat: 'daily'
             }],
-            tooltipOnItemUpdateTime: {
-                  template: function(item) {
-                    return '<div><div><b>Start:</b>' + item.start + ' </div><div><b>End:</b> ' + item.end +'</div><div><b>Deadline:</b>' + moment(item.deadline).toLocaleString() + '</div><div>'
-                  }
-              },
             onAdd: function(item, callback) {
              const lines = [];
              if(this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal)) this.props.schedule.goal_skus.find(elem => elem.goal._id === item.goal).skus.find(elem => elem._id === item.sku).manufacturing_lines.forEach(l => lines.push(l._id));
@@ -258,7 +253,9 @@ class ScheduleWindow extends React.Component {
     const [item] = data.items.filter(function(item){
       return item.sku === _id
     });
-    this.setState({windowStart: item.start, windowEnd: item.end});
+    if(item){
+      this.setState({windowStart: item.start, windowEnd: item.end});
+    }
   }
 
   render() {
@@ -266,7 +263,7 @@ class ScheduleWindow extends React.Component {
     data.groups = lines.map(line =>{
         var group = {};
         group.id = line._id;
-        group.content = line.name;
+        group.content = line.shortname;
         return group;
     })
     const activities = this.props.schedule.activities;
@@ -298,7 +295,8 @@ class ScheduleWindow extends React.Component {
                       goal: activity.goal_id._id,
                       group: activity.line._id,
                       duration: activity.duration,
-                      deadline: activity.goal_id.deadline
+                      deadline: activity.goal_id.deadline,
+                      title: '<div class="vis-onUpdateTime-tooltip" ><div><b>Start:</b>' + moment(startDate).toLocaleString() + ' </div><div><b>End:</b> ' + moment(endDate).toLocaleString() +'</div><div><b>Deadline:</b>' + moment(activity.goal_id.deadline).toLocaleString() + '</div><div>'
                   };
         return item;
     })

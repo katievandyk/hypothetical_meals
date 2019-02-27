@@ -196,8 +196,8 @@ class ImportAssistant extends Component {
                     <td>{entry['ingr#']}</td>
                     <td>{entry['name']}</td>
                     <td>{entry['vendor info']}</td>
+                    <td>{entry['size']}</td>
                     <td>{entry['cost']}</td>
-                    <td>{entry['package_size']}</td>
                     <td>{entry['comment']}</td>
                   </tr>
                   <tr style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>

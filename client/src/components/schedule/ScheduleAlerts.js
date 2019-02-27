@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import {
-  Row, Col, UncontrolledAlert
+  Row, Col, Alert, UncontrolledAlert
 } from 'reactstrap';
 
 import { connect } from 'react-redux';
@@ -22,15 +22,15 @@ class ScheduleAlerts extends Component {
           {value}
           </UncontrolledAlert>
         ))}
-        {(warnings.length > 0)?(
-          <UncontrolledAlert color="warning">
+        {(warnings.length > 0 )?(
+          <Alert color="warning">
           <h4>WARNING</h4>
           {warnings.map((value, i) => (
           <div key={i}>
             {value}
           </div>
             ))}
-          </UncontrolledAlert>):("")
+          </Alert>):("")
         }
         </Col>
         <Col></Col>

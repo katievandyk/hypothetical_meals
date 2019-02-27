@@ -31,20 +31,24 @@ export default function(state = initialState, action) {
     case GET_ACTIVITY:
         return {
           ...state,
+          error_msgs: [],
           activities: action.payload
      }
     case ADD_ACTIVITY:
       return {
         ...state,
+        error_msgs: [],
         activities: [...state.activities, action.payload]
      }
     case UPDATE_ACTIVITY:
         return {
           ...state,
+          error_msgs: []
      }
      case DELETE_ACTIVITY:
         return {
           ...state,
+          error_msgs: [],
           activities: state.activities.filter( act => act._id !== action.payload)
      }
     case ENABLE_GOAL:
@@ -86,7 +90,6 @@ export default function(state = initialState, action) {
     case SCHEDULE_WARNING:{
       return {
         ...state,
-        error_msgs: [],
         loading: false,
         warning_msgs: action.payload
       }
