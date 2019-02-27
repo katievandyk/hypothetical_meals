@@ -79,8 +79,7 @@ router.delete('/:id', (req, res) => {
 // @desc updates a goal
 // @access public
 router.post('/update/:id', (req, res) => {
-    var removedSKUs = [];
-    Goal.findOne({name: req.body.name}).then(goal => {
+    Goal.findById(req.body.id).then(goal => {
         if(goal !== null && req.params.id != goal._id) {
             res.status(404).json({success: false, message: "Goal name is not unique: " + req.body.name})
         }
