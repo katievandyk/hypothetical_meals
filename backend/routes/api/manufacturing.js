@@ -95,7 +95,7 @@ router.post('/update/:id', (req, res) => {
                 else
                     return false
             }).map(sku => sku.sku._id)
-            ManufacturingActivity.find({sku : {$in: updatedSKUQtys}}).then(activities => {
+            ManufacturingActivity.find({sku : {$in: updatedSKUQtys}, goal_id: goal._id}).then(activities => {
                 if(activities.length > 0)
                     res.status(404).json({success: false, message: `SKU quantity cannot be updated because an activity for it has already been created.`})
                 else {

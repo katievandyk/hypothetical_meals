@@ -266,10 +266,7 @@ router.post('/report', (req, res) => {
                     })
                     if (activity.start >= startTime && activity.end <= endTime) {
                         var diff =  Math.floor((activity.end.getTime()- activity.start.getTime()) / 86400000);
-                        console.log("difference: " + diff)
                         var duration = (activity.end.getTime()- activity.start.getTime()- (diff)*50400000)/(60.0*60*1000)
-                        console.log(activity.end.getTime() + " " + activity.start.getTime() + " " + diff)
-                        console.log(duration)
                         activity.actual_duration = activity.duration
                         activity.actual_start = activity.start
                         activity.actual_end = activity.end
@@ -277,13 +274,13 @@ router.post('/report', (req, res) => {
                         addIngredientsToList(ingredients, ing_calcs, 1)
                     }
                     else if(activity.start < endTime && activity.start >= startTime) {
-                        console.log("here2")
                         var diff =  Math.floor((endTime.getTime()- activity.start.getTime()) / 86400000);
                         activity.actual_duration = (endTime.getTime()- activity.start.getTime()- diff*50400000)/(60.0*60*1000)
                         
                         activity.actual_start = activity.start 
                         activity.actual_end = endTime
                         tasks.push(activity)
+                        
                         addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
 
                     }
@@ -296,7 +293,7 @@ router.post('/report', (req, res) => {
 
                         addIngredientsToList(ingredients, ing_calcs, (activity.actual_duration/activity.duration))
                     }
-                    else {
+                    else if (activity.start <= startTime && activity.end >= endTime){
                         var diff =  Math.floor((endTime.getTime()- startTime.getTime()) / 86400000);
                         activity.actual_duration = (endTime.getTime() - startTime.getTime()-diff*50400000)/(60.0*60*1000)
 
@@ -334,7 +331,9 @@ function addIngredientsToList(ingredients, ing_calcs, part) {
             accumulator[currentValue.ingredient._id].packages = accumulator[currentValue.ingredient._id].packages + currentValue.packages * part
         }
         else {
-            accumulator[currentValue.ingredient._id] = currentValue
+            currentValue.quantity = currentValue.quantity * part
+            currentValue.packages = currentValue.packages * part
+            accumulator[currentValue.ingredient._id] = currentValue 
         }
         return accumulator
     };
