@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getGoals, updateGoal, getGoalsIngQuantity, deleteGoal } from '../../actions/goalsActions';
 import { getSKUs } from '../../actions/skuActions';
+import moment from 'moment';
 
 class GoalsEntry extends React.Component {
     constructor(props) {
@@ -179,7 +180,6 @@ class GoalsEntry extends React.Component {
       deadline: this.state.edit_date,
       skus_list: this.state.edit_skus_list,
     };
-
     this.props.updateGoal(editedGoal, this.props.auth.user_username);
     this.edit_toggle();
   }
@@ -217,7 +217,7 @@ class GoalsEntry extends React.Component {
                         </Button>
                       </td>
                       <td>
-                        {new Date(deadline).toUTCString().split(" 0")[0]}
+                        {moment(deadline).format('ddd, DD MMM YYYY')}
                       </td>
                       <td>
                         <Button size="sm" color="link"
