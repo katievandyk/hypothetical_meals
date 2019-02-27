@@ -55,7 +55,13 @@ class ScheduleWindow extends React.Component {
             end: this.state.windowEnd,
             zoomMin: 1000 * 60 * 60 * 24,
             zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
-            editable: this.props.auth.isAdmin,
+            editable: {
+                add: this.props.auth.isAdmin,
+                overrideItems: false,
+                updateTime: this.props.auth.isAdmin,
+                updateGroup: this.props.auth.isAdmin,
+                remove: this.props.auth.isAdmin
+            },
             orientation: 'top',
             horizontalScroll: true,
             visibleFrameTemplate: function(item) {
@@ -294,6 +300,11 @@ class ScheduleWindow extends React.Component {
                       id: activity._id,
                       content: content,
                       type: 'range',
+                      editable: {
+                        remove: this.props.auth.isAdmin,
+                        updateGroup: (!activity.orphan && this.props.auth.isAdmin),
+                        updateTime: (!activity.orphan && this.props.auth.isAdmin)
+                      },
                       start: startDate,
                       end: endDate,
                       className: className,
