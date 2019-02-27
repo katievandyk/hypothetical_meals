@@ -341,7 +341,7 @@ class ScheduleWindow extends React.Component {
             <h4>Adding Items</h4>
             <p><b>Enable and disable goals</b> by clicking the edit icon on the top-left panel.</p>
             <p><b>Add a SKU</b> to the schedule by clicking and dragging from the available options in the bottom-left panel.</p>
-            <p><b>Click</b> an item in the left panel to go shortcut to it in the schedule.</p>
+            <p><b>Click</b> an item in the left panel to view it in the schedule.</p>
             <p></p><p></p>
             <h4>Navigating the Schedule</h4>
             To <b>zoom</b>, icons at the bottom of the timeline or click and pinch. To <b>move left and right</b> in time, click and drag.
