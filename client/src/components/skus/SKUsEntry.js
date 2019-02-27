@@ -710,11 +710,11 @@ class SKUsEntry extends React.Component {
               </TransitionGroup>
               </tbody>
             </Table>
-            {this.editForm()}
-            {this.mlModal()}
-            {this.formulaModal()}
           </div>
           ))}
+          {this.editForm()}
+          {this.mlModal()}
+          {this.formulaModal()}
         </div>
       )
     }
