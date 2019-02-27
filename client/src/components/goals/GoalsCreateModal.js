@@ -61,6 +61,12 @@ class GoalsCreateModal extends React.Component {
            deadline: this.state.date
          };
          this.props.addGoal(newGoal);
+         this.setState({name: '', quantity: '', skuSel: '',
+         skus_list: [],
+         date: '',
+         validNum: '',
+         validName: '',
+         validDate: ''});
          this.toggle();
      }
    }
