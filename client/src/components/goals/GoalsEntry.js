@@ -217,7 +217,7 @@ class GoalsEntry extends React.Component {
                         </Button>
                       </td>
                       <td>
-                        {moment(deadline).format('ddd, DD MMM YYYY')}
+                        {moment(new Date(deadline)).utc().format('ddd, DD MMM YYYY')}
                       </td>
                       <td>
                         <Button size="sm" color="link"
