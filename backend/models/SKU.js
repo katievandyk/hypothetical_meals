@@ -42,6 +42,14 @@ const SKUSchema = new Schema({
         type: Number,
         required: true
     },
+    setup_cost: {
+        type: Number,
+        required: true
+    },
+    run_cost: {
+        type: Number,
+        required: true
+    },
     comment: {
         type: String,
         required: false

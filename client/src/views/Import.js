@@ -86,7 +86,7 @@ class Import extends Component {
                           <td>
                             skus
                           </td>
-                          <td>SKU#,Name,Case UPC,Unit UPC,Unit size,Count per case,PL Name,Formula#,Formula factor,ML shortnames,Rate,Comment</td>
+                          <td>SKU#,Name,Case UPC,Unit UPC,Unit size,Count per case,PL Name,Formula#,Formula factor,ML shortnames,Rate,Mfg setup cost,Mfg run cost,Comment</td>
                         </tr>
                         <tr>
                           <td>

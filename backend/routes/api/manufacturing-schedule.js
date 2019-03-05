@@ -120,7 +120,7 @@ router.get('/skus', (req, res) => {
             .then(goal => {
                 Formula.populate(goal, {path:"skus_list.sku.formula"}).then(goal => {
                     let skus_list = goal.skus_list.map(skus => {
-                        skus.sku.duration = Math.ceil(skus.sku.manufacturing_rate*skus.quantity)
+                        skus.sku.duration = Math.ceil(skus.quantity/skus.sku.manufacturing_rate)
                         let goal_info = {
                             _id: goal._id,
                             name: goal.name,
@@ -248,7 +248,7 @@ router.post('/report', (req, res) => {
                 let tasks = []
                 var ingredients = []
                 activities.forEach(activity => {
-                    let sku_quantity = 1.0 * activity.duration / activity.sku.manufacturing_rate
+                    let sku_quantity = 1.0 * activity.duration * activity.sku.manufacturing_rate
                     let ing_calcs = activity.sku.formula.ingredients_list.map(ing => {
                         extracted_ps = Helpers.extractUnits(ing._id.package_size)
                         package_num = extracted_ps[0]
