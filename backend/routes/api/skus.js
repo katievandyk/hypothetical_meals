@@ -164,6 +164,8 @@ router.post('/update/:id', (req, res) => {
                     if(!(line._id))
                         throw new Error("Manufacturing line id cannot be empty.")
                 })
+            if(updatedSku.number != sku.number)
+                throw new Error("SKU# cannot be updated.")
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
             return;
