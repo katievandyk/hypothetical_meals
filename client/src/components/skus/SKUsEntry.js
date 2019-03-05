@@ -36,6 +36,8 @@ class SKUsEntry extends React.Component {
     edit_formula_scale_factor: '',
     edit_manufacturing_lines: [],
     edit_manufacturing_rate: '',
+    edit_run_cost: '',
+    edit_setup_cost: '',
     edit_comment: '',
     ml_modal: false,
     mlines: [],
@@ -83,7 +85,7 @@ class SKUsEntry extends React.Component {
   };
 
   onEditClick = (id, name, number, case_number, unit_number, unit_size, count_per_case, product_line,
-  formula, formula_scale_factor, manufacturing_lines, manufacturing_rate, comment) => {
+  formula, formula_scale_factor, manufacturing_lines, manufacturing_rate, setup_cost, run_cost, comment) => {
     this.setState({
       modal: true,
       edit_id: id,
@@ -98,6 +100,8 @@ class SKUsEntry extends React.Component {
       edit_formula_scale_factor: formula_scale_factor,
       edit_manufacturing_lines: manufacturing_lines,
       edit_manufacturing_rate: manufacturing_rate,
+      edit_setup_cost: setup_cost,
+      edit_run_cost: run_cost,
       edit_comment: comment
     });
   };
@@ -169,6 +173,15 @@ class SKUsEntry extends React.Component {
           validate[field_type] = 'not-valid-upca'
         }
       }
+      else if(field_type === 'edit_run_cost' || field_type === 'edit_setup_cost' ){
+        const numRex = /^[1-9]\d*(\.\d+)?$/mg
+        if (numRex.test(e.target.value)) {
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid'
+        }
+      }
     } else if(field_type !== 'edit_comment' && field_type !== 'edit_number'){
       validate[e.target.name] = 'is-empty';
     }
@@ -204,6 +217,8 @@ class SKUsEntry extends React.Component {
       formula_scale_factor: this.state.edit_formula_scale_factor,
       manufacturing_lines: this.state.edit_manufacturing_lines,
       manufacturing_rate: this.state.edit_manufacturing_rate,
+      setup_cost: this.state.edit_setup_cost,
+      run_cost: this.state.edit_run_cost,
       comment: this.state.edit_comment
     };
     var allRequiredFields = true;
@@ -345,7 +360,8 @@ class SKUsEntry extends React.Component {
                   id="edit_number"
                   placeholder="Add SKU Number"
                   onChange={this.onChange}
-                  defaultValue={this.state.edit_number}>
+                  defaultValue={this.state.edit_number}
+                  disabled>
                 </Input>
                 {this.state.validate.edit_number === 'is-empty' ? (
                   <FormFeedback>
@@ -492,6 +508,50 @@ class SKUsEntry extends React.Component {
                   ):(
                     <FormFeedback>
                       Please input a valid manufacturing rate.
+                    </FormFeedback>
+                  )}
+              </FormGroup>
+              <FormGroup>
+                <Label for="edit_setup_cost">Manufacturing Setup Cost</Label>
+                  <Input
+                    valid={this.state.validate.edit_setup_cost === 'has-success' }
+                    invalid={this.state.validate.edit_setup_cost === 'is-empty' || this.state.validate.edit_setup_cost === 'not-valid'}
+                    type="text"
+                    name="edit_setup_cost"
+                    id="edit_setup_cost"
+                    placeholder="Add the Manufacturing Setup Cost"
+                    onChange={this.onChange}
+                    defaultValue={this.state.edit_setup_cost}>
+                  </Input>
+                  {this.state.validate.edit_setup_cost === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid cost value.
+                    </FormFeedback>
+                  )}
+              </FormGroup>
+              <FormGroup>
+                <Label for="edit_run_cost">Manufacturing Run Cost</Label>
+                  <Input
+                    valid={this.state.validate.edit_run_cost === 'has-success' }
+                    invalid={this.state.validate.edit_run_cost === 'is-empty' || this.state.validate.edit_run_cost === 'not-valid'}
+                    type="text"
+                    name="edit_run_cost"
+                    id="edit_run_cost"
+                    placeholder="Add the Manufacturing Run Cost"
+                    onChange={this.onChange}
+                    defaultValue={this.state.edit_run_cost}>
+                  </Input>
+                  {this.state.validate.edit_run_cost === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid cost value.
                     </FormFeedback>
                   )}
               </FormGroup>
@@ -643,6 +703,16 @@ class SKUsEntry extends React.Component {
                     Mfg. Rate{' '}
                       {this.getSortIcon('manufacturing_rate')}
                   </th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'setup_cost')}>
+                    Mfg. Setup Cost{' '}
+                      {this.getSortIcon('setup_cost')}
+                  </th>
+                  <th style={{cursor:'pointer'}}
+                    onClick={this.sortCol.bind(this, 'run_cost')}>
+                    Mfg. Run Cost{' '}
+                      {this.getSortIcon('run_cost')}
+                  </th>
                   <th>Comments</th>
                   {this.props.auth.isAdmin && <th>Edit</th>}
                   {this.props.auth.isAdmin && <th>Delete</th>}
@@ -652,7 +722,7 @@ class SKUsEntry extends React.Component {
                 <TransitionGroup className="ingredients-table" component={null}>
                   {value.map(({_id, name, number, case_number, unit_number, unit_size,
                     count_per_case, product_line, formula, formula_scale_factor,
-                    manufacturing_lines, manufacturing_rate, comment }) => (
+                    manufacturing_lines, manufacturing_rate, setup_cost, run_cost, comment }) => (
                     <CSSTransition key={_id} timeout={500} classNames="fade">
                       <tr>
                         <td> {name} </td>
@@ -680,6 +750,8 @@ class SKUsEntry extends React.Component {
                           </Button>
                         </td>
                         <td> {manufacturing_rate} </td>
+                        <td> {setup_cost} </td>
+                        <td> {run_cost} </td>
                         <td style={{wordBreak:'break-all'}}> {comment} </td>
                         {this.props.auth.isAdmin &&
                           <td>
@@ -687,7 +759,7 @@ class SKUsEntry extends React.Component {
                               onClick={this.onEditClick.bind(this,
                                 _id, name, number, case_number, unit_number, unit_size,
                                   count_per_case, product_line, formula, formula_scale_factor,
-                                  manufacturing_lines, manufacturing_rate, comment
+                                  manufacturing_lines, manufacturing_rate, setup_cost, run_cost, comment
                               )}
                               style={{'color':'black'}}>
                               <FontAwesomeIcon icon = "edit"/>
@@ -773,6 +845,16 @@ class SKUsEntry extends React.Component {
                   Mfg. Rate{' '}
                     {this.getSortIcon('manufacturing_rate')}
                 </th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'setup_cost')}>
+                  Mfg. Setup Cost{' '}
+                    {this.getSortIcon('setup_cost')}
+                </th>
+                <th style={{cursor:'pointer'}}
+                  onClick={this.sortCol.bind(this, 'run_cost')}>
+                  Mfg. Run Cost{' '}
+                    {this.getSortIcon('run_cost')}
+                </th>
                 <th>Comments</th>
                 {this.props.auth.isAdmin && <th>Edit</th> }
                 {this.props.auth.isAdmin && <th>Delete</th>}
@@ -782,7 +864,7 @@ class SKUsEntry extends React.Component {
               <TransitionGroup className="ingredients-table" component={null}>
                 {skus.map(({_id, name, number, case_number, unit_number, unit_size,
                   count_per_case, product_line, formula, formula_scale_factor,
-                  manufacturing_lines, manufacturing_rate, comment }) => (
+                  manufacturing_lines, manufacturing_rate, setup_cost, run_cost, comment }) => (
                   <CSSTransition key={_id} timeout={500} classNames="fade">
                     <tr>
                       <td> {name} </td>
@@ -810,6 +892,8 @@ class SKUsEntry extends React.Component {
                         </Button>
                       </td>
                       <td> {manufacturing_rate} </td>
+                      <td> {setup_cost} </td>
+                      <td> {run_cost} </td>
                       <td style={{wordBreak:'break-all'}}> {comment} </td>
                       {this.props.auth.isAdmin &&
                         <td>
@@ -817,7 +901,7 @@ class SKUsEntry extends React.Component {
                             onClick={this.onEditClick.bind(this,
                               _id, name, number, case_number, unit_number, unit_size,
                                 count_per_case, product_line, formula, formula_scale_factor,
-                                manufacturing_lines, manufacturing_rate, comment
+                                manufacturing_lines, manufacturing_rate, setup_cost, run_cost, comment
                             )}
                             style={{'color':'black'}}>
                             <FontAwesomeIcon icon = "edit"/>
