@@ -18,12 +18,13 @@ class SKUBulkEditMLines extends React.Component {
     selected_skus:[],
     selected_mlines:[],
     not_selected_mlines:[],
-    showAllSKUs: false
+    showAllSKUs: true
   }
 
   sku_select_toggle = () => {
     this.setState({
-      sku_select_modal: !this.state.sku_select_modal
+      sku_select_modal: !this.state.sku_select_modal,
+      showAllSKUs: true && !this.state.sku_select_modal
     });
   }
 
@@ -180,7 +181,7 @@ class SKUBulkEditMLines extends React.Component {
       selected_mlines: [],
       not_selected_mlines:[],
       selected_skus:[],
-      showAllSKUs: false
+      showAllSKUs: true
     });
   }
 

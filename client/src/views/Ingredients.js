@@ -52,19 +52,14 @@ class Ingredients extends Component {
   genReportClick = () => {
     this.props.genIngDepReport(this.props.ing.obj);
     this.setState({
-      modal: true
+      modal: true,
+      navigate: true
     });
   }
 
   modal_toggle = () => {
     this.setState({
       modal: !this.state.modal
-    })
-  }
-
-  redirectReports = () => {
-    this.setState({
-      navigate: true
     })
   }
 
@@ -149,13 +144,6 @@ class Ingredients extends Component {
                 <Row>
                   <Col style={{'textAlign': 'left'}}>
                     <div style={{paddingRight:'10px'}}><Button color="success" onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button>{' '}</div>
-                    <Modal isOpen={this.state.modal} toggle={this.modal_toggle}>
-                      <ModalHeader toggle={this.modal_toggle}> Report Generated </ModalHeader>
-                      <ModalBody style={{textAlign:'center'}}>
-                        Ingredients Dependency Report Generated! <br></br>You can view or export it on the Ingredients Dependency Report page
-                      </ModalBody>
-                      <ModalFooter><Button onClick={this.redirectReports}>View Ingredients Dependency Report</Button></ModalFooter>
-                    </Modal>
                   </Col>
                   <Col style={{textAlign: 'right'}}>
                   <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export Ingredients</Button>
