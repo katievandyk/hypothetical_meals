@@ -178,6 +178,7 @@ router.post("/login", (req, res) => {
   router.post("/makeAdmin", (req, res) => {
     User.findOne({ username: req.body.username }).then(user => {
         if (!user) {
+          //No local user by this name
           makeNetidAdmin(req.body.username, res);
           return
         }
@@ -191,6 +192,56 @@ router.post("/login", (req, res) => {
         });
       });
     });
+
+
+
+    function revokeNetidAdmin(username, res) {
+      NetidUser.findOne({ username: username }).then(user => {
+        if (!user) {
+          return res.status(400).json({ username: "Username does not exist" });
+        }
+        if(!user.isAdmin) {
+          return res.status(400).json({ username: "User is not an admin"});
+        }
+        NetidUser.findOne({ username: username }, function (err, doc){
+          doc.isAdmin = false;
+          doc.save().then(updatedUser => res.json(updatedUser))
+          .catch(err => console.log(err.message));
+        });
+      });
+    }
+
+  // @route POST api/users/revokeAdmin
+  // @desc removes admin priviledges from req.body.username
+  // @access Private
+    router.post("/revokeAdmin", (req, res) => {
+      User.findOne({ username: req.body.username }).then(user => {
+          if (!user) {
+            //No local user by this name
+            revokeNetidAdmin(req.body.username, res);
+            return
+          }
+          if(!user.isAdmin) {
+            return res.status(400).json({ username: "User is not an admin"});
+          }
+          User.findOne({ username: req.body.username }, function (err, doc){
+            doc.isAdmin = false;
+            doc.save().then(updatedUser => res.json(updatedUser))
+            .catch(err => console.log(err.message));
+          });
+        });
+      });
+
+    
+    router.post("/delete", (req, res) => {
+      User.findOneAndRemove({username: req.body.username}).then(user => {
+        if(!user) {
+          //No local user, thus return error
+          return res.status(400).json({ username: "User does not exist"})
+        }
+        res.status(200).json({username : "User deleted"})
+      }).catch(err => console.log(err.message));
+    })
 
   module.exports = router;
   
