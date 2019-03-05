@@ -63,6 +63,9 @@ class AppNavbar extends Component {
                <DropdownItem>
                  <NavLink tag={RRNavLink} to="/makeAdmin" className="nav-link" activeClassName="active">Make Admin</NavLink>
                </DropdownItem>
+               <DropdownItem>
+                 <NavLink tag={RRNavLink} to="/manageUsers" className="nav-link" activeClassName="active">Manage Users</NavLink>
+               </DropdownItem>
              </DropdownMenu>
            </UncontrolledDropdown>
             ): (<div></div>)}
