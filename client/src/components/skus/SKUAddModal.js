@@ -31,6 +31,8 @@ class SKUAddModal extends React.Component {
     formula_scale_factor: '',
     manufacturing_lines: [],
     manufacturing_rate: '',
+    setup_cost: '',
+    run_cost: '',
     comment: '',
     validate: {}
   };
@@ -109,6 +111,15 @@ class SKUAddModal extends React.Component {
           validate[field_type] = 'not-valid-upca'
         }
       }
+      else if(field_type === 'run_cost' || field_type === 'setup_cost' ){
+        const numRex = /^[1-9]\d*(\.\d+)?$/mg
+        if (numRex.test(e.target.value)) {
+          validate[field_type] = 'has-success';
+        }
+        else {
+          validate[field_type] = 'not-valid'
+        }
+      }
     } else if(field_type !== 'comment' && field_type !== 'number'){
       validate[e.target.name] = 'is-empty';
     }
@@ -143,6 +154,8 @@ class SKUAddModal extends React.Component {
       formula_scale_factor: this.state.formula_scale_factor,
       manufacturing_lines: this.state.manufacturing_lines,
       manufacturing_rate: this.state.manufacturing_rate,
+      setup_cost: this.state.setup_cost,
+      run_cost: this.state.run_cost,
       comment: this.state.comment
     };
     var allRequiredFields = true;
@@ -185,6 +198,14 @@ class SKUAddModal extends React.Component {
     }
     if(newValidate.manufacturing_rate !== 'has-success'){
       newValidate.manufacturing_rate = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.setup_cost !== 'has-success'){
+      newValidate.setup_cost = 'is-empty';
+      allRequiredFields = false;
+    }
+    if(newValidate.run_cost !== 'has-success'){
+      newValidate.run_cost = 'is-empty';
       allRequiredFields = false;
     }
     this.setState({
@@ -416,6 +437,50 @@ class SKUAddModal extends React.Component {
                   ):(
                     <FormFeedback>
                       Please input a valid manufacturing rate.
+                    </FormFeedback>
+                  )}
+              </FormGroup>
+              <FormGroup>
+                <Label for="setup_cost">Manufacturing Setup Cost</Label>
+                  <Input
+                    valid={this.state.validate.setup_cost === 'has-success' }
+                    invalid={this.state.validate.setup_cost === 'is-empty' || this.state.validate.setup_cost === 'not-valid'}
+                    type="text"
+                    name="setup_cost"
+                    id="setup_cost"
+                    placeholder="Add the Manufacturing Setup Cost"
+                    onChange={this.onChange}
+                    defaultValue={this.state.setup_cost}>
+                  </Input>
+                  {this.state.validate.setup_cost === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid cost value.
+                    </FormFeedback>
+                  )}
+              </FormGroup>
+              <FormGroup>
+                <Label for="run_cost">Manufacturing Run Cost</Label>
+                  <Input
+                    valid={this.state.validate.run_cost === 'has-success' }
+                    invalid={this.state.validate.run_cost === 'is-empty' || this.state.validate.run_cost === 'not-valid'}
+                    type="text"
+                    name="run_cost"
+                    id="run_cost"
+                    placeholder="Add the Manufacturing Run Cost"
+                    onChange={this.onChange}
+                    defaultValue={this.state.run_cost}>
+                  </Input>
+                  {this.state.validate.run_cost === 'is-empty' ? (
+                    <FormFeedback>
+                      Please input a value.
+                    </FormFeedback>
+                  ):(
+                    <FormFeedback>
+                      Please input a valid cost value.
                     </FormFeedback>
                   )}
               </FormGroup>
