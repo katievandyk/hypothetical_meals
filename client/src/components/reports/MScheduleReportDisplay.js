@@ -167,18 +167,12 @@ class MScheduleReportDisplay extends React.Component {
                               <tr>
                                 <th title="Name">Name</th>
                                 <th title="#">#</th>
-                                <th title="Ingredients List">Ingredients List</th>
                               </tr>
                             </thead>
                             <tbody>
                                   <tr>
                                     <td> {formula.name} </td>
                                     <td> {formula.number} </td>
-                                    <td> {
-                                      formula.ingredients_list.map(({_id, quantity}) => (
-                                        <div key={_id._id}> {_id.name}, {quantity}</div>
-                                      ))
-                                    } </td>
                                   </tr>
                             </tbody>
                           </Table>
@@ -193,16 +187,18 @@ class MScheduleReportDisplay extends React.Component {
                                 <th title="Vendor Info">Vendor Info</th>
                                 <th title="Package Size">Package Size</th>
                                 <th title="Cost Per Package">Cost Per Package</th>
+                                <th title="Formula Quantity">Formula Quantity</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {formula.ingredients_list.map(({_id}) => (
+                              {formula.ingredients_list.map(({_id, quantity}) => (
                                 <tr key={_id._id}>
                                   <td> {_id.name} </td>
                                   <td> {_id.number} </td>
                                   <td> {_id.vendor_info} </td>
                                   <td> {_id.package_size} </td>
                                   <td> {_id.cost_per_package} </td>
+                                  <td> {quantity} </td>
                                 </tr>
                               ))}
                             </tbody>
