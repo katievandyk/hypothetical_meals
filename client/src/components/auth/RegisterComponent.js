@@ -6,7 +6,7 @@ import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
 
 import {Form, FormGroup, Label, Input, Container,
-Row, Col, Button} from 'reactstrap';
+Row, Col, Button, Modal, ModalBody, ModalHeader} from 'reactstrap';
 class RegisterComponent extends Component {
   constructor() {
     super();
@@ -15,7 +15,8 @@ class RegisterComponent extends Component {
       username: "",
       password: "",
       password2: "",
-      errors: {}
+      errors: {},
+      modal: false,
     };
   }
 
@@ -39,18 +40,23 @@ const newUser = {
     };
 this.props.registerUser(newUser, this.props.history);
   };
+
+toggle = () => {
+  this.setState({
+    modal: !this.state.modal
+  })
+}
 render() {
     const { errors } = this.state;
 return (
-      <div className="container">
-        <Container>
-          <Row>
-            <Col></Col>
-            <Col>
+      <div>
+        <div>
+          <Button onClick={this.toggle}>Register New User</Button>
+        </div>
+        <Modal isOpen={this.state.modal} toggle={this.toggle}>
+          <ModalHeader>Register New User</ModalHeader>
+          <ModalBody>
           <Form noValidate onSubmit={this.onSubmit}>
-            <h4>
-              <b>Register</b> below
-            </h4>
             <FormGroup>
               <Label for="name">Name</Label>
               <Input onChange={this.onChange}
@@ -110,10 +116,8 @@ return (
             </FormGroup>
             <Button type="submit"> Sign Up </Button>
           </Form>
-          </Col>
-          <Col></Col>
-          </Row>
-          </Container>
+          </ModalBody>
+        </Modal>
       </div>
     );
   }

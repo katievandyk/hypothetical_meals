@@ -45,7 +45,7 @@ class AppNavbar extends Component {
         <Collapse className="justify-content-end" isOpen={this.state.isOpen} navbar>
           {this.props.auth.isAuthenticated ? (
           <Nav className="navbar-expand-md" navbar>
-            {this.props.auth.isAdmin ? (
+            {/*this.props.auth.isAdmin ? (
             <UncontrolledDropdown nav
             active={
               (this.props.location.pathname === '/register' ||
@@ -68,7 +68,10 @@ class AppNavbar extends Component {
                </DropdownItem>
              </DropdownMenu>
            </UncontrolledDropdown>
-            ): (<div></div>)}
+         ): (<div></div>)*/}
+            {this.props.auth.isAdmin ? (<NavItem>
+              <NavLink tag={RRNavLink} to="/manageUsers" className="nav-link" activeClassName="active">Manage Users</NavLink>
+            </NavItem>): (<div></div>)}
             <UncontrolledDropdown nav
               active={
                 (this.props.location.pathname === '/ingredients' ||
