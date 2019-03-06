@@ -18,8 +18,7 @@ import {Redirect} from 'react-router';
 import { sortIngs, genIngDepReport } from '../actions/ingActions';
 
 import {
-  Container, Row, Col, Button,
-  Modal, ModalBody, ModalHeader, ModalFooter
+  Container, Row, Col, Button
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

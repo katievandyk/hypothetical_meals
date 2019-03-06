@@ -16,6 +16,7 @@ export const GET_ERRORS = "GET_ERRORS";
 export const USER_LOADING = "USER_LOADING";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 export const SET_NETID_USER = "SET_NETID_USER";
+export const GET_USERS = "GET_USERS"
 // Manufacturing Goals
 export const GET_GOALS = 'GET_GOALS';
 export const ADD_GOAL = 'ADD_GOAL';
