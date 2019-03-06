@@ -13,6 +13,7 @@ import Import from './views/Import';
 import SKU from './views/SKU';
 import MakeAdmin from './views/MakeAdmin';
 import Formulas from './views/Formulas';
+import SalesReport from './views/SalesReport';
 import { BrowserRouter, Route, Switch} from "react-router-dom";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -81,6 +82,7 @@ class App extends Component {
                       <AdminRoute path="/import" component={Import} />
                       <PrivateRoute path="/ingredients-dependency-report" component={IngDepReportView} />
                       <PrivateRoute path="/manufacturing-schedule-report" component={MScheduleReport} />
+                      <PrivateRoute path="/sales-report" component={SalesReport} />
                     </Switch>
 
                   </div>
