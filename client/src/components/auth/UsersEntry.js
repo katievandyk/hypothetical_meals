@@ -2,23 +2,28 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { makeAdmin } from "../../actions/authActions";
+import { makeAdmin, revokeAdmin, deleteUser, getAllUsers } from "../../actions/authActions";
 import {Alert} from 'reactstrap';
-import classnames from "classnames";
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import {Form, FormGroup, Label, Input, Container,
-Row, Col, Button, Table} from 'reactstrap';
+import {Container,
+Row, Col, Button, Table, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 class UsersEntry extends Component {
   constructor() {
     super();
     this.state = {
       username: "",
       errors: {},
-      userCreated_alert: false
+      userCreated_alert: false,
+      revoke_modal: false,
+      grant_modal: false,
+      edit_user: {}
     };
   }
+
+componentDidMount() {
+  this.props.getAllUsers();
+}
 
 componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
@@ -32,33 +37,55 @@ componentWillReceiveProps(nextProps) {
       userCreated_alert: !this.userCreated_alert
     })
   }
-/*onChange = e => {
-    this.setState({ [e.target.id]: e.target.value });
-  };
-onSubmit = e => {
+
+revoke_toggle = () => {
   this.setState({
-    userCreated_alert: !this.state.errors.username
-  });
-    e.preventDefault();
-const adminUser = {
-      username: this.state.username,
-    };
-this.props.makeAdmin(adminUser, this.props.history);
-  };
-  */
-
-onEditClick = (_id, name, e) => {
-  console.log(_id, name);
+    revoke_modal: !this.state.revoke_modal
+  })
 }
 
-onDeleteClick = (_id, e) => {
-  console.log(_id);
+grant_toggle = () => {
+  this.setState({
+    grant_modal: !this.state.grant_modal
+  })
 }
+
+onEditClick = (_id, name, username, isAdmin, e) => {
+  const newObj = {_id: _id, name: name, username: username, isAdmin: isAdmin};
+  if(isAdmin){
+    this.setState({
+      revoke_modal: true,
+      grant_modal: false,
+      edit_user: newObj
+    });
+  }
+  else {
+    this.setState({
+      revoke_modal: false,
+      grant_modal: true,
+      edit_user: newObj
+    });
+  }
+}
+
+onDeleteClick = (username, e) => {
+  this.props.deleteUser({username:username});
+}
+
+revoke = (username, e) => {
+  this.props.revokeAdmin({username: username});
+  this.revoke_toggle();
+}
+
+grant = (username, e) => {
+  this.props.makeAdmin({username: username});
+  this.grant_toggle();
+}
+
 
 render() {
     const { errors } = this.state;
-    console.log(this.props.auth);
-    const users = [{_id: "333", name: "hi"}, {_id: "344", name: "test"}];
+    const users = this.props.auth.users;
 return (
       <div className="container">
         <Container>
@@ -75,6 +102,7 @@ return (
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Username</th>
                   <th>Admin?</th>
                   <th>Edit</th>
                   <th>Delete</th>
@@ -82,15 +110,16 @@ return (
               </thead>
               <tbody is="transition-group" >
                 <TransitionGroup className="ingredients-table" component={null}>
-                  {users.map(({_id, name }) => (
+                  {users.map(({_id, name, username, isAdmin }) => (
                     <CSSTransition key={_id} timeout={500} classNames="fade">
                       <tr>
                         <td> {name} </td>
-                        <td> Y/N </td>
+                        <td> {username} </td>
+                        <td> {isAdmin?("Y"):("N")} </td>
                         <td>
                             <Button size="sm" color="link"
                               onClick={this.onEditClick.bind(this,
-                                _id, name
+                                _id, name, username, isAdmin
                               )}
                               style={{'color':'black'}}>
                               <FontAwesomeIcon icon = "edit"/>
@@ -98,7 +127,7 @@ return (
                           </td>
                           <td >
                             <Button size="sm" sm="2"color="link"
-                              onClick={this.onDeleteClick.bind(this, _id)}
+                              onClick={this.onDeleteClick.bind(this, username)}
                               style={{'color':'black'}}>
                               <FontAwesomeIcon icon="trash"/>
                             </Button>
@@ -111,12 +140,35 @@ return (
             </Table>
           </Row>
           </Container>
+          <Modal isOpen={this.state.revoke_modal} toggle={this.revoke_toggle}>
+          <ModalHeader toggle={this.revoke_toggle}>
+          Revoke Admin Status for {this.state.edit_user.name}</ModalHeader>
+        <ModalBody>
+          Are you sure you want to <b>Revoke Admin Status</b> for {this.state.edit_user.name} (Username: {this.state.edit_user.username})?
+
+        </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={this.revoke.bind(this, this.state.edit_user.username)}>Yes - Revoke</Button>
+        <Button onClick={this.revoke_toggle}>Cancel</Button>
+      </ModalFooter></Modal>
+      <Modal isOpen={this.state.grant_modal} toggle={this.grant_toggle}>
+        <ModalHeader toggle={this.grant_toggle}>
+        Grant Admin Status to {this.state.edit_user.name}</ModalHeader>
+      <ModalBody>
+        Are you sure you want to <b>Grant Admin Status</b> to {this.state.edit_user.name} (Username: {this.state.edit_user.username})?
+      </ModalBody>
+      <ModalFooter>
+        <Button color="success" onClick={this.grant.bind(this, this.state.edit_user.username)}>Yes - Grant</Button>
+        <Button onClick={this.grant_toggle}>Cancel</Button></ModalFooter></Modal>
       </div>
     );
   }
 }
 UsersEntry.propTypes = {
   makeAdmin: PropTypes.func.isRequired,
+  revokeAdmin: PropTypes.func.isRequired,
+  getAllUsers: PropTypes.func.isRequired,
+  deleteUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -126,4 +178,4 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { makeAdmin })(UsersEntry);
+  { makeAdmin, revokeAdmin, getAllUsers, deleteUser })(withRouter(UsersEntry));

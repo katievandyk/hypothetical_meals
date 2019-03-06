@@ -1,12 +1,10 @@
 import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
 
-import {Form, FormGroup, Label, Input, Container,
-Row, Col, Button, Modal, ModalBody, ModalHeader} from 'reactstrap';
+import {Form, FormGroup, Label, Input, Button, Modal, ModalBody, ModalHeader} from 'reactstrap';
 class RegisterComponent extends Component {
   constructor() {
     super();
@@ -38,10 +36,22 @@ const newUser = {
       password: this.state.password,
       password2: this.state.password2
     };
-this.props.registerUser(newUser, this.props.history);
+this.props.registerUser(newUser);
+if(Object.keys(this.state.errors).length === 0){
+  this.setState({submitted:true})
+  this.toggle();
+}
   };
 
 toggle = () => {
+  if(Object.keys(this.state.errors).length === 0 && this.state.submitted){
+    this.setState({
+      name: "",
+      username: "",
+      password: "",
+      password2: ""
+    })
+  }
   this.setState({
     modal: !this.state.modal
   })
@@ -53,7 +63,7 @@ return (
         <div>
           <Button onClick={this.toggle}>Register New User</Button>
         </div>
-        <Modal isOpen={this.state.modal} toggle={this.toggle}>
+        <Modal isOpen={this.state.modal || Object.keys(errors).length > 0} toggle={this.toggle}>
           <ModalHeader>Register New User</ModalHeader>
           <ModalBody>
           <Form noValidate onSubmit={this.onSubmit}>
@@ -134,4 +144,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   { registerUser }
-)(withRouter(RegisterComponent));
+)(RegisterComponent);

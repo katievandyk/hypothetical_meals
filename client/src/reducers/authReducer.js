@@ -1,7 +1,8 @@
 import {
     SET_CURRENT_USER,
     USER_LOADING,
-    SET_NETID_USER
+    SET_NETID_USER,
+    GET_USERS
   } from "../actions/types";
   const isEmpty = require("is-empty");
   const initialState = {
@@ -9,6 +10,7 @@ import {
     isAdmin: false,
     user_username: "",
     user: {},
+    users: [],
     loading: false
   };
   export default function(state = initialState, action) {
@@ -34,6 +36,16 @@ import {
           user_username: action.payload.username,
           user:action.payload
         }
+      case GET_USERS:{
+        var usersArray = [];
+        if(action.payload.users){
+          usersArray = action.payload.users;
+        };
+        return{
+          ...state,
+          users: usersArray
+        }
+      }
       default:
         return state;
     }
