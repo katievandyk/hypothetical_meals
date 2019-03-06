@@ -21,8 +21,7 @@ class CreateScheduleReport extends Component {
     line_id: '',
     validate:'',
     validate_dates:'',
-    view_modal: false,
-    naviage: false
+    navigate: false
   }
 
   componentDidMount() {
@@ -37,12 +36,6 @@ class CreateScheduleReport extends Component {
       validate_dates:'',
       startDate: null,
       endDate: null
-    })
-  }
-
-  viewtoggle = () => {
-    this.setState({
-      view_modal: !this.state.view_modal
     })
   }
 
@@ -92,8 +85,10 @@ class CreateScheduleReport extends Component {
       var endString = this.state.endDate.format('YYYY-MM-DD') + "T18:00:00.000Z";
       const newObj = {line_id: this.state.line_id, start: startString, end: endString}
       this.props.genScheduleReport(newObj);
+      this.setState({
+        navigate: true
+      })
       this.toggle();
-      this.viewtoggle();
     }
   }
 
@@ -147,14 +142,6 @@ class CreateScheduleReport extends Component {
           </Form>
           </ModalBody>
           <ModalFooter><Button onClick={this.onGenReportClick}>Generate Manufacturing Schedule Report</Button></ModalFooter>
-        </Modal>
-        <Modal isOpen={this.state.view_modal && this.props.schedule.error_msgs.length === 0 } toggle={this.viewtoggle}>
-          <ModalHeader toggle={this.viewtoggle}> Report Generated </ModalHeader>
-          <ModalBody style={{textAlign:'center'}}>
-              Manufacturing Schedule Report Generated! <br></br>You can view or
-              export it on the Manufacturing Schedule Report page
-          </ModalBody>
-          <ModalFooter><Button onClick={this.redirectReports}>View Manufacturing Schedule Report</Button></ModalFooter>
         </Modal>
         </div>
       );

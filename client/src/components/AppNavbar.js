@@ -85,18 +85,26 @@ class AppNavbar extends Component {
                  Data Management
                </DropdownToggle>
                <DropdownMenu right>
+                 <NavLink tag={RRNavLink} to="/ingredients" className="nav-link" activeClassName="active">
                  <DropdownItem>
-                  <NavLink tag={RRNavLink} to="/ingredients" className="nav-link" activeClassName="active">Ingredients</NavLink>
+                  Ingredients
                  </DropdownItem>
+                 </NavLink>
+                 <NavLink tag={RRNavLink} to="/productlines" className="nav-link" activeClassName="active">
                  <DropdownItem>
-                   <NavLink tag={RRNavLink} to="/productlines" className="nav-link" activeClassName="active">Product Lines</NavLink>
+                   Product Lines
                  </DropdownItem>
+                 </NavLink>
+                 <NavLink tag={RRNavLink} to="/sku" className="nav-link" activeClassName="active">
                  <DropdownItem>
-                   <NavLink tag={RRNavLink} to="/sku" className="nav-link" activeClassName="active">SKUs</NavLink>
+                   SKUs
                  </DropdownItem>
+                 </NavLink>
+                 <NavLink tag={RRNavLink} to="/formulas" className="nav-link" activeClassName="active">
                  <DropdownItem>
-                   <NavLink tag={RRNavLink} to="/formulas" className="nav-link" activeClassName="active">Formulas</NavLink>
+                   Formulas
                  </DropdownItem>
+                 </NavLink>
                </DropdownMenu>
              </UncontrolledDropdown>
             {this.props.auth.isAdmin ? (<NavItem>
@@ -114,15 +122,21 @@ class AppNavbar extends Component {
                  Manufacturing
                </DropdownToggle>
                <DropdownMenu right>
+                 <NavLink tag={RRNavLink} to="/manufacturinggoals" className="nav-link" activeClassName="active">
                  <DropdownItem>
-                  <NavLink tag={RRNavLink} to="/manufacturinggoals" className="nav-link" activeClassName="active">Goals</NavLink>
+                  Goals
                  </DropdownItem>
+                 </NavLink>
+                 <NavLink tag={RRNavLink} to="/manufacturingschedule" className="nav-link" activeClassName="active">
                  <DropdownItem>
-                  <NavLink tag={RRNavLink} to="/manufacturingschedule" className="nav-link" activeClassName="active">Schedule</NavLink>
+                  Schedule
                  </DropdownItem>
+                 </NavLink>
+                 <NavLink tag={RRNavLink} to="/manufacturinglines" className="nav-link" activeClassName="active">
                  <DropdownItem>
-                    <NavLink tag={RRNavLink} to="/manufacturinglines" className="nav-link" activeClassName="active">Lines</NavLink>
+                    Lines
                  </DropdownItem>
+                 </NavLink>
                </DropdownMenu>
              </UncontrolledDropdown>
             <UncontrolledDropdown nav
@@ -134,12 +148,16 @@ class AppNavbar extends Component {
               inNavbar >
               <DropdownToggle nav caret> Reports </DropdownToggle>
               <DropdownMenu right>
+                <NavLink tag={RRNavLink} to="/ingredients-dependency-report" className="nav-link" activeClassName="active">
                 <DropdownItem>
-                  <NavLink tag={RRNavLink} to="/ingredients-dependency-report" className="nav-link" activeClassName="active">Ingredients Dependency Report</NavLink>
+                  Ingredients Dependency Report
                 </DropdownItem>
+                </NavLink>
+                <NavLink tag={RRNavLink} to="/manufacturing-schedule-report" className="nav-link" activeClassName="active">
                 <DropdownItem>
-                  <NavLink tag={RRNavLink} to="/manufacturing-schedule-report" className="nav-link" activeClassName="active">Manufacturing Schedule Report</NavLink>
+                  Manufacturing Schedule Report
                 </DropdownItem>
+                </NavLink>
               </DropdownMenu>
             </UncontrolledDropdown>
             <NavItem>
