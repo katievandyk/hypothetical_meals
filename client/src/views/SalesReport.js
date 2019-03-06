@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import AppNavbar from '../components/AppNavbar';
+import SalesReportGenerate from '../components/sales/SalesReportGenerate';
+import SummaryReportDisplay from '../components/sales/SummaryReportDisplay';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
@@ -19,7 +21,7 @@ class SalesReport extends Component {
   };
 
    render() {
-     if(this.state.reportGen){
+     if(!this.state.reportGen){
         return(
           <Provider store={store}>
             <div>
@@ -31,7 +33,12 @@ class SalesReport extends Component {
                 <Row>
                   <Col> <h1>Sales Report</h1> </Col>
                 </Row>
-                <Row>No report generated.</Row>
+                <Row>
+                  <Col  style={{'textAlign': 'right'}}> <SalesReportGenerate/> </Col>
+                </Row>
+                <Row>
+                    <Col style={{'textAlign': 'center'}}>No summary report generated.</Col>
+                </Row>
               </Container>
               </Container>
             </div>
@@ -49,6 +56,7 @@ class SalesReport extends Component {
                 <Row>
                   <Col> <h1>Sales Report</h1> </Col>
                 </Row>
+                <SummaryReportDisplay/>
               </Container>
               </Container>
             </div>
