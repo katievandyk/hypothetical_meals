@@ -232,7 +232,9 @@ router.post("/login", (req, res) => {
         });
       });
 
-    
+  // @route POST api/users/delete
+  // @desc removes a local user
+  // @access Private
     router.post("/delete", (req, res) => {
       User.findOneAndRemove({username: req.body.username}).then(user => {
         if(!user) {
@@ -241,6 +243,24 @@ router.post("/login", (req, res) => {
         }
         res.status(200).json({username : "User deleted"})
       }).catch(err => console.log(err.message));
+    })
+
+  // @route GET api/users/
+  // @desc gets all users (netid and local)
+  // @access Private
+    router.get("/", (req, res) => {
+      User
+        .find()
+        .lean()
+        .then( localUsers => {
+          NetidUser
+            .find()
+            .lean()
+            .then(netidUsers => {
+              var users = localUsers.concat(netidUsers);
+              res.status(200).json({users : users})
+            }).catch(err => res.status(404).json({success: false, message: err.message}));
+        }).catch(err => res.status(404).json({success: false, message: err.message}));
     })
 
   module.exports = router;
