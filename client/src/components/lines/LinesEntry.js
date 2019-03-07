@@ -65,11 +65,12 @@ class LinesEntry extends React.Component {
         this.setState({ validName: valid })
    }
 
-   onShortNameChange = e => {
+   onShortNameChange = (e) => {
+        const edit_id = this.state.edit_id
         var lines  = this.props.lines.lines
         this.setState({ edit_shortname: e.target.value })
         var valid = '';
-        var unique = lines.find(elem => elem.shortname === e.target.value) == null
+        var unique = lines.find(elem => elem.shortname === e.target.value && elem._id !== edit_id) == null
         if (e.target.value.length > 0 && e.target.value.length <= 5) {
           if (unique)
             valid = 'success'

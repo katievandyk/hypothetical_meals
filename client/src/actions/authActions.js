@@ -4,14 +4,17 @@ import jwt_decode from "jwt-decode";
 import {
   GET_ERRORS,
   SET_CURRENT_USER,
-  USER_LOADING
+  USER_LOADING,
+  GET_USERS
 } from "./types";
 
 //Make existing user an admin
-export const makeAdmin = (userData, history) => dispatch => {
+export const makeAdmin = (userData) => dispatch => {
   axios
     .post("/api/users/makeAdmin", userData)
-    .then(res => history.push("/ingredients")) // re-direct to login on successful register
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
@@ -19,11 +22,48 @@ export const makeAdmin = (userData, history) => dispatch => {
       })
     );
 };
+
+//Revoke existing user admin status
+export const revokeAdmin = (userData) => dispatch => {
+  axios
+    .post("/api/users/revokeAdmin", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Delete existing users
+export const deleteUser = (userData) => dispatch => {
+  axios
+    .post("api/users/delete", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+}
+
 // Register User
-export const registerUser = (userData, history) => dispatch => {
+export const registerUser = (userData) => dispatch => {
   axios
     .post("/api/users/register", userData)
-    .then(res => history.push("/login")) // re-direct to login on successful register
+    .then(res => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: {}
+      });
+      dispatch(getAllUsers());
+    })
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
@@ -119,3 +159,21 @@ export const logoutUser = () => dispatch => {
   // Set current user to empty object {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
 };
+
+//Get all Users
+export const getAllUsers = () => dispatch => {
+  axios
+    .get("/api/users/")
+    .then(res => {
+      dispatch({
+        type: GET_USERS,
+        payload: res.data
+      });
+    })
+    .catch(err =>{
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })}
+    );
+}
