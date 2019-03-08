@@ -118,7 +118,9 @@ function updateOneSKU(sku_entry) {
             formula: sku_entry["formula_id"],
             formula_scale_factor: sku_entry[sku_fields.formula_factor],
             manufacturing_lines: sku_entry["ml_results"],
-            manufacturing_rate: sku_entry[sku_fields.rate]
+            manufacturing_rate: sku_entry[sku_fields.rate],
+            setup_cost: sku_entry[sku_fields.setup_cost],
+            run_cost: sku_entry[sku_fields.run_cost]
         };
         SKU
         .findByIdAndUpdate(sku_entry.to_overwrite._id, updateObj, {new: true})
@@ -152,7 +154,9 @@ function createOneSKU(sku_entry) {
             formula: sku_entry["formula_id"],
             formula_scale_factor: sku_entry[sku_fields.formula_factor],
             manufacturing_lines: sku_entry["ml_results"],
-            manufacturing_rate: sku_entry[sku_fields.rate]
+            manufacturing_rate: sku_entry[sku_fields.rate],
+            setup_cost: sku_entry[sku_fields.setup_cost],
+            run_cost: sku_entry[sku_fields.run_cost]
         }).save().then(sku => {
             resolve(sku_entry)
         }).catch(error => reject(error));

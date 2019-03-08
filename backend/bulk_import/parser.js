@@ -245,9 +245,9 @@ module.exports.checkSKUFileDuplicates = checkSKUFileDuplicates = function(max_nu
     }
 }
 
-module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc, unit_upc, unit_size, count, pl_name, formula, formula_sf, manufacturing_rate) {
-    if(! (name && case_upc && unit_upc && unit_size && count &&  pl_name && formula && manufacturing_rate))
-        throw new Error(`SKU name, Case UPC#, Unit UPC#, Unit Size, Count per case, Product Line, Formula, and Manufacturing Rate fields are required. 
+module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc, unit_upc, unit_size, count, pl_name, formula, formula_sf, manufacturing_rate, setup_cost, run_cost) {
+    if(! (name && case_upc && unit_upc && unit_size && count &&  pl_name && formula && manufacturing_rate && setup_cost && run_cost))
+        throw new Error(`SKU name, Case UPC#, Unit UPC#, Unit Size, Count per case, Product Line, Formula, Manufacturing Rate, Setup Cost, and Run Cost fields are required. 
         Got: ${name},${case_upc},${unit_upc},${unit_size},${count},${pl_name},${formula},${manufacturing_rate}`)
     if(!Helpers.isPositiveInteger(number)) 
         throw new Error("SKU number is not a valid number: " + number);
@@ -281,10 +281,24 @@ module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc
     if (parseFloat(manufacturing_rate) < 0) 
         throw new Error(
                 "Manufacturing rate is not a positive number: " + manufacturing_rate);
+
+    if(!Helpers.isNumeric(setup_cost)) 
+        throw new Error(
+            "Setup cost is not a number: " + setup_cost);
+    if (parseFloat(setup_cost) < 0) 
+        throw new Error(
+                "Setup cost is not a positive number: " + setup_cost);
+
+    if(!Helpers.isNumeric(run_cost)) 
+        throw new Error(
+            "Run cost is not a number: " + run_cost);
+    if (parseFloat(run_cost) < 0) 
+        throw new Error(
+                "Run cost is not a positive number: " + run_cost);
 }
 
 module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
-    skuFieldsCheck(sku_data[sku_fields.name], sku_data[sku_fields.number], sku_data[sku_fields.case_upc], sku_data[sku_fields.unit_upc], sku_data[sku_fields.unit_size], sku_data[sku_fields.count], sku_data[sku_fields.formula_num], sku_data[sku_fields.pl_name],sku_data[sku_fields.formula_factor],sku_data[sku_fields.rate])
+    skuFieldsCheck(sku_data[sku_fields.name], sku_data[sku_fields.number], sku_data[sku_fields.case_upc], sku_data[sku_fields.unit_upc], sku_data[sku_fields.unit_size], sku_data[sku_fields.count], sku_data[sku_fields.formula_num], sku_data[sku_fields.pl_name],sku_data[sku_fields.formula_factor],sku_data[sku_fields.rate], sku_data[sku_fields.setup_cost], sku_data[sku_fields.run_cost])
 
     let pl = sku_data[sku_fields.pl_name];
 
@@ -328,7 +342,9 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                         number_result.formula._id.toString() == formula_result._id.toString() &&
                         number_result.formula_scale_factor == sku_data[sku_fields.formula_factor] &&
                         number_result.manufacturing_rate == sku_data[sku_fields.rate] &&
-                        mLsEqual(number_result.manufacturing_lines, expected_mls))
+                        mLsEqual(number_result.manufacturing_lines, expected_mls) &&
+                        number_result.setup_cost == sku_data[sku_fields.setup_cost] &&
+                        number_result.run_cost == sku_data[sku_fields.run_cost])
                         status = "Ignore";
                     else {
                         status = "Overwrite";

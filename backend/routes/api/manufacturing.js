@@ -44,7 +44,7 @@ router.post('/', (req, res) => {
     });
 
     newGoal.save().then(goal => res.json(goal))
-        .catch(err => console.log(err.message));
+        .catch(err => res.json({success: false, message: err.message}));
 });
 
 // @route DELETE api/manufacturing/:id

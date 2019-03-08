@@ -130,6 +130,8 @@ class ImportAssistant extends Component {
                 <th>Formula#</th>
                 <th>Formula factor</th>
                 <th>ML shortnames</th>
+                <th>Setup cost</th>
+                <th>Run cost</th>
                 <th>Comment</th>
               </tr>
             </thead>
@@ -150,6 +152,8 @@ class ImportAssistant extends Component {
                     <td>{entry['formula#']}</td>
                     <td>{entry['formula factor']}</td>
                     <td>{entry['ml shortnames']}</td>
+                    <td>{entry['mfg setup cost']}</td>
+                    <td>{entry['mfg run cost']}</td>
                     <td>{entry['comment']}</td>
                   </tr>
                   <tr style={{backgroundColor:'#d3d3d3', fontStyle:'italic'}}>
@@ -164,6 +168,8 @@ class ImportAssistant extends Component {
                     <td>{entry.to_overwrite.formula ? (entry.to_overwrite.formula.number):('')}</td>
                     <td>{entry.to_overwrite['formula_scale_factor']}</td>
                     <td>{this.owSKUsMLines(entry.to_overwrite.manufacturing_lines)}</td>
+                    <td>{entry.to_overwrite['setup_cost']}</td>
+                    <td>{entry.to_overwrite['run_cost']}</td>
                     <td>{entry.to_overwrite['comment']}</td>
                   </tr>
                 </tbody>
@@ -311,6 +317,8 @@ class ImportAssistant extends Component {
                 <th>Formula#</th>
                 <th>Formula factor</th>
                 <th>ML shortnames</th>
+                <th>Setup cost</th>
+                <th>Run cost</th>
                 <th>Comment</th>
               </tr>
             </thead>
@@ -327,6 +335,8 @@ class ImportAssistant extends Component {
                     <td>{entry['formula#']}</td>
                     <td>{entry['formula factor']}</td>
                     <td>{entry['ml shortnames']}</td>
+                    <td>{entry['mfg setup cost']}</td>
+                    <td>{entry['mfg run cost']}</td>
                     <td>{entry['comment']}</td>
                   </tr>
               ))}
@@ -431,6 +441,8 @@ class ImportAssistant extends Component {
                 <th>Formula#</th>
                 <th>Formula factor</th>
                 <th>ML shortnames</th>
+                <th>Setup cost</th>
+                <th>Run cost</th>
                 <th>Comment</th>
               </tr>
             </thead>
@@ -447,6 +459,8 @@ class ImportAssistant extends Component {
                     <td>{entry['formula#']}</td>
                     <td>{entry['formula factor']}</td>
                     <td>{entry['ml shortnames']}</td>
+                    <td>{entry['mfg setup cost']}</td>
+                    <td>{entry['mfg run cost']}</td>
                     <td>{entry['comment']}</td>
                   </tr>
               ))}
@@ -553,6 +567,8 @@ class ImportAssistant extends Component {
                     <th>Formula#</th>
                     <th>Formula factor</th>
                     <th>ML shortnames</th>
+                    <th>Setup cost</th>
+                    <th>Run cost</th>
                     <th>Comment</th>
                   </tr>
                 </thead>
@@ -569,6 +585,8 @@ class ImportAssistant extends Component {
                       <td>{entry['formula#']}</td>
                       <td>{entry['formula factor']}</td>
                       <td>{entry['ml shortnames']}</td>
+                      <td>{entry['mfg setup cost']}</td>
+                      <td>{entry['mfg run cost']}</td>
                       <td>{entry['comment']}</td>
                     </tr>
                   ))}
@@ -687,6 +705,8 @@ class ImportAssistant extends Component {
                     <th>Formula#</th>
                     <th>Formula factor</th>
                     <th>ML shortnames</th>
+                    <th>Setup cost</th>
+                    <th>Run cost</th>
                     <th>Comment</th>
                   </tr>
                 </thead>
@@ -703,6 +723,8 @@ class ImportAssistant extends Component {
                       <td>{entry['formula#']}</td>
                       <td>{entry['formula factor']}</td>
                       <td>{entry['ml shortnames']}</td>
+                      <td>{entry['mfg setup cost']}</td>
+                      <td>{entry['mfg run cost']}</td>
                       <td>{entry['comment']}</td>
                     </tr>
                   ))}
@@ -821,6 +843,8 @@ class ImportAssistant extends Component {
                     <th>Formula#</th>
                     <th>Formula factor</th>
                     <th>ML shortnames</th>
+                    <th>Setup cost</th>
+                    <th>Run cost</th>
                     <th>Comment</th>
                   </tr>
                 </thead>
@@ -837,6 +861,8 @@ class ImportAssistant extends Component {
                       <td>{entry['formula#']}</td>
                       <td>{entry['formula factor']}</td>
                       <td>{entry['ml shortnames']}</td>
+                      <td>{entry['mfg setup cost']}</td>
+                      <td>{entry['mfg run cost']}</td>
                       <td>{entry['comment']}</td>
                     </tr>
                   ))}
@@ -955,6 +981,8 @@ class ImportAssistant extends Component {
                     <th>Formula#</th>
                     <th>Formula factor</th>
                     <th>ML shortnames</th>
+                    <th>Setup cost</th>
+                    <th>Run cost</th>
                     <th>Comment</th>
                   </tr>
                 </thead>
@@ -971,6 +999,8 @@ class ImportAssistant extends Component {
                       <td>{entry['formula#']}</td>
                       <td>{entry['formula factor']}</td>
                       <td>{entry['ml shortnames']}</td>
+                      <td>{entry['mfg setup cost']}</td>
+                      <td>{entry['mfg run cost']}</td>
                       <td>{entry['comment']}</td>
                     </tr>
                   ))}
