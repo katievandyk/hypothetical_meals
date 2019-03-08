@@ -186,93 +186,21 @@ router.get('/ingquantities/:id', (req, res) => {
     calculateIngredientQuantities(req, res, getIngrQtyCallback)
 })
 
+function getIngrQtyCallback(res, aggregated) {
+    res.json(aggregated)
+}
+
 function calculateIngredientQuantities(req, res, callback) {
     Goal.findById(req.params.id).lean().populate("skus_list.sku").then(goal => {
         Formula.populate(goal, {path:"skus_list.sku.formula"}).then(f_pop => {
             Ingredient.populate(f_pop, {path:"skus_list.sku.formula.ingredients_list._id"})
             .then(populated => {
-                ing_per_sku = populated.skus_list.map(sku => {
-                    ing_qty = sku.sku.formula.ingredients_list.map(ing => {
-                        extracted_ps = Helpers.extractUnits(ing._id.package_size)
-                        package_num = extracted_ps[0]
-                        package_unit = extracted_ps[1]
-
-                        extracted_fs = Helpers.extractUnits(ing.quantity)
-                        formula_qty = extracted_fs[0]
-                        formula_unit = extracted_fs[1]
-
-                        calculations = calculate(package_num, package_unit, formula_qty, formula_unit, sku)
-                        let ing_qty = calculations[0]
-                        let packages = calculations[1]
-                        let unit = calculations[2]
-                        
-                        return {ingredient: ing._id, quantity: ing_qty, packages: packages, unit: unit}
-                    })
-                    return ing_qty
-                })
-
-                groupedByIng = groupByIngredient(ing_per_sku)
-
-                const reducer = (accumulator, currentValue) => {
-                    accumulator.quantity =  accumulator.quantity + currentValue.quantity;
-                    accumulator.packages =  accumulator.packages + currentValue.packages;
-                    return accumulator
-                }
-
-                aggregated = Object.values(groupedByIng)
-                .map(one_ing => one_ing.reduce(
-                    reducer, {
-                        ingredient: one_ing[0].ingredient, 
-                        quantity: 0, 
-                        packages: 0, 
-                        unit: one_ing[0].unit}))
-
-                aggregated.forEach(ing => {
-                    ing.quantity = (Math.round(ing.quantity  * 100) / 100) + " " + ing.unit
-                    ing.packages = Math.round(ing.packages  * 100) / 100
-                    delete ing.unit
-                })
+                aggregated = Helpers.processIngredientForCalculator(populated)
 
                 callback(res, aggregated)
             })
         })
     })
-}
-
-function getIngrQtyCallback(res, aggregated) {
-    res.json(aggregated)
-}
-
-function groupByIngredient(res) {
-    var merged = [].concat.apply([], res);
-    return merged.reduce(function(r,a) {
-        r[a.ingredient] = r[a.ingredient] || [];
-        r[a.ingredient].push(a);
-        return r;
-    }, Object.create(null))
-}
-
-function calculate(package_num, package_unit, formula_qty, formula_unit, sku) {
-    let ing_qty, packages, unit
-    if(Constants.units[package_unit] == "weight" && Constants.units[formula_unit] == "weight") {
-        formula_qty_converted = formula_qty * Constants.weight_conv[formula_unit] / Constants.weight_conv[package_unit] * (sku.sku.formula_scale_factor) * sku.quantity
-        ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
-        unit = package_unit
-    }
-    else if(Constants.units[package_unit] == "volume" && Constants.units[formula_unit] == "volume") {
-        formula_qty_converted = formula_qty * Constants.volume_conv[formula_unit] / Constants.volume_conv[package_unit] * (sku.sku.formula_scale_factor) * sku.quantity
-        ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
-        unit = package_unit
-    }
-    else { // count
-        formula_qty_converted = formula_qty * (sku.sku.formula_scale_factor) * sku.quantity
-        ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted / package_num * 100) / 100)
-        unit = "count"
-    }
-    return [ing_qty, packages, unit]
 }
 
 module.exports = router;

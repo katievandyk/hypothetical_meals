@@ -158,6 +158,7 @@ function createOneSKU(sku_entry) {
             setup_cost: sku_entry[sku_fields.setup_cost],
             run_cost: sku_entry[sku_fields.run_cost]
         }).save().then(sku => {
+            sku_entry._id = sku._id
             resolve(sku_entry)
         }).catch(error => reject(error));
     });
