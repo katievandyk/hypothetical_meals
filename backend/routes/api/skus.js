@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
         let formulaSaleFactorResolved = req.body.formula_scale_factor ? req.body.formula_scale_factor : 1.0
         try {
             Parser.skuFieldsCheck(req.body.name, numberResolved, req.body.case_number, req.body.unit_number, req.body.unit_size, req.body.count_per_case, req.body.product_line,
-                req.body.formula, formulaSaleFactorResolved, req.body.manufacturing_rate, req.body.setup_cost, req.body.run_cost)
+                req.body.formula, formulaSaleFactorResolved, req.body.manufacturing_rate)
             if(req.body.manufacturing_lines && !Array.isArray(req.body.manufacturing_lines))
                 throw new Error("Manufacturing lines must be an array.")
             if(req.body.manufacturing_lines)
@@ -74,8 +74,6 @@ router.post('/', (req, res) => {
             formula_scale_factor: formulaSaleFactorResolved,
             manufacturing_lines: req.body.manufacturing_lines,
             manufacturing_rate: req.body.manufacturing_rate,
-            setup_cost: req.body.setup_cost,
-            run_cost: req.body.run_cost,
             comment: req.body.comment
         });
 
@@ -106,10 +104,6 @@ router.post('/', (req, res) => {
             })
         })
 });
-
-function executeAsync(func) {
-    setTimeout(func, 0);
-}
 
 // @route DELETE api/skus/:id
 // @desc delete an sku
@@ -161,14 +155,12 @@ router.post('/update/:id', (req, res) => {
             formula_scale_factor: req.body.formula_scale_factor != null ? req.body.formula_scale_factor : sku.formula_scale_factor,
             manufacturing_lines: req.body.manufacturing_lines != null ? req.body.manufacturing_lines : sku.manufacturing_lines,
             manufacturing_rate: req.body.manufacturing_rate != null ? req.body.manufacturing_rate : sku.manufacturing_rate,
-            setup_cost: req.body.setup_cost != null ? req.body.setup_cost : sku.setup_cost,
-            run_cost: req.body.run_cost != null ? req.body.run_cost : sku.run_cost,
             comment: req.body.comment != null ? req.body.comment : sku.comment,
         };
 
         try {
             Parser.skuFieldsCheck(updatedSku.name, updatedSku.number.toString(), updatedSku.case_number.toString(), updatedSku.unit_number.toString(), updatedSku.unit_size, updatedSku.count_per_case, updatedSku.product_line,
-                updatedSku.formula, updatedSku.formula_scale_factor, updatedSku.manufacturing_rate, updatedSku.setup_cost, updatedSku.run_cost)
+                updatedSku.formula, updatedSku.formula_scale_factor, updatedSku.manufacturing_rate)
             if(updatedSku.manufacturing_lines && !Array.isArray(updatedSku.manufacturing_lines))
                 throw new Error("Manufacturing lines must be an array.")
             if(updatedSku.manufacturing_lines)
@@ -176,8 +168,6 @@ router.post('/update/:id', (req, res) => {
                     if(!(line._id))
                         throw new Error("Manufacturing line id cannot be empty.")
                 })
-            if(updatedSku.number != sku.number)
-                throw new Error("SKU# cannot be updated.")
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
             return;
