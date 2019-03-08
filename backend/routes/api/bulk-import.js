@@ -143,7 +143,7 @@ router.post('/upload/skus', (req, res) => {
         var results_summary = generateResultsSummary(req,result)
         res.json(results_summary)
         // Trigger downloading SKU sales data
-        process.send(results_summary.Store.map(obj => obj.number));
+        process.send(results_summary.Store.records);
     })
     .catch(err => { 
         console.log(err);

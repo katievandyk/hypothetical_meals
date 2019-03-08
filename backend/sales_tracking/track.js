@@ -1,10 +1,7 @@
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const express = require('express');
-const router = express.Router();
 const mongoose = require('mongoose');
 
 const Customer = require("../models/Customer")
-const SKU = require("../models/SKU")
 const Sale = require("../models/Sale")
 var MongoClient = require('mongodb').MongoClient;
 var mongo_url = require('../configs').mongoURI
@@ -23,8 +20,6 @@ function httpGet(theUrl) {
     xmlHttp.send( null );
     return xmlHttp.responseText;
 }
-
-// getSKUSalesCL(1001, 2019)
 
 function parseSKUSaleResult(text, sku_id) {
     let table_start = "<table border=1>"
@@ -52,73 +47,6 @@ function parseSKUSaleResult(text, sku_id) {
     return table
 }
 
-function getSKUSalesCL(num, year) {
-    url = `http://hypomeals-sales.colab.duke.edu:8080/?sku=${num}&year=${year}`
-    var sales_data = httpGet(url)
-    var sales_objs = parseSKUSaleResult(sales_data)
-
-    mongoose.connect(mongo_url, options, function (err) {
-        if (err) throw err;
-        
-        console.log('Successfully connected');
-        
-        SKU.find({number: parseInt(num)}).then(sku => {
-            console.log(sku)
-            const sku_id = sku._id
-            Promise.all(sales_objs.map(entry => {
-                return new Promise(function( accept, reject) {
-                    Customer.findOne({number: parseInt(entry.cust_number)})
-                    .then(cust => {
-                        console.log(sku_id)
-                        var newSale = new Sale({
-                            sku: sku_id,
-                            customer: cust._id,
-                            year: entry.year,
-                            week: entry.week,
-                            sales: entry.sales,
-                            price_per_case: entry.price_per_case
-                        })
-                        newSale.save().then(accept).catch(reject)
-                    }).catch(reject)
-                })
-            })).then(results => {
-                console.log(results)
-                mongoose.connection.close()
-            }).catch(err => {
-                console.log("Errors storing: " + err)
-                mongoose.connection.close()
-            })
-        }).catch(err => console.log(err))
-    })
-}
-
-async function getSKUSales(num, year, sku_id) {
-    url = `http://hypomeals-sales.colab.duke.edu:8080/?sku=${num}&year=${year}`
-    var sales_data = httpGet(url)
-    var sales_objs = parseSKUSaleResult(sales_data)
-
-    Promise.all(sales_objs.map(entry => {
-        return new Promise(function( accept, reject) {
-            Customer.findOne({number: parseInt(entry.cust_number)})
-            .then(cust => {
-                var newSale = new Sale({
-                    sku: sku_id,
-                    customer: cust._id,
-                    year: entry.year,
-                    week: entry.week,
-                    sales: entry.sales,
-                    price_per_case: entry.price_per_case
-                })
-                newSale.save().then(accept).catch(reject)
-            }).catch(reject)
-        })
-    })).then(results => {
-        console.log(`Successfully cached sales for SKU ${num} for ${year}. Number of records: ` + results.length)
-    }).catch(err => {
-        console.log("Errors storing: " + err)
-    })
-}
-
 async function onCreateGetSkuSales(sku_num, sku_id) {
     mongoose.connect(mongo_url, options, function (err) {
         if (err) throw err;
@@ -128,17 +56,16 @@ async function onCreateGetSkuSales(sku_num, sku_id) {
 }
 
 async function onCreateBulkImportedSkuSales(skus_list) {
-    console.log(skus_list)
-    // mongoose.connect(mongo_url, options, function (err) {
-    //     if (err) throw err;
-    //     var sales_objs = fetchSalesDataBulk(skus_list)
-    //     cacheSalesDataBulk(sales_objs)
-    // })
+    mongoose.connect(mongo_url, options, function (err) {
+        if (err) throw err;
+        var sales_objs = fetchSalesDataBulk(skus_list)
+        cacheSalesDataBulk(sales_objs)
+    })
 }
 
 function fetchSalesDataBulk(skus_list) {
-    var sales_obj = skus_list.forEach(sku => {
-        return fetchSalesData(sku.number, sku._id)
+    var sales_obj = skus_list.map(sku => {
+        return fetchSalesData(sku['sku#'], sku._id)
     })
 
     return [].concat.apply([], sales_obj)
@@ -146,7 +73,7 @@ function fetchSalesDataBulk(skus_list) {
 
 function cacheSalesDataBulk(sales_objs) {
     Promise.all(sales_objs.map(entry => {
-        return getSalesStorePromise(entry.id, entry)
+        return getSalesStorePromise(entry)
     })).then(results => {
         console.log(`Successfully cached bulk imported SKUs. Number of records: ` + results.length)
     }).catch(err => {
@@ -245,6 +172,5 @@ process.on('message', async (message) => {
         onCreateGetSkuSales(message.number, message.id)
   });
 
+// Uncomment the following line to get and store customers in DB.
 // getCustomers()
-
-// module.exports = router;
