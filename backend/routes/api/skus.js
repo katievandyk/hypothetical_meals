@@ -3,6 +3,8 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Helper = require('../../bulk_import/helpers');
 const Parser = require('../../bulk_import/parser')
+const Track = require('../../sales_tracking/track')
+const { fork } = require('child_process');
 
 // SKU Model
 const SKU = require('../../models/SKU');
@@ -13,6 +15,8 @@ const Ingredient = require('../../models/Ingredient');
 // Product Line Model
 const ProductLine = require('../../models/ProductLine');
 const Goal = require('../../models/Goal');
+
+const process = fork('backend/sales_tracking/track.js');
 
 // @route GET api/skus
 // @desc get all SKUs
@@ -91,11 +95,19 @@ router.post('/', (req, res) => {
                     }
                 })
                 if(!error_thrown)
-                    newSKU.save().then(sku => res.json(sku))
+                    newSKU.save().then(sku => {
+                        res.json(sku)
+                        // Trigger downloading SKU sales data
+                        process.send({ number: sku.number, id: sku._id });
+                    })
                     .catch(err => res.status(404).json({success: false, message: err.message}));
             })
         })
 });
+
+function executeAsync(func) {
+    setTimeout(func, 0);
+}
 
 // @route DELETE api/skus/:id
 // @desc delete an sku

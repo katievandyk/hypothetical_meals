@@ -17,7 +17,6 @@ var options = {
     replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 1000000000 } }
   };
 
-
 function httpGet(theUrl) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
@@ -25,14 +24,13 @@ function httpGet(theUrl) {
     return xmlHttp.responseText;
 }
 
-getSKUSales(1001, 2019)
+// getSKUSalesCL(1001, 2019)
 
-function parseSKUSaleResult(text) {
+function parseSKUSaleResult(text, sku_id) {
     let table_start = "<table border=1>"
     let table_end = "</table>"
     let index_table_start = text.indexOf(table_start)
     let index_table_end = text.indexOf(table_end)
-    console.log(index_table_start + " " + index_table_end)
 
     var table = text.substring(index_table_start, index_table_end)
     table = table.split("\n").splice(1).filter(line => line.length != 0)
@@ -46,14 +44,15 @@ function parseSKUSaleResult(text) {
             cust_number: fields[3],
             cust_name: fields[4],
             sales: fields[5],
-            price_per_case: fields[6]
+            price_per_case: fields[6],
+            sku_id: sku_id
         }
         return obj;
     })
     return table
 }
 
-function getSKUSales(num, year) {
+function getSKUSalesCL(num, year) {
     url = `http://hypomeals-sales.colab.duke.edu:8080/?sku=${num}&year=${year}`
     var sales_data = httpGet(url)
     var sales_objs = parseSKUSaleResult(sales_data)
@@ -65,12 +64,14 @@ function getSKUSales(num, year) {
         
         SKU.find({number: parseInt(num)}).then(sku => {
             console.log(sku)
+            const sku_id = sku._id
             Promise.all(sales_objs.map(entry => {
                 return new Promise(function( accept, reject) {
                     Customer.findOne({number: parseInt(entry.cust_number)})
                     .then(cust => {
+                        console.log(sku_id)
                         var newSale = new Sale({
-                            sku: sku._id,
+                            sku: sku_id,
                             customer: cust._id,
                             year: entry.year,
                             week: entry.week,
@@ -84,11 +85,121 @@ function getSKUSales(num, year) {
                 console.log(results)
                 mongoose.connection.close()
             }).catch(err => {
-                console.log("Errors storing")
+                console.log("Errors storing: " + err)
                 mongoose.connection.close()
             })
-        })
+        }).catch(err => console.log(err))
     })
+}
+
+async function getSKUSales(num, year, sku_id) {
+    url = `http://hypomeals-sales.colab.duke.edu:8080/?sku=${num}&year=${year}`
+    var sales_data = httpGet(url)
+    var sales_objs = parseSKUSaleResult(sales_data)
+
+    Promise.all(sales_objs.map(entry => {
+        return new Promise(function( accept, reject) {
+            Customer.findOne({number: parseInt(entry.cust_number)})
+            .then(cust => {
+                var newSale = new Sale({
+                    sku: sku_id,
+                    customer: cust._id,
+                    year: entry.year,
+                    week: entry.week,
+                    sales: entry.sales,
+                    price_per_case: entry.price_per_case
+                })
+                newSale.save().then(accept).catch(reject)
+            }).catch(reject)
+        })
+    })).then(results => {
+        console.log(`Successfully cached sales for SKU ${num} for ${year}. Number of records: ` + results.length)
+    }).catch(err => {
+        console.log("Errors storing: " + err)
+    })
+}
+
+async function onCreateGetSkuSales(sku_num, sku_id) {
+    mongoose.connect(mongo_url, options, function (err) {
+        if (err) throw err;
+        var sales_objs = fetchSalesData(sku_num, sku_id)
+        cacheSalesData(sku_id, sku_num, sales_objs)
+    })
+}
+
+async function onCreateBulkImportedSkuSales(skus_list) {
+    console.log(skus_list)
+    // mongoose.connect(mongo_url, options, function (err) {
+    //     if (err) throw err;
+    //     var sales_objs = fetchSalesDataBulk(skus_list)
+    //     cacheSalesDataBulk(sales_objs)
+    // })
+}
+
+function fetchSalesDataBulk(skus_list) {
+    var sales_obj = skus_list.forEach(sku => {
+        return fetchSalesData(sku.number, sku._id)
+    })
+
+    return [].concat.apply([], sales_obj)
+}
+
+function cacheSalesDataBulk(sales_objs) {
+    Promise.all(sales_objs.map(entry => {
+        return getSalesStorePromise(entry.id, entry)
+    })).then(results => {
+        console.log(`Successfully cached bulk imported SKUs. Number of records: ` + results.length)
+    }).catch(err => {
+        console.log("Errors storing: " + err)
+    })
+}
+
+
+function fetchSalesData(sku_num, sku_id) {
+    var sales_objs = []
+
+    for (year = 1999; year <= 2019; year++) {
+        url = `http://hypomeals-sales.colab.duke.edu:8080/?sku=${sku_num}&year=${year}`
+        var sales_data = httpGet(url)
+        Array.prototype.push.apply(sales_objs,parseSKUSaleResult(sales_data, sku_id)); 
+        sleep(200)
+    }
+
+    return sales_objs
+}
+
+function cacheSalesData(sku_id, sku_num, sales_objs) {
+    Promise.all(sales_objs.map(entry => {
+        return getSalesStorePromise(entry)
+    })).then(results => {
+        console.log(`Successfully cached sales for SKU ${sku_num}. Number of records: ` + results.length)
+    }).catch(err => {
+        console.log("Errors storing: " + err)
+    })
+}
+
+function getSalesStorePromise(entry) {
+    return new Promise(function( accept, reject) {
+        Customer.findOne({number: parseInt(entry.cust_number)})
+        .then(cust => {
+            var newSale = new Sale({
+                sku: entry.sku_id,
+                customer: cust._id,
+                year: entry.year,
+                week: entry.week,
+                sales: entry.sales,
+                price_per_case: entry.price_per_case
+            })
+            newSale.save().then(accept).catch(reject)
+        }).catch(reject)
+    })
+}
+
+
+function sleep(ms) 
+{
+  var e = new Date().getTime() + (ms);
+  while (new Date().getTime() <= e) {}
 }
                                         
 function getCustomers() {
@@ -127,8 +238,13 @@ function parseCustomersData(text) {
     return table
 }
 
+process.on('message', async (message) => {
+    if (Array.isArray(message)) 
+        onCreateBulkImportedSkuSales(message)
+    else
+        onCreateGetSkuSales(message.number, message.id)
+  });
+
 // getCustomers()
 
-// httpGet("http://hypomeals-sales.colab.duke.edu:8080/?sku=34&year=2019", printResult)
-
-module.exports = router;
+// module.exports = router;
