@@ -2,8 +2,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://admin:admin123@ds243501.mlab.com:43501/hypothetical_meals_prod"
-// require('../configs').mongoURI;
+var url = require('../configs').mongoURI;
 
 MongoClient.connect(url, function(err, db) {
   if (err) throw err;
