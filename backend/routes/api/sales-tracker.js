@@ -21,7 +21,7 @@ function groupByYear(res) {
 // request body fields:
 // - skus: list of sku ids to get sales summary for
 // returns:
-// - [{sku: sku_object, summary: [one entry per year for 10 years]}]
+// - [{sku: sku_id, entries: list of objects- each representing aggregated calculations for one year, summary: [one entry per year for 10 years]}]
 router.post('/summary', (req, res) => {
     Promise.all(req.body.skus.map(sku_id => {
         return calculateAggregatedForOneSKU(sku_id, 2009, 2019)
@@ -68,7 +68,7 @@ function calculateSummaryStats(sku_id, entries) {
                         summary.avgerage_profit = summary.avgerage_revenue - summary.cogs
                         summary.profit_margin = summary.avgerage_revenue / summary.cogs - 1
                         delete summary.sku
-                        accept({sku: sku_id, yearly: entries, summary: summary})
+                        accept({sku: sku_id, entries: entries, summary: summary})
                     })
                 })
             })
@@ -83,7 +83,7 @@ function calculateSummaryStats(sku_id, entries) {
 // - start_year: start year
 // - end_year: end year
 // returns:
-// - 
+// - [{sku: sku_id, entries: list of objects- each representing a weekly entry, summary: [one entry per year for 10 years]}]
 router.post('/detailed/:sku_id', (req, res) => {
     var saleFindPromise = Sale.find({sku: req.params.sku_id}).where('year').gte(req.body.start_year).lte(req.body.end_year)
     if(req.body.customer) {
