@@ -14,14 +14,14 @@ var options = {
     replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 1000000000 } }
   };
 
-function httpGet(theUrl) {
+module.exports.httpGet = httpGet = function(theUrl) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
     xmlHttp.send( null );
     return xmlHttp.responseText;
 }
 
-function parseSKUSaleResult(text, sku_id) {
+module.exports.parseSKUSaleResult = parseSKUSaleResult = function(text, sku_id) {
     let table_start = "<table border=1>"
     let table_end = "</table>"
     let index_table_start = text.indexOf(table_start)
@@ -123,7 +123,7 @@ function getSalesStorePromise(entry) {
 }
 
 
-function sleep(ms) 
+module.exports.sleep = sleep = function(ms) 
 {
   var e = new Date().getTime() + (ms);
   while (new Date().getTime() <= e) {}
@@ -151,7 +151,7 @@ function getCustomers() {
     
 }
 
-function parseCustomersData(text) {
+module.exports.parseCustomersData = parseCustomersData = function(text) {
     var table = text.split("\n").splice(1).filter(line => line.length != 0)
     table = table.map(line => {
         var l = line.substring(8)
@@ -168,9 +168,24 @@ function parseCustomersData(text) {
 process.on('message', async (message) => {
     if (Array.isArray(message)) 
         onCreateBulkImportedSkuSales(message)
-    else
+    else if(message.event == "new_sku")
         onCreateGetSkuSales(message.number, message.id)
+    else if(message.event == "delete_sku")
+        onDeleteRemoveSKUCache(message.id)
   });
+
+async function onDeleteRemoveSKUCache(sku_id) {
+    mongoose.connect(mongo_url, options, function (err) {
+        if (err) throw err;
+        Sale.find({sku: sku_id}).then(sales => {
+            Promise.all(sales.map(sale => {
+                return new Promise(function(accept, reject) {
+                    Sale.findByIdAndDelete(sale._id).then(accept).catch(reject);
+                })
+            })).then(result => console.log("Removed SKU sales from cache.")).catch(err => console.log(err.message))
+        })
+    })
+}
 
 // Uncomment the following line to get and store customers in DB.
 // getCustomers()
