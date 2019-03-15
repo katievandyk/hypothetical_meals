@@ -6,7 +6,6 @@ var Parser = require('../../bulk_import/parser');
 var Uploader = require('../../bulk_import/upload');
 
 const { spawn } = require('child_process');
-// const process = fork('backend/sales_tracking/track.js');
 
 function groupByStatus(res) {
     return res.reduce(function(r,a) {
@@ -143,7 +142,7 @@ router.post('/upload/skus', (req, res) => {
         var results_summary = generateResultsSummary(req,result)
         res.json(results_summary)
         // Trigger downloading SKU sales data
-        const ls = spawn('node',['backend/sales_tracking/daily_track.js']);
+        const ls = spawn('node',['sales_tracking/daily_track.js']);
         ls.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
         });

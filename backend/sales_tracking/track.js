@@ -152,6 +152,15 @@ async function onDeleteRemoveSKUCache(sku_id) {
     })
 }
 
+console.log(process.argv)
+if(process.argv[2] == "new_sku") {
+    onCreateGetSkuSales(process.argv[3], process.argv[4])
+}
+else if(process.argv[2] == "delete_sku") {
+    console.log("deleting")
+    onDeleteRemoveSKUCache(process.argv[3])
+}
+
 
 // Uncomment the following line to get and store customers in DB.
 // getCustomers()

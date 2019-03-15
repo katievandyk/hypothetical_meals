@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Helper = require('../../bulk_import/helpers');
 const Parser = require('../../bulk_import/parser')
 const Track = require('../../sales_tracking/track')
-const { fork } = require('child_process');
+const { spawn } = require('child_process');
 
 // SKU Model
 const SKU = require('../../models/SKU');
@@ -15,8 +15,6 @@ const Ingredient = require('../../models/Ingredient');
 // Product Line Model
 const ProductLine = require('../../models/ProductLine');
 const Goal = require('../../models/Goal');
-
-const process = fork('backend/sales_tracking/track.js');
 
 // @route GET api/skus
 // @desc get all SKUs
@@ -100,7 +98,19 @@ router.post('/', (req, res) => {
                     newSKU.save().then(sku => {
                         res.json(sku)
                         // Trigger downloading SKU sales data
-                        process.send({ event: "new_sku", number: sku.number, id: sku._id });
+                        // process.send({ event: "new_sku", number: sku.number, id: sku._id });
+                        const spawned = spawn('node',['sales_tracking/track.js',"new_sku",sku.number, sku._id]);
+                        spawned.stdout.on('data', (data) => {
+                            console.log(`stdout: ${data}`);
+                        });
+                
+                        spawned.stderr.on('data', (data) => {
+                            console.log(`stderr: ${data}`);
+                        });
+                        
+                        spawned.on('close', (code) => {
+                            console.log(`child process exited with code ${code}`);
+                        });
                     })
                     .catch(err => res.status(404).json({success: false, message: err.message}));
             })
@@ -134,7 +144,19 @@ router.delete('/:id', (req, res) => {
                 SKU.findById(req.params.id)
                 .then(sku => {
                     sku.remove().then(() => res.json({success: true}));
-                    process.send({ event: "delete_sku", id: sku._id });
+                    // process.send({ event: "delete_sku", id: sku._id });
+                    const spawned = spawn('node',['sales_tracking/track.js',"delete_sku", sku._id.toString()]);
+                    spawned.stdout.on('data', (data) => {
+                        console.log(`stdout: ${data}`);
+                    });
+            
+                    spawned.stderr.on('data', (data) => {
+                        console.log(`stderr: ${data}`);
+                    });
+                    
+                    spawned.on('close', (code) => {
+                        console.log(`child process exited with code ${code}`);
+                    });
                 })
             }).catch(err => res.status(404).json({success: false, message: err.message}))
         })
