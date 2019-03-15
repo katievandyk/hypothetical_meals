@@ -142,16 +142,17 @@ router.post('/upload/skus', (req, res) => {
         var results_summary = generateResultsSummary(req,result)
         res.json(results_summary)
         // Trigger downloading SKU sales data
-        const ls = spawn('node',['sales_tracking/daily_track.js']);
-        ls.stdout.on('data', (data) => {
+        var skus_args = results_summary.Store.records.map(sku => sku["sku#"] + "|" + sku._id).join(",")
+        const spawned = spawn('node',['sales_tracking/track.js',"bulk_skus",skus_args]);
+        spawned.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
         });
 
-        ls.stderr.on('data', (data) => {
+        spawned.stderr.on('data', (data) => {
             console.log(`stderr: ${data}`);
         });
         
-        ls.on('close', (code) => {
+        spawned.on('close', (code) => {
             console.log(`child process exited with code ${code}`);
         });
     })

@@ -98,7 +98,6 @@ router.post('/', (req, res) => {
                     newSKU.save().then(sku => {
                         res.json(sku)
                         // Trigger downloading SKU sales data
-                        // process.send({ event: "new_sku", number: sku.number, id: sku._id });
                         const spawned = spawn('node',['sales_tracking/track.js',"new_sku",sku.number, sku._id]);
                         spawned.stdout.on('data', (data) => {
                             console.log(`stdout: ${data}`);

@@ -66,7 +66,7 @@ async function onCreateBulkImportedSkuSales(skus_list) {
 function fetchSalesDataBulk(skus_list) {
     var sales_obj = []
     skus_list.forEach(sku => {
-        sales_obj.push(fetchSalesData(sku['sku#'], sku._id))
+        sales_obj.push(fetchSalesData(sku.number, sku._id))
     });
 
     return [].concat.apply([], sales_obj)
@@ -152,15 +152,17 @@ async function onDeleteRemoveSKUCache(sku_id) {
     })
 }
 
-console.log(process.argv)
 if(process.argv[2] == "new_sku") {
     onCreateGetSkuSales(process.argv[3], process.argv[4])
 }
 else if(process.argv[2] == "delete_sku") {
-    console.log("deleting")
     onDeleteRemoveSKUCache(process.argv[3])
 }
+else if(process.argv[2] == "bulk_skus") {
+    var skus = process.argv[3].split(",").map(info => {
+        var temp = info.split("|")
+        return {number: temp[0], _id: temp[1]}
+    })
 
-
-// Uncomment the following line to get and store customers in DB.
-// getCustomers()
+    onCreateBulkImportedSkuSales(skus)
+}
