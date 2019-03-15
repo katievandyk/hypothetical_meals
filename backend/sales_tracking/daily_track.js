@@ -29,6 +29,7 @@ function fetchSalesDataBulk(skus_list) {
 }
 
 function dailyCacheUpdate() {
+    console.log("Updating cache.")
     mongoose.connect(mongo_url, options, function (err) {
         if (err) throw err;
         

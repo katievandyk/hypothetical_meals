@@ -6,7 +6,7 @@ var Parser = require('../../bulk_import/parser');
 var Uploader = require('../../bulk_import/upload');
 
 const { fork } = require('child_process');
-const process = fork('backend/sales_tracking/track.js');
+const process = fork('backend/sales_tracking/track.js',[],{silent:true});
 
 function groupByStatus(res) {
     return res.reduce(function(r,a) {
