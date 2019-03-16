@@ -22,13 +22,13 @@ import Select from 'react-select';
 class SalesReportGenerate extends React.Component {
   constructor(props){
       super(props)
+      this.modifyPlines = this.modifyPlines.bind(this);
       this.state = {
         modal: false,
         showAllPLines: false,
         showAllCustomers: true,
         allCustomersChecked: true,
         selected_plines:[],
-        not_selected_plines:[],
         selected_customers: []
       };
   };
@@ -39,9 +39,10 @@ class SalesReportGenerate extends React.Component {
 
   toggle = () => {
     const { plines } = this.props.plines;
+    var plines_options = Object.values(plines).flat();
     this.setState({
       modal: !this.state.modal,
-      selected_plines: plines
+      selected_plines: plines_options
     });
   }
 
@@ -52,10 +53,25 @@ class SalesReportGenerate extends React.Component {
   }
 
   toggleCustomers = () => {
-    alert("HI")
     this.setState({
       allCustomersChecked: !this.state.allCustomersChecked
     });
+  }
+
+  modifyPlines = (e, pline) => {
+     var new_selected_plines = [];
+     if(this.state.selected_plines.length > 0){
+       new_selected_plines = this.state.selected_plines;
+     }
+     if(e.target.checked){
+       new_selected_plines = new_selected_plines.concat(pline);
+     }
+     else{
+       new_selected_plines = new_selected_plines.filter(({_id}) => _id !== pline._id);
+     }x
+     this.setState({
+       selected_plines: new_selected_plines
+     });
   }
 
   genOptions = (customers) => {
@@ -104,9 +120,9 @@ class SalesReportGenerate extends React.Component {
                                 </Row>
                           {this.state.showAllPLines &&
                              <div style={{marginLeft: '20px'}}>
-                               {this.state.selected_plines.map((pline) => (
+                               {this.props.plines.plines.map((pline) => (
                                  <CustomInput key={pline._id} type="checkbox" id={pline._id} label={pline.name}
-                                 defaultChecked={true}/>
+                                 defaultChecked={true} onClick={e => this.modifyPlines(e, pline)}/>
                                ))}
                              </div>}
                           </div>
@@ -116,7 +132,7 @@ class SalesReportGenerate extends React.Component {
                         <div style={{paddingBottom: '1.5em'}}>
                         <Row style={{marginBottom: '10px'}}>
                             <Col md={6}>
-                                  <CustomInput id={100} checked={this.state.allCustomersChecked} type="radio" name="cust" defaultChecked onChange={e => this.setState({ allCustomersChecked: true })} label='Select all'/>
+                                  <CustomInput id={100} checked={this.state.allCustomersChecked} type="radio" name="cust" onChange={e => this.setState({ allCustomersChecked: true })} label='Select all'/>
                             </Col>
                         </Row>
                         <Row style={{marginBottom: '10px'}}>
@@ -144,9 +160,13 @@ class SalesReportGenerate extends React.Component {
   }
  }
 
-const mapStateToProps = state => ({
+SalesReportGenerate.propTypes = {
   getPLines: PropTypes.func.isRequired,
-  plines: state.plines,
+  plines: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+  plines: state.plines
 });
 
 export default connect(mapStateToProps, {getPLines})(SalesReportGenerate);

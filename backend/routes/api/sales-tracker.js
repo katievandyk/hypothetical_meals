@@ -17,7 +17,7 @@ function groupByYear(res) {
     }, Object.create(null))
 }
 
-// @route POST api/sales/sumnmary
+// @route POST api/sales/summary
 // request body fields:
 // - skus: list of sku ids to get sales summary for
 // returns:
@@ -65,7 +65,7 @@ function calculateSummaryStats(sku_id, entries) {
                     calculateIngredients(goals, summary.sku_id).then(calc => {
                         var reduced_res = calc.reduce(sumCalculatorCosts, 0)
                         summary.cogs = summary.sku.run_cost + summary.average_setup_cost + reduced_res
-                        summary.avgerage_profit = summary.avgerage_revenue - summary.cogs
+                        summary.average_profit = summary.avgerage_revenue - summary.cogs
                         summary.profit_margin = summary.avgerage_revenue / summary.cogs - 1
                         delete summary.sku
                         accept({sku: sku_id, entries: entries, summary: summary})
