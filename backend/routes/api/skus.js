@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Helper = require('../../bulk_import/helpers');
 const Parser = require('../../bulk_import/parser')
 const Track = require('../../sales_tracking/track')
-const { fork } = require('child_process');
+const { spawn } = require('child_process');
 
 // SKU Model
 const SKU = require('../../models/SKU');
@@ -15,8 +15,6 @@ const Ingredient = require('../../models/Ingredient');
 // Product Line Model
 const ProductLine = require('../../models/ProductLine');
 const Goal = require('../../models/Goal');
-
-const process = fork('backend/sales_tracking/track.js');
 
 // @route GET api/skus
 // @desc get all SKUs
@@ -47,7 +45,7 @@ router.post('/', (req, res) => {
         let formulaSaleFactorResolved = req.body.formula_scale_factor ? req.body.formula_scale_factor : 1.0
         try {
             Parser.skuFieldsCheck(req.body.name, numberResolved, req.body.case_number, req.body.unit_number, req.body.unit_size, req.body.count_per_case, req.body.product_line,
-                req.body.formula, formulaSaleFactorResolved, req.body.manufacturing_rate)
+                req.body.formula, formulaSaleFactorResolved, req.body.manufacturing_rate, req.body.setup_cost, req.body.run_cost)
             if(req.body.manufacturing_lines && !Array.isArray(req.body.manufacturing_lines))
                 throw new Error("Manufacturing lines must be an array.")
             if(req.body.manufacturing_lines)
@@ -74,6 +72,8 @@ router.post('/', (req, res) => {
             formula_scale_factor: formulaSaleFactorResolved,
             manufacturing_lines: req.body.manufacturing_lines,
             manufacturing_rate: req.body.manufacturing_rate,
+            setup_cost: req.body.setup_cost,
+            run_cost: req.body.run_cost,
             comment: req.body.comment
         });
 
@@ -98,7 +98,18 @@ router.post('/', (req, res) => {
                     newSKU.save().then(sku => {
                         res.json(sku)
                         // Trigger downloading SKU sales data
-                        process.send({ number: sku.number, id: sku._id });
+                        const spawned = spawn('node',['sales_tracking/track.js',"new_sku",sku.number, sku._id]);
+                        spawned.stdout.on('data', (data) => {
+                            console.log(`stdout: ${data}`);
+                        });
+                
+                        spawned.stderr.on('data', (data) => {
+                            console.log(`stderr: ${data}`);
+                        });
+                        
+                        spawned.on('close', (code) => {
+                            console.log(`child process exited with code ${code}`);
+                        });
                     })
                     .catch(err => res.status(404).json({success: false, message: err.message}));
             })
@@ -130,9 +141,22 @@ router.delete('/:id', (req, res) => {
             })
             .then(result => {
                 SKU.findById(req.params.id)
-                .then(sku => sku.remove().then(
-                    () => res.json({success: true}))
-                )
+                .then(sku => {
+                    sku.remove().then(() => res.json({success: true}));
+                    // process.send({ event: "delete_sku", id: sku._id });
+                    const spawned = spawn('node',['sales_tracking/track.js',"delete_sku", sku._id.toString()]);
+                    spawned.stdout.on('data', (data) => {
+                        console.log(`stdout: ${data}`);
+                    });
+            
+                    spawned.stderr.on('data', (data) => {
+                        console.log(`stderr: ${data}`);
+                    });
+                    
+                    spawned.on('close', (code) => {
+                        console.log(`child process exited with code ${code}`);
+                    });
+                })
             }).catch(err => res.status(404).json({success: false, message: err.message}))
         })
     }).catch(err => res.status(404).json({success: false, message: err.message}))
@@ -155,12 +179,14 @@ router.post('/update/:id', (req, res) => {
             formula_scale_factor: req.body.formula_scale_factor != null ? req.body.formula_scale_factor : sku.formula_scale_factor,
             manufacturing_lines: req.body.manufacturing_lines != null ? req.body.manufacturing_lines : sku.manufacturing_lines,
             manufacturing_rate: req.body.manufacturing_rate != null ? req.body.manufacturing_rate : sku.manufacturing_rate,
+            setup_cost: req.body.setup_cost != null ? req.body.setup_cost : sku.setup_cost,
+            run_cost: req.body.run_cost != null ? req.body.run_cost : sku.run_cost,
             comment: req.body.comment != null ? req.body.comment : sku.comment,
         };
 
         try {
             Parser.skuFieldsCheck(updatedSku.name, updatedSku.number.toString(), updatedSku.case_number.toString(), updatedSku.unit_number.toString(), updatedSku.unit_size, updatedSku.count_per_case, updatedSku.product_line,
-                updatedSku.formula, updatedSku.formula_scale_factor, updatedSku.manufacturing_rate)
+                updatedSku.formula, updatedSku.formula_scale_factor, updatedSku.manufacturing_rate, updatedSku.setup_cost, updatedSku.run_cost)
             if(updatedSku.manufacturing_lines && !Array.isArray(updatedSku.manufacturing_lines))
                 throw new Error("Manufacturing lines must be an array.")
             if(updatedSku.manufacturing_lines)

@@ -14,14 +14,14 @@ var options = {
     replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 1000000000 } }
   };
 
-function httpGet(theUrl) {
+module.exports.httpGet = httpGet = function(theUrl) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
     xmlHttp.send( null );
     return xmlHttp.responseText;
 }
 
-function parseSKUSaleResult(text, sku_id) {
+module.exports.parseSKUSaleResult = parseSKUSaleResult = function(text, sku_id) {
     let table_start = "<table border=1>"
     let table_end = "</table>"
     let index_table_start = text.indexOf(table_start)
@@ -64,9 +64,10 @@ async function onCreateBulkImportedSkuSales(skus_list) {
 }
 
 function fetchSalesDataBulk(skus_list) {
-    var sales_obj = skus_list.map(sku => {
-        return fetchSalesData(sku['sku#'], sku._id)
-    })
+    var sales_obj = []
+    skus_list.forEach(sku => {
+        sales_obj.push(fetchSalesData(sku.number, sku._id))
+    });
 
     return [].concat.apply([], sales_obj)
 }
@@ -82,7 +83,7 @@ function cacheSalesDataBulk(sales_objs) {
 }
 
 
-function fetchSalesData(sku_num, sku_id) {
+module.exports.fetchSalesData = fetchSalesData = function(sku_num, sku_id) {
     var sales_objs = []
 
     for (year = 1999; year <= 2019; year++) {
@@ -105,7 +106,7 @@ function cacheSalesData(sku_id, sku_num, sales_objs) {
     })
 }
 
-function getSalesStorePromise(entry) {
+module.exports.getSalesStorePromise = getSalesStorePromise = function(entry) {
     return new Promise(function( accept, reject) {
         Customer.findOne({number: parseInt(entry.cust_number)})
         .then(cust => {
@@ -123,54 +124,45 @@ function getSalesStorePromise(entry) {
 }
 
 
-function sleep(ms) 
+module.exports.sleep = sleep = function(ms) 
 {
   var e = new Date().getTime() + (ms);
   while (new Date().getTime() <= e) {}
-}
-                                        
-function getCustomers() {
-    url = "http://hypomeals-sales.colab.duke.edu:8080/customers"
-    var customer_data = httpGet(url)
-    customer_data = parseCustomersData(customer_data)
-
-    MongoClient.connect(mongo_url, function(err, db) {
-        var dbo = db.db(mong_db)
-        Promise.all(customer_data.map(entry => {
-            new Promise(function( accept, reject) {
-                var newCustomer = new Customer(entry)
-                dbo.collection("customers").insertOne(newCustomer).then(accept).catch(reject)
-            })
-        })).then(result => {
-            db.close()
-            console.log("Inserted all customers")
-        }).catch(err => {
-            db.close()
-        })
-    })
-    
-}
-
-function parseCustomersData(text) {
-    var table = text.split("\n").splice(1).filter(line => line.length != 0)
-    table = table.map(line => {
-        var l = line.substring(8)
-        var fields = l.split("<td>")
-        var obj = {
-            number: fields[0],
-            name: fields[1]
-        }
-        return obj;
-    })
-    return table
 }
 
 process.on('message', async (message) => {
     if (Array.isArray(message)) 
         onCreateBulkImportedSkuSales(message)
-    else
+    else if(message.event == "new_sku")
         onCreateGetSkuSales(message.number, message.id)
+    else if(message.event == "delete_sku")
+        onDeleteRemoveSKUCache(message.id)
   });
 
-// Uncomment the following line to get and store customers in DB.
-// getCustomers()
+async function onDeleteRemoveSKUCache(sku_id) {
+    mongoose.connect(mongo_url, options, function (err) {
+        if (err) throw err;
+        Sale.find({sku: sku_id}).then(sales => {
+            Promise.all(sales.map(sale => {
+                return new Promise(function(accept, reject) {
+                    Sale.findByIdAndDelete(sale._id).then(accept).catch(reject);
+                })
+            })).then(result => console.log("Removed SKU sales from cache.")).catch(err => console.log(err.message))
+        })
+    })
+}
+
+if(process.argv[2] == "new_sku") {
+    onCreateGetSkuSales(process.argv[3], process.argv[4])
+}
+else if(process.argv[2] == "delete_sku") {
+    onDeleteRemoveSKUCache(process.argv[3])
+}
+else if(process.argv[2] == "bulk_skus") {
+    var skus = process.argv[3].split(",").map(info => {
+        var temp = info.split("|")
+        return {number: temp[0], _id: temp[1]}
+    })
+
+    onCreateBulkImportedSkuSales(skus)
+}

@@ -48,12 +48,16 @@ function calculateAggregatedForOneSKU(sku_id, start_year, end_year) {
 
 function calculateSummaryStats(sku_id, entries) {
     return new Promise(function(accept, reject) {
-        ManufacturingActivity.find({"sku" : sku_id}).lean()
+        SKU.findById(sku_id).then(sku => {
+            ManufacturingActivity.find({"sku" : sku_id}).lean()
             .then(activities => {
                 var activity_goals = activities.map(a => a.goal_id)
-
                 Goal.find({_id: {$in: activity_goals}}).lean().populate("skus_list.sku").then(goals => {
                     var summary = goals.reduce(calculateAvgRunSize, {run_size: 0, runs: 0, sku_id: sku_id})
+                    if(goals.length == 0) {
+                        summary.sku = sku
+                        summary.average_run_size = 10*sku.manufacturing_rate
+                    }
                     summary.average_setup_cost = summary.sku.setup_cost / summary.average_run_size
                     summary.sum_revenue = entries.reduce((total, item) => {
                         return total + item.revenue
@@ -72,6 +76,7 @@ function calculateSummaryStats(sku_id, entries) {
                     })
                 })
             })
+        })
     })
 }
 
