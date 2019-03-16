@@ -3,6 +3,8 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Helper = require('../../bulk_import/helpers');
 const Parser = require('../../bulk_import/parser')
+const Track = require('../../sales_tracking/track')
+const { spawn } = require('child_process');
 
 // SKU Model
 const SKU = require('../../models/SKU');
@@ -93,7 +95,22 @@ router.post('/', (req, res) => {
                     }
                 })
                 if(!error_thrown)
-                    newSKU.save().then(sku => res.json(sku))
+                    newSKU.save().then(sku => {
+                        res.json(sku)
+                        // Trigger downloading SKU sales data
+                        const spawned = spawn('node',['sales_tracking/track.js',"new_sku",sku.number, sku._id]);
+                        spawned.stdout.on('data', (data) => {
+                            console.log(`stdout: ${data}`);
+                        });
+                
+                        spawned.stderr.on('data', (data) => {
+                            console.log(`stderr: ${data}`);
+                        });
+                        
+                        spawned.on('close', (code) => {
+                            console.log(`child process exited with code ${code}`);
+                        });
+                    })
                     .catch(err => res.status(404).json({success: false, message: err.message}));
             })
         })
@@ -124,9 +141,22 @@ router.delete('/:id', (req, res) => {
             })
             .then(result => {
                 SKU.findById(req.params.id)
-                .then(sku => sku.remove().then(
-                    () => res.json({success: true}))
-                )
+                .then(sku => {
+                    sku.remove().then(() => res.json({success: true}));
+                    // process.send({ event: "delete_sku", id: sku._id });
+                    const spawned = spawn('node',['sales_tracking/track.js',"delete_sku", sku._id.toString()]);
+                    spawned.stdout.on('data', (data) => {
+                        console.log(`stdout: ${data}`);
+                    });
+            
+                    spawned.stderr.on('data', (data) => {
+                        console.log(`stderr: ${data}`);
+                    });
+                    
+                    spawned.on('close', (code) => {
+                        console.log(`child process exited with code ${code}`);
+                    });
+                })
             }).catch(err => res.status(404).json({success: false, message: err.message}))
         })
     }).catch(err => res.status(404).json({success: false, message: err.message}))
@@ -164,8 +194,6 @@ router.post('/update/:id', (req, res) => {
                     if(!(line._id))
                         throw new Error("Manufacturing line id cannot be empty.")
                 })
-            if(updatedSku.number != sku.number)
-                throw new Error("SKU# cannot be updated.")
         } catch(err) {
             res.status(404).json({success: false, message: err.message})
             return;

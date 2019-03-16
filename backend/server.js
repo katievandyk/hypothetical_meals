@@ -39,6 +39,9 @@ app.use(passport.initialize());
 // Passport User Routes
 app.use("/api/users", users);
 
+const sales = require('./routes/api/sales-tracker')
+app.use("/api/sales", sales)
+
 // // append /api for our http requests
 // app.use("/api", router);
 
