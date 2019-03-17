@@ -7,6 +7,10 @@ import '../styles.css';
 
 import { Provider } from 'react-redux';
 import store from '../store';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import { getSummary } from '../actions/salesActions';
 
 import {
   Container, Row, Col, Button,
@@ -16,9 +20,22 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class SalesReport extends Component {
-  state = {
-    reportGen: false,
-  };
+
+    constructor(props){
+        super(props)
+        this.generateReport = this.generateReport.bind(this);
+        this.state = {
+             reportGen: false,
+        };
+    };
+
+    generateReport = (sku_ids) => {
+        this.props.getSummary({skus: sku_ids})
+        alert(JSON.stringify(this.props))
+        this.setState({
+          reportGen: true,
+        });
+    }
 
    render() {
      if(!this.state.reportGen){
@@ -34,7 +51,7 @@ class SalesReport extends Component {
                   <Col> <h1>Sales Report</h1> </Col>
                 </Row>
                 <Row>
-                  <Col  style={{'textAlign': 'right'}}> <SalesReportGenerate/> </Col>
+                  <Col  style={{'textAlign': 'right'}}> <SalesReportGenerate generateReport={(sku_ids) => this.generateReport(sku_ids)}/> </Col>
                 </Row>
                 <Row>
                     <Col style={{'textAlign': 'center'}}>No summary report generated.</Col>
@@ -56,7 +73,7 @@ class SalesReport extends Component {
                 <Row>
                   <Col> <h1>Sales Report</h1> </Col>
                 </Row>
-                <SummaryReportDisplay/>
+                <SummaryReportDisplay summary={this.props.summary}/>
               </Container>
               </Container>
             </div>
@@ -65,4 +82,13 @@ class SalesReport extends Component {
    }
 }
 
-export default SalesReport;
+SalesReport.propTypes = {
+  getSummary: PropTypes.func.isRequired,
+  sales: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+  sales: state.sales
+});
+
+export default connect(mapStateToProps, { getSummary })(SalesReport);

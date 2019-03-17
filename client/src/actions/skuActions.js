@@ -4,12 +4,13 @@ import { ADD_SKU, DELETE_SKU, UPDATE_SKU, SKU_KW_SEARCH,
    SKUS_LOADING, SKU_ERROR, SKU_GROUP_BY_PL, SKUS_BULK_EDIT,
    MLINES_BULK_EDIT, BULK_EDIT_MAP} from './types';
 
-export const getSKUsByPLine = (plines) => dispatch =>  {
+export const getSKUsByPLine = (plines, _callback) => dispatch =>  {
   dispatch(setSKUsLoading());
   axios.post('/api/skus/byproductlines/',
     {
         "product_lines": plines
     }).then(res => {
+    _callback(res.data);
     dispatch({
       type: GET_SKUS_BYPLINE,
       payload: res.data

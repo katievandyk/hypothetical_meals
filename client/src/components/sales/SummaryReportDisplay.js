@@ -2,16 +2,31 @@ import React from 'react';
 import {
   Table,
   Container, Row, Col,
-  Button
+  Button,
+  Spinner
  } from 'reactstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import '../../styles.css'
+import '../../styles.css';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 class SummaryReportDisplay extends React.Component {
 
+
   render() {
-    const report = this.props.sales.report;
+    const report = this.props.sales.summary;
+    const loading = this.props.sales.loading;
+    if(loading){
+      return (
+        <div style={{'textAlign':'center'}}>
+          <Spinner type="grow" color="success" />
+          <Spinner type="grow" color="success" />
+          <Spinner type="grow" color="success" />
+        </div>
+
+      );
+    }
+    else if(report.length > 0){
       return (
         <div>
           <Container>
@@ -56,7 +71,23 @@ class SummaryReportDisplay extends React.Component {
           </Container>
         </div>
       );
+      }
+      else{
+        return (
+          <div style={{textAlign: 'center'}}>
+             Error rendering report.
+          </div>
+        );
+      }
     }
   }
 
-export default SummaryReportDisplay;
+SummaryReportDisplay.propTypes = {
+  sales: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+  sales: state.sales
+});
+
+export default connect(mapStateToProps, {} )(SummaryReportDisplay);

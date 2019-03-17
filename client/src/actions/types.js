@@ -97,3 +97,4 @@ export const FORMULA_SKUS_LOADING = 'FORMULA_SKUS_LOADING';
 // Sales actions
 export const GET_SALES_SUMMARY = 'GET_SALES_SUMMARY';
 export const SALES_LOADING = 'SALES_LOADING';
+export const SALES_ERROR = 'SALES_ERROR';

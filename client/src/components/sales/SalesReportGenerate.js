@@ -16,13 +16,21 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getPLines } from '../../actions/plineActions';
+import { getSKUsByPLine } from '../../actions/skuActions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
 
 class SalesReportGenerate extends React.Component {
+
+  state = {
+     report: []
+  };
+
   constructor(props){
       super(props)
       this.modifyPlines = this.modifyPlines.bind(this);
+      this.onSubmit = this.onSubmit.bind(this);
+      this.generateReport = this.generateReport.bind(this);
       this.state = {
         modal: false,
         showAllPLines: false,
@@ -58,6 +66,19 @@ class SalesReportGenerate extends React.Component {
     });
   }
 
+  onSubmit = () => {
+    var pline_ids = []
+    this.state.selected_plines.forEach(pline => pline_ids.push(pline._id))
+    this.props.getSKUsByPLine(pline_ids, this.generateReport);
+  }
+
+  generateReport = (skus) => {
+    var sku_ids = []
+    skus.forEach(sku => sku_ids.push(sku._id))
+    this.props.generateReport(sku_ids)
+    this.toggle();
+  }
+
   modifyPlines = (e, pline) => {
      var new_selected_plines = [];
      if(this.state.selected_plines.length > 0){
@@ -68,7 +89,7 @@ class SalesReportGenerate extends React.Component {
      }
      else{
        new_selected_plines = new_selected_plines.filter(({_id}) => _id !== pline._id);
-     }x
+     }
      this.setState({
        selected_plines: new_selected_plines
      });
@@ -151,7 +172,7 @@ class SalesReportGenerate extends React.Component {
                 </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="success" onClick={this.toggle}>Generate Report</Button>{' '}
+          <Button color="success" onClick={this.onSubmit}>Generate Report</Button>{' '}
           <Button color="secondary" onClick={this.toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>
@@ -162,11 +183,14 @@ class SalesReportGenerate extends React.Component {
 
 SalesReportGenerate.propTypes = {
   getPLines: PropTypes.func.isRequired,
+  getSKUsByPLine: PropTypes.func.isRequired,
+  skus: PropTypes.object.isRequired,
   plines: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
-  plines: state.plines
+  plines: state.plines,
+  skus: state.skus
 });
 
-export default connect(mapStateToProps, {getPLines})(SalesReportGenerate);
+export default connect(mapStateToProps, { getPLines, getSKUsByPLine })(SalesReportGenerate);

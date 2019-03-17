@@ -1,8 +1,8 @@
 import { GET_SALES_SUMMARY, SALES_LOADING } from '../actions/types';
 
 const initialState = {
-  summary: {},
-  loading: false
+  loading: false,
+  summary: []
 };
 
 export default function(state = initialState, action) {
@@ -21,6 +21,5 @@ export default function(state = initialState, action) {
     default:
       return state;
   }
-
 
 }
