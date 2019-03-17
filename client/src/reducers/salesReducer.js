@@ -2,7 +2,9 @@ import { GET_SALES_SUMMARY, SALES_LOADING } from '../actions/types';
 
 const initialState = {
   loading: false,
-  summary: []
+  summary: [],
+  summary_plines: [],
+  summary_customers: []
 };
 
 export default function(state = initialState, action) {
@@ -13,6 +15,7 @@ export default function(state = initialState, action) {
         summary: action.payload,
         loading: false,
       }
+
     case SALES_LOADING:
       return {
         ...state,
