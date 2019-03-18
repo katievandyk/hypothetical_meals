@@ -4,7 +4,7 @@ import {
   Container, Row, Col,
   Button,
   Spinner,
-  Modal, ModalBody, ModalHeader, ModalFooter
+  Modal, ModalBody, ModalHeader
  } from 'reactstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -13,19 +13,27 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class SummaryReportDisplay extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        summary_modal: false,
-        sku_drilldown_modal: false,
-        curr_sku: ''
-      };
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      summary_modal: false,
+      sku_drilldown_modal: false,
+      curr_sku: {}
+    };
+  }
 
-    sku_clicked = (sku) => {
+  summary_toggle = () => {
+     this.setState({
+       summary_modal: !this.state.summary_modal,
+     });
+  }
 
-
-    }
+  sku_clicked = (sku) => {
+    this.setState({
+      curr_sku: sku
+    });
+    this.summary_toggle();
+  }
 
   render() {
     const report = this.props.sales.summary;
@@ -54,6 +62,7 @@ class SummaryReportDisplay extends React.Component {
                             <th>Name</th>
                             <th>Unit Size</th>
                             <th>Count/Case</th>
+                            <th>SKU Summary</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -84,15 +93,30 @@ class SummaryReportDisplay extends React.Component {
            <Button>Export</Button>
         </Row>
         </Container>
-        <Modal isOpen={this.state.skulist_modal} size="lg">
-             <ModalHeader>Add a SKU, Quantity Tuple</ModalHeader>
+        <Modal isOpen={this.state.summary_modal} toggle={this.summary_toggle} size="lg">
+             <ModalHeader>Summary for {this.state.curr_sku.name}</ModalHeader>
                 <ModalBody>
-
+                   <Table responsive size="sm">
+                    <thead>
+                      <tr>
+                        <th>Year</th>
+                        <th>Revenue</th>
+                        <th>Sales</th>
+                        <th>Average</th>
+                      </tr>
+                    </thead>
+                        <tbody>
+                        {report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).entries.map(({revenue, sales, year, average}) => (
+                           <tr key={year}>
+                                    <td> {year} </td>
+                                    <td> {revenue} </td>
+                                    <td> {sales} </td>
+                                    <td> {average} </td>
+                           </tr>
+                        ))}
+                        </tbody>
+                  </Table>
                 </ModalBody>
-             <ModalFooter>
-                <Button disabled={this.state.validNum === 'failure' || this.state.sku_valid !== 'success'} onClick={this.onAddSKU}>Save</Button>
-              <Button onClick={this.skulist_toggle}>Cancel</Button>
-             </ModalFooter>
         </Modal>
         </div>
       );
