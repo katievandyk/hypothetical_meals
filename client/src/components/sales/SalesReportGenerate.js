@@ -31,7 +31,6 @@ class SalesReportGenerate extends React.Component {
       this.state = {
         modal: false,
         showAllPLines: false,
-        showAllCustomers: true,
         allCustomersChecked: true,
         selected_plines:[],
         selected_customer: '',
@@ -71,7 +70,7 @@ class SalesReportGenerate extends React.Component {
   }
 
   generateReport = (sku_ids) => {
-    this.props.generateReport(sku_ids)
+    this.props.generateReport(sku_ids, this.state.allCustomersChecked, this.state.selected_customer)
     this.toggle();
   }
 
@@ -151,7 +150,7 @@ class SalesReportGenerate extends React.Component {
                         </Row>
                         <Row style={{marginBottom: '10px'}}>
                             <Col md={6}>
-                                  <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersChecked} onChange={e => this.setState({ allCustomersChecked: false })} label='Select specific customers:'/>
+                                  <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersChecked} onChange={e => this.setState({ allCustomersChecked: false })} label='Select a specific customer:'/>
                             </Col>
                         </Row>
                         <Row>

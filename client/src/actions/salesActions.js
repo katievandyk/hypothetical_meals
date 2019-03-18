@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { GET_SALES_SUMMARY, SALES_LOADING, SALES_ERROR, SALES_GET_SKUS_BY_PL, GET_CUSTOMERS } from './types';
 
-export const getSummary = (skus) => dispatch =>  {
+export const getSummary = (skus, customer) => dispatch =>  {
+  const body = {"skus": skus};
+  if(customer !== null) body["customer"] = customer;
+  alert(JSON.stringify(body))
   dispatch(setSalesLoading());
-  axios.post(`/api/sales/summary`, skus).then(res =>{
+  axios.post(`/api/sales/summary`, body ).then(res =>{
     dispatch({
       type: GET_SALES_SUMMARY,
       payload: res.data
