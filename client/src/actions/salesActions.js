@@ -1,9 +1,11 @@
 import axios from 'axios';
-import { GET_SALES_SUMMARY, SALES_LOADING, SALES_ERROR, SALES_GET_SKUS_BY_PL } from './types';
+import { GET_SALES_SUMMARY, SALES_LOADING, SALES_ERROR, SALES_GET_SKUS_BY_PL, GET_CUSTOMERS } from './types';
 
-export const getSummary = (skus) => dispatch =>  {
+export const getSummary = (skus, customer) => dispatch =>  {
+  const body = {"skus": skus};
+  if(customer !== null) body["customer"] = customer;
   dispatch(setSalesLoading());
-  axios.post(`/api/sales/summary`, skus).then(res =>{
+  axios.post(`/api/sales/summary`, body ).then(res =>{
     dispatch({
       type: GET_SALES_SUMMARY,
       payload: res.data
@@ -29,6 +31,16 @@ export const getSalesSKUs = (plines, _callback) => dispatch =>  {
     _callback(sku_ids);
     dispatch({
       type: SALES_GET_SKUS_BY_PL,
+      payload: res.data
+    })
+  });
+};
+
+export const getCustomers = () => dispatch =>  {
+  dispatch(setSalesLoading());
+  axios.post('/api/sales/customers').then(res => {
+    dispatch({
+      type: GET_CUSTOMERS,
       payload: res.data
     })
   });

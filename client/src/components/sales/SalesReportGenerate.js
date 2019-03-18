@@ -17,14 +17,11 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getPLines } from '../../actions/plineActions';
 import { getSalesSKUs } from '../../actions/salesActions';
+import { getCustomers } from '../../actions/salesActions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
 
 class SalesReportGenerate extends React.Component {
-
-  state = {
-     report: []
-  };
 
   constructor(props){
       super(props)
@@ -34,15 +31,15 @@ class SalesReportGenerate extends React.Component {
       this.state = {
         modal: false,
         showAllPLines: false,
-        showAllCustomers: true,
         allCustomersChecked: true,
         selected_plines:[],
-        selected_customers: []
+        selected_customer: '',
       };
   };
 
   componentDidMount() {
     this.props.getPLines(1, 10);
+    this.props.getCustomers();
   }
 
   toggle = () => {
@@ -73,7 +70,7 @@ class SalesReportGenerate extends React.Component {
   }
 
   generateReport = (sku_ids) => {
-    this.props.generateReport(sku_ids)
+    this.props.generateReport(sku_ids, this.state.allCustomersChecked, this.state.selected_customer)
     this.toggle();
   }
 
@@ -96,7 +93,7 @@ class SalesReportGenerate extends React.Component {
   genOptions = (customers) => {
     var newOptions = [];
     customers.forEach(function(customer){
-      var newOption = {value: customer._id, label: customer.name+": " }; // TODO add customer number
+      var newOption = {value: customer._id, label: customer.name+": " + customer.number}; // TODO add customer number
       newOptions = [...newOptions, newOption];
     });
     return newOptions;
@@ -104,13 +101,10 @@ class SalesReportGenerate extends React.Component {
 
   onChange = (e) => {
     var newCustomers = [];
-    e.forEach(function(option){
-      newCustomers = [...newCustomers, option.value];
-    });
     this.setState({
-      allCustomersChecked: false
+      allCustomersChecked: false,
+      selected_customer: e.value
     });
-   // TODO API CALL
   }
 
   render() {
@@ -156,13 +150,13 @@ class SalesReportGenerate extends React.Component {
                         </Row>
                         <Row style={{marginBottom: '10px'}}>
                             <Col md={6}>
-                                  <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersChecked} onChange={e => this.setState({ allCustomersChecked: false })} label='Select specific customers:'/>
+                                  <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersChecked} onChange={e => this.setState({ allCustomersChecked: false })} label='Select a specific customer:'/>
                             </Col>
                         </Row>
                         <Row>
                             <Col md={1}/>
                             <Col>
-                            <Select isMulti={true} options={this.genOptions(this.state.selected_plines)} onChange={this.onChange} />
+                            <Select isMulti={false} options={this.genOptions(this.props.sales.summary_customers)} onChange={this.onChange} />
                             </Col>
                         </Row>
                         </div>
@@ -182,13 +176,14 @@ class SalesReportGenerate extends React.Component {
 SalesReportGenerate.propTypes = {
   getPLines: PropTypes.func.isRequired,
   getSalesSKUs: PropTypes.func.isRequired,
-  skus: PropTypes.object.isRequired,
+  getCustomers: PropTypes.func.isRequired,
+  sales: PropTypes.object.isRequired,
   plines: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => ({
   plines: state.plines,
-  skus: state.skus
+  sales: state.sales
 });
 
-export default connect(mapStateToProps, { getPLines, getSalesSKUs })(SalesReportGenerate);
+export default connect(mapStateToProps, { getPLines, getSalesSKUs, getCustomers })(SalesReportGenerate);
