@@ -130,7 +130,7 @@ class SummaryReportDisplay extends React.Component {
                     </tr>
                     <tr>
                        <td><b>Ingredient Cost/Case</b></td>
-                       <td>?</td>
+                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.ing_cost_per_case.toFixed(2)}</td>
                     </tr>
                     <tr>
                        <td><b>Average Manufacturing Setup Cost/Case</b></td>
