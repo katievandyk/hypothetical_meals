@@ -4,7 +4,6 @@ import { GET_SALES_SUMMARY, SALES_LOADING, SALES_ERROR, SALES_GET_SKUS_BY_PL, GE
 export const getSummary = (skus, customer) => dispatch =>  {
   const body = {"skus": skus};
   if(customer !== null) body["customer"] = customer;
-  alert(JSON.stringify(body))
   dispatch(setSalesLoading());
   axios.post(`/api/sales/summary`, body ).then(res =>{
     dispatch({
