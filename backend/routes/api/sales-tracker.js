@@ -1,14 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 const Helper = require('../../bulk_import/helpers');
-const Track = require('../../sales_tracking/track')
 const SKU = require('../../models/SKU')
 const Sale = require('../../models/Sale')
 const ManufacturingActivity = require('../../models/ManufacturingActivity')
 const Goal = require('../../models/Goal')
 const Customer = require('../../models/Customer')
-const Papa = require('papaparse');
 
 function groupByYear(res) {
     return res.reduce(function(r,a) {
