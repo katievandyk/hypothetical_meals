@@ -1,9 +1,9 @@
-import { GET_SALES_SUMMARY, SALES_LOADING } from '../actions/types';
+import { GET_SALES_SUMMARY, SALES_LOADING, SALES_GET_SKUS_BY_PL } from '../actions/types';
 
 const initialState = {
   loading: false,
   summary: [],
-  summary_plines: [],
+  pline_groups: {},
   summary_customers: []
 };
 
@@ -15,7 +15,11 @@ export default function(state = initialState, action) {
         summary: action.payload,
         loading: false,
       }
-
+    case SALES_GET_SKUS_BY_PL:
+        return {
+          ...state,
+          pline_groups: action.payload
+        }
     case SALES_LOADING:
       return {
         ...state,
