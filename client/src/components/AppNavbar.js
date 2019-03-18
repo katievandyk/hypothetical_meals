@@ -158,6 +158,11 @@ class AppNavbar extends Component {
                   Manufacturing Schedule Report
                 </DropdownItem>
                 </NavLink>
+                <NavLink tag={RRNavLink} to="/sales-report" className="nav-link" activeClassName="active">
+                <DropdownItem>
+                  Sales Report
+                </DropdownItem>
+                </NavLink>
               </DropdownMenu>
             </UncontrolledDropdown>
             <NavItem>

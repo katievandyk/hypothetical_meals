@@ -279,7 +279,17 @@ router.post('/byproductlines', (req, res) => {
             }
         })
         .lean()
-        .then(sku => res.json(sku))
+        .populate('product_line')
+        .then(skus => {
+            let i;
+            let pl_to_skus = new Object();
+            for(i = 0; i < skus.length; i++) {
+                pl_name = skus[i].product_line.name
+                pl_name in pl_to_skus ?
+                    pl_to_skus[pl_name].push(skus[i]) : pl_to_skus[pl_name] = [skus[i]];
+            }
+            res.json(pl_to_skus)
+        });
     });
 
 // @route GET api/skus/byingredients
