@@ -90,6 +90,7 @@ function calculateSummaryStats(sku_id, entries) {
                     summary.avgerage_revenue = summary.sum_revenue / summary.sum_cases
                     calculateIngredients(goals, summary.sku_id).then(calc => {
                         var reduced_res = calc.reduce(sumCalculatorCosts, 0)
+                        summary.ing_cost_per_case = reduced_res
                         summary.cogs = summary.sku.run_cost + summary.average_setup_cost + reduced_res
                         summary.average_profit = summary.avgerage_revenue - summary.cogs
                         summary.profit_margin = summary.avgerage_revenue / summary.cogs - 1
