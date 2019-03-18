@@ -7,7 +7,7 @@ const SKU = require('../../models/SKU')
 const Sale = require('../../models/Sale')
 const ManufacturingActivity = require('../../models/ManufacturingActivity')
 const Goal = require('../../models/Goal')
-
+const Customer = require('../../models/Customer')
 
 function groupByYear(res) {
     return res.reduce(function(r,a) {
@@ -17,22 +17,44 @@ function groupByYear(res) {
     }, Object.create(null))
 }
 
+// @route POST api/sales/customers
+// request body fields:
+// - keywords
+router.post('/customers', (req, res) => {
+    var customerFindPromise;
+    if (req.body.keywords != null)
+        customerFindPromise = Customer.find(
+            {$text: {$search: req.body.keywords,
+                $caseSensitive: false,
+                $diacriticSensitive: true}},
+            {score:{$meta: "textScore"}});
+    else
+        customerFindPromise = Customer.find()
+
+    customerFindPromise.then(customers => res.json(customers)).catch(err => res.status(404).json({success: false, message: err.message}))
+})
+
 // @route POST api/sales/summary
 // request body fields:
 // - skus: list of sku ids to get sales summary for
+// - customer: customer to calculate sales for
 // returns:
 // - [{sku: sku_id, entries: list of objects- each representing aggregated calculations for one year, summary: [one entry per year for 10 years]}]
 router.post('/summary', (req, res) => {
     Promise.all(req.body.skus.map(sku_id => {
-        return calculateAggregatedForOneSKU(sku_id, 2009, 2019)
+        return calculateAggregatedForOneSKU(sku_id, 2009, 2019, req.body.customer)
     })).then(results => {
         res.json(results)
     })
 })
 
-function calculateAggregatedForOneSKU(sku_id, start_year, end_year) {
+function calculateAggregatedForOneSKU(sku_id, start_year, end_year, customer) {
     return new Promise(function(accept, reject) {
-        Sale.find({sku: sku_id}).where('year').gte(start_year).lte(end_year).lean()
+        var saleFindPromise = Sale.find({sku: sku_id}).where('year').gte(start_year).lte(end_year)
+        if (customer != null) {
+            saleFindPromise = saleFindPromise.where({customer: customer})
+        }
+        saleFindPromise.lean()
         .then(result=> {
             var byYear = groupByYear(result)
 

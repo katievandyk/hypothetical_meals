@@ -109,9 +109,9 @@ class SummaryReportDisplay extends React.Component {
                         {report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).entries.map(({revenue, sales, year, average}) => (
                            <tr key={year}>
                                     <td> {year} </td>
-                                    <td> {revenue} </td>
-                                    <td> {sales} </td>
-                                    <td> {average} </td>
+                                    <td> ${revenue.toFixed(2)} </td>
+                                    <td> ${sales.toFixed(2)} </td>
+                                    <td> ${average.toFixed(2)} </td>
                            </tr>
                         ))}
                         </tbody>

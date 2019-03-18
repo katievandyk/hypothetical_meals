@@ -72,6 +72,9 @@ class SalesReport extends Component {
                 <Row>
                   <Col> <h1>Sales Report</h1> </Col>
                 </Row>
+                <Row>
+                  <Col  style={{'textAlign': 'right'}}> <SalesReportGenerate generateReport={(sku_ids) => this.generateReport(sku_ids)}/> </Col>
+                </Row>
                 <SummaryReportDisplay summary={this.props.summary}/>
               </Container>
               </Container>

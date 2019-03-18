@@ -1,4 +1,4 @@
-import { GET_SALES_SUMMARY, SALES_LOADING, SALES_GET_SKUS_BY_PL } from '../actions/types';
+import { GET_SALES_SUMMARY, SALES_LOADING, SALES_GET_SKUS_BY_PL, GET_CUSTOMERS } from '../actions/types';
 
 const initialState = {
   loading: false,
@@ -24,6 +24,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         loading: true
+      }
+    case GET_CUSTOMERS:
+      return {
+        ...state,
+        summary_customers: action.payload
       }
     default:
       return state;
