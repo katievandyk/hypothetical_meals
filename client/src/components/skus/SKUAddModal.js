@@ -404,8 +404,7 @@ class SKUAddModal extends React.Component {
                     name="formula_scale_factor"
                     id="formula_scale_factor"
                     placeholder="Add the Formula Scale Factor"
-                    onChange={this.onChange}
-                    defaultValue={this.state.formula_scale_factor}>
+                    onChange={this.onChange}>
                   </Input>
                   {this.state.validate.formula_scale_factor === 'is-empty' ? (
                     <FormFeedback>
@@ -427,8 +426,7 @@ class SKUAddModal extends React.Component {
                     name="manufacturing_rate"
                     id="manufacturing_rate"
                     placeholder="Add the Manufacturing Rate"
-                    onChange={this.onChange}
-                    defaultValue={this.state.manufacturing_rate}>
+                    onChange={this.onChange}>
                   </Input>
                   {this.state.validate.manufacturing_rate === 'is-empty' ? (
                     <FormFeedback>
@@ -449,8 +447,7 @@ class SKUAddModal extends React.Component {
                     name="setup_cost"
                     id="setup_cost"
                     placeholder="Add the Manufacturing Setup Cost"
-                    onChange={this.onChange}
-                    defaultValue={this.state.setup_cost}>
+                    onChange={this.onChange}>
                   </Input>
                   {this.state.validate.setup_cost === 'is-empty' ? (
                     <FormFeedback>
@@ -471,8 +468,7 @@ class SKUAddModal extends React.Component {
                     name="run_cost"
                     id="run_cost"
                     placeholder="Add the Manufacturing Run Cost"
-                    onChange={this.onChange}
-                    defaultValue={this.state.run_cost}>
+                    onChange={this.onChange}>
                   </Input>
                   {this.state.validate.run_cost === 'is-empty' ? (
                     <FormFeedback>
