@@ -16,7 +16,7 @@ import {
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getPLines } from '../../actions/plineActions';
-import { getSKUsByPLine } from '../../actions/skuActions';
+import { getSalesSKUs } from '../../actions/salesActions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
 
@@ -69,12 +69,10 @@ class SalesReportGenerate extends React.Component {
   onSubmit = () => {
     var pline_ids = []
     this.state.selected_plines.forEach(pline => pline_ids.push(pline._id))
-    this.props.getSKUsByPLine(pline_ids, this.generateReport);
+    this.props.getSalesSKUs(pline_ids, this.generateReport);
   }
 
-  generateReport = (skus) => {
-    var sku_ids = []
-    skus.forEach(sku => sku_ids.push(sku._id))
+  generateReport = (sku_ids) => {
     this.props.generateReport(sku_ids)
     this.toggle();
   }
@@ -183,7 +181,7 @@ class SalesReportGenerate extends React.Component {
 
 SalesReportGenerate.propTypes = {
   getPLines: PropTypes.func.isRequired,
-  getSKUsByPLine: PropTypes.func.isRequired,
+  getSalesSKUs: PropTypes.func.isRequired,
   skus: PropTypes.object.isRequired,
   plines: PropTypes.object.isRequired
 };
@@ -193,4 +191,4 @@ const mapStateToProps = (state) => ({
   skus: state.skus
 });
 
-export default connect(mapStateToProps, { getPLines, getSKUsByPLine })(SalesReportGenerate);
+export default connect(mapStateToProps, { getPLines, getSalesSKUs })(SalesReportGenerate);

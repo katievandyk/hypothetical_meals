@@ -31,7 +31,6 @@ class SalesReport extends Component {
 
     generateReport = (sku_ids) => {
         this.props.getSummary({skus: sku_ids})
-        alert(JSON.stringify(this.props))
         this.setState({
           reportGen: true,
         });
