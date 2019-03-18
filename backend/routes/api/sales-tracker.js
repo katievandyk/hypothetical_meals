@@ -8,11 +8,20 @@ const Sale = require('../../models/Sale')
 const ManufacturingActivity = require('../../models/ManufacturingActivity')
 const Goal = require('../../models/Goal')
 const Customer = require('../../models/Customer')
+const Papa = require('papaparse');
 
 function groupByYear(res) {
     return res.reduce(function(r,a) {
         r[a.year] = r[a.year] || [];
         r[a.year].push(a);
+        return r;
+    }, Object.create(null))
+}
+
+function groupByPL(res) {
+    return res.reduce(function(r,a) {
+        r[a.pl] = r[a.pl] || [];
+        r[a.pl].push(a);
         return r;
     }, Object.create(null))
 }
@@ -38,15 +47,45 @@ router.post('/customers', (req, res) => {
 // request body fields:
 // - skus: list of sku ids to get sales summary for
 // - customer: customer to calculate sales for
+// - export: if true will return csv result
 // returns:
 // - [{sku: sku_id, entries: list of objects- each representing aggregated calculations for one year, summary: [one entry per year for 10 years]}]
 router.post('/summary', (req, res) => {
+    var year = new Date().getFullYear()
+    var yearMinus10 = year-10
     Promise.all(req.body.skus.map(sku_id => {
-        return calculateAggregatedForOneSKU(sku_id, 2009, 2019, req.body.customer)
+        return calculateAggregatedForOneSKU(sku_id, yearMinus10, year, req.body.customer)
     })).then(results => {
-        res.json(results)
+        if(req.body.export) {
+            results = generateCsvSummary(results)
+            res.setHeader('Content-Type', 'text/csv')
+            res.status(200).send(results)
+        }
+        else {
+            res.json(results)
+        }
     })
 })
+
+function generateCsvSummary(results) {
+    results = groupByPL(results)
+    var lines = []
+    var keys = Object.keys(results)
+    keys.forEach(pl => {
+        lines.push("Product line")
+        lines.push(pl)
+        lines.push("Name,Unit size,Count per case,Year,Revenue,Sales,Average")
+        results[pl].forEach(sku_entry => {
+            sku_entry.entries.forEach(entry => {
+                lines.push(`${sku_entry.name},${sku_entry.unit_size},${sku_entry.count_per_case},${entry.year},${entry.revenue},${entry.sales},${entry.average}`)
+            })
+            lines.push("Total")
+            lines.push("Yearly revenue,Avg mfg run size,Ing cost per case,Avg mfg setup cost,Mfg run cost per case,Total COGS,Avg revenue per case,Avg profit per case,Avg profit margin(%)")
+            lines.push(`${sku_entry.summary.sum_revenue},${sku_entry.summary.average_run_size},${sku_entry.summary.ing_cost_per_case},${sku_entry.summary.average_setup_cost},${sku_entry.run_cost},${sku_entry.summary.cogs},${sku_entry.summary.avgerage_revenue},${sku_entry.summary.average_profit},${sku_entry.summary.profit_margin*100}`)
+        })
+    })
+    return lines.join("\r\n")
+}
 
 function calculateAggregatedForOneSKU(sku_id, start_year, end_year, customer) {
     return new Promise(function(accept, reject) {
@@ -63,15 +102,27 @@ function calculateAggregatedForOneSKU(sku_id, start_year, end_year, customer) {
                 byYear[key] = year_entries.reduce(calculateSummaryCost, {revenue: 0, sales: 0, year: key})
             });
             
-            calculateSummaryStats(sku_id, Object.values(byYear)).then(r => accept(r)).catch(reject)
+            calculateSummaryStats(sku_id, Object.values(byYear), start_year, end_year).then(r => {
+                accept(r)
+            }).catch(reject)
         })
     }) 
 }
 
-function calculateSummaryStats(sku_id, entries) {
+function calculateSummaryStats(sku_id, entries, start_year, end_year) {
     return new Promise(function(accept, reject) {
-        SKU.findById(sku_id).then(sku => {
-            ManufacturingActivity.find({"sku" : sku_id}).lean()
+        SKU.findById(sku_id).populate("product_line").lean().then(sku => {
+            ManufacturingActivity.find({"sku" : sku_id, 
+                $or: [ {
+                    start: {
+                        $gte: new Date(`${start_year}-01-01T00:00:00.000Z`),
+                        $lt: new Date(`${end_year+1}-01-01T00:00:00.000Z`)
+                    }},{
+                    end: {
+                        $gte: new Date(`${start_year}-01-01T00:00:00.000Z`),
+                        $lt: new Date(`${end_year+1}-01-01T00:00:00.000Z`)
+                    }}]
+            }).lean()
             .then(activities => {
                 var activity_goals = activities.map(a => a.goal_id)
                 Goal.find({_id: {$in: activity_goals}}).lean().populate("skus_list.sku").then(goals => {
@@ -95,7 +146,7 @@ function calculateSummaryStats(sku_id, entries) {
                         summary.average_profit = summary.avgerage_revenue - summary.cogs
                         summary.profit_margin = summary.avgerage_revenue / summary.cogs - 1
                         delete summary.sku
-                        accept({sku: sku_id, entries: entries, summary: summary})
+                        accept({sku: sku_id, entries: entries, summary: summary, pl: sku.product_line.name, name: sku.name, unit_size: sku.unit_size, count_per_case: sku.count_per_case, run_cost: sku.run_cost})
                     })
                 })
             })
@@ -110,6 +161,7 @@ function calculateSummaryStats(sku_id, entries) {
 // - customer: id of customer or nothing if want all customers
 // - start_year: start year
 // - end_year: end year
+// - export: if true will return csv result
 // returns:
 // - [{sku: sku_id, entries: list of objects- each representing a weekly entry, summary: [one entry per year for 10 years]}]
 router.post('/detailed/:sku_id', (req, res) => {
@@ -118,13 +170,35 @@ router.post('/detailed/:sku_id', (req, res) => {
         saleFindPromise = saleFindPromise.where({customer: req.body.customer})
     }
 
-    saleFindPromise.lean().populate("sku").then(entries=> {
+    saleFindPromise.lean().populate("sku").populate("customer").lean().then(entries=> {
         entries.forEach(entry => {
             entry.revenue = entry.sales * entry.price_per_case
         })
-        calculateSummaryStats(req.params.sku_id, entries).then(r => res.json(r)).catch(err => res.json({success: false}))
+        calculateSummaryStats(req.params.sku_id, entries, req.body.start_year, req.body.end_year)
+        .then(r => {
+            if(req.body.export) {
+                let csvRes = generateCsvDetailed(r, req.body.start_year, req.body.end_year)
+                res.setHeader('Content-Type', 'text/csv')
+                res.status(200).send(csvRes)
+            }
+            else {
+                res.json(r)
+            }
+            
+        })
+        .catch(err => res.json({success: false, message: err.message}))
     })
 })
+
+function generateCsvDetailed(results, start_year, end_year) {
+    var lines = []
+    lines.push(`Time span: ${start_year} - ${end_year}`)
+    lines.push("SKU name,Year,Week,Customer number,Customer name,Sales,Price per case,Revenue")
+    results.entries.forEach(entry => {
+        lines.push(`${entry.sku.name},${entry.year},${entry.week},${entry.customer.number},${entry.customer.name},${entry.sales},${entry.price_per_case},${entry.revenue}`)
+    })
+    return lines.join("\r\n")
+}
 
 function sumCalculatorCosts(total, item) {
     return total + item.packages * item.ingredient.cost_per_package
