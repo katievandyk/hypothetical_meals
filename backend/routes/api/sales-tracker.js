@@ -26,6 +26,10 @@ function groupByPL(res) {
     }, Object.create(null))
 }
 
+function round(num) {
+    return Math.round(num * 100) / 100
+}
+
 // @route POST api/sales/customers
 // request body fields:
 // - keywords
@@ -77,11 +81,11 @@ function generateCsvSummary(results) {
         lines.push("Name,Unit size,Count per case,Year,Revenue,Sales,Average")
         results[pl].forEach(sku_entry => {
             sku_entry.entries.forEach(entry => {
-                lines.push(`${sku_entry.name},${sku_entry.unit_size},${sku_entry.count_per_case},${entry.year},${entry.revenue},${entry.sales},${entry.average}`)
+                lines.push(`${sku_entry.name},${sku_entry.unit_size},${sku_entry.count_per_case},${entry.year},${round(entry.revenue)},${round(entry.sales)},${round(entry.average)}`)
             })
             lines.push("Total")
             lines.push("Yearly revenue,Avg mfg run size,Ing cost per case,Avg mfg setup cost,Mfg run cost per case,Total COGS,Avg revenue per case,Avg profit per case,Avg profit margin(%)")
-            lines.push(`${sku_entry.summary.sum_revenue},${sku_entry.summary.average_run_size},${sku_entry.summary.ing_cost_per_case},${sku_entry.summary.average_setup_cost},${sku_entry.run_cost},${sku_entry.summary.cogs},${sku_entry.summary.avgerage_revenue},${sku_entry.summary.average_profit},${sku_entry.summary.profit_margin*100}`)
+            lines.push(`${round(sku_entry.summary.sum_revenue)},${round(sku_entry.summary.average_run_size)},${round(sku_entry.summary.ing_cost_per_case)},${round(sku_entry.summary.average_setup_cost)},${round(sku_entry.run_cost)},${round(sku_entry.summary.cogs)},${round(sku_entry.summary.avgerage_revenue)},${round(sku_entry.summary.average_profit)},${round(sku_entry.summary.profit_margin*100)}`)
         })
     })
     return lines.join("\r\n")
@@ -195,7 +199,7 @@ function generateCsvDetailed(results, start_year, end_year) {
     lines.push(`Time span: ${start_year} - ${end_year}`)
     lines.push("SKU name,Year,Week,Customer number,Customer name,Sales,Price per case,Revenue")
     results.entries.forEach(entry => {
-        lines.push(`${entry.sku.name},${entry.year},${entry.week},${entry.customer.number},${entry.customer.name},${entry.sales},${entry.price_per_case},${entry.revenue}`)
+        lines.push(`${entry.sku.name},${entry.year},${entry.week},${entry.customer.number},${entry.customer.name},${entry.sales},${round(entry.price_per_case)},${round(entry.revenue)}`)
     })
     return lines.join("\r\n")
 }
