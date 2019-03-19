@@ -13,6 +13,17 @@ module.exports.isPositiveInteger = function(str) {
     return regex.test(str) && Number(str) > 0;
 }
 
+module.exports.isCurrency = function(num) {
+    let regex = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/;
+    return regex.test(num)
+}
+
+module.exports.getCurrency = function(num) {
+    let regex = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/;
+    let match = regex.exec(num)
+    return match[1]
+}
+
 module.exports.is_upca_standard = function(code_str) {
     if(code_str.length != 12) {
         return false;
