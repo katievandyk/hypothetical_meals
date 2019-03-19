@@ -138,7 +138,7 @@ class SummaryReportDisplay extends React.Component {
                     </tr>
                     <tr>
                        <td><b>Manufacturing Run Cost/Case</b></td>
-                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.sum_revenue.toFixed(2)}</td>
+                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).run_cost.toFixed(2)}</td>
                     </tr>
                     <tr>
                        <td><b>Total COGS/Case</b></td>
