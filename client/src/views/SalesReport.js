@@ -25,12 +25,24 @@ class SalesReport extends Component {
         super(props)
         this.generateReport = this.generateReport.bind(this);
         this.state = {
+             sku_drilldown_modal: false,
              reportGen: false,
         };
     };
 
-    generateReport = (sku_ids) => {
-        this.props.getSummary({skus: sku_ids})
+    generateReport = (sku_ids, all_customers, sel_customer) => {
+        if(!all_customers){
+            this.props.getSummary(sku_ids, sel_customer)
+        }
+        else {
+            this.props.getSummary(sku_ids)
+        }
+        this.setState({
+          reportGen: true,
+        });
+    }
+
+    skuDrillDownCallback = (sku_id) => {
         this.setState({
           reportGen: true,
         });
@@ -50,7 +62,7 @@ class SalesReport extends Component {
                   <Col> <h1>Sales Report</h1> </Col>
                 </Row>
                 <Row>
-                  <Col  style={{'textAlign': 'right'}}> <SalesReportGenerate generateReport={(sku_ids) => this.generateReport(sku_ids)}/> </Col>
+                  <Col  style={{'textAlign': 'right'}}> <SalesReportGenerate generateReport={(sku_ids, all_customers, sel_customer) => this.generateReport(sku_ids, all_customers, sel_customer)}/> </Col>
                 </Row>
                 <Row>
                     <Col style={{'textAlign': 'center'}}>No summary report generated.</Col>
@@ -72,8 +84,11 @@ class SalesReport extends Component {
                 <Row>
                   <Col> <h1>Sales Report</h1> </Col>
                 </Row>
-                <Row>
-                  <Col  style={{'textAlign': 'right'}}> <SalesReportGenerate generateReport={(sku_ids) => this.generateReport(sku_ids)}/> </Col>
+                <Row style={{marginBottom: '20px'}}>
+                  <Col>
+                  Click on a SKU to view its drilldown.
+                  </Col>
+                  <Col  style={{'textAlign': 'right'}}> <SalesReportGenerate generateReport={(sku_ids, all_customers, sel_customer) => this.generateReport(sku_ids, all_customers, sel_customer)}/> </Col>
                 </Row>
                 <SummaryReportDisplay summary={this.props.summary}/>
               </Container>

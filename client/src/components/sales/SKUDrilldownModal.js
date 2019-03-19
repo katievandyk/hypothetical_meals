@@ -1,22 +1,14 @@
 import React from 'react';
 import {
   Row, Col,
-  Button,
-  Modal,
-  ModalHeader,
-  ModalFooter,
-  CustomInput,
   ModalBody,
-  Form,
-  FormGroup,
-  FormFeedback,
   Label,
   Input, InputGroupAddon, InputGroup
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-class SalesReportGenerate extends React.Component {
+class SKUDrilldownModal extends React.Component {
   state = {
     modal: false,
   };
@@ -31,22 +23,13 @@ class SalesReportGenerate extends React.Component {
 
   render() {
     return (
-      <div style={{'display': 'inline-block'}}>
-      <Button color="success" onClick={this.toggle}>
-        Generate Summary Report
-      </Button>
-      <Modal isOpen={this.state.modal} toggle={this.toggle}>
-        <ModalHeader>SKU Drilldown for </ModalHeader>
+      <div>
         <ModalBody>
+            Placeholder for SKU drilldown.
         </ModalBody>
-        <ModalFooter>
-          <Button color="success" onClick={this.toggle}>Export</Button>{' '}
-          <Button color="secondary" onClick={this.toggle}>Close</Button>
-        </ModalFooter>
-      </Modal>
       </div>
     );
   }
  }
 
-export default connect(mapStateToProps, {getPLines})(SKUDrilldownModal);
+export default SKUDrilldownModal;
