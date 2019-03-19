@@ -86,6 +86,7 @@ grant = (username, e) => {
 render() {
     const { errors } = this.state;
     const users = this.props.auth.users;
+    console.log(this.props.auth.user);
 return (
       <div className="container">
         <Container>
@@ -117,7 +118,7 @@ return (
                         <td> {username} </td>
                         <td> {isAdmin?("Y"):("N")} </td>
                         <td>
-                            <Button size="sm" color="link"
+                            <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditClick.bind(this,
                                 _id, name, username, isAdmin
                               )}
@@ -126,7 +127,7 @@ return (
                             </Button>
                           </td>
                           <td >
-                            <Button size="sm" sm="2"color="link"
+                            <Button size="sm" sm="2"color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onDeleteClick.bind(this, username)}
                               style={{'color':'black'}}>
                               <FontAwesomeIcon icon="trash"/>

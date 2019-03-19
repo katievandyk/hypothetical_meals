@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import '../../styles.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import SKUDrillDownModal from '../../components/sales/SKUDrilldownModal';
 
 class SummaryReportDisplay extends React.Component {
   constructor(props) {
@@ -28,11 +29,24 @@ class SummaryReportDisplay extends React.Component {
      });
   }
 
+  drilldown_toggle = () => {
+     this.setState({
+       sku_drilldown_modal: !this.state.sku_drilldown_modal,
+     });
+  }
+
   sku_clicked = (sku) => {
     this.setState({
       curr_sku: sku
     });
     this.summary_toggle();
+  }
+
+  sku_drilldown = (sku) => {
+    this.setState({
+      curr_sku: sku
+    });
+    this.drilldown_toggle();
   }
 
   render() {
@@ -68,7 +82,13 @@ class SummaryReportDisplay extends React.Component {
                         <tbody>
                           {value.map((sku)=> (
                               <tr key={sku._id}>
-                                <td> {sku.name} </td>
+                                <td>
+                                    <Button color="link"
+                                    onClick={this.sku_drilldown.bind(this, sku)}
+                                    >
+                                    {sku.name}
+                                    </Button>
+                                </td>
                                 <td> {sku.unit_size} </td>
                                 <td> {sku.count_per_case}</td>
                                 <td>
@@ -138,7 +158,7 @@ class SummaryReportDisplay extends React.Component {
                     </tr>
                     <tr>
                        <td><b>Manufacturing Run Cost/Case</b></td>
-                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.sum_revenue.toFixed(2)}</td>
+                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).run_cost.toFixed(2)}</td>
                     </tr>
                     <tr>
                        <td><b>Total COGS/Case</b></td>
@@ -159,6 +179,10 @@ class SummaryReportDisplay extends React.Component {
                   </tbody>
                  </Table>
                 </ModalBody>
+        </Modal>
+        <Modal isOpen={this.state.sku_drilldown_modal} toggle={this.drilldown_toggle} size="lg">
+             <ModalHeader>SKU Drilldown for {this.state.curr_sku.name}</ModalHeader>
+             <SKUDrillDownModal/>
         </Modal>
         </div>
       );
