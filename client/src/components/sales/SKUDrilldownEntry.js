@@ -33,12 +33,12 @@ class SKUDrillDownEntry extends React.Component {
         <div>
           <Container>
           <Row>
-          <Col>
-            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Sales Chart</h5>
+          <Col style={{marginBottom: '20px'}}>
+            <h5 style={{marginBottom: '20px'}}>Sales Chart</h5>
             <LineChart data={{"2017-05-13": 2, "2017-05-14": 5}} />
           </Col>
           <Col md={4}>
-            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Totals</h5>
+            <h5 style={{marginBottom: '20px'}}>Totals</h5>
                   <Table responsive bordered size="sm">
                     <tbody>
                     <tr>
