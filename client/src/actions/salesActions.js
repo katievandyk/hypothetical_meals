@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_SALES_SUMMARY, SALES_LOADING, SALES_ERROR, SALES_GET_SKUS_BY_PL, GET_CUSTOMERS } from './types';
+import { GET_SALES_SUMMARY, SALES_LOADING, SALES_ERROR, SALES_GET_SKUS_BY_PL, GET_CUSTOMERS, GET_SKU_DRILLDOWN } from './types';
 
 export const getSummary = (skus, customer) => dispatch =>  {
   const body = {"skus": skus};
@@ -45,6 +45,17 @@ export const getCustomers = () => dispatch =>  {
     })
   });
 };
+
+export const getSKUDrilldown = (sku_id, obj) => dispatch =>  {
+  dispatch(setSalesLoading());
+  axios.post('/api/sales/detailed/' + sku_id, obj).then(res => {
+    dispatch({
+      type: GET_SKU_DRILLDOWN,
+      payload: res.data
+    })
+  });
+};
+
 
 export const setSalesLoading = () => {
   return {
