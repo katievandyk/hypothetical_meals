@@ -12,6 +12,7 @@ import '../../styles.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SKUDrillDownModal from '../../components/sales/SKUDrilldownModal';
+import { exportSummary } from '../../actions/exportActions';
 
 class SummaryReportDisplay extends React.Component {
   constructor(props) {
@@ -47,6 +48,10 @@ class SummaryReportDisplay extends React.Component {
       curr_sku: sku
     });
     this.drilldown_toggle();
+  }
+
+  export = () => {
+    this.props.exportSummary(this.props.sales.summ_body);
   }
 
   render() {
@@ -110,7 +115,7 @@ class SummaryReportDisplay extends React.Component {
         ))}
         <Row>
            <Col style={{'textAlign': 'right'}}/>
-           <Button>Export</Button>
+           <Button onClick={this.export}>Export</Button>
         </Row>
         </Container>
         <Modal isOpen={this.state.summary_modal} toggle={this.summary_toggle} size="lg">
@@ -198,11 +203,12 @@ class SummaryReportDisplay extends React.Component {
   }
 
 SummaryReportDisplay.propTypes = {
-  sales: PropTypes.object.isRequired
+  sales: PropTypes.object.isRequired,
+  exportSummary: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
   sales: state.sales
 });
 
-export default connect(mapStateToProps, {} )(SummaryReportDisplay);
+export default connect(mapStateToProps, {exportSummary} )(SummaryReportDisplay);

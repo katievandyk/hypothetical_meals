@@ -16,6 +16,7 @@ import { getSKUDrilldown } from '../../actions/salesActions';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
 import SKUDrilldownEntry from '../../components/sales/SKUDrilldownEntry';
+import { exportDrilldown } from '../../actions/exportActions';
 
 class SKUDrilldownModal extends React.Component {
   constructor(props){
@@ -37,6 +38,10 @@ class SKUDrilldownModal extends React.Component {
       startDate: null,
       endDate: null
     });
+  }
+
+  export = () => {
+    this.props.exportDrilldown(this.props.sales.drilldown_sku_id, this.props.sales.drilldown_body);
   }
 
   genOptionsDD = (customers) => {
@@ -73,7 +78,7 @@ class SKUDrilldownModal extends React.Component {
             <Row style={{marginBottom: '20px'}}>
                 <Col  style={{'textAlign': 'right'}}>
                     <Button onClick={this.settings_toggle}>Settings</Button>&nbsp;
-                    <Button color="success">Export</Button>
+                    <Button onClick={this.export} color="success">Export</Button>
                 </Col>
             </Row>
         </ModalBody>
@@ -125,6 +130,7 @@ class SKUDrilldownModal extends React.Component {
 
  SKUDrilldownModal.propTypes = {
    getSKUDrilldown: PropTypes.func.isRequired,
+   exportDrilldown: PropTypes.func.isRequired,
    sales: PropTypes.object.isRequired
  };
 
@@ -132,4 +138,4 @@ class SKUDrilldownModal extends React.Component {
    sales: state.sales
  });
 
-export default connect(mapStateToProps, { getSKUDrilldown })(SKUDrilldownModal);
+export default connect(mapStateToProps, { getSKUDrilldown, exportDrilldown })(SKUDrilldownModal);

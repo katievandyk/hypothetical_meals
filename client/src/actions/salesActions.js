@@ -8,7 +8,7 @@ export const getSummary = (skus, customer) => dispatch =>  {
   axios.post(`/api/sales/summary`, body ).then(res =>{
     dispatch({
       type: GET_SALES_SUMMARY,
-      payload: res.data
+      payload: {data: res.data, body: body}
     })}
   ).catch(error =>{
     dispatch({
@@ -51,7 +51,7 @@ export const getSKUDrilldown = (sku_id, obj) => dispatch =>  {
   axios.post('/api/sales/detailed/' + sku_id, obj).then(res => {
     dispatch({
       type: GET_SKU_DRILLDOWN,
-      payload: res.data
+      payload: {data: res.data, body: obj, sku_id: sku_id}
     })
   });
 };
