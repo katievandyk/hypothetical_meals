@@ -142,10 +142,10 @@ module.exports.ingredientFieldsCheck = ingredientFieldsCheck = function(name, nu
     if(!Helpers.isPositiveInteger(number)) 
         throw new Error("Ingredient number is not a valid number: " + number);
 
-    if(!Helpers.isNumeric(cost)) 
-        throw new Error("Ingredient cost is not a number: " + cost);
-    if (parseFloat(cost) < 0) 
-        throw new Error("Ingredient cost is not positive: " + cost);
+    if(!Helpers.isCurrency(cost)) 
+        throw new Error("Ingredient cost is not a USD expression: " + cost);
+    if(parseFloat(Helpers.getCurrency(cost)) < 0)
+        throw new Error("Ingredient cost is not a positive number: " + Helpers.getCurrency(cost));
 
     if(!Helpers.unitChecker(size))
         throw new Error("Ingredient package size is not formatted correctly: " + size)
@@ -154,6 +154,7 @@ module.exports.ingredientFieldsCheck = ingredientFieldsCheck = function(name, nu
 // visible for testing
 module.exports.preprocessOneIngredient = preprocessOneIngredient = function(ing_data) {
     ingredientFieldsCheck(ing_data[ing_fields.name], ing_data[ing_fields.number], ing_data[ing_fields.size], ing_data[ing_fields.cost])
+    ing_data[ing_fields.cost] = Helpers.getCurrency(ing_data[ing_fields.cost])
 
     return new Promise(function(accept, reject) {
         Promise.all([
@@ -282,23 +283,21 @@ module.exports.skuFieldsCheck = skuFieldsCheck = function(name, number, case_upc
         throw new Error(
                 "Manufacturing rate is not a positive number: " + manufacturing_rate);
 
-    if(!Helpers.isNumeric(setup_cost)) 
-        throw new Error(
-            "Setup cost is not a number: " + setup_cost);
-    if (parseFloat(setup_cost) < 0) 
-        throw new Error(
-                "Setup cost is not a positive number: " + setup_cost);
-
-    if(!Helpers.isNumeric(run_cost)) 
-        throw new Error(
-            "Run cost is not a number: " + run_cost);
-    if (parseFloat(run_cost) < 0) 
-        throw new Error(
-                "Run cost is not a positive number: " + run_cost);
+    if(!Helpers.isCurrency(setup_cost)) 
+        throw new Error("Setup cost is not a USD expression: " + setup_cost);
+    if(parseFloat(Helpers.getCurrency(setup_cost)) < 0)
+        throw new Error("Setup cost is not a positive number: " + Helpers.getCurrency(setup_cost));
+    
+    if(!Helpers.isCurrency(run_cost)) 
+        throw new Error("Run cost is not a USD expression: " + run_cost);
+    if(parseFloat(Helpers.getCurrency(run_cost)) < 0)
+        throw new Error("Run cost is not a positive number: " + Helpers.getCurrency(run_cost));
 }
 
 module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
     skuFieldsCheck(sku_data[sku_fields.name], sku_data[sku_fields.number], sku_data[sku_fields.case_upc], sku_data[sku_fields.unit_upc], sku_data[sku_fields.unit_size], sku_data[sku_fields.count], sku_data[sku_fields.formula_num], sku_data[sku_fields.pl_name],sku_data[sku_fields.formula_factor],sku_data[sku_fields.rate], sku_data[sku_fields.setup_cost], sku_data[sku_fields.run_cost])
+    sku_data[sku_fields.setup_cost] = Helpers.getCurrency(sku_data[sku_fields.setup_cost])
+    sku_data[sku_fields.run_cost] = Helpers.getCurrency(sku_data[sku_fields.run_cost])
 
     let pl = sku_data[sku_fields.pl_name];
 

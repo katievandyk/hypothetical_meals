@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { EXPORT_SKUS, EXPORT_PLINES, EXPORT_INGS, EXPORT_FORMULAS, EXPORT_INGDEP_REPORT, EXPORT_SUMMARY } from './types';
+import { EXPORT_SKUS, EXPORT_PLINES, EXPORT_INGS, EXPORT_FORMULAS, EXPORT_INGDEP_REPORT, EXPORT_SUMMARY, EXPORT_DRILLDOWN } from './types';
 
 const FileDownload = require('js-file-download');
 
@@ -56,4 +56,14 @@ export const exportPLines = () => dispatch => {
     });
     return {
         type: EXPORT_SUMMARY
+    };}
+
+  export const exportDrilldown = (sku_id, drilldown_body) => dispatch =>  {
+    const body = drilldown_body;
+    body.export = true;
+    axios.post(`/api/sales/detailed/${sku_id}`, body ).then(res =>{
+      FileDownload(res.data, 'sales_sku_drilldown_' + Date.now() + '.csv')
+    });
+    return {
+        type: EXPORT_DRILLDOWN
     };}

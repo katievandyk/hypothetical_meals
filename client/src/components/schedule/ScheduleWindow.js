@@ -54,7 +54,7 @@ class ScheduleWindow extends React.Component {
             start: this.state.windowStart,
             end: this.state.windowEnd,
             zoomMin: 1000 * 60 * 60 * 24,
-            zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
+            zoomMax: 1000 * 60 * 60 * 24 * 31 * 12 * 10,
             editable: {
                 add: this.props.auth.isAdmin,
                 overrideItems: false,
