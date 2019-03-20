@@ -180,7 +180,7 @@ class SummaryReportDisplay extends React.Component {
                  </Table>
                 </ModalBody>
         </Modal>
-        <Modal isOpen={this.state.sku_drilldown_modal} toggle={this.drilldown_toggle} size="lg">
+        <Modal isOpen={this.state.sku_drilldown_modal} toggle={this.drilldown_toggle} className="modal-xl">
              <ModalHeader>SKU Drilldown for {this.state.curr_sku.name}</ModalHeader>
              <SKUDrillDownModal curr_sku={this.state.curr_sku}/>
         </Modal>

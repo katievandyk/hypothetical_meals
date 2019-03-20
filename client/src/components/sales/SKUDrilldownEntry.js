@@ -29,6 +29,44 @@ class SKUDrillDownEntry extends React.Component {
       return (
         <div>
           <Container>
+            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Totals:</h5>
+                  <Table>
+                    <tbody>
+                    <tr>
+                       <td><b>Average Manufacturing Run Size</b></td>
+                       <td>{report.summary.average_run_size.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                       <td><b>Ingredient Cost/Case</b></td>
+                       <td>${report.summary.ing_cost_per_case.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                       <td><b>Average Manufacturing Setup Cost/Case</b></td>
+                       <td>${report.summary.average_setup_cost.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                       <td><b>Manufacturing Run Cost/Case</b></td>
+                       <td>${report.run_cost.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                       <td><b>Total COGS/Case</b></td>
+                       <td>${report.summary.cogs.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                       <td><b>Average Revenue/Case</b></td>
+                       <td>${report.summary.avgerage_revenue.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                       <td><b>Average Profit/Case</b></td>
+                       <td>${report.summary.average_profit.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                       <td><b>Profit Margin</b></td>
+                       <td>${report.summary.profit_margin.toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                 </Table>
+            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Sales Records:</h5>
             <Table responsive size="sm">
                 <thead>
                     <tr>
