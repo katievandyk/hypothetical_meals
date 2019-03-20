@@ -11,13 +11,24 @@ import PropTypes from 'prop-types';
 import '../../styles.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import ReactChartkick, { LineChart } from 'react-chartkick'
-import Chart from 'chart.js'
+import Chart from 'chart.js';
+import moment from 'moment';
 
 
 class SKUDrillDownEntry extends React.Component {
 
+  chart_data = (entries) => {
+    var obj = {};
+    for(var i = 0; i < entries.length; i++){
+      const date = moment().year(entries[i].year).week(entries[i].week).format('YYYY-MM-DD');
+      obj[date] = entries[i].revenue;
+    }
+    return obj;
+  }
+
   render() {
     const report = this.props.sku_drilldown;
+    console.log(report);
     const loading = this.props.loading;
     if(loading){
       return (
@@ -33,9 +44,10 @@ class SKUDrillDownEntry extends React.Component {
         <div>
           <Container>
           <Row>
-          <Col style={{marginBottom: '20px'}}>
-            <h5 style={{marginBottom: '20px'}}>Sales Chart</h5>
-            <LineChart data={{"2017-05-13": 2, "2017-05-14": 5}} />
+          <Col>
+            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Sales Chart</h5>
+            <LineChart data={this.chart_data(report.entries)}
+              xtitle='Date' ytitle='Revenue for Week' />
           </Col>
           <Col md={4}>
             <h5 style={{marginBottom: '20px'}}>Totals</h5>
