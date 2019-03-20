@@ -53,7 +53,7 @@ class SummaryReportDisplay extends React.Component {
     const report = this.props.sales.summary;
     const pline_groups = this.props.sales.pline_groups;
     const loading = this.props.sales.loading;
-    if(loading){
+    if(loading && !this.state.sku_drilldown_modal){
       return (
         <div style={{'textAlign':'center'}}>
           <Spinner type="grow" color="success" />

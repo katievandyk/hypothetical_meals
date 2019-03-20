@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import { getSKUDrilldown } from '../../actions/salesActions';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
+import SKUDrilldownEntry from '../../components/sales/SKUDrilldownEntry';
 
 class SKUDrilldownModal extends React.Component {
   constructor(props){
@@ -25,6 +26,10 @@ class SKUDrilldownModal extends React.Component {
         selected_customerDD: '',
       };
   };
+
+  componentDidMount() {
+      this.props.getSKUDrilldown(this.props.curr_sku._id, {start_year: 2018, end_year: 2019});
+   }
 
   settings_toggle = () => {
     this.setState({
@@ -64,8 +69,10 @@ class SKUDrilldownModal extends React.Component {
     return (
       <div>
         <ModalBody>
-            Placeholder for SKU drilldown.
-            <Button onClick={this.settings_toggle}>Edit Settings</Button>
+            <Row style={{marginBottom: '20px'}}>
+                <Col  style={{'textAlign': 'right'}}><Button onClick={this.settings_toggle}>Edit Settings</Button></Col>
+            </Row>
+            <SKUDrilldownEntry sku_drilldown={this.props.sales.sku_drilldown} loading={this.props.sales.loading}/>
         </ModalBody>
         <Modal isOpen={this.state.settings_modal} toggle={this.settings_toggle} size='md'>
             <ModalHeader>Settings</ModalHeader>
