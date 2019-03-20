@@ -98,7 +98,7 @@ router.post('/', (req, res) => {
                     newSKU.save().then(sku => {
                         res.json(sku)
 
-                        var job = jobs.create('new_sku', {number: sku.number, id: sku._id});
+                        var job = jobs.create('cache_job', {number: sku.number, id: sku._id, job_name: 'new_sku'});
                         job.save();
                     })
                     .catch(err => res.status(404).json({success: false, message: err.message}));
@@ -133,7 +133,7 @@ router.delete('/:id', (req, res) => {
                 SKU.findById(req.params.id)
                 .then(sku => {
                     sku.remove().then(() => res.json({success: true}));
-                    var job = jobs.create('delete_sku', {id: sku._id});
+                    var job = jobs.create('cache_job', {id: sku._id, job_name: 'delete_sku'});
                     job.save();
                 })
             }).catch(err => res.status(404).json({success: false, message: err.message}))

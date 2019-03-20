@@ -144,7 +144,7 @@ router.post('/upload/skus', (req, res) => {
         res.json(results_summary)
 
         var bulk_skus_obj = results_summary.Store.records.map(sku => ({number: sku["sku#"], _id: sku._id}))
-        var job = jobs.create('bulk_skus', {skus: bulk_skus_obj});
+        var job = jobs.create('cache_job', {skus: bulk_skus_obj, job_name: 'bulk_skus'});
         job.save();
     })
     .catch(err => { 

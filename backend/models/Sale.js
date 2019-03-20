@@ -22,4 +22,6 @@ const SaleSchema = new Schema({
     }
 });
 
+SaleSchema.index({sku: 1, customer: 1, year: 1, week: 1}, { unique: true });
+
 module.exports = Sale = mongoose.model('sale', SaleSchema);

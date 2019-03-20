@@ -45,18 +45,9 @@ const kue = require('kue')
 var jobs = kue.createQueue();
 const Track = require('../backend/sales_tracking/track')
 
-jobs.process('new_sku', function (job, done){
-    Track.onCreateGetSkuSales(job.data.number, job.data.id)
-    .then(results => {
-        console.log(`Successfully cached sales for SKU ${job.data.number}. Number of records: ` + results.length)
-        done && done();
-    }).catch(err => {
-        console.log("Errors storing: " + err)
-        done && done();
-    })
-});
 
-jobs.process('delete_sku', function (job, done) {
+jobs.process('cache_job', function (job, done){
+  if (job.data.job_name == "delete_sku") {
     Track.onDeleteRemoveSKUCache(job.data.id)
     .then(result => {
       console.log("Removed SKU sales from cache. Number of records: " + result.length)
@@ -66,21 +57,28 @@ jobs.process('delete_sku', function (job, done) {
       console.log(err.message)
       done && done();
     })
-    
-});
-
-jobs.process('bulk_skus', function (job, done){
+  }
+  else if(job.data.job_name == "new_sku") {
+    Track.onCreateGetSkuSales(job.data.number, job.data.id)
+    .then(results => {
+        console.log(`Successfully cached sales for SKU ${job.data.number}. Number of records: ` + results.length)
+        done && done();
+    }).catch(err => {
+        console.log("Errors storing: " + err)
+        done && done();
+    })
+  }
+  else if(job.data.job_name == "bulk_skus") {
     Track.onCreateBulkImportedSkuSales(job.data.skus)
     .then(results => {
       console.log(`Successfully cached bulk imported SKUs. Number of records: ` + results.length)
       done && done();
-  }).catch(err => {
-      console.log("Errors storing: " + err)
-      done && done();
-  })
+    }).catch(err => {
+        console.log("Errors storing: " + err)
+        done && done();
+    })
+  }
 });
-
-
 
 // launch our backend into a port
 app.listen(API_PORT, () => console.log(`SALES LISTENING ON PORT ${API_PORT}`));
