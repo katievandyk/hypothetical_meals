@@ -5,7 +5,8 @@ const fs = require('fs')
 var Parser = require('../../bulk_import/parser');
 var Uploader = require('../../bulk_import/upload');
 
-const { spawn } = require('child_process');
+const kue = require('kue')
+var jobs = kue.createQueue();
 
 function groupByStatus(res) {
     return res.reduce(function(r,a) {
@@ -141,20 +142,10 @@ router.post('/upload/skus', (req, res) => {
     .then(result => {
         var results_summary = generateResultsSummary(req,result)
         res.json(results_summary)
-        // Trigger downloading SKU sales data
-        var skus_args = results_summary.Store.records.map(sku => sku["sku#"] + "|" + sku._id).join(",")
-        const spawned = spawn('node',['sales_tracking/track.js',"bulk_skus",skus_args]);
-        spawned.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-        });
 
-        spawned.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
-        });
-        
-        spawned.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-        });
+        var bulk_skus_obj = results_summary.Store.records.map(sku => ({number: sku["sku#"], _id: sku._id}))
+        var job = jobs.create('bulk_skus', {skus: bulk_skus_obj});
+        job.save();
     })
     .catch(err => { 
         console.log(err);

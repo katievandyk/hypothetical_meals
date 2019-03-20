@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 
 const Customer = require("../models/Customer")
 const Sale = require("../models/Sale")
+var MongoClient = require('mongodb').MongoClient;
 var mongo_url = require('../configs').mongoURI
+var mong_db = mongo_url.substring(mongo_url.lastIndexOf("/")+1)
 
 mongoose.Promise = global.Promise;
 
@@ -45,16 +47,20 @@ module.exports.parseSKUSaleResult = parseSKUSaleResult = function(text, sku_id) 
     return table
 }
 
-module.exports.onCreateGetSkuSales = onCreateGetSkuSales = async function(sku_num, sku_id) {
-    mongoose.connect(mongo_url, options)
-    var sales_objs = fetchSalesData(sku_num, sku_id)
-    return cacheSalesData(sku_id, sku_num, sales_objs)
+async function onCreateGetSkuSales(sku_num, sku_id) {
+    mongoose.connect(mongo_url, options, function (err) {
+        if (err) throw err;
+        var sales_objs = fetchSalesData(sku_num, sku_id)
+        cacheSalesData(sku_id, sku_num, sales_objs)
+    })
 }
 
-module.exports.onCreateBulkImportedSkuSales =  onCreateBulkImportedSkuSales = async function(skus_list) {
-    mongoose.connect(mongo_url, options)
-    var sales_objs = fetchSalesDataBulk(skus_list)
-    return cacheSalesDataBulk(sales_objs)
+async function onCreateBulkImportedSkuSales(skus_list) {
+    mongoose.connect(mongo_url, options, function (err) {
+        if (err) throw err;
+        var sales_objs = fetchSalesDataBulk(skus_list)
+        cacheSalesDataBulk(sales_objs)
+    })
 }
 
 function fetchSalesDataBulk(skus_list) {
@@ -67,9 +73,13 @@ function fetchSalesDataBulk(skus_list) {
 }
 
 function cacheSalesDataBulk(sales_objs) {
-    return Promise.all(sales_objs.map(entry => {
+    Promise.all(sales_objs.map(entry => {
         return getSalesStorePromise(entry)
-    }))
+    })).then(results => {
+        console.log(`Successfully cached bulk imported SKUs. Number of records: ` + results.length)
+    }).catch(err => {
+        console.log("Errors storing: " + err)
+    })
 }
 
 
@@ -87,9 +97,13 @@ module.exports.fetchSalesData = fetchSalesData = function(sku_num, sku_id) {
 }
 
 function cacheSalesData(sku_id, sku_num, sales_objs) {
-    return Promise.all(sales_objs.map(entry => {
+    Promise.all(sales_objs.map(entry => {
         return getSalesStorePromise(entry)
-    }))
+    })).then(results => {
+        console.log(`Successfully cached sales for SKU ${sku_num}. Number of records: ` + results.length)
+    }).catch(err => {
+        console.log("Errors storing: " + err)
+    })
 }
 
 module.exports.getSalesStorePromise = getSalesStorePromise = function(entry) {
@@ -125,14 +139,30 @@ process.on('message', async (message) => {
         onDeleteRemoveSKUCache(message.id)
   });
 
-module.exports.onDeleteRemoveSKUCache = onDeleteRemoveSKUCache = async function(sku_id) {
-    mongoose.connect(mongo_url, options)
-    return new Promise(function(accept,reject) {
+async function onDeleteRemoveSKUCache(sku_id) {
+    mongoose.connect(mongo_url, options, function (err) {
+        if (err) throw err;
         Sale.find({sku: sku_id}).then(sales => {
-        Promise.all(sales.map(sale => {
-            return new Promise(function(accept, reject) {
-                Sale.findByIdAndDelete(sale._id).then(accept).catch(reject);
-            })
-        })).then(result => accept(result)).catch(err => reject(err))
-   })})
+            Promise.all(sales.map(sale => {
+                return new Promise(function(accept, reject) {
+                    Sale.findByIdAndDelete(sale._id).then(accept).catch(reject);
+                })
+            })).then(result => console.log("Removed SKU sales from cache.")).catch(err => console.log(err.message))
+        })
+    })
+}
+
+if(process.argv[2] == "new_sku") {
+    onCreateGetSkuSales(process.argv[3], process.argv[4])
+}
+else if(process.argv[2] == "delete_sku") {
+    onDeleteRemoveSKUCache(process.argv[3])
+}
+else if(process.argv[2] == "bulk_skus") {
+    var skus = process.argv[3].split(",").map(info => {
+        var temp = info.split("|")
+        return {number: temp[0], _id: temp[1]}
+    })
+
+    onCreateBulkImportedSkuSales(skus)
 }
