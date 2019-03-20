@@ -115,7 +115,7 @@ class SKUDrillDownEntry extends React.Component {
       else{
         return (
           <div style={{textAlign: 'center'}}>
-             Error rendering report.
+             No sales records available for given date range.
           </div>
         );
       }
