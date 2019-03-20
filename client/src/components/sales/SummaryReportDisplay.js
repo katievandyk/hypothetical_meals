@@ -12,6 +12,7 @@ import '../../styles.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SKUDrillDownModal from '../../components/sales/SKUDrilldownModal';
+import { exportSummary } from '../../actions/exportActions';
 
 class SummaryReportDisplay extends React.Component {
   constructor(props) {
@@ -49,11 +50,15 @@ class SummaryReportDisplay extends React.Component {
     this.drilldown_toggle();
   }
 
+  export = () => {
+    this.props.exportSummary(this.props.sales.summ_body);
+  }
+
   render() {
     const report = this.props.sales.summary;
     const pline_groups = this.props.sales.pline_groups;
     const loading = this.props.sales.loading;
-    if(loading){
+    if(loading && !this.state.sku_drilldown_modal){
       return (
         <div style={{'textAlign':'center'}}>
           <Spinner type="grow" color="success" />
@@ -110,7 +115,7 @@ class SummaryReportDisplay extends React.Component {
         ))}
         <Row>
            <Col style={{'textAlign': 'right'}}/>
-           <Button>Export</Button>
+           <Button onClick={this.export}>Export</Button>
         </Row>
         </Container>
         <Modal isOpen={this.state.summary_modal} toggle={this.summary_toggle} size="lg">
@@ -180,9 +185,9 @@ class SummaryReportDisplay extends React.Component {
                  </Table>
                 </ModalBody>
         </Modal>
-        <Modal isOpen={this.state.sku_drilldown_modal} toggle={this.drilldown_toggle} size="lg">
+        <Modal isOpen={this.state.sku_drilldown_modal} toggle={this.drilldown_toggle} className="modal-xl">
              <ModalHeader>SKU Drilldown for {this.state.curr_sku.name}</ModalHeader>
-             <SKUDrillDownModal/>
+             <SKUDrillDownModal curr_sku={this.state.curr_sku}/>
         </Modal>
         </div>
       );
@@ -198,11 +203,12 @@ class SummaryReportDisplay extends React.Component {
   }
 
 SummaryReportDisplay.propTypes = {
-  sales: PropTypes.object.isRequired
+  sales: PropTypes.object.isRequired,
+  exportSummary: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
   sales: state.sales
 });
 
-export default connect(mapStateToProps, {} )(SummaryReportDisplay);
+export default connect(mapStateToProps, {exportSummary} )(SummaryReportDisplay);

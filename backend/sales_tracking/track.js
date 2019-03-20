@@ -3,14 +3,14 @@ const mongoose = require('mongoose');
 
 const Customer = require("../models/Customer")
 const Sale = require("../models/Sale")
-var mongo_url = require('../configs').mongoURI
+const mongo_url = require("../configs").mongoURI
 
 mongoose.Promise = global.Promise;
 
 var options = {
     server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 1000000000 } },
     replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 1000000000 } }
-  };
+};
 
 module.exports.httpGet = httpGet = function(theUrl) {
     var xmlHttp = new XMLHttpRequest();

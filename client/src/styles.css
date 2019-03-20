@@ -151,3 +151,7 @@ body{
   cursor:pointer;
   text-decoration: underline;
 }
+
+.modal-xl {
+    width: 100%
+}

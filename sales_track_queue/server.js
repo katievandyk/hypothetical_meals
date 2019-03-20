@@ -22,10 +22,6 @@ mongoose
     .then(() => console.log('MongoDB Connected- Sales Tracking'))
     .catch(err => console.log(err));
 
-
-const queue = require('./routes/api/send-message');
-app.use('/api/queue', queue);
-
 var env = process.env.NODE_ENV || 'dev';
 
 // if(env!=='dev') {
