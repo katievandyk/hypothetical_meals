@@ -76,8 +76,8 @@ class IngredientsAddModal extends React.Component {
         }
       }
       else if(field_type === 'cost_per_package'){
-        const numRex = /^[1-9]\d*(\.\d+)?$/mg
-        if (numRex.test(e.target.value)) {
+        const numRex = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/;
+        if (numRex.test(e.target.value) && parseFloat(numRex.exec(e.target.value)[1]) >= 0) {
           validate[field_type] = 'has-success';
         }
         else {
