@@ -53,7 +53,7 @@ class SummaryReportDisplay extends React.Component {
     const report = this.props.sales.summary;
     const pline_groups = this.props.sales.pline_groups;
     const loading = this.props.sales.loading;
-    if(loading){
+    if(loading && !this.state.sku_drilldown_modal){
       return (
         <div style={{'textAlign':'center'}}>
           <Spinner type="grow" color="success" />
@@ -182,7 +182,7 @@ class SummaryReportDisplay extends React.Component {
         </Modal>
         <Modal isOpen={this.state.sku_drilldown_modal} toggle={this.drilldown_toggle} size="lg">
              <ModalHeader>SKU Drilldown for {this.state.curr_sku.name}</ModalHeader>
-             <SKUDrillDownModal/>
+             <SKUDrillDownModal curr_sku={this.state.curr_sku}/>
         </Modal>
         </div>
       );
