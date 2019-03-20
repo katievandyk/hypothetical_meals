@@ -10,6 +10,9 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import '../../styles.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import ReactChartkick, { LineChart } from 'react-chartkick'
+import Chart from 'chart.js'
+
 
 class SKUDrillDownEntry extends React.Component {
 
@@ -29,11 +32,17 @@ class SKUDrillDownEntry extends React.Component {
       return (
         <div>
           <Container>
-            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Totals:</h5>
-                  <Table>
+          <Row>
+          <Col>
+            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Sales Chart</h5>
+            <LineChart data={{"2017-05-13": 2, "2017-05-14": 5}} />
+          </Col>
+          <Col md={4}>
+            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Totals</h5>
+                  <Table responsive bordered size="sm">
                     <tbody>
                     <tr>
-                       <td><b>Average Manufacturing Run Size</b></td>
+                       <td><b>Avg. Mfg. Run Size</b></td>
                        <td>{report.summary.average_run_size.toFixed(2)}</td>
                     </tr>
                     <tr>
@@ -41,11 +50,11 @@ class SKUDrillDownEntry extends React.Component {
                        <td>${report.summary.ing_cost_per_case.toFixed(2)}</td>
                     </tr>
                     <tr>
-                       <td><b>Average Manufacturing Setup Cost/Case</b></td>
+                       <td><b>Mfg. Setup Cost/Case</b></td>
                        <td>${report.summary.average_setup_cost.toFixed(2)}</td>
                     </tr>
                     <tr>
-                       <td><b>Manufacturing Run Cost/Case</b></td>
+                       <td><b>Mfg. Run Cost/Case</b></td>
                        <td>${report.run_cost.toFixed(2)}</td>
                     </tr>
                     <tr>
@@ -53,11 +62,11 @@ class SKUDrillDownEntry extends React.Component {
                        <td>${report.summary.cogs.toFixed(2)}</td>
                     </tr>
                     <tr>
-                       <td><b>Average Revenue/Case</b></td>
+                       <td><b>Avg. Revenue/Case</b></td>
                        <td>${report.summary.avgerage_revenue.toFixed(2)}</td>
                     </tr>
                     <tr>
-                       <td><b>Average Profit/Case</b></td>
+                       <td><b>Avg. Profit/Case</b></td>
                        <td>${report.summary.average_profit.toFixed(2)}</td>
                     </tr>
                     <tr>
@@ -66,14 +75,18 @@ class SKUDrillDownEntry extends React.Component {
                     </tr>
                   </tbody>
                  </Table>
-            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Sales Records:</h5>
+          </Col>
+          </Row>
+          <Row>
+          <Col>
+            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Sales Records</h5>
             <Table responsive size="sm">
                 <thead>
                     <tr>
                         <th>Year</th>
                         <th>Week</th>
-                        <th>Customer #</th>
                         <th>Customer Name</th>
+                        <th>Customer #</th>
                         <th>Sales</th>
                          <th>Price/Case</th>
                         <th>Revenue</th>
@@ -84,8 +97,8 @@ class SKUDrillDownEntry extends React.Component {
                               <tr key={obj._id}>
                                 <td> {obj.year} </td>
                                 <td> {obj.week} </td>
-                                <td> {obj.customer.number} </td>
                                 <td> {obj.customer.name} </td>
+                                <td> {obj.customer.number} </td>
                                 <td> {obj.sales}</td>
                                 <td> ${obj.price_per_case} </td>
                                 <td> ${obj.revenue} </td>
@@ -93,7 +106,9 @@ class SKUDrillDownEntry extends React.Component {
                             ))}
                         </tbody>
                       </Table>
-                </Container>
+                </Col>
+            </Row>
+          </Container>
         </div>
       );
       }

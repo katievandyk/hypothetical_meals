@@ -69,13 +69,13 @@ class SKUDrilldownModal extends React.Component {
     return (
       <div>
         <ModalBody>
+            <SKUDrilldownEntry sku_drilldown={this.props.sales.sku_drilldown} loading={this.props.sales.loading}/>
             <Row style={{marginBottom: '20px'}}>
                 <Col  style={{'textAlign': 'right'}}>
                     <Button onClick={this.settings_toggle}>Settings</Button>&nbsp;
                     <Button color="success">Export</Button>
                 </Col>
             </Row>
-            <SKUDrilldownEntry sku_drilldown={this.props.sales.sku_drilldown} loading={this.props.sales.loading}/>
         </ModalBody>
         <Modal isOpen={this.state.settings_modal} toggle={this.settings_toggle} size='md'>
             <ModalHeader>Settings</ModalHeader>
