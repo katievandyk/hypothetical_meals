@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_SALES_SUMMARY, SALES_LOADING, SALES_ERROR, SALES_GET_SKUS_BY_PL, GET_CUSTOMERS } from './types';
+import { GET_SALES_SUMMARY, SALES_LOADING, SALES_ERROR, SALES_GET_SKUS_BY_PL, GET_CUSTOMERS} from './types';
 
 export const getSummary = (skus, customer) => dispatch =>  {
   const body = {"skus": skus};
@@ -8,7 +8,7 @@ export const getSummary = (skus, customer) => dispatch =>  {
   axios.post(`/api/sales/summary`, body ).then(res =>{
     dispatch({
       type: GET_SALES_SUMMARY,
-      payload: res.data
+      payload: {data: res.data, body: body}
     })}
   ).catch(error =>{
     dispatch({

@@ -1,10 +1,11 @@
-import { GET_SALES_SUMMARY, SALES_LOADING, SALES_GET_SKUS_BY_PL, GET_CUSTOMERS } from '../actions/types';
+import { GET_SALES_SUMMARY, SALES_LOADING, SALES_GET_SKUS_BY_PL, GET_CUSTOMERS, EXPORT_SUMMARY } from '../actions/types';
 
 const initialState = {
   loading: false,
   summary: [],
   pline_groups: {},
-  summary_customers: []
+  summary_customers: [],
+  summ_body: {}
 };
 
 export default function(state = initialState, action) {
@@ -12,7 +13,8 @@ export default function(state = initialState, action) {
     case GET_SALES_SUMMARY:
       return {
         ...state,
-        summary: action.payload,
+        summary: action.payload.data,
+        summ_body: action.payload.body,
         loading: false,
       }
     case SALES_GET_SKUS_BY_PL:
@@ -29,6 +31,10 @@ export default function(state = initialState, action) {
       return {
         ...state,
         summary_customers: action.payload
+      }
+    case EXPORT_SUMMARY:
+      return {
+        ...state
       }
     default:
       return state;
