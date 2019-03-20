@@ -121,68 +121,76 @@ class SummaryReportDisplay extends React.Component {
         <Modal isOpen={this.state.summary_modal} toggle={this.summary_toggle} size="lg">
              <ModalHeader>Summary for {this.state.curr_sku.name}</ModalHeader>
                 <ModalBody>
-                   <h5 style={{marginBottom: '20px'}}>10 Year Summary:</h5>
-                   <Table responsive size="sm">
-                    <thead>
-                      <tr>
-                        <th>Year</th>
-                        <th>Revenue</th>
-                        <th>Sales</th>
-                        <th>Average</th>
-                      </tr>
-                    </thead>
-                        <tbody>
-                        {report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).entries.map(({revenue, sales, year, average}) => (
-                           <tr key={year}>
+                {(report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).entries && report.find(elem => elem.sku === this.state.curr_sku._id).entries.length > 0) ? (
+                    <div>
+                        <h5 style={{marginBottom: '20px'}}>10 Year Summary:</h5>
+                        <Table responsive size="sm">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Revenue</th>
+                                    <th>Sales</th>
+                                    <th>Average</th>
+                                </tr>
+                             </thead>
+                             <tbody>
+                             {report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).entries.map(({revenue, sales, year, average}) => (
+                                <tr key={year}>
                                     <td> {year} </td>
                                     <td> ${revenue.toFixed(2)} </td>
                                     <td> ${sales.toFixed(2)} </td>
                                     <td> ${average.toFixed(2)} </td>
-                           </tr>
-                        ))}
-                           <tr>
-                                 <td><b>Total</b></td>
-                                 <td><b>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.sum_revenue.toFixed(2)}</b></td>
-                           </tr>
-                        </tbody>
-                  </Table>
-                  <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Totals:</h5>
-                  <Table>
-                    <tbody>
-                    <tr>
-                       <td><b>Average Manufacturing Run Size</b></td>
-                       <td>{report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.average_run_size.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                       <td><b>Ingredient Cost/Case</b></td>
-                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.ing_cost_per_case.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                       <td><b>Average Manufacturing Setup Cost/Case</b></td>
-                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.average_setup_cost.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                       <td><b>Manufacturing Run Cost/Case</b></td>
-                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).run_cost.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                       <td><b>Total COGS/Case</b></td>
-                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.cogs.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                       <td><b>Average Revenue/Case</b></td>
-                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.avgerage_revenue.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                       <td><b>Average Profit/Case</b></td>
-                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.average_profit.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                       <td><b>Profit Margin</b></td>
-                       <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.profit_margin.toFixed(2)}</td>
-                    </tr>
-                  </tbody>
-                 </Table>
+                                </tr>
+                              ))}
+                                <tr>
+                                    <td><b>Total</b></td>
+                                    <td><b>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.sum_revenue.toFixed(2)}</b></td>
+                                </tr>
+                               </tbody>
+                        </Table>
+                        <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Totals:</h5>
+                        <Table>
+                            <tbody>
+                                <tr>
+                                    <td><b>Average Manufacturing Run Size</b></td>
+                                    <td>{report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.average_run_size.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Ingredient Cost/Case</b></td>
+                                    <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.ing_cost_per_case.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Average Manufacturing Setup Cost/Case</b></td>
+                                    <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.average_setup_cost.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Manufacturing Run Cost/Case</b></td>
+                                    <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).run_cost.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Total COGS/Case</b></td>
+                                    <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.cogs.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Average Revenue/Case</b></td>
+                                    <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.avgerage_revenue.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Average Profit/Case</b></td>
+                                    <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.average_profit.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Profit Margin</b></td>
+                                    <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.profit_margin.toFixed(2)}</td>
+                                </tr>
+                            </tbody>
+                        </Table>
+                    </div>
+                ) : (
+                          <div style={{textAlign: 'center'}}>
+                             No sales records for the specified SKU and customer(s).
+                          </div>
+               )}
                 </ModalBody>
         </Modal>
         <Modal isOpen={this.state.sku_drilldown_modal} toggle={this.drilldown_toggle} className="modal-xl">

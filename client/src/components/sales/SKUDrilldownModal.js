@@ -5,7 +5,6 @@ import {
   Label,
   Button,
   CustomInput,
-  Form, FormGroup
 } from 'reactstrap';
 import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
@@ -17,6 +16,7 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import SKUDrilldownEntry from '../../components/sales/SKUDrilldownEntry';
 import { exportDrilldown } from '../../actions/exportActions';
+import moment from 'moment'
 
 class SKUDrilldownModal extends React.Component {
   constructor(props){
@@ -25,11 +25,15 @@ class SKUDrilldownModal extends React.Component {
         settings_modal: false,
         allCustomersCheckedDD: true,
         selected_customerDD: '',
+        startDate: '',
+        endDate: ''
       };
   };
 
   componentDidMount() {
-      this.props.getSKUDrilldown(this.props.curr_sku._id, {start_year: 2018, end_year: 2019});
+      var today = new Date();
+      var past = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+      this.props.getSKUDrilldown(this.props.curr_sku._id, {start_date: moment(past).format('MM-DD-YYYY'), end_date: moment(today).format('MM-DD-YYYY')});
    }
 
   settings_toggle = () => {
@@ -47,14 +51,13 @@ class SKUDrilldownModal extends React.Component {
   genOptionsDD = (customers) => {
     var newOptions = [];
     customers.forEach(function(customer){
-      var newOption = {value: customer._id, label: customer.name+": " + customer.number}; // TODO add customer number
+      var newOption = {value: customer._id, label: customer.name+": " + customer.number};
       newOptions = [...newOptions, newOption];
     });
     return newOptions;
   }
 
   onChangeCustomers = (e) => {
-    var newCustomers = [];
     this.setState({
       allCustomersCheckedDD: false,
       selected_customerDD: e.value
@@ -62,9 +65,9 @@ class SKUDrilldownModal extends React.Component {
   }
 
   onSubmitSettings = () =>{
-      var startString = this.state.startDate.format('YYYY');
-      var endString = this.state.endDate.format('YYYY');
-      const newObj = {start_year: parseInt(startString, 10), end_year: parseInt(endString, 10)}
+      var startString = this.state.startDate.format('MM-DD-YYYY');
+      var endString = this.state.endDate.format('MM-DD-YYYY');
+      const newObj = {start_date: startString, end_date: endString}
       if(!this.state.allCustomersCheckedDD) newObj['customer'] = this.state.selected_customerDD
       this.props.getSKUDrilldown(this.props.curr_sku._id, newObj);
       this.settings_toggle();

@@ -4,6 +4,7 @@
 backend/node_modules/*
 backend/configs.js
 node_modules/*
+sales_track_queue/node_modules/*
 .idea*
 client/build
 *.crt

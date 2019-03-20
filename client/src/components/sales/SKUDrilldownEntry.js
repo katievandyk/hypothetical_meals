@@ -47,19 +47,10 @@ class SKUDrillDownEntry extends React.Component {
           <Col>
             <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Sales Chart</h5>
             <LineChart data={this.chart_data(report.entries)}
-              xtitle='Date' ytitle='Revenue for Week'
-              options={{
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              stepSize: 1000
-                          }
-                      }]
-                  }
-              }} />
+              xtitle='Date' ytitle='Revenue for Week' />
           </Col>
           <Col md={4}>
-            <h5 style={{marginBottom: '20px', marginTop: '20px'}}>Totals</h5>
+            <h5 style={{marginBottom: '20px'}}>Totals</h5>
                   <Table responsive bordered size="sm">
                     <tbody>
                     <tr>
@@ -136,7 +127,7 @@ class SKUDrillDownEntry extends React.Component {
       else{
         return (
           <div style={{textAlign: 'center'}}>
-             Error rendering report.
+             No sales records available for given date range.
           </div>
         );
       }

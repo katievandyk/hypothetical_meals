@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const router = express.Router();
 const Helper = require('../../bulk_import/helpers');
 const SKU = require('../../models/SKU')
@@ -54,8 +55,10 @@ router.post('/customers', (req, res) => {
 router.post('/summary', (req, res) => {
     var year = new Date().getFullYear()
     var yearMinus10 = year-10
+    var startDate = moment(`01-01-${yearMinus10}`, 'MM-DD-YYYY')
+    var endDate = moment(`01-01-${year+1}`, 'MM-DD-YYYY')
     Promise.all(req.body.skus.map(sku_id => {
-        return calculateAggregatedForOneSKU(sku_id, yearMinus10, year, req.body.customer)
+        return calculateAggregatedForOneSKU(sku_id, startDate, endDate, req.body.customer)
     })).then(results => {
         if(req.body.export) {
             results = generateCsvSummary(results)
@@ -88,9 +91,9 @@ function generateCsvSummary(results) {
     return lines.join("\r\n")
 }
 
-function calculateAggregatedForOneSKU(sku_id, start_year, end_year, customer) {
+function calculateAggregatedForOneSKU(sku_id, startDate, endDate, customer) {
     return new Promise(function(accept, reject) {
-        var saleFindPromise = Sale.find({sku: sku_id}).where('year').gte(start_year).lte(end_year)
+        var saleFindPromise = Sale.find({sku: sku_id}).where('year').gte(startDate.year()).lte(endDate.year())
         if (customer != null) {
             saleFindPromise = saleFindPromise.where({customer: customer})
         }
@@ -103,26 +106,27 @@ function calculateAggregatedForOneSKU(sku_id, start_year, end_year, customer) {
                 byYear[key] = year_entries.reduce(calculateSummaryCost, {revenue: 0, sales: 0, year: key})
             });
             
-            calculateSummaryStats(sku_id, Object.values(byYear), start_year, end_year).then(r => {
+            calculateSummaryStats(sku_id, Object.values(byYear), startDate, endDate).then(r => {
                 accept(r)
             }).catch(reject)
         })
     }) 
 }
 
-function calculateSummaryStats(sku_id, entries, start_year, end_year) {
+function calculateSummaryStats(sku_id, entries, startDate, endDate) {
     return new Promise(function(accept, reject) {
         SKU.findById(sku_id).populate("product_line").lean().then(sku => {
             ManufacturingActivity.find({"sku" : sku_id, 
                 $or: [ {
                     start: {
-                        $gte: new Date(`${start_year}-01-01T00:00:00.000Z`),
-                        $lt: new Date(`${end_year+1}-01-01T00:00:00.000Z`)
+                        $gte: startDate,
+                        $lt: endDate
                     }},{
                     end: {
-                        $gte: new Date(`${start_year}-01-01T00:00:00.000Z`),
-                        $lt: new Date(`${end_year+1}-01-01T00:00:00.000Z`)
-                    }}]
+                        $gte: startDate,
+                        $lt: endDate
+                    }},{
+                    start: {$lte: startDate}, end: {$gte: endDate}}]
             }).lean()
             .then(activities => {
                 var activity_goals = activities.map(a => a.goal_id)
@@ -160,13 +164,31 @@ function calculateSummaryStats(sku_id, entries, start_year, end_year) {
 // - sku_id: id of sku for detailed report
 // request body fields:
 // - customer: id of customer or nothing if want all customers
-// - start_year: start year
-// - end_year: end year
+// - start_date: start date (MM-DD-YYYY format)
+// - end_date: end date (MM-DD-YYYY format)
 // - export: if true will return csv result
 // returns:
 // - [{sku: sku_id, entries: list of objects- each representing a weekly entry, summary: [one entry per year for 10 years]}]
 router.post('/detailed/:sku_id', (req, res) => {
-    var saleFindPromise = Sale.find({sku: req.params.sku_id}).where('year').gte(req.body.start_year).lte(req.body.end_year)
+    var startDate = moment(req.body.start_date, 'MM-DD-YYYY')
+    var endDate = moment(req.body.end_date, 'MM-DD-YYYY')
+    // console.log("start date: "+ startDate.year() + " " + startDate.week())
+    // console.log("end date: " + endDate.year() + " " + endDate.week())
+
+    var saleFindPromise = Sale
+        .find({
+            $and: [
+                { $or: [
+                    {year: { $gt: startDate.year()}}, 
+                    {year: startDate.year(), week: { $gte: startDate.week()}}, 
+                ]},
+                { $or: [
+                    {year: { $lt: endDate.year() }},
+                    {year: endDate.year(), week: { $lte: endDate.week()}}, 
+                ]},
+                { sku: req.params.sku_id }
+            ]
+        })
     if(req.body.customer) {
         saleFindPromise = saleFindPromise.where({customer: req.body.customer})
     }
@@ -175,10 +197,10 @@ router.post('/detailed/:sku_id', (req, res) => {
         entries.forEach(entry => {
             entry.revenue = entry.sales * entry.price_per_case
         })
-        calculateSummaryStats(req.params.sku_id, entries, req.body.start_year, req.body.end_year)
+        calculateSummaryStats(req.params.sku_id, entries, startDate, endDate.add(1, "days"))
         .then(r => {
             if(req.body.export) {
-                let csvRes = generateCsvDetailed(r, req.body.start_year, req.body.end_year)
+                let csvRes = generateCsvDetailed(r, req.body.start_date, req.body.end_date)
                 res.setHeader('Content-Type', 'text/csv')
                 res.status(200).send(csvRes)
             }

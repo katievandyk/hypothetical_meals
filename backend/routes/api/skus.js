@@ -3,8 +3,8 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Helper = require('../../bulk_import/helpers');
 const Parser = require('../../bulk_import/parser')
-const Track = require('../../sales_tracking/track')
-const { spawn } = require('child_process');
+const kue = require('kue')
+var jobs = kue.createQueue();
 
 // SKU Model
 const SKU = require('../../models/SKU');
@@ -97,19 +97,9 @@ router.post('/', (req, res) => {
                 if(!error_thrown)
                     newSKU.save().then(sku => {
                         res.json(sku)
-                        // Trigger downloading SKU sales data
-                        const spawned = spawn('node',['sales_tracking/track.js',"new_sku",sku.number, sku._id]);
-                        spawned.stdout.on('data', (data) => {
-                            console.log(`stdout: ${data}`);
-                        });
-                
-                        spawned.stderr.on('data', (data) => {
-                            console.log(`stderr: ${data}`);
-                        });
-                        
-                        spawned.on('close', (code) => {
-                            console.log(`child process exited with code ${code}`);
-                        });
+
+                        var job = jobs.create('cache_job', {number: sku.number, id: sku._id, job_name: 'new_sku'});
+                        job.save();
                     })
                     .catch(err => res.status(404).json({success: false, message: err.message}));
             })
@@ -143,19 +133,8 @@ router.delete('/:id', (req, res) => {
                 SKU.findById(req.params.id)
                 .then(sku => {
                     sku.remove().then(() => res.json({success: true}));
-                    // process.send({ event: "delete_sku", id: sku._id });
-                    const spawned = spawn('node',['sales_tracking/track.js',"delete_sku", sku._id.toString()]);
-                    spawned.stdout.on('data', (data) => {
-                        console.log(`stdout: ${data}`);
-                    });
-            
-                    spawned.stderr.on('data', (data) => {
-                        console.log(`stderr: ${data}`);
-                    });
-                    
-                    spawned.on('close', (code) => {
-                        console.log(`child process exited with code ${code}`);
-                    });
+                    var job = jobs.create('cache_job', {id: sku._id, job_name: 'delete_sku'});
+                    job.save();
                 })
             }).catch(err => res.status(404).json({success: false, message: err.message}))
         })
