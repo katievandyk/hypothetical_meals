@@ -54,8 +54,8 @@ router.post('/customers', (req, res) => {
 // - [{sku: sku_id, entries: list of objects- each representing aggregated calculations for one year, summary: [one entry per year for 10 years]}]
 router.post('/summary', (req, res) => {
     var year = new Date().getFullYear()
-    var yearMinus10 = year-10
-    var startDate = moment(`01-01-${yearMinus10}`, 'MM-DD-YYYY')
+    var yearMinus9 = year-9
+    var startDate = moment(`01-01-${yearMinus9}`, 'MM-DD-YYYY')
     var endDate = moment(`01-01-${year+1}`, 'MM-DD-YYYY')
     Promise.all(req.body.skus.map(sku_id => {
         return calculateAggregatedForOneSKU(sku_id, startDate, endDate, req.body.customer)
@@ -147,7 +147,7 @@ function calculateSummaryStats(sku_id, entries, startDate, endDate) {
                     calculateIngredients(goals, summary.sku_id).then(calc => {
                         var reduced_res = calc.reduce(sumCalculatorCosts, 0)
                         summary.ing_cost_per_case = reduced_res
-                        summary.cogs = summary.sku.run_cost + summary.average_setup_cost + reduced_res
+                        summary.cogs = summary.sku.run_cost + summary.average_setup_cost + summary.ing_cost_per_case
                         summary.average_profit = summary.avgerage_revenue - summary.cogs
                         summary.profit_margin = summary.avgerage_revenue / summary.cogs - 1
                         delete summary.sku
