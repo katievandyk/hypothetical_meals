@@ -22,6 +22,7 @@ class SKUDrilldownModal extends React.Component {
   constructor(props){
       super(props)
       this.state = {
+        validateCustomers: '',
         settings_modal: false,
         allCustomersCheckedDD: true,
         selected_customerDD: '',
@@ -58,13 +59,25 @@ class SKUDrilldownModal extends React.Component {
   }
 
   onChangeCustomers = (e) => {
+    var newVal = this.state.validate;
+    if(this.state.selected_customerDD === ''){
+        newVal = 'isInvalid'
+    }
+    else {
+        newVal = 'isValid'
+    }
     this.setState({
       allCustomersCheckedDD: false,
-      selected_customerDD: e.value
+      selected_customerDD: e.value,
+      validateCustomers: newVal
     });
   }
 
   onSubmitSettings = () =>{
+    if(this.state.validateCustomers === 'isInvalid') {
+        alert("Please select a valid customer.")
+    }
+    else {
       var startString = this.state.startDate.format('MM-DD-YYYY');
       var endString = this.state.endDate.format('MM-DD-YYYY');
       const newObj = {start_date: startString, end_date: endString}
@@ -72,6 +85,7 @@ class SKUDrilldownModal extends React.Component {
       this.props.getSKUDrilldown(this.props.curr_sku._id, newObj);
       this.settings_toggle();
     }
+  }
 
   render() {
     return (
@@ -93,18 +107,22 @@ class SKUDrilldownModal extends React.Component {
                 <div style={{paddingBottom: '1.5em'}}>
                     <Row style={{marginBottom: '10px'}}>
                         <Col md={6}>
-                            <CustomInput id={100} checked={this.state.allCustomersCheckedDD} type="radio" name="cust" onChange={e => this.setState({ allCustomersCheckedDD: true })} label='Select all'/>
+                            <CustomInput id={100} checked={this.state.allCustomersCheckedDD} type="radio" name="cust" onChange={e => this.setState({ allCustomersCheckedDD: true, validateCustomers: '' })} label='Select all'/>
                         </Col>
                     </Row>
                     <Row style={{marginBottom: '10px'}}>
                         <Col md={6}>
-                            <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersCheckedDD} onChange={e => this.setState({ allCustomersCheckedDD: false })} label='Select a specific customer:'/>
+                            <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersCheckedDD} onChange={e => this.onChangeCustomers(e)} label='Select a specific customer:'/>
                         </Col>
                     </Row>
                     <Row>
                         <Col md={1}/>
                         <Col>
-                        <Select isMulti={false} options={this.genOptionsDD(this.props.sales.summary_customers)} onChange={this.onChangeCustomers} />
+                        <Select
+                            className={this.state.validateCustomers}
+                            classNamePrefix="react-select"
+                            options={this.genOptionsDD(this.props.sales.summary_customers)}
+                            onChange={this.onChangeCustomers}/>
                         </Col>
                    </Row>
                 </div>

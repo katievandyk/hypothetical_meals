@@ -34,6 +34,7 @@ class SalesReportGenerate extends React.Component {
         allCustomersChecked: true,
         selected_plines:[],
         selected_customer: '',
+        valid_customer: ''
       };
   };
 
@@ -58,15 +59,28 @@ class SalesReportGenerate extends React.Component {
   }
 
   toggleCustomers = () => {
+    var newVal = this.state.validate;
+    if(this.state.selected_customer === ''){
+        newVal = 'isInvalid'
+    }
+    else {
+        newVal = 'isValid'
+    }
     this.setState({
-      allCustomersChecked: !this.state.allCustomersChecked
+      allCustomersChecked: false,
+      validate: newVal
     });
   }
 
   onSubmit = () => {
-    var pline_ids = []
-    this.state.selected_plines.forEach(pline => pline_ids.push(pline._id))
-    this.props.getSalesSKUs(pline_ids, this.generateReport);
+    if(this.state.validate === 'isInvalid') {
+        alert("Please select a valid customer.")
+    }
+    else {
+        var pline_ids = []
+        this.state.selected_plines.forEach(pline => pline_ids.push(pline._id))
+        this.props.getSalesSKUs(pline_ids, this.generateReport);
+    }
   }
 
   generateReport = (sku_ids) => {
@@ -100,10 +114,10 @@ class SalesReportGenerate extends React.Component {
   }
 
   onChange = (e) => {
-    var newCustomers = [];
     this.setState({
       allCustomersChecked: false,
-      selected_customer: e.value
+      selected_customer: e.value,
+      validate: 'isValid'
     });
   }
 
@@ -145,18 +159,22 @@ class SalesReportGenerate extends React.Component {
                         <div style={{paddingBottom: '1.5em'}}>
                         <Row style={{marginBottom: '10px'}}>
                             <Col md={6}>
-                                  <CustomInput id={100} checked={this.state.allCustomersChecked} type="radio" name="cust" onChange={e => this.setState({ allCustomersChecked: true })} label='Select all'/>
+                                  <CustomInput id={100} checked={this.state.allCustomersChecked} type="radio" name="cust" onChange={e => this.setState({ allCustomersChecked: true, validate: '' })} label='Select all'/>
                             </Col>
                         </Row>
                         <Row style={{marginBottom: '10px'}}>
                             <Col md={6}>
-                                  <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersChecked} onChange={e => this.setState({ allCustomersChecked: false })} label='Select a specific customer:'/>
+                                  <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersChecked} onChange={e => this.toggleCustomers(e)} label='Select a specific customer:'/>
                             </Col>
                         </Row>
                         <Row>
                             <Col md={1}/>
                             <Col>
-                            <Select isMulti={false} options={this.genOptions(this.props.sales.summary_customers)} onChange={this.onChange} />
+                            <Select className={this.state.validate}
+                             classNamePrefix="react-select"
+                             isMulti={false}
+                             options={this.genOptions(this.props.sales.summary_customers)}
+                             onChange={this.onChange} />
                             </Col>
                         </Row>
                         </div>
