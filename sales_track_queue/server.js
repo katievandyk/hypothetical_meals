@@ -61,6 +61,7 @@ else {
 function processJobs() {
   jobs.process('cache_job', function (job, done){
     if (job.data.job_name == "delete_sku") {
+      console.log("Starting delete_sku job.")
       Track.onDeleteRemoveSKUCache(job.data.id)
       .then(result => {
         console.log("Removed SKU sales from cache. Number of records: " + result.length)
@@ -72,6 +73,7 @@ function processJobs() {
       })
     }
     else if(job.data.job_name == "new_sku") {
+      console.log("Starting new_sku job.")
       Track.onCreateGetSkuSales(job.data.number, job.data.id)
       .then(results => {
           console.log(`Successfully cached sales for SKU ${job.data.number}. Number of records: ` + results.length)
@@ -82,6 +84,7 @@ function processJobs() {
       })
     }
     else if(job.data.job_name == "bulk_skus") {
+      console.log("Starting bulk_skus job.")
       Track.onCreateBulkImportedSkuSales(job.data.skus)
       .then(results => {
         console.log(`Successfully cached bulk imported SKUs. Number of records: ` + results.length)
