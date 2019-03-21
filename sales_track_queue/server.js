@@ -47,7 +47,7 @@ if (process.env && process.env.pm_id) {
   console.log("Node app instance: " + process.env.NODE_APP_INSTANCE)
   console.log("PM ID: " + process.env.pm_id)
   //running in pm2 
-  if (process.env.pm_id % os.cpus().length !== 0) {
+  if (process.env.NODE_APP_INSTANCE !== 0) {
       console.log("Not master process.")
       return;
   } else {
