@@ -31,6 +31,7 @@ class SalesReportGenerate extends React.Component {
       this.state = {
         modal: false,
         showAllPLines: false,
+        selectAllPLines: true,
         allCustomersChecked: true,
         selected_plines:[],
         selected_customer: '',
@@ -44,11 +45,17 @@ class SalesReportGenerate extends React.Component {
   }
 
   toggle = () => {
-    const { plines } = this.props.plines;
-    var plines_options = Object.values(plines).flat();
     this.setState({
       modal: !this.state.modal,
-      selected_plines: plines_options
+      selectAllPLines: true,
+      selected_plines: []
+    });
+  }
+
+  selectAll = (e) => {
+    this.setState({
+      selectAllPLines: !this.state.selectAllPLines,
+      selected_plines: []
     });
   }
 
@@ -78,7 +85,13 @@ class SalesReportGenerate extends React.Component {
     }
     else {
         var pline_ids = []
-        this.state.selected_plines.forEach(pline => pline_ids.push(pline._id))
+        if(this.state.selectAllPLines){
+            const { plines } = this.props.plines
+            plines.forEach(l => pline_ids.push(l._id))
+        }
+        else{
+            this.state.selected_plines.forEach(pline => pline_ids.push(pline._id))
+        }
         this.props.getSalesSKUs(pline_ids, this.generateReport);
     }
   }
@@ -89,25 +102,33 @@ class SalesReportGenerate extends React.Component {
   }
 
   modifyPlines = (e, pline) => {
+     const { plines } = this.props.plines;
+     var plines_options = Object.values(plines).flat();
      var new_selected_plines = [];
-     if(this.state.selected_plines.length > 0){
+     if(this.state.selectAllPLines){
+        new_selected_plines = plines_options
+     }
+     else if(this.state.selected_plines.length > 0){
        new_selected_plines = this.state.selected_plines;
      }
+
      if(e.target.checked){
        new_selected_plines = new_selected_plines.concat(pline);
      }
      else{
        new_selected_plines = new_selected_plines.filter(({_id}) => _id !== pline._id);
      }
+     var all_selected = (new_selected_plines.length === plines.length)
      this.setState({
-       selected_plines: new_selected_plines
+       selected_plines: new_selected_plines,
+       selectAllPLines: all_selected
      });
   }
 
   genOptions = (customers) => {
     var newOptions = [];
     customers.forEach(function(customer){
-      var newOption = {value: customer._id, label: customer.name+": " + customer.number}; // TODO add customer number
+      var newOption = {value: customer._id, label: customer.name+": " + customer.number};
       newOptions = [...newOptions, newOption];
     });
     return newOptions;
@@ -122,6 +143,7 @@ class SalesReportGenerate extends React.Component {
   }
 
   render() {
+    const { plines } = this.props.plines;
     return (
       <div style={{'display': 'inline-block'}}>
       <Button color="success" onClick={this.toggle}>
@@ -137,7 +159,7 @@ class SalesReportGenerate extends React.Component {
                                 <Row>
                                     <Col md={3}>
                                       <CustomInput id={0} type="checkbox" label={'Select All'}
-                                       defaultChecked={true}/>
+                                       checked={this.state.selectAllPLines} onClick={e => this.selectAll(e)}/>
                                     </Col>
                                     <Col md={6} style={{paddingLeft: '0em'}}>
                                       <Button onClick={this.showAll} color="link" size="sm">
@@ -149,7 +171,7 @@ class SalesReportGenerate extends React.Component {
                              <div style={{marginLeft: '20px'}}>
                                {this.props.plines.plines.map((pline) => (
                                  <CustomInput key={pline._id} type="checkbox" id={pline._id} label={pline.name}
-                                 defaultChecked={true} onClick={e => this.modifyPlines(e, pline)}/>
+                                 checked={this.state.selectAllPLines || this.state.selected_plines.indexOf(pline) !== -1} onClick={e => this.modifyPlines(e, pline)}/>
                                ))}
                              </div>}
                           </div>

@@ -181,7 +181,7 @@ class SummaryReportDisplay extends React.Component {
                                 </tr>
                                 <tr>
                                     <td><b>Profit Margin</b></td>
-                                    <td>${report.find(elem => elem.sku === this.state.curr_sku._id) && report.find(elem => elem.sku === this.state.curr_sku._id).summary.profit_margin.toFixed(2)}</td>
+                                    <td>{report.find(elem => elem.sku === this.state.curr_sku._id) && parseInt(report.find(elem => elem.sku === this.state.curr_sku._id).summary.profit_margin * 100).toFixed(2)}%</td>
                                 </tr>
                             </tbody>
                         </Table>

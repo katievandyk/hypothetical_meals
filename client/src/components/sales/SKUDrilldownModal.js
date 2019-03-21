@@ -26,8 +26,8 @@ class SKUDrilldownModal extends React.Component {
         settings_modal: false,
         allCustomersCheckedDD: true,
         selected_customerDD: '',
-        startDate: '',
-        endDate: ''
+        startDate: null,
+        endDate: null
       };
   };
 
@@ -78,9 +78,17 @@ class SKUDrilldownModal extends React.Component {
         alert("Please select a valid customer.")
     }
     else {
-      var startString = this.state.startDate.format('MM-DD-YYYY');
-      var endString = this.state.endDate.format('MM-DD-YYYY');
-      const newObj = {start_date: startString, end_date: endString}
+        var newObj = {}
+        if(this.state.startDate === null || this.state.endDate === null) {
+          var today = new Date();
+          var past = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+          newObj =  {start_date: moment(past).format('MM-DD-YYYY'), end_date: moment(today).format('MM-DD-YYYY')}
+        }
+        else {
+          var startString = this.state.startDate.format('MM-DD-YYYY');
+          var endString = this.state.endDate.format('MM-DD-YYYY');
+          newObj = {start_date: startString, end_date: endString}
+        }
       if(!this.state.allCustomersCheckedDD) newObj['customer'] = this.state.selected_customerDD
       this.props.getSKUDrilldown(this.props.curr_sku._id, newObj);
       this.settings_toggle();
@@ -103,7 +111,7 @@ class SKUDrilldownModal extends React.Component {
         <Modal isOpen={this.state.settings_modal} toggle={this.settings_toggle} size='md'>
             <ModalHeader>Settings</ModalHeader>
             <ModalBody>
-                <Label><h6>1. Modify Customer Selection:</h6></Label>
+                <Label><h6>1. Modify Customer Selection</h6></Label>
                 <div style={{paddingBottom: '1.5em'}}>
                     <Row style={{marginBottom: '10px'}}>
                         <Col md={6}>
@@ -126,7 +134,7 @@ class SKUDrilldownModal extends React.Component {
                         </Col>
                    </Row>
                 </div>
-                <Label><h6>2. Modify timespan (defaults to past year):</h6></Label>
+                <Label><h6>2. Modify timespan (defaults to past year)</h6></Label>
                 <div style={{paddingBottom: '1.5em'}}>
                       <DateRangePicker
                       startDate={this.state.startDate}
