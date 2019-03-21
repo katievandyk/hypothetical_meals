@@ -115,7 +115,7 @@ class SKUsFormFormula extends React.Component {
   onEditSubmit = e => {
     e.preventDefault();
 
-    const editedFormula = {
+    var editedFormula = {
       _id: this.state.edit_id,
       name: this.state.edit_name,
       number: this.state.edit_number,
@@ -133,6 +133,9 @@ class SKUsFormFormula extends React.Component {
       this.props.updateFormula(editedFormula, this.props.formulas.sortby,
         this.props.formulas.sortdir, this.props.formulas.page, this.props.formulas.pagelimit,
         this.props.formulas.obj);
+        this.setState({
+          selected_value: {value: this.state.selected_value.value, label: editedFormula.name}
+        });
       this.edit_toggle();
     }
     else{
@@ -170,6 +173,7 @@ class SKUsFormFormula extends React.Component {
       use_added: false,
       selected_value: e
     });
+    this.props.onUseAddedFormula(false);
     this.props.onFormulaChange(e.value, isValid);
   }
 
@@ -178,6 +182,8 @@ class SKUsFormFormula extends React.Component {
         use_added: true,
         add_error: true
       });
+
+      this.props.onUseAddedFormula(true);
     }
 
   classNameValue = () => {
@@ -311,6 +317,7 @@ SKUsFormFormula.propTypes = {
   updateFormula: PropTypes.func.isRequired,
   formulas: PropTypes.object.isRequired,
   onFormulaChange: PropTypes.func.isRequired,
+  onUseAddedFormula: PropTypes.func.isRequired,
   defaultValue: PropTypes.object,
   validate: PropTypes.string
 };

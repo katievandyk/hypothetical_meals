@@ -28,7 +28,6 @@ class SKUDrillDownEntry extends React.Component {
 
   render() {
     const report = this.props.sku_drilldown;
-    console.log(report);
     const loading = this.props.loading;
     if(loading){
       return (
