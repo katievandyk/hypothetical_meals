@@ -118,8 +118,6 @@ class SummaryReportDisplay extends React.Component {
            <Button onClick={this.export}>Export</Button>
         </Row>
         </Container>
-
-
         <Modal isOpen={this.state.summary_modal} toggle={this.summary_toggle} size="lg">
              <ModalHeader>Summary for {this.state.curr_sku.name}</ModalHeader>
                 <ModalBody>
