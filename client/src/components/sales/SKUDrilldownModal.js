@@ -111,7 +111,7 @@ class SKUDrilldownModal extends React.Component {
         <Modal isOpen={this.state.settings_modal} toggle={this.settings_toggle} size='md'>
             <ModalHeader>Settings</ModalHeader>
             <ModalBody>
-                <Label><h6>1. Modify Customer Selection:</h6></Label>
+                <Label><h6>1. Modify Customer Selection</h6></Label>
                 <div style={{paddingBottom: '1.5em'}}>
                     <Row style={{marginBottom: '10px'}}>
                         <Col md={6}>
@@ -134,7 +134,7 @@ class SKUDrilldownModal extends React.Component {
                         </Col>
                    </Row>
                 </div>
-                <Label><h6>2. Modify timespan (defaults to past year):</h6></Label>
+                <Label><h6>2. Modify timespan (defaults to past year)</h6></Label>
                 <div style={{paddingBottom: '1.5em'}}>
                       <DateRangePicker
                       startDate={this.state.startDate}
