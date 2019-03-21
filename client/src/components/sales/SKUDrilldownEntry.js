@@ -83,7 +83,7 @@ class SKUDrillDownEntry extends React.Component {
                     </tr>
                     <tr>
                        <td><b>Profit Margin</b></td>
-                       <td>${report.summary.profit_margin.toFixed(2)}</td>
+                       <td>{parseInt(report.summary.profit_margin * 100).toFixed(2)}%</td>
                     </tr>
                   </tbody>
                  </Table>
