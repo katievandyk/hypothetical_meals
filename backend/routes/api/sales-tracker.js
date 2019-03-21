@@ -144,7 +144,7 @@ function calculateSummaryStats(sku_id, entries, startDate, endDate) {
                         return total + item.sales
                     }, 0)
                     summary.avgerage_revenue = summary.sum_revenue / summary.sum_cases
-                    calculateIngredients(goals, summary.sku_id).then(calc => {
+                    calculateIngredients(summary.sku_id).then(calc => {
                         var reduced_res = calc.reduce(sumCalculatorCosts, 0)
                         summary.ing_cost_per_case = reduced_res
                         summary.cogs = summary.sku.run_cost + summary.average_setup_cost + summary.ing_cost_per_case
@@ -243,24 +243,16 @@ function calculateAvgRunSize(total, item) {
     return total
 }
 
-function calculateIngredients(goals, sku_id) {
-    if (goals.length > 0) {
-        var goal = goals[0] 
-        return new Promise(function(accept, reject) {
-            Formula.populate(goal, {path:"skus_list.sku.formula"}).then(f_pop => {
-                Ingredient.populate(f_pop, {path:"skus_list.sku.formula.ingredients_list._id"})
-                .then(populated => {
-                    populated.skus_list = populated.skus_list.filter(i => i.sku._id.toString() == sku_id.toString())
-                    var calc_results = Helper.processIngredientForCalculator(populated)
-                    accept(calc_results)
-                })
-            })
-        })
-    }
-    else
-        return new Promise(function(accept, reject) {
-            accept([])
-        })
+function calculateIngredients(sku_id) {
+    return new Promise(function(accept, reject) {
+        SKU.findById(sku_id).populate("formula").then(sku => {
+            Ingredient.populate(sku, {path:"formula.ingredients_list._id"}).then(populated => {
+                var calc_results = Helper.processIngredientForCalculator({skus_list: [{sku: populated, quantity: 1}]})
+                accept(calc_results)
+            }).catch(reject)
+        }).catch(reject)
+    })
+    
 }
 
 module.exports = router;
