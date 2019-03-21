@@ -48,7 +48,8 @@ class SKUsEntry extends React.Component {
     formula_number: '',
     formula_ingredients_list: [],
     formula_comment:'',
-    formula_modal: false
+    formula_modal: false,
+    use_added_formula: false
   };
 
   toggle = () => {
@@ -204,7 +205,7 @@ class SKUsEntry extends React.Component {
   onEditSubmit = e => {
     e.preventDefault();
 
-    const editedSKU = {
+    var editedSKU = {
       id: this.state.edit_id,
       name: this.state.edit_name,
       number: this.state.edit_number,
@@ -221,6 +222,10 @@ class SKUsEntry extends React.Component {
       run_cost: this.state.edit_run_cost,
       comment: this.state.edit_comment
     };
+
+    if(this.state.use_added_formula){
+      editedSKU.formula = this.props.formulas.added_formula;
+    }
     var allRequiredFields = true;
     var newValidate = this.state.validate;
     if(newValidate.manufacturing_lines && newValidate.manufacturing_lines !== 'has-success'){
@@ -301,6 +306,10 @@ class SKUsEntry extends React.Component {
       edit_manufacturing_lines: newLines,
       validate: val_obj
     });
+  }
+
+  onUseAddedFormula = (use_added) => {
+    this.setState({use_added_formula: use_added});
   }
 
   getSortIcon = (field) =>{
@@ -463,7 +472,8 @@ class SKUsEntry extends React.Component {
             <SKUsFormFormula onFormulaChange={this.onFormulaChange}
               defaultValue={(this.state.edit_formula && this.state.edit_formula._id)?
                 (this.state.edit_formula):({})}
-              cLISrw={this.state.validate.formula}/>
+              onUseAddedFormula={this.onUseAddedFormula}
+              validate={this.state.validate.formula}/>
             <FormGroup>
                 <Label for="edit_formula_scale_factor">Formula Scale Factor</Label>
                   <Input

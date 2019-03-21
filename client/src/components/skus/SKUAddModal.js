@@ -34,7 +34,8 @@ class SKUAddModal extends React.Component {
     setup_cost: '',
     run_cost: '',
     comment: '',
-    validate: {}
+    validate: {},
+    use_added_formula: false
   };
 
   toggle = () => {
@@ -142,7 +143,7 @@ class SKUAddModal extends React.Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const newSKU = {
+    var newSKU = {
       name: this.state.name,
       number: this.state.number,
       case_number: this.state.case_number,
@@ -158,6 +159,11 @@ class SKUAddModal extends React.Component {
       run_cost: this.state.run_cost,
       comment: this.state.comment
     };
+
+    if(this.state.use_added_formula){
+      newSKU.formula = this.props.formulas.added_formula;
+    }
+
     var allRequiredFields = true;
     var newValidate = this.state.validate;
     if(newValidate.name !== 'has-success'){
@@ -265,6 +271,10 @@ class SKUAddModal extends React.Component {
       manufacturing_lines: newLines,
       validate: val_obj
     });
+  }
+
+  onUseAddedFormula = (use_added) => {
+    this.setState({use_added_formula: use_added});
   }
 
   render() {
@@ -394,7 +404,7 @@ class SKUAddModal extends React.Component {
                 )}
             </FormGroup>
             <SKUsFormPLineSelection onProductLineChange={this.onProductLineChange} validate={this.state.validate.product_line}/>
-            <SKUsFormFormula onFormulaChange={this.onFormulaChange} validate={this.state.validate.formula}/>
+            <SKUsFormFormula onFormulaChange={this.onFormulaChange} onUseAddedFormula={this.onUseAddedFormula} validate={this.state.validate.formula}/>
               <FormGroup>
                 <Label for="formula_scale_factor">Formula Scale Factor</Label>
                   <Input
@@ -506,10 +516,12 @@ class SKUAddModal extends React.Component {
 SKUAddModal.propTypes = {
   sortSKUs: PropTypes.func.isRequired,
   addSKU: PropTypes.func.isRequired,
-  skus: PropTypes.object.isRequired
+  skus: PropTypes.object.isRequired,
+  formulas: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  skus: state.skus
+  skus: state.skus,
+  formulas: state.formulas
 });
 export default connect(mapStateToProps, {addSKU, sortSKUs})(SKUAddModal);

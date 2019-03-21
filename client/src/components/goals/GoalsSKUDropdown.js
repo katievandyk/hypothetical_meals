@@ -57,8 +57,8 @@ class GoalsSKUDropdown extends React.Component {
         classNamePrefix="react-select"
         options={this.genOptions(skus)}
         onChange={this.changeValue}
-        name="formula"
-        placeholder="Select Formula"
+        name="SKU"
+        placeholder="Select SKU"
         />
     );
   }
