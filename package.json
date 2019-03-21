@@ -6,7 +6,7 @@
   "scripts": {
     "start": "concurrently \"cd backend && node server.js\" \"cd client && npm start\" \"cd sales_track_queue && node server.js\"",
     "install": "cd backend && npm install && cd ../client && npm install && cd ../sales_track_queue && npm install",
-    "deploy": "cd client && npm run build && cd ../backend && NODE_ENV=production pm2 -f start server.js --name backend && cd ../sales_track_queue && pm2 -f start server.js --name queue",
+    "deploy": "cd client && npm run build && pm2 delete backend && cd ../backend && NODE_ENV=production pm2 -f start server.js --name backend && pm2 delete queue && cd ../sales_track_queue && pm2 -f start server.js --name queue && pm2 save",
     "test": "cd backend && npm test"
   },
   "repository": {
