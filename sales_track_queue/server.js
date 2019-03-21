@@ -45,9 +45,11 @@ const Track = require('../backend/sales_tracking/track')
 if (process.env && process.env.pm_id) {
   //running in pm2 
   if (process.env.pm_id % os.cpus().length !== 0) {
+      console.log("Not master process.")
       return;
   } else {
     // Only master process should process jobs
+    console.log("Master process: processing jobs.")
     processJobs();
  }
 }
