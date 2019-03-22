@@ -203,7 +203,7 @@ class SummaryReportDisplay extends React.Component {
       else{
         return (
           <div style={{textAlign: 'center'}}>
-             Error rendering report.
+             No product lines selected.
           </div>
         );
       }
