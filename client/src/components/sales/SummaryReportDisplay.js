@@ -195,7 +195,7 @@ class SummaryReportDisplay extends React.Component {
         </Modal>
         <Modal isOpen={this.state.sku_drilldown_modal} toggle={this.drilldown_toggle} className="modal-xl">
              <ModalHeader>SKU Drilldown for {this.state.curr_sku.name}</ModalHeader>
-             <SKUDrillDownModal curr_sku={this.state.curr_sku}/>
+             <SKUDrillDownModal all_customers={this.props.all_customers} sel_customer={this.props.sel_customer} curr_sku={this.state.curr_sku}/>
         </Modal>
         </div>
       );

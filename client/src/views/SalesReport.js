@@ -27,6 +27,8 @@ class SalesReport extends Component {
         this.state = {
              sku_drilldown_modal: false,
              reportGen: false,
+             sel_customer: '',
+             all_customers: true,
         };
     };
 
@@ -39,6 +41,8 @@ class SalesReport extends Component {
         }
         this.setState({
           reportGen: true,
+          all_customers: all_customers,
+          sel_customer: sel_customer
         });
     }
 
@@ -90,7 +94,7 @@ class SalesReport extends Component {
                   </Col>
                   <Col  style={{'textAlign': 'right'}}> <SalesReportGenerate generateReport={(sku_ids, all_customers, sel_customer) => this.generateReport(sku_ids, all_customers, sel_customer)}/> </Col>
                 </Row>
-                <SummaryReportDisplay summary={this.props.summary}/>
+                <SummaryReportDisplay all_customers={this.state.all_customers} sel_customer={this.state.sel_customer} summary={this.props.summary}/>
               </Container>
               </Container>
             </div>
