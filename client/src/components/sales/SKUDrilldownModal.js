@@ -34,7 +34,10 @@ class SKUDrilldownModal extends React.Component {
   componentDidMount() {
       var today = new Date();
       var past = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
-      console.log(this.props.all_customers)
+      this.setState({
+        allCustomersCheckedDD: this.props.all_customers,
+        selected_customerDD: this.props.sel_customer
+      });
       if(this.props.all_customers){
            this.props.getSKUDrilldown(this.props.curr_sku._id, {start_date: moment(past).format('MM-DD-YYYY'), end_date: moment(today).format('MM-DD-YYYY')});
       }
