@@ -34,7 +34,10 @@ class SKUDrilldownModal extends React.Component {
   componentDidMount() {
       var today = new Date();
       var past = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
-      console.log(this.props.all_customers)
+      this.setState({
+        allCustomersCheckedDD: this.props.all_customers,
+        selected_customerDD: this.props.sel_customer
+      });
       if(this.props.all_customers){
            this.props.getSKUDrilldown(this.props.curr_sku._id, {start_date: moment(past).format('MM-DD-YYYY'), end_date: moment(today).format('MM-DD-YYYY')});
       }
@@ -46,8 +49,7 @@ class SKUDrilldownModal extends React.Component {
   settings_toggle = () => {
     this.setState({
       settings_modal: !this.state.settings_modal,
-      startDate: null,
-      endDate: null
+      validateCustomers: ''
     });
   }
 
@@ -66,7 +68,7 @@ class SKUDrilldownModal extends React.Component {
 
   onChangeCustomers = (e) => {
     var newVal = this.state.validate;
-    if(this.state.selected_customerDD === ''){
+    if(this.state.selected_customerDD === '' ){
         newVal = 'isInvalid'
     }
     else {
@@ -78,6 +80,14 @@ class SKUDrilldownModal extends React.Component {
       validateCustomers: newVal
     });
   }
+
+    onChange = (e) => {
+      this.setState({
+        allCustomersCheckedDD: false,
+        selected_customerDD: e.value,
+        validateCustomers: 'isValid'
+      });
+    }
 
   onSubmitSettings = () =>{
     if(this.state.validateCustomers === 'isInvalid') {
@@ -117,7 +127,7 @@ class SKUDrilldownModal extends React.Component {
         <Modal isOpen={this.state.settings_modal} toggle={this.settings_toggle} size='md'>
             <ModalHeader>Settings</ModalHeader>
             <ModalBody>
-                <Label><h6>1. Modify Customer Selection</h6></Label>
+                <Label><h5>Modify Customer Selection</h5></Label>
                 <div style={{paddingBottom: '1.5em'}}>
                     <Row style={{marginBottom: '10px'}}>
                         <Col md={6}>
@@ -136,11 +146,12 @@ class SKUDrilldownModal extends React.Component {
                             className={this.state.validateCustomers}
                             classNamePrefix="react-select"
                             options={this.genOptionsDD(this.props.sales.summary_customers)}
-                            onChange={this.onChangeCustomers}/>
+                            defaultInputValue={(this.state.allCustomersCheckedDD) ? '' : this.props.sales.summary_customers.find(c => c._id === this.state.selected_customerDD).name}
+                            onChange={this.onChange}/>
                         </Col>
                    </Row>
                 </div>
-                <Label><h6>2. Modify timespan (defaults to past year)</h6></Label>
+                <Label><h5>Modify Timespan</h5></Label>
                 <div style={{paddingBottom: '1.5em'}}>
                       <DateRangePicker
                       startDate={this.state.startDate}
@@ -152,10 +163,11 @@ class SKUDrilldownModal extends React.Component {
                       focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
                       onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired
                        />
+                 <p><small>Timespan defaults to the past year.</small></p>
                  </div>
             </ModalBody>
             <ModalFooter>
-              <Button color="success" onClick={this.onSubmitSettings}>Generate Report</Button>{' '}
+              <Button color="success" onClick={this.onSubmitSettings}>Save</Button>{' '}
               <Button color="secondary" onClick={this.settings_toggle}>Cancel</Button>
             </ModalFooter>
         </Modal>
