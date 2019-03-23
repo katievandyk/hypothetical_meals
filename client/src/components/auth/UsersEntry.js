@@ -105,7 +105,7 @@ return (
                   <th>Name</th>
                   <th>Username</th>
                   <th>Admin?</th>
-                  <th>Edit</th>
+                  <th>Change Status</th>
                   <th>Delete</th>
                 </tr>
               </thead>
@@ -123,7 +123,7 @@ return (
                                 _id, name, username, isAdmin
                               )}
                               style={{'color':'black'}}>
-                              <FontAwesomeIcon icon = "edit"/>
+                              <FontAwesomeIcon icon = "user-cog"/>
                             </Button>
                           </td>
                           <td >
