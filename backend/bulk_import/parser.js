@@ -325,6 +325,7 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                 sku_data['formula_name'] = formula_result.name
 
                 mls = result[4]
+                expected_mls = []
                 if(sku_data[sku_fields.mls]) {
                     expected_mls = sku_data[sku_fields.mls].split(',')
                     if(mls.length != expected_mls.length) reject(new Error("Not all Manufacturing Lines found: " + sku_data[sku_fields.mls]));
