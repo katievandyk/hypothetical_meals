@@ -60,10 +60,10 @@ router.post('/skus', (req, res) => {
 });
 
 function exportSKUResponse(req, res, skuFindPromise, ignorePromise) {
-    let field_order = ["number", "name", "case_number", "unit_number", "unit_size", "count_per_case", "product_line_name", "formula_num", "formula_scale_factor", "ml_shortnames", "manufacturing_rate", "comment"]
+    let field_order = ["number", "name", "case_number", "unit_number", "unit_size", "count_per_case", "product_line_name", "formula_num", "formula_scale_factor", "ml_shortnames", "manufacturing_rate", "setup_cost", "run_cost", "comment"]
     let header = Constants.skus_header.join(",") + "\r\n"
     skuFindPromise.lean()
-    .select('-_id name number case_number unit_number unit_size count_per_case comment formula formula_scale_factor manufacturing_lines manufacturing_rate')
+    .select('-_id name number case_number unit_number unit_size count_per_case comment formula formula_scale_factor manufacturing_lines manufacturing_rate setup_cost run_cost')
     .then(resultF => {
         resultF = resultF.map(postProcessSkuResult)
         let csv = Papa.unparse({fields: field_order, data: resultF}, {header: false});
