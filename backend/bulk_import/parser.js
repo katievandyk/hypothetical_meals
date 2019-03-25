@@ -325,10 +325,12 @@ module.exports.checkOneSKU = checkOneSKU = function(sku_data) {
                 sku_data['formula_name'] = formula_result.name
 
                 mls = result[4]
-                expected_mls = sku_data[sku_fields.mls].split(',')
-                if(mls.length != expected_mls.length) reject(new Error("Not all Manufacturing Lines found: " + sku_data[sku_fields.mls]));
-                sku_data['ml_results'] = mls
-
+                if(sku_data[sku_fields.mls]) {
+                    expected_mls = sku_data[sku_fields.mls].split(',')
+                    if(mls.length != expected_mls.length) reject(new Error("Not all Manufacturing Lines found: " + sku_data[sku_fields.mls]));
+                    sku_data['ml_results'] = mls
+                }
+                
                 if(number_result) {
                     if(number_result.name == sku_data[sku_fields.name] &&
                         number_result.case_number == sku_data[sku_fields.case_upc] &&
