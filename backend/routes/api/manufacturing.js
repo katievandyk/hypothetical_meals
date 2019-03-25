@@ -197,7 +197,11 @@ function calculateIngredientQuantities(req, res, callback) {
             .then(populated => {
                 aggregated = Helpers.processIngredientForCalculator(populated)
 
-                callback(res, aggregated)
+                var rounded = aggregated.map(entry => {
+                    entry.packages = Math.round(entry.packages * 100) / 100
+                    return entry
+                })
+                callback(res, rounded)
             })
         })
     })

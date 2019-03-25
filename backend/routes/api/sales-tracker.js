@@ -247,7 +247,7 @@ function calculateIngredients(sku_id) {
     return new Promise(function(accept, reject) {
         SKU.findById(sku_id).populate("formula").then(sku => {
             Ingredient.populate(sku, {path:"formula.ingredients_list._id"}).then(populated => {
-                var calc_results = Helper.processIngredientForCalculator({skus_list: [{sku: populated, quantity: 1}]})
+                var calc_results = Helper.processIngredientForCalculator({skus_list: [{sku: populated, quantity: 1.0}]})
                 accept(calc_results)
             }).catch(reject)
         }).catch(reject)
