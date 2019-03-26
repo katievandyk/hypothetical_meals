@@ -5,13 +5,13 @@ import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
 import GoalsSKUSearch from '../../components/goals/GoalsSKUSearch';
 import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
 
-import { addGoal }  from '../../actions/goalsActions';
+import { addGoal, getAllGoals }  from '../../actions/goalsActions';
 import { getSKUs } from '../../actions/skuActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {
-  Col, Row, Input,
+  Col, Row, Input, FormFeedback,
   Modal, ModalHeader, ModalBody, ModalFooter,
   Button, Table, Form, FormGroup, Label
 } from 'reactstrap';
@@ -47,6 +47,7 @@ class GoalsCreateModal extends React.Component {
 
    componentDidMount() {
        this.props.getSKUs();
+       this.props.getAllGoals();
    }
 
    onSubmit = e => {
@@ -97,13 +98,16 @@ class GoalsCreateModal extends React.Component {
    }
 
    onNameChange = e => {
-        var goals  = this.props.goals.goals
+        var goals  = this.props.goals.all_goals;
         this.setState({ name: e.target.value })
         var valid = '';
         if (e.target.value.length > 0 && goals.find(elem => elem.name === e.target.value) == null) {
           valid = 'success'
-        } else {
+        } else if(e.target.value.length > 0){
           valid = 'failure'
+        }
+        else {
+          valid = 'empty'
         }
         this.setState({ validName: valid })
    }
@@ -168,9 +172,10 @@ class GoalsCreateModal extends React.Component {
                  <FormGroup>
                      <Label>Manufacturing Goal Name</Label>
                      <Input valid={this.state.validName === 'success'}
-                       invalid={this.state.validName === 'failure'} value={this.state.name}
+                       invalid={this.state.validName === 'failure' || this.state.validName === 'empty'} value={this.state.name}
                        onChange={this.onNameChange}
                        placeholder="Add Manufacturing Goal Name"/>
+                     {this.state.validName === 'failure' ? (<FormFeedback>This goal name has already been used (by you or another user)</FormFeedback>):('')}
                  </FormGroup>
                  <FormGroup>
                       <Label>Manufacturing Goal Deadline</Label>
@@ -246,6 +251,7 @@ class GoalsCreateModal extends React.Component {
 
     GoalsCreateModal.propTypes = {
       addGoal: PropTypes.func.isRequired,
+      getAllGoals: PropTypes.func.isRequired,
       skus: PropTypes.object.isRequired,
       auth: PropTypes.object.isRequired,
       goals: PropTypes.object.isRequired
@@ -258,4 +264,4 @@ class GoalsCreateModal extends React.Component {
     });
 
 
-    export default connect(mapStateToProps, {getSKUs, addGoal})(GoalsCreateModal);
+    export default connect(mapStateToProps, {getSKUs, addGoal, getAllGoals})(GoalsCreateModal);

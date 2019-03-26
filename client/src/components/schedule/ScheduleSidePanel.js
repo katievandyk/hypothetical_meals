@@ -94,7 +94,7 @@ class ScheduleSidePanel extends React.Component {
   }
 
   render() {
-    const { goals } = this.props.goals;
+    const goals = this.props.goals.all_goals;
     const { schedule } = this.props.schedule;
     const goal_skus = this.props.schedule.goal_skus;
     const lines = this.props.lines.lines;
