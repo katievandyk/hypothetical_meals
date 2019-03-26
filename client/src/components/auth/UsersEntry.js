@@ -111,7 +111,7 @@ return (
               </thead>
               <tbody is="transition-group" >
                 <TransitionGroup className="ingredients-table" component={null}>
-                  {users.map(({_id, name, username, isAdmin }) => (
+                  {users.map(({_id, name, username, isAdmin}) => (
                     <CSSTransition key={_id} timeout={500} classNames="fade">
                       <tr>
                         <td> {name} </td>
@@ -122,14 +122,14 @@ return (
                               onClick={this.onEditClick.bind(this,
                                 _id, name, username, isAdmin
                               )}
-                              style={{'color':'black'}}>
+                              style={this.props.auth.user.id === _id?({'color': 'lightgrey'}):({'color':'black'})}>
                               <FontAwesomeIcon icon = "user-cog"/>
                             </Button>
                           </td>
                           <td >
                             <Button size="sm" sm="2"color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onDeleteClick.bind(this, username)}
-                              style={{'color':'black'}}>
+                                style={this.props.auth.user.id === _id?({'color': 'lightgrey'}):({'color':'black'})}>
                               <FontAwesomeIcon icon="trash"/>
                             </Button>
                           </td>

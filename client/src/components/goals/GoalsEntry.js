@@ -178,8 +178,8 @@ class GoalsEntry extends React.Component {
    }
 
   edit_submit = () => {
-    var goals  = this.props.goals.all_goals;
-    if(this.state.edit_name.length === 0 || goals.find(elem => elem.name === this.state.edit_name) != null) alert("Please enter a unique name for your goal.")
+    var goals  = this.props.goals.all_goals
+    if(this.state.edit_name.length === 0 || goals.find(elem => ((elem.name === this.state.edit_name) && (elem._id !== this.state.edit_id))) != null) alert("Please enter a unique name for your goal.")
     else if(this.state.validDate !== 'success') alert("Please enter a valid date.")
     else {
         const editedGoal = {
