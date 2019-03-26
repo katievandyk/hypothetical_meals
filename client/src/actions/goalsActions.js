@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY,
+import { GET_GOALS, GET_ALL_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY,
   GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR, SCHEDULE_KW_SEARCH } from './types';
 
 const FileDownload = require('js-file-download');
@@ -23,7 +23,7 @@ export const getAllGoals = () => dispatch =>  {
   dispatch(setGoalsLoading());
   axios.get('/api/manufacturing/').then(res =>
     dispatch({
-      type: GET_GOALS,
+      type: GET_ALL_GOALS,
       payload: res.data
     })
   ).catch(error =>{

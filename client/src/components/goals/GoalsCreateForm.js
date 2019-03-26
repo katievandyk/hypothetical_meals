@@ -3,13 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
 import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
 
-import { addGoal }  from '../../actions/goalsActions';
+import { addGoal, getAllGoals }  from '../../actions/goalsActions';
 import { getSKUs } from '../../actions/skuActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {
-  InputGroup, InputGroupAddon, Input, Button,
+  InputGroup, InputGroupAddon, Input, Button, FormFeedback,
   Container, Table, Row, Col, Form, FormGroup, Label
 } from 'reactstrap';
 
@@ -34,6 +34,7 @@ class GoalsCreateForm extends React.Component {
 
    componentDidMount() {
        this.props.getSKUs();
+       this.props.getAllGoals();
    }
 
    onSubmit = e => {
@@ -75,7 +76,7 @@ class GoalsCreateForm extends React.Component {
    }
 
    onNameChange = e => {
-        var goals  = this.props.goals.goals
+        var goals  = this.props.goals.all_goals;
         this.setState({ name: e.target.value })
         var valid = '';
         if (e.target.value.length > 0 && goals.find(elem => elem.name === e.target.value) == null) {
@@ -106,7 +107,8 @@ class GoalsCreateForm extends React.Component {
          <FormGroup>
              <Label for="goal_name">Manufacturing Goal Name</Label>
              <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.name} onChange={this.onNameChange}/>
-         </FormGroup>
+             <FormFeedback>This goal name has already been used (by you or another user).</FormFeedback>
+           </FormGroup>
          <Label>Create SKU List</Label>
          <FormGroup>
                   <Table>

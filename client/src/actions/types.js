@@ -19,6 +19,7 @@ export const SET_NETID_USER = "SET_NETID_USER";
 export const GET_USERS = "GET_USERS"
 // Manufacturing Goals
 export const GET_GOALS = 'GET_GOALS';
+export const GET_ALL_GOALS = 'GET_ALL_GOALS';
 export const ADD_GOAL = 'ADD_GOAL';
 export const UPDATE_GOAL = 'UPDATE_GOAL';
 export const DELETE_GOAL = 'DELETE_GOAL';

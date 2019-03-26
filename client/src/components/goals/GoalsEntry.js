@@ -1,7 +1,7 @@
 import React from 'react';
 import {  Col, Row, Input,
           Modal, ModalHeader, ModalBody, ModalFooter,
-          Button, Table, Form, FormGroup, Label } from 'reactstrap';
+          Button, Table, Form, FormGroup, FormFeedback, Label } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CalculatorEntry from './CalculatorEntry';
@@ -14,7 +14,7 @@ import * as jsPDF from 'jspdf';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getGoals, updateGoal, getGoalsIngQuantity, deleteGoal } from '../../actions/goalsActions';
+import { getGoals, getAllGoals, updateGoal, getGoalsIngQuantity, deleteGoal } from '../../actions/goalsActions';
 import { getSKUs } from '../../actions/skuActions';
 import moment from 'moment';
 
@@ -44,6 +44,7 @@ class GoalsEntry extends React.Component {
 
   componentDidMount() {
     this.props.getGoals(this.props.auth.user_username);
+    this.props.getAllGoals();
     this.props.getSKUs();
   }
 
@@ -134,13 +135,16 @@ class GoalsEntry extends React.Component {
    }
 
    onNameChange = e => {
-        var goals  = this.props.goals.goals
+        var goals  = this.props.goals.all_goals
         this.setState({ edit_name: e.target.value })
         var valid = '';
         if (e.target.value.length > 0 && goals.find(elem => elem.name === e.target.value && elem._id !== this.state.edit_id) == null) {
           valid = 'success'
-        } else {
+        } else if(e.target.value.length > 0){
           valid = 'failure'
+        }
+        else {
+          valid = 'empty'
         }
         this.setState({ validName: valid })
    }
@@ -174,14 +178,25 @@ class GoalsEntry extends React.Component {
    }
 
   edit_submit = () => {
-    const editedGoal = {
-      id: this.state.edit_id,
-      name: this.state.edit_name,
-      deadline: this.state.edit_date,
-      skus_list: this.state.edit_skus_list,
-    };
-    this.props.updateGoal(editedGoal, this.props.auth.user_username);
-    this.edit_toggle();
+    var goals  = this.props.goals.all_goals;
+    if(this.state.edit_name.length === 0 || goals.find(elem => elem.name === this.state.edit_name) != null) alert("Please enter a unique name for your goal.")
+    else if(this.state.validDate !== 'success') alert("Please enter a valid date.")
+    else {
+        const editedGoal = {
+          id: this.state.edit_id,
+          name: this.state.edit_name,
+          skus_list: this.state.edit_skus_list,
+          deadline: this.state.edit_date
+        };
+        this.props.updateGoal(editedGoal, this.props.auth.user_username);
+        this.setState({name: '', quantity: '', skuSel: '',
+        skus_list: [],
+        date: '',
+        validNum: '',
+        validName: '',
+        validDate: ''});
+        this.edit_toggle();
+    }
   }
 
   skulist_toggle = () => {
@@ -281,8 +296,9 @@ class GoalsEntry extends React.Component {
                <Form>
                  <FormGroup>
                      <Label for="goal_name">Edit Manufacturing Goal Name</Label>
-                     <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure'} value={this.state.edit_name} onChange={this.onNameChange}/>
-                 </FormGroup>
+                     <Input id="goal_name" valid={this.state.validName === 'success'} invalid={this.state.validName === 'failure' || this.state.validName === 'empty'} value={this.state.edit_name} onChange={this.onNameChange}/>
+                     {this.state.validName === 'failure' ? (<FormFeedback>This goal name has already been used (by you or another user)</FormFeedback>):('')}
+                </FormGroup>
                  <FormGroup>
                       <Label>Edit Manufacturing Goal Deadline</Label>
                       <Input valid={this.state.validDate === 'success'} invalid={this.state.validDate === 'failure'} value={this.state.edit_date} onChange={this.onDateChange} type="date" />
@@ -358,6 +374,7 @@ class GoalsEntry extends React.Component {
 
 GoalsEntry.propTypes = {
   getGoals: PropTypes.func.isRequired,
+  getAllGoals: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
   skus: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
@@ -372,4 +389,4 @@ const mapStateToProps = (state) => ({
   skus: state.skus
 });
 
-export default connect(mapStateToProps, { getSKUs, getGoals, updateGoal, deleteGoal, getGoalsIngQuantity })(GoalsEntry);
+export default connect(mapStateToProps, { getSKUs, getGoals, getAllGoals, updateGoal, deleteGoal, getGoalsIngQuantity })(GoalsEntry);
