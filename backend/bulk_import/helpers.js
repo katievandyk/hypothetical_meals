@@ -371,7 +371,7 @@ module.exports.processIngredientForCalculator = function(populated) {
 
     aggregated.forEach(ing => {
         ing.quantity = (Math.round(ing.quantity  * 100) / 100) + " " + ing.unit
-        ing.packages = Math.round(ing.packages  * 100) / 100
+        ing.packages = ing.packages  * 100 / 100
         delete ing.unit
     })
 
@@ -382,20 +382,20 @@ function calculate(package_num, package_unit, formula_qty, formula_unit, sku) {
     let ing_qty, packages, unit
     if(Constants.units[package_unit] == "weight" && Constants.units[formula_unit] == "weight") {
         formula_qty_converted = formula_qty * Constants.weight_conv[formula_unit] / Constants.weight_conv[package_unit] * (sku.sku.formula_scale_factor) * sku.quantity
-        ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
+        ing_qty = (formula_qty_converted * 100 / 100)
+        packages = (formula_qty_converted/package_num * 100 / 100) 
         unit = package_unit
     }
     else if(Constants.units[package_unit] == "volume" && Constants.units[formula_unit] == "volume") {
         formula_qty_converted = formula_qty * Constants.volume_conv[formula_unit] / Constants.volume_conv[package_unit] * (sku.sku.formula_scale_factor) * sku.quantity
-        ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted/package_num * 100) / 100) 
+        ing_qty = (formula_qty_converted * 100 / 100)
+        packages = (formula_qty_converted/package_num * 100 / 100) 
         unit = package_unit
     }
     else { // count
         formula_qty_converted = formula_qty * (sku.sku.formula_scale_factor) * sku.quantity
-        ing_qty = (Math.round(formula_qty_converted * 100) / 100)
-        packages = (Math.round(formula_qty_converted / package_num * 100) / 100)
+        ing_qty = (formula_qty_converted * 100 / 100)
+        packages = (formula_qty_converted / package_num * 100 / 100)
         unit = "count"
     }
     return [ing_qty, packages, unit]
