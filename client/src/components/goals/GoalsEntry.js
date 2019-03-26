@@ -178,14 +178,25 @@ class GoalsEntry extends React.Component {
    }
 
   edit_submit = () => {
-    const editedGoal = {
-      id: this.state.edit_id,
-      name: this.state.edit_name,
-      deadline: this.state.edit_date,
-      skus_list: this.state.edit_skus_list,
-    };
-    this.props.updateGoal(editedGoal, this.props.auth.user_username);
-    this.edit_toggle();
+    var goals  = this.props.goals.all_goals;
+    if(this.state.edit_name.length === 0 || goals.find(elem => elem.name === this.state.edit_name) != null) alert("Please enter a unique name for your goal.")
+    else if(this.state.validDate !== 'success') alert("Please enter a valid date.")
+    else {
+        const editedGoal = {
+          id: this.state.edit_id,
+          name: this.state.edit_name,
+          skus_list: this.state.edit_skus_list,
+          deadline: this.state.edit_date
+        };
+        this.props.updateGoal(editedGoal, this.props.auth.user_username);
+        this.setState({name: '', quantity: '', skuSel: '',
+        skus_list: [],
+        date: '',
+        validNum: '',
+        validName: '',
+        validDate: ''});
+        this.edit_toggle();
+    }
   }
 
   skulist_toggle = () => {
