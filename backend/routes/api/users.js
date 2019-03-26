@@ -238,10 +238,13 @@ router.post("/login", (req, res) => {
     router.post("/delete", (req, res) => {
       User.findOneAndRemove({username: req.body.username}).then(user => {
         if(!user) {
-          //No local user, thus return error
-          return res.status(400).json({ username: "User does not exist"})
+          NetidUser.findOneAndRemove({username: req.body.username}).then(user => {
+            res.status(200).json({username : "User deleted"})
+          })
         }
-        res.status(200).json({username : "User deleted"})
+        else {
+          res.status(200).json({username : "User deleted"})
+        }
       }).catch(err => console.log(err.message));
     })
 
