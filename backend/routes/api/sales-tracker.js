@@ -220,6 +220,9 @@ function generateCsvDetailed(results, start_year, end_year) {
     results.entries.forEach(entry => {
         lines.push(`${entry.sku.name},${entry.year},${entry.week},${entry.customer.number},${entry.customer.name},${entry.sales},${round(entry.price_per_case)},${round(entry.revenue)}`)
     })
+    lines.push("Total")
+    lines.push("Avg mfg run size,Ing cost per case,Avg mfg setup cost,Mfg run cost per case,Total COGS,Avg revenue per case,Avg profit per case,Avg profit margin(%)")
+    lines.push(`${round(results.summary.average_run_size)},${round(results.summary.ing_cost_per_case)},${round(results.summary.average_setup_cost)},${round(results.run_cost)},${round(results.summary.cogs)},${round(results.summary.avgerage_revenue)},${round(results.summary.average_profit)},${round(results.summary.profit_margin*100)}`)
     return lines.join("\r\n")
 }
 
