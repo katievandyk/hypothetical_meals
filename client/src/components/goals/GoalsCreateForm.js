@@ -44,7 +44,7 @@ class GoalsCreateForm extends React.Component {
          const newGoal = {
            name: this.state.name,
            skus_list: this.state.skus_list,
-           user_username: this.props.auth.user_username
+           user_id: this.props.auth.user.id
          };
          this.props.addGoal(newGoal);
          this.props.toggle();

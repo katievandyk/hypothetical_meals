@@ -43,7 +43,7 @@ class GoalsEntry extends React.Component {
     }
 
   componentDidMount() {
-    this.props.getGoals(this.props.auth.user_username);
+    this.props.getGoals(this.props.auth.user.id);
     this.props.getAllGoals();
     this.props.getSKUs();
   }

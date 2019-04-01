@@ -58,7 +58,7 @@ class GoalsCreateModal extends React.Component {
          const newGoal = {
            name: this.state.name,
            skus_list: this.state.skus_list,
-           user_username: this.props.auth.user_username,
+           user_id: this.props.auth.user.id,
            deadline: this.state.date
          };
          this.props.addGoal(newGoal);
