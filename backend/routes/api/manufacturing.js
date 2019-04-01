@@ -20,12 +20,12 @@ router.get('/', (req, res) => {
         .lean()
         .then(goal => res.json(goal))
 });
-// @route GET api/manufacturing/:user_username
+// @route GET api/manufacturing/:user_id
 // @desc get all goals for specific user
 // @access public
-router.get('/:user_username', (req, res) => {
+router.get('/:user_id', (req, res) => {
     Goal
-        .find({ 'user_username' : req.params.user_username})
+        .find({ 'user_id' : req.params.user_id})
         .populate({ path: 'skus_list.sku'})
         .lean()
         .then(goal => res.json(goal))
@@ -39,7 +39,7 @@ router.post('/', (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         skus_list: req.body.skus_list,
-        user_username: req.body.user_username,
+        user_id: req.body.user_id,
         deadline: req.body.deadline
     });
 
