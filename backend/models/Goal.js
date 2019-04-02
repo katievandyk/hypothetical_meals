@@ -17,6 +17,10 @@ const GoalSchema = new Schema({
         type: Date,
         required: true
     },
+    edit_timestamp: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 GoalSchema.index({'$**': 'text'});

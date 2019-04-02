@@ -20,6 +20,30 @@ router.get('/', (req, res) => {
         .lean()
         .then(goal => res.json(goal))
 });
+
+// @route GET api/manufacturing/sort/:field/:asc
+// @desc get all goals for all users
+// request params:
+// - field: either "name" for goal title, "user" for author, and "edit_timestamp" for timestamp of last edit
+// - asc: "asc" for ascending sort, "desc" for descending sort
+// @access public
+router.get('/sort/:field/:asc', (req, res) => {
+    var sortOrder = req.params.asc === 'asc' ? 1 : -1;
+    Goal
+        .find()
+        .populate({ path: 'skus_list.sku'})
+        .populate({ path: 'user_id'})
+        .sort({[req.params.field] : sortOrder})
+        .lean()
+        .then(goal => {
+            if(req.params.field == "user") {
+                goal.sort((a,b) => sortOrder*a.user_id.name.localeCompare(b.user_id.name));
+            }
+            
+            res.json(goal)
+        })
+});
+
 // @route GET api/manufacturing/:user_id
 // @desc get all goals for specific user
 // @access public
@@ -79,11 +103,12 @@ router.delete('/:id', (req, res) => {
 // @desc updates a goal
 // @access public
 router.post('/update/:id', (req, res) => {
-    Goal.findById(req.body.id).then(goal => {
+    Goal.findById(req.params.id).then(goal => {
         if(goal !== null && req.params.id != goal._id) {
             res.status(404).json({success: false, message: "Goal name is not unique: " + req.body.name})
         }
         else {
+            console.log(goal)
             var removedSKUs = goal.skus_list.filter( item => {
                 return !req.body.skus_list.some(new_list => new_list.sku._id.toString() === item.sku.toString())
             })
@@ -109,6 +134,7 @@ router.post('/update/:id', (req, res) => {
                             })
                         })
                     })).then(() => {
+                        req.body.edit_timestamp = Date.now() 
                         Goal.findByIdAndUpdate(req.params.id, {$set:req.body})
                         .then(() => res.json({success: true}))
                         .catch(err => res.status(404).json({success: false, message: err.message}))
