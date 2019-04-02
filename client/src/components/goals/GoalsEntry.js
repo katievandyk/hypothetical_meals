@@ -188,7 +188,7 @@ class GoalsEntry extends React.Component {
           skus_list: this.state.edit_skus_list,
           deadline: this.state.edit_date
         };
-        this.props.updateGoal(editedGoal, this.props.auth.user_username);
+        this.props.updateGoal(editedGoal, this.props.auth.user.id);
         this.setState({name: '', quantity: '', skuSel: '',
         skus_list: [],
         date: '',
