@@ -16,7 +16,7 @@ import * as jsPDF from 'jspdf';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getGoals, getAllGoals, updateGoal, getGoalsIngQuantity, deleteGoal } from '../../actions/goalsActions';
+import { getGoals, getAllGoals, updateGoal, sortGoals, getGoalsIngQuantity, deleteGoal } from '../../actions/goalsActions';
 import { getSKUs } from '../../actions/skuActions';
 import moment from 'moment';
 
@@ -49,7 +49,7 @@ class GoalsEntry extends React.Component {
     }
 
   componentDidMount() {
-    this.props.getGoals(this.props.auth.user.id);
+    this.props.sortGoals('name', 'asc');
     this.props.getAllGoals();
     this.props.getSKUs();
   }
@@ -232,6 +232,32 @@ class GoalsEntry extends React.Component {
     })
   }
 
+  getSortIcon = (field) =>{
+    if(this.props.goals.sortby === field && this.props.goals.sortdir === 'desc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-down"/>
+    }
+    else if(this.props.goals.sortby === field && this.props.goals.sortdir === 'asc'){
+      return <FontAwesomeIcon className='main-green' icon = "sort-up"/>
+    }
+    else{
+      return <FontAwesomeIcon icon = "sort"/>
+    }
+  }
+
+  sortCol = (field, e) => {
+    if(this.props.goals.sortby === field){
+      if(this.props.goals.sortdir === 'asc'){
+        this.props.sortGoals(field, 'desc');
+      }
+      else{
+        this.props.sortGoals(field, 'asc');
+      }
+    }
+    else{
+      this.props.sortGoals(field, 'asc');
+    }
+  }
+
   render() {
     const { goals } = this.props.goals;
     return (
@@ -239,7 +265,9 @@ class GoalsEntry extends React.Component {
             <Table>
               <thead>
                 <tr>
-                  <th>Name</th>
+                  <th onClick={this.sortCol.bind(this, 'name')}>Name {this.getSortIcon('name')}</th>
+                  <th onClick={this.sortCol.bind(this, 'user')}>Author {this.getSortIcon('user')}</th>
+                  <th onClick={this.sortCol.bind(this, 'edit_timestamp')}>Timestamp of Last Edit {this.getSortIcon('edit_timestamp')}</th>
                   <th>Deadline</th>
                   <th>SKU List</th>
                   <th>Edit</th>
@@ -247,7 +275,7 @@ class GoalsEntry extends React.Component {
                 </tr>
               </thead>
               <tbody>
-                {goals.map(({ _id, name, deadline, skus_list}) => (
+                {goals.map(({ _id, name, user_id, deadline, edit_timestamp, skus_list}) => (
                     <tr key={_id}>
                       <td>
                         <Button color="link"
@@ -255,6 +283,12 @@ class GoalsEntry extends React.Component {
                         >
                         {name}
                         </Button>
+                      </td>
+                      <td>
+                        {user_id.username}
+                      </td>
+                      <td>
+                        {moment(new Date(edit_timestamp)).format('llll')}
                       </td>
                       <td>
                         {moment(new Date(deadline)).utc().format('ddd, DD MMM YYYY')}
@@ -407,14 +441,14 @@ class GoalsEntry extends React.Component {
 }
 
 GoalsEntry.propTypes = {
-  getGoals: PropTypes.func.isRequired,
   getAllGoals: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
   skus: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   getGoalsIngQuantity: PropTypes.func.isRequired,
   deleteGoal: PropTypes.func.isRequired,
-  updateGoal: PropTypes.func.isRequired
+  updateGoal: PropTypes.func.isRequired,
+  sortGoals: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -423,4 +457,4 @@ const mapStateToProps = (state) => ({
   skus: state.skus
 });
 
-export default connect(mapStateToProps, { getSKUs, getGoals, getAllGoals, updateGoal, deleteGoal, getGoalsIngQuantity })(GoalsEntry);
+export default connect(mapStateToProps, { getSKUs, getAllGoals, updateGoal, deleteGoal, sortGoals, getGoalsIngQuantity })(GoalsEntry);
