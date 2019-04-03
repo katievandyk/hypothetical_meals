@@ -123,7 +123,7 @@ class SKUProjectionModal extends React.Component {
                                         <td><b>Average</b></td>
                                         <td></td>
                                         <td>
-                                            <b>{obj.display}</b>&nbsp;&nbsp;
+                                            <b>${obj.display}</b>&nbsp;&nbsp;
                                             <Button id="tt" onClick={this.props.copyQuantity(obj.avg_sales)} color="success" size="sm"><FontAwesomeIcon icon = "clipboard"/></Button>
                                             <Tooltip placement="right" isOpen={this.state.ttOpen} target="tt" toggle={this.tt_toggle}>Copy to Quantity</Tooltip>
                                         </td>
