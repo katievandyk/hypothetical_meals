@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
 import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
-import SKUProjectionModal from '../../components/goals/SKUProjectionModal'
+import SKUProjectionModal from '../../components/goals/SKUProjectionModal';
 
 import { addGoal, getAllGoals }  from '../../actions/goalsActions';
 import { getSKUs } from '../../actions/skuActions';
@@ -252,10 +252,11 @@ class GoalsCreateModal extends React.Component {
                     </FormGroup>
                     <FormGroup>
                         <Label><h5>2. Select a quantity.</h5></Label>
+                        <p>Use the SKU projection tool to generate a quantity, or enter one manually.</p>
                         <Row>
                         <Col md={6} style={{'paddingRight': '0em'}}><Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/></Col>
                         <Col>
-                            <Button id="toolButton" color="success" onClick={this.skuproj_toggle}><FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "chart-line"/></Button>
+                            <Button disabled={this.state.skuSel.length === 0} id="toolButton" color="success" onClick={this.skuproj_toggle}><FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "chart-line"/></Button>
                             <Tooltip placement="right" isOpen={this.state.tooltipOpen} target="toolButton" toggle={this.tooltip_toggle}>SKU Projection Tool</Tooltip>
                         </Col>
                         </Row>
@@ -268,7 +269,7 @@ class GoalsCreateModal extends React.Component {
              </ModalFooter>
         </Modal>
         <Modal isOpen={this.state.skuproj_modal} size="lg" toggle={this.skuproj_toggle} >
-            <SKUProjectionModal toggle={this.skuproj_toggle}/>
+            <SKUProjectionModal toggle={this.skuproj_toggle} sku={this.state.skuSel}/>
         </Modal>
       </div>
     );

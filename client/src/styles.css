@@ -155,3 +155,7 @@ body{
 .modal-xl {
     width: 100%
 }
+
+.modal-tall {
+    min-height: 500px
+}

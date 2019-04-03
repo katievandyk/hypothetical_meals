@@ -1,9 +1,10 @@
 import React from 'react';
 import {
-  ModalBody, ModalFooter,
+  ModalBody, ModalFooter, ModalHeader,
   Label,
   Button,
   CustomInput,
+  Col, Row
 } from 'reactstrap';
 import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
@@ -22,36 +23,38 @@ class SKUProjectionModal extends React.Component {
       };
   };
 
-  genOptionsDD = (customers) => {
-    var newOptions = [];
-    customers.forEach(function(customer){
-      var newOption = {value: customer._id, label: customer.name+": " + customer.number};
-      newOptions = [...newOptions, newOption];
-    });
-    return newOptions;
-  }
-
   render() {
     return (
       <div>
-            <ModalBody>
+            <ModalHeader>
+            Projection Tool for {this.props.sku.name}
+            </ModalHeader>
+            <ModalBody style={{ minHeight: '400px'}}>
                 <Label><h5>Select Timespan</h5></Label>
-                <div style={{paddingBottom: '1.5em'}}>
+                <Row style={{paddingBottom: '1.5em'}}>
+                    <Col>
                       <DateRangePicker
+                      renderMonthText= {(month) =>  moment(month).format('MMMM')} // (month) => PropTypes.string,
                       startDate={this.state.startDate}
                       startDateId="start_date_id"
-                      isOutsideRange={() => false}
+                      isOutsideRange={(day) => day > moment().add(1, 'year') || day < moment().add(-1, 'day')}
+                      numberOfMonths={2}
+                      displayFormat="MMM D"
                       endDate={this.state.endDate} // momentPropTypes.momentObj or null,
                       endDateId="end_date_id" // PropTypes.string.isRequired,
                       onDatesChange={({ startDate, endDate }) => this.setState({ startDate, endDate })} // PropTypes.func.isRequired,
                       focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
                       onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired
-                       />
-                 </div>
+                       />&nbsp;
+                      <Button size="lg" color="success">Generate</Button>
+                     </Col>
+                 </Row>
+                 <Row>
+                    <Col style={{'textAlign': 'center', 'paddingTop': '100px'}}>No projection generated.</Col>
+                 </Row>
             </ModalBody>
             <ModalFooter>
-              <Button color="success">Save</Button>{' '}
-              <Button color="secondary" onClick={this.props.toggle}>Cancel</Button>
+              <Button color="secondary" onClick={this.props.toggle}>Close</Button>
             </ModalFooter>
       </div>
     );
