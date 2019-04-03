@@ -2,8 +2,8 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
-import GoalsSKUSearch from '../../components/goals/GoalsSKUSearch';
 import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
+import SKUProjectionModal from '../../components/goals/SKUProjectionModal';
 
 import { addGoal, getAllGoals }  from '../../actions/goalsActions';
 import { getSKUs } from '../../actions/skuActions';
@@ -13,7 +13,8 @@ import PropTypes from 'prop-types';
 import {
   Col, Row, Input, FormFeedback,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  Button, Table, Form, FormGroup, Label
+  Button, Table, Form, FormGroup, Label,
+  Tooltip
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -25,6 +26,8 @@ class GoalsCreateModal extends React.Component {
     this.state = {
       modal: false,
       skulist_modal: false,
+      skuproj_modal: false,
+      tooltipOpen: false,
       name: '',
       quantity: '',
       skuSel: '',
@@ -37,6 +40,8 @@ class GoalsCreateModal extends React.Component {
 
     this.toggle = this.toggle.bind(this);
     this.skulist_toggle = this.skulist_toggle.bind(this);
+    this.skuproj_toggle = this.skuproj_toggle.bind(this);
+    this.tooltip_toggle = this.tooltip_toggle.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onAddSKU = this.onAddSKU.bind(this);
     this.skuCallback = this.skuCallback.bind(this);
@@ -58,7 +63,7 @@ class GoalsCreateModal extends React.Component {
          const newGoal = {
            name: this.state.name,
            skus_list: this.state.skus_list,
-           user_username: this.props.auth.user_username,
+           user_id: this.props.auth.user.id,
            deadline: this.state.date
          };
          this.props.addGoal(newGoal);
@@ -161,6 +166,24 @@ class GoalsCreateModal extends React.Component {
      });
   }
 
+  skuproj_toggle() {
+     this.setState({
+       skuproj_modal: !this.state.skuproj_modal,
+     });
+  }
+
+  tooltip_toggle() {
+    this.setState({
+      tooltipOpen: !this.state.tooltipOpen
+    });
+  }
+
+  copyQuantity = (quant) => {
+    this.setState({
+        quantity: parseInt(quant)
+    })
+  }
+
   render() {
     return (
       <div>
@@ -199,7 +222,7 @@ class GoalsCreateModal extends React.Component {
                                         <Button size="sm" color="link"
                                         onClick={this.onDeleteClick.bind(this, this.state.skus_list[i])}
                                         style={{'color':'black'}}>
-                                        <FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "times"/>
+                                        <FontAwesomeIcon icon = "times"/>
                                         </Button>
                                       </td>
                                    </tr>
@@ -235,14 +258,24 @@ class GoalsCreateModal extends React.Component {
                     </FormGroup>
                     <FormGroup>
                         <Label><h5>2. Select a quantity.</h5></Label>
-                        <Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/>
+                        <p>Use the SKU projection tool to generate a quantity, or enter one manually.</p>
+                        <Row>
+                        <Col md={6} style={{'paddingRight': '0em'}}><Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/></Col>
+                        <Col>
+                            <Button disabled={this.state.skuSel.length === 0} id="toolButton" color="success" onClick={this.skuproj_toggle}><FontAwesomeIcon icon = "chart-line"/></Button>
+                            <Tooltip placement="right" isOpen={this.state.tooltipOpen} target="toolButton" toggle={this.tooltip_toggle}>SKU Projection Tool</Tooltip>
+                        </Col>
+                        </Row>
                     </FormGroup>
                 </Form>
              </ModalBody>
              <ModalFooter>
-                <Button onClick={this.onAddSKU}>Save</Button>
+                <Button color="success" onClick={this.onAddSKU}>Save</Button>
                 <Button onClick={this.skulist_toggle}>Cancel</Button>
              </ModalFooter>
+        </Modal>
+        <Modal isOpen={this.state.skuproj_modal} size="lg" toggle={this.skuproj_toggle} >
+            <SKUProjectionModal copyQuantity={this.copyQuantity} toggle={this.skuproj_toggle} sku={this.state.skuSel}/>
         </Modal>
       </div>
     );

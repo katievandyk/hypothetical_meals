@@ -20,7 +20,7 @@ import { Container, Row, Col} from 'reactstrap';
 class ManufacturingGoals extends Component {
 
   componentDidMount() {
-      this.props.getGoals(this.props.auth.user_username);
+      this.props.getGoals(this.props.auth.user.id);
   }
 
    render() {
@@ -43,7 +43,7 @@ class ManufacturingGoals extends Component {
                       <GoalsExport goals={this.props.goals}/>
                    </Row>
                 </Container>
-                <GoalsEntry user_email={this.props.auth.user_username} />
+                <GoalsEntry/>
               </Container>
               </div>
           </Provider>

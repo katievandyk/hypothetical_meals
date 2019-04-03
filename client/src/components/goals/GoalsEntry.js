@@ -1,13 +1,15 @@
 import React from 'react';
 import {  Col, Row, Input,
           Modal, ModalHeader, ModalBody, ModalFooter,
-          Button, Table, Form, FormGroup, FormFeedback, Label } from 'reactstrap';
+          Button, Table, Form, FormGroup, FormFeedback, Label,
+          Tooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CalculatorEntry from './CalculatorEntry';
 import CalculatorExport from './CalculatorExport';
 import GoalsSKUDropdown from '../../components/goals/GoalsSKUDropdown';
 import GoalsProductLineFilter from '../../components/goals/GoalsProductLineFilter';
+import SKUProjectionModal from '../../components/goals/SKUProjectionModal';
 
 import 'jspdf-autotable';
 import * as jsPDF from 'jspdf';
@@ -22,9 +24,13 @@ class GoalsEntry extends React.Component {
     constructor(props) {
       super(props);
       this.exportPDF = this.exportPDF.bind(this);
+      this.skuproj_toggle = this.skuproj_toggle.bind(this);
+      this.tooltip_toggle = this.tooltip_toggle.bind(this);
       this.state = {
         sku_modal: false,
         calculator_modal: false,
+        skuproj_modal: false,
+        tooltipOpen: false,
         curr_list: [],
         curr_goal: {},
         edit_modal: false,
@@ -43,7 +49,7 @@ class GoalsEntry extends React.Component {
     }
 
   componentDidMount() {
-    this.props.getGoals(this.props.auth.user_username);
+    this.props.getGoals(this.props.auth.user.id);
     this.props.getAllGoals();
     this.props.getSKUs();
   }
@@ -188,7 +194,7 @@ class GoalsEntry extends React.Component {
           skus_list: this.state.edit_skus_list,
           deadline: this.state.edit_date
         };
-        this.props.updateGoal(editedGoal, this.props.auth.user_username);
+        this.props.updateGoal(editedGoal, this.props.auth.user.id);
         this.setState({name: '', quantity: '', skuSel: '',
         skus_list: [],
         date: '',
@@ -205,6 +211,24 @@ class GoalsEntry extends React.Component {
        quantity: '',
        validNum: ''
      });
+  }
+
+  skuproj_toggle() {
+     this.setState({
+       skuproj_modal: !this.state.skuproj_modal,
+     });
+  }
+
+  tooltip_toggle() {
+    this.setState({
+      tooltipOpen: !this.state.tooltipOpen
+    });
+  }
+
+  copyQuantity = (quant) => {
+    this.setState({
+        quantity: parseInt(quant)
+    })
   }
 
   render() {
@@ -357,7 +381,13 @@ class GoalsEntry extends React.Component {
                     </FormGroup>
                     <FormGroup>
                         <Label><h5>2. Select a quantity.</h5></Label>
-                        <Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/>
+                        <Row>
+                        <Col md={6} style={{'paddingRight': '0em'}}><Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/></Col>
+                        <Col>
+                            <Button disabled={this.state.skuSel.length === 0} id="toolButton" color="success" onClick={this.skuproj_toggle}><FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "chart-line"/></Button>
+                            <Tooltip placement="right" isOpen={this.state.tooltipOpen} target="toolButton" toggle={this.tooltip_toggle}>SKU Projection Tool</Tooltip>
+                        </Col>
+                        </Row>
                     </FormGroup>
                 </Form>
              </ModalBody>
@@ -365,6 +395,9 @@ class GoalsEntry extends React.Component {
                 <Button disabled={this.state.validNum === 'failure' || this.state.sku_valid !== 'success'} onClick={this.onAddSKU}>Save</Button>
               <Button onClick={this.skulist_toggle}>Cancel</Button>
              </ModalFooter>
+        </Modal>
+        <Modal isOpen={this.state.skuproj_modal} size="lg" toggle={this.skuproj_toggle} >
+            <SKUProjectionModal copyQuantity={this.copyQuantity} toggle={this.skuproj_toggle} sku={this.state.skuSel}/>
         </Modal>
        </div>
 
