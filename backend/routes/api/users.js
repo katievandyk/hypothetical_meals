@@ -320,7 +320,6 @@ router.post("/login", (req, res) => {
       }
       User.findOne({ username: req.body.username }, function (err, doc){
         doc.product = true;
-        doc.analyst = true;
         doc.save().then(updatedUser => res.json(updatedUser))
         .catch(err => console.log(err.message));
       });
@@ -341,7 +340,6 @@ router.post("/login", (req, res) => {
       }
       User.findOne({ username: req.body.username }, function (err, doc){
         doc.product = false;
-        doc.analyst = false;
         doc.save().then(updatedUser => res.json(updatedUser))
         .catch(err => console.log(err.message));
       });
@@ -362,7 +360,6 @@ router.post("/login", (req, res) => {
       }
       User.findOne({ username: req.body.username }, function (err, doc){
         doc.business = true;
-        doc.analyst = true;
         doc.save().then(updatedUser => res.json(updatedUser))
         .catch(err => console.log(err.message));
       });
@@ -383,7 +380,6 @@ router.post("/login", (req, res) => {
       }
       User.findOne({ username: req.body.username }, function (err, doc){
         doc.business = false;
-        doc.analyst = false;
         doc.save().then(updatedUser => res.json(updatedUser))
         .catch(err => console.log(err.message));
       });
@@ -404,7 +400,6 @@ router.post("/login", (req, res) => {
       }
       User.findOne({ username: req.body.username }, function (err, doc){
         doc.plant = true;
-        doc.analyst = true;
         doc.lines = doc.lines.concat(req.body.line)
         doc.save().then(updatedUser => res.json(updatedUser))
         .catch(err => console.log(err.message));
