@@ -178,6 +178,12 @@ class GoalsCreateModal extends React.Component {
     });
   }
 
+  copyQuantity = (quant) => {
+    this.setState({
+        quantity: parseInt(quant)
+    })
+  }
+
   render() {
     return (
       <div>
@@ -216,7 +222,7 @@ class GoalsCreateModal extends React.Component {
                                         <Button size="sm" color="link"
                                         onClick={this.onDeleteClick.bind(this, this.state.skus_list[i])}
                                         style={{'color':'black'}}>
-                                        <FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "times"/>
+                                        <FontAwesomeIcon icon = "times"/>
                                         </Button>
                                       </td>
                                    </tr>
@@ -256,7 +262,7 @@ class GoalsCreateModal extends React.Component {
                         <Row>
                         <Col md={6} style={{'paddingRight': '0em'}}><Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/></Col>
                         <Col>
-                            <Button disabled={this.state.skuSel.length === 0} id="toolButton" color="success" onClick={this.skuproj_toggle}><FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "chart-line"/></Button>
+                            <Button disabled={this.state.skuSel.length === 0} id="toolButton" color="success" onClick={this.skuproj_toggle}><FontAwesomeIcon icon = "chart-line"/></Button>
                             <Tooltip placement="right" isOpen={this.state.tooltipOpen} target="toolButton" toggle={this.tooltip_toggle}>SKU Projection Tool</Tooltip>
                         </Col>
                         </Row>
@@ -269,7 +275,7 @@ class GoalsCreateModal extends React.Component {
              </ModalFooter>
         </Modal>
         <Modal isOpen={this.state.skuproj_modal} size="lg" toggle={this.skuproj_toggle} >
-            <SKUProjectionModal toggle={this.skuproj_toggle} sku={this.state.skuSel}/>
+            <SKUProjectionModal copyQuantity={this.copyQuantity} toggle={this.skuproj_toggle} sku={this.state.skuSel}/>
         </Modal>
       </div>
     );

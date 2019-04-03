@@ -1,10 +1,11 @@
 import {GET_GOALS, GET_ALL_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_EXPORT, GOAL_CALCULATOREXPORT,
-  GOAL_ERROR, SCHEDULE_KW_SEARCH} from '../actions/types';
+  GOAL_ERROR, SCHEDULE_KW_SEARCH, SKU_PROJECTION} from '../actions/types';
 
 const initialState = {
    goals: [],
    all_goals: [],
    ing_quantities: [],
+   sku_projection: [],
    loading: false,
    error_msgs: []
 };
@@ -80,6 +81,14 @@ export default function(state = initialState, action) {
         goals: action.payload,
         error_msgs: []
       }
+    }
+    case SKU_PROJECTION: {
+        return {
+         ...state,
+         sku_projection: action.payload,
+         error_msgs: [],
+         loading: false
+        }
     }
     default:
       return state;

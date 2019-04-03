@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { GET_GOALS, GET_ALL_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY,
-  GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR, SCHEDULE_KW_SEARCH } from './types';
+  GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR, SCHEDULE_KW_SEARCH, SKU_PROJECTION } from './types';
 
 const FileDownload = require('js-file-download');
 
@@ -54,7 +54,6 @@ export const getGoalsIngQuantity = (goal) => dispatch =>  {
     })
   });
 };
-
 
 export const addGoal = (goal) => dispatch =>  {
   axios.post(`/api/manufacturing`, goal).then(res => {
@@ -159,3 +158,18 @@ export const deleteGoal = (goal_id) => dispatch => {
       })
     });
   };
+
+export const getSKUProjection = (id, obj) => dispatch =>  {
+  dispatch(setGoalsLoading());
+   axios.post(`/api/sales/projection/${id}`, obj).then(res =>
+    dispatch({
+      type: SKU_PROJECTION,
+      payload: res.data
+    })
+  ).catch(error =>{
+    dispatch({
+      type: GOAL_ERROR,
+      payload: error.response
+    })
+  });
+};
