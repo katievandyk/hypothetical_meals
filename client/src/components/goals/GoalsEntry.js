@@ -227,7 +227,8 @@ class GoalsEntry extends React.Component {
 
   copyQuantity = (quant) => {
     this.setState({
-        quantity: parseInt(quant)
+        quantity: parseInt(quant),
+        validNum: 'success'
     })
   }
 
