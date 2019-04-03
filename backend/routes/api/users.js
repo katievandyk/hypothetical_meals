@@ -8,8 +8,7 @@ const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 // Load User model
 const User = require("../../models/User");
-const NetidUser = require("../../models/NetidUser");
-
+const mongoose = require('mongoose');
 
 // @route POST api/users/register
 // @desc Register user
@@ -26,6 +25,7 @@ router.post("/register", (req, res) => {
         return res.status(400).json({ username: "Username already exists" });
       };
   const newUser = new User({
+          _id: new mongoose.Types.ObjectId(),
           name: req.body.name,
           username: req.body.username,
           password: req.body.password
@@ -103,12 +103,21 @@ router.post("/login", (req, res) => {
   router.post("/netid", (req, res) => {
     const name = req.body.name;
     const username = req.body.username;
-    NetidUser.findOne({ username: username }).then(user => {
+    User.findOne({ username: username }).then(user => {
+      if(user && user.isNetIdUser) {
+        res.json({
+          success: false,
+          message: "Username already exists."
+        })
+        return;
+      }
       if(!user) {
         //Make a user
-        const newUser = new NetidUser({
+        const newUser = new User({
+          _id: new mongoose.Types.ObjectId(),
           name: name,
-          username: username
+          username: username,
+          isNetIdUser: true
         });
         newUser
               .save( function(err, newDocument) {
@@ -160,67 +169,11 @@ router.post("/login", (req, res) => {
     })
   })
 
-  function makeNetidAdmin(username, res) {
-    NetidUser.findOne({ username: username }).then(user => {
-      if (!user) {
-        return res.status(400).json({ username: "Username does not exist" });
-      }
-      if(user.isAdmin) {
-        return res.status(400).json({ username: "User is already an admin"});
-      }
-      NetidUser.findOne({ username: username }, function (err, doc){
-        doc.isAdmin = true;
-        doc.save().then(updatedUser => res.json(updatedUser))
-        .catch(err => console.log(err.message));
-      });
-    });
-  }
-  router.post("/makeAdmin", (req, res) => {
-    User.findOne({ username: req.body.username }).then(user => {
-        if (!user) {
-          //No local user by this name
-          makeNetidAdmin(req.body.username, res);
-          return
-        }
-        if(user.isAdmin) {
-          return res.status(400).json({ username: "User is already an admin"});
-        }
-        User.findOne({ username: req.body.username }, function (err, doc){
-          doc.isAdmin = true;
-          doc.save().then(updatedUser => res.json(updatedUser))
-          .catch(err => console.log(err.message));
-        });
-      });
-    });
-
-
-
-    function revokeNetidAdmin(username, res) {
-      NetidUser.findOne({ username: username }).then(user => {
-        if (!user) {
-          return res.status(400).json({ username: "Username does not exist" });
-        }
-        if(!user.isAdmin) {
-          return res.status(400).json({ username: "User is not an admin"});
-        }
-        NetidUser.findOne({ username: username }, function (err, doc){
-          doc.isAdmin = false;
-          doc.save().then(updatedUser => res.json(updatedUser))
-          .catch(err => console.log(err.message));
-        });
-      });
-    }
-
   // @route POST api/users/revokeAdmin
   // @desc removes admin priviledges from req.body.username
   // @access Private
     router.post("/revokeAdmin", (req, res) => {
       User.findOne({ username: req.body.username }).then(user => {
-          if (!user) {
-            //No local user by this name
-            revokeNetidAdmin(req.body.username, res);
-            return
-          }
           if(!user.isAdmin) {
             return res.status(400).json({ username: "User is not an admin"});
           }
@@ -234,17 +187,12 @@ router.post("/login", (req, res) => {
 
   // @route POST api/users/delete
   // @desc removes a local user
+  // body
+  // - userid: object id of the user to remove
   // @access Private
     router.post("/delete", (req, res) => {
-      User.findOneAndRemove({username: req.body.username}).then(user => {
-        if(!user) {
-          NetidUser.findOneAndRemove({username: req.body.username}).then(user => {
-            res.status(200).json({username : "User deleted"})
-          })
-        }
-        else {
-          res.status(200).json({username : "User deleted"})
-        }
+      User.findByIdAndDelete(req.body.userid).then(user => {
+        res.status(200).json({username : "User deleted"})
       }).catch(err => console.log(err.message));
     })
 
@@ -255,14 +203,8 @@ router.post("/login", (req, res) => {
       User
         .find()
         .lean()
-        .then( localUsers => {
-          NetidUser
-            .find()
-            .lean()
-            .then(netidUsers => {
-              var users = localUsers.concat(netidUsers);
-              res.status(200).json({users : users})
-            }).catch(err => res.status(404).json({success: false, message: err.message}));
+        .then( users => {
+          res.status(200).json({users : users})
         }).catch(err => res.status(404).json({success: false, message: err.message}));
     })
 

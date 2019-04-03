@@ -28,6 +28,85 @@ function round(num) {
     return Math.round(num * 100) / 100
 }
 
+// @route POST api/sales/projection/:id
+// request param fields:
+// - id
+// request body fields:
+// - start_month: starting month
+// - start_day: starting day
+// - end_month: ending month
+// - end_day: ending day
+router.post('/projection/:id', (req, res) => {
+    var today = moment()
+    var start_month = parseFloat(req.body.start_month)
+    var start_day = parseFloat(req.body.start_day)
+    var end_month = parseFloat(req.body.end_month)
+    var end_day = parseFloat(req.body.end_day)
+    var years 
+    if (end_month < today.month() || 
+        end_month == today.month() && 
+        end_day < today.date()) {
+        years = [today.year(), today.year()-1, today.year()-2, today.year()-3]
+    }
+    else {
+        years = [today.year()-1, today.year()-2, today.year()-3, today.year()-4]
+    }
+
+    var startYearBefore = start_month > end_month || 
+        (start_month == end_month && start_day > end_day)
+
+    var timespans = years.map(year => {
+        var startYear = startYearBefore ? year-1 : year 
+        return {
+            start: convertToDate(start_month, start_day, startYear),
+            end: convertToDate(end_month, end_day, year)
+        }
+    })
+
+    // timespans.forEach(timespan => {
+    //     console.log(moment(timespan.start).format('MM-DD-YYYY') + " to " + moment(timespan.end).format('MM-DD-YYYY'))
+    // })
+
+    var promises = timespans.map(timespan => {
+        var startDate = timespan.start
+        var endDate = timespan.end
+        if(startYearBefore) {
+            return Sale.find({
+                $or: [ {year: startDate.year(), week: { $gte: startDate.week()}}, 
+                    {year: endDate.year(), week: { $lte: endDate.week()}}]
+            })
+        }
+        else {
+            return Sale.find({year: { $gte: startDate.year()}, week: { $gte: startDate.week()}})
+                .find({year: {$lte: endDate.year()}, week: { $lte: endDate.week()}}).lean()
+        }
+    })
+
+    Promise.all(promises).then(results => {
+        var final_res = timespans.map(function(timespan, i) {
+            var total_sales = results[i].reduce((total, sale) =>  total + sale.sales, 0)
+            return {
+                start: timespan.start,
+                end: timespan.end,
+                sales: total_sales
+            }
+          });
+        var all_sales = final_res.reduce((total, entry) => total + entry.sales, 0)
+        var avg_sales = all_sales / 4.0
+        var square_diffs = final_res.map(entry => (entry.sales - avg_sales)*(entry.sales - avg_sales))
+        var std_dev = Math.sqrt(square_diffs.reduce((total, entry) => total+entry, 0) / 4.0)
+        final_res.push({summary: "summary", avg_sales: Math.round(avg_sales), sd: Math.round(std_dev*10)/10, display: Math.round(avg_sales) + " +/- " + Math.round(std_dev*10)/10})
+        res.json(final_res)
+    })
+})
+
+function convertToDate(month, date, year) {
+    var month_str = month % 10 > 0 ? ""+month : "0"+month
+    var date_str = date % 10 > 0 ? ""+date : "0"+date
+    var str = month_str + "-" + date_str + "-" + year
+    return moment(str, 'MM-DD-YYYY')
+}
+
 // @route POST api/sales/customers
 // request body fields:
 // - keywords
