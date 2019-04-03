@@ -213,18 +213,23 @@ class GoalsEntry extends React.Component {
      });
   }
 
-  skuproj_toggle = () => {
+  skuproj_toggle() {
      this.setState({
        skuproj_modal: !this.state.skuproj_modal,
      });
   }
 
-  tooltip_toggle = () => {
+  tooltip_toggle() {
     this.setState({
       tooltipOpen: !this.state.tooltipOpen
     });
   }
 
+  copyQuantity = (quant) => {
+    this.setState({
+        quantity: parseInt(quant)
+    })
+  }
 
   render() {
     const { goals } = this.props.goals;
@@ -379,7 +384,7 @@ class GoalsEntry extends React.Component {
                         <Row>
                         <Col md={6} style={{'paddingRight': '0em'}}><Input valid={this.state.validNum === 'success'} invalid={this.state.validNum === 'failure'} value={this.state.quantity} placeholder="Qty." onChange={this.onNumberChange}/></Col>
                         <Col>
-                            <Button id="toolButton" color="success" onClick={this.skuproj_toggle}><FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "chart-line"/></Button>
+                            <Button disabled={this.state.skuSel.length === 0} id="toolButton" color="success" onClick={this.skuproj_toggle}><FontAwesomeIcon style={{verticalAlign:'bottom'}} icon = "chart-line"/></Button>
                             <Tooltip placement="right" isOpen={this.state.tooltipOpen} target="toolButton" toggle={this.tooltip_toggle}>SKU Projection Tool</Tooltip>
                         </Col>
                         </Row>
@@ -392,7 +397,7 @@ class GoalsEntry extends React.Component {
              </ModalFooter>
         </Modal>
         <Modal isOpen={this.state.skuproj_modal} size="lg" toggle={this.skuproj_toggle} >
-            <SKUProjectionModal toggle={this.skuproj_toggle}/>
+            <SKUProjectionModal copyQuantity={this.copyQuantity} toggle={this.skuproj_toggle} sku={this.state.skuSel}/>
         </Modal>
        </div>
 
