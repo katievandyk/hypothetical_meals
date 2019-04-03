@@ -117,7 +117,8 @@ toggle = () => {
     name: "",
     username: "",
     password: "",
-    password2: ""
+    password2: "",
+    validate: {}
   })
 }
 render() {
