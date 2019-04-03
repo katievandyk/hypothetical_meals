@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
 
 import { getGoals } from '../actions/goalsActions';
+import { getAllUsers } from '../actions/authActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -20,7 +21,7 @@ import { Container, Row, Col} from 'reactstrap';
 class ManufacturingGoals extends Component {
 
   componentDidMount() {
-      this.props.getGoals(this.props.auth.user.id);
+      this.props.getAllUsers()
   }
 
    render() {
@@ -52,7 +53,7 @@ class ManufacturingGoals extends Component {
 }
 
 ManufacturingGoals.propTypes = {
-  getGoals: PropTypes.func.isRequired,
+  getAllUsers: PropTypes.func.isRequired,
   goals: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
@@ -62,4 +63,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getGoals })(ManufacturingGoals);
+export default connect(mapStateToProps, { getAllUsers })(ManufacturingGoals);

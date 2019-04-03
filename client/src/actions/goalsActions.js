@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { GET_GOALS, GET_ALL_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY,
-  GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR, SCHEDULE_KW_SEARCH, SKU_PROJECTION } from './types';
+  GOAL_CALCULATOREXPORT, GOAL_EXPORT, GOAL_ERROR, SCHEDULE_KW_SEARCH, SKU_PROJECTION, GOALS_SORT } from './types';
 
 const FileDownload = require('js-file-download');
 
@@ -38,6 +38,21 @@ export const setGoalsLoading = () => {
   return {
     type: GOALS_LOADING
   };
+};
+
+export const sortGoals = (field, asc) => dispatch => {
+  dispatch(setGoalsLoading());
+  axios.get(`/api/manufacturing/sort/${field}/${asc}`).then(res =>
+    dispatch({
+      type: GOALS_SORT,
+      payload: {data: res.data, sortby: field, sortdir: asc}
+    })
+  ).catch(error =>{
+    dispatch({
+      type: GOAL_ERROR,
+      payload: error.response
+    })
+  });
 };
 
 export const getGoalsIngQuantity = (goal) => dispatch =>  {

@@ -28,6 +28,7 @@ export const GOALS_INGQUANTITY = 'GOALS_INGQUANTITY';
 export const GOAL_EXPORT = 'GOAL_EXPORT';
 export const GOAL_CALCULATOREXPORT = 'GOAL_CALCULATOREXPORT';
 export const GOAL_ERROR = 'GOAL_ERROR';
+export const GOALS_SORT = 'GOALS_SORT';
 export const SKU_PROJECTION = 'SKU_PROJECTION';
 // Manufacturing Lines
 export const GET_LINES = 'GET_LINES';
