@@ -435,7 +435,7 @@ router.post("/automate", (req, res) => {
                 }
             });
             User.findById(req.body.user_id).lean().then(user => {
-                var allowed_mls =["5c7c9a2bd848965b57246ca0", "5c7c9a4ed848965b57246ca3"] //user.lines ["5c7c9a3cd848965b57246ca1"]// 
+                var allowed_mls = user.lines.map(line => line._id) 
                 ManufacturingActivity.find({"line": {$in: allowed_mls}}).lean().then(activities => {
                     var groupedByMl = activities.reduce(function(r,a) {
                         r[a.line] = r[a.line] || [];

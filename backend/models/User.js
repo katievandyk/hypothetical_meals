@@ -48,9 +48,6 @@ const UserSchema = new Schema({
   isNetIdUser: {
     type: Boolean,
     default: false
-  },
-  mls: [{
-    ml: { type: Schema.Types.ObjectId, ref: 'manufacturingline' }
-  }]
+  }
 });
 module.exports = User = mongoose.model("users", UserSchema);
