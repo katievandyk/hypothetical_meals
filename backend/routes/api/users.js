@@ -208,5 +208,173 @@ router.post("/login", (req, res) => {
         }).catch(err => res.status(404).json({success: false, message: err.message}));
     })
 
+  // @route POST api/users/makeAnalyst
+  // @desc gives analyst role
+  // @access public
+  router.post("/makeAnalyst", (req, res) => {
+    User.findOne({ username: req.body.username }).then(user => {
+      if (!user) {
+        //No local user by this name
+        return res.status(400).json({success: false, message: "User does not exist"});
+      }
+      if(user.analyst) {
+        return res.status(400).json({success: false, message: "User is already an Analyst"});
+      }
+      User.findOne({ username: req.body.username }, function (err, doc){
+        doc.analyst = true;
+        doc.save().then(updatedUser => res.json(updatedUser))
+        .catch(err => console.log(err.message));
+      });
+    });
+  })
+
+  // @route POST api/users/revoke
+  // @desc revokes analyst role
+  // @access public
+  router.post("/revokeAnalyst", (req, res) => {
+    User.findOne({ username: req.body.username }).then(user => {
+      if (!user) {
+        //No local user by this name
+        return res.status(400).json({success: false, message: "User does not exist"});
+      }
+      if(!user.analyst) {
+        return res.status(400).json({success: false, message: "User is not an Analyst"});
+      }
+      User.findOne({ username: req.body.username }, function (err, doc){
+        doc.analyst = false;
+        doc.save().then(updatedUser => res.json(updatedUser))
+        .catch(err => console.log(err.message));
+      });
+    });
+  })
+
+  // @route POST api/users/makeProduct
+  // @desc gives product manager role
+  // @access public
+  router.post("/makeProduct", (req, res) => {
+    User.findOne({ username: req.body.username }).then(user => {
+      if (!user) {
+        //No local user by this name
+        return res.status(400).json({success: false, message: "User does not exist"});
+      }
+      if(user.product) {
+        return res.status(400).json({success: false, message: "User is already an Product Manager"});
+      }
+      User.findOne({ username: req.body.username }, function (err, doc){
+        doc.product = true;
+        doc.save().then(updatedUser => res.json(updatedUser))
+        .catch(err => console.log(err.message));
+      });
+    });
+  })
+
+  // @route POST api/users/revokeProduce
+  // @desc revokes product manager role
+  // @access public
+  router.post("/revokeProduct", (req, res) => {
+    User.findOne({ username: req.body.username }).then(user => {
+      if (!user) {
+        //No local user by this name
+        return res.status(400).json({success: false, message: "User does not exist"});
+      }
+      if(!user.product) {
+        return res.status(400).json({success: false, message: "User is not Product Manager"});
+      }
+      User.findOne({ username: req.body.username }, function (err, doc){
+        doc.product = false;
+        doc.save().then(updatedUser => res.json(updatedUser))
+        .catch(err => console.log(err.message));
+      });
+    });
+  })
+
+  // @route POST api/users/makeBusiness
+  // @desc gives business manager role
+  // @access public
+  router.post("/makeBusiness", (req, res) => {
+    User.findOne({ username: req.body.username }).then(user => {
+      if (!user) {
+        //No local user by this name
+        return res.status(400).json({success: false, message: "User does not exist"});
+      }
+      if(user.business) {
+        return res.status(400).json({success: false, message: "User is already a Business Manager"});
+      }
+      User.findOne({ username: req.body.username }, function (err, doc){
+        doc.business = true;
+        doc.save().then(updatedUser => res.json(updatedUser))
+        .catch(err => console.log(err.message));
+      });
+    });
+  })
+
+  // @route POST api/users/revokeBusiness
+  // @desc revokes business manager role
+  // @access public
+  router.post("/revokeBusiness", (req, res) => {
+    User.findOne({ username: req.body.username }).then(user => {
+      if (!user) {
+        //No local user by this name
+        return res.status(400).json({success: false, message: "User does not exist"});
+      }
+      if(!user.business) {
+        return res.status(400).json({success: false, message: "User is not Business Manager"});
+      }
+      User.findOne({ username: req.body.username }, function (err, doc){
+        doc.business = false;
+        doc.save().then(updatedUser => res.json(updatedUser))
+        .catch(err => console.log(err.message));
+      });
+    });
+  })
+
+  // @route POST api/users/makePlant
+  // @desc gives business manager role
+  // @body username, lines
+  // @access public
+  router.post("/makePlant", (req, res) => {
+    User.findOne({ username: req.body.username }).then(user => {
+      if (!user) {
+        //No local user by this name
+        return res.status(400).json({success: false, message: "User does not exist"});
+      }
+      if(user.plant) {
+        //return res.status(400).json({success: false, message: "User is already a Plant Manager"});
+      }
+      User.findOne({ username: req.body.username }, function (err, doc){
+        doc.plant = true;
+        req.body.lines.forEach(val => {
+          doc.lines.push(val);
+        })
+        doc.save().then(updatedUser => res.json(updatedUser)).catch(err => console.log(err.message));
+      });
+    })
+  })
+
+  // @route POST api/users/revokePlant
+  // @desc gives business manager role. 
+  // @body username, lines
+  // @access public
+  router.post("/revokePlant", (req, res) => {
+    User.findOne({ username: req.body.username }).then(user => {
+      if (!user) {
+        //No local user by this name
+        return res.status(400).json({success: false, message: "User does not exist"});
+      }
+      if(user.plant) {
+        //This case is not relevant for plant manager
+      }
+      User.findOne({ username: req.body.username }, function (err, doc){
+        req.body.lines.forEach(val => {
+          doc.lines.pull(val);
+        })
+        if(doc.lines.length==0) {
+          doc.plant = false;
+        }
+        doc.save().then(updatedUser => res.json(updatedUser))
+        .catch(err => console.log(err.message));
+      });
+    });
+  })
+
   module.exports = router;
-  
