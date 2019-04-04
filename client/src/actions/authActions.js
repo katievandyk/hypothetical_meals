@@ -8,6 +8,98 @@ import {
   GET_USERS
 } from "./types";
 
+//Make existing user an Business Manger
+export const makeBusiness = (userData) => dispatch => {
+  axios
+    .post("/api/users/makeBusiness", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Revoke existing user business manager status
+export const revokeBusiness = (userData) => dispatch => {
+  console.log('hererere')
+  axios
+    .post("/api/users/revokeBusiness", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Make existing user an Product Manger
+export const makeProduct = (userData) => dispatch => {
+  axios
+    .post("/api/users/makeProduct", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Revoke existing user product manager status
+export const revokeProduct = (userData) => dispatch => {
+  console.log('hererere')
+  axios
+    .post("/api/users/revokeProduct", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Make existing user an Analyst
+export const makeAnalyst = (userData) => dispatch => {
+  axios
+    .post("/api/users/makeAnalyst", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Revoke existing user analyst status
+export const revokeAnalyst = (userData) => dispatch => {
+  axios
+    .post("/api/users/revokeAnalyst", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
 //Make existing user an admin
 export const makeAdmin = (userData) => dispatch => {
   axios
