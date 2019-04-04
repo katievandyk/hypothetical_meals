@@ -330,7 +330,7 @@ router.post("/login", (req, res) => {
 
   // @route POST api/users/makePlant
   // @desc gives business manager role
-  // @body username, line
+  // @body username, lines
   // @access public
   router.post("/makePlant", (req, res) => {
     User.findOne({ username: req.body.username }).then(user => {
@@ -339,20 +339,21 @@ router.post("/login", (req, res) => {
         return res.status(400).json({success: false, message: "User does not exist"});
       }
       if(user.plant) {
-        return res.status(400).json({success: false, message: "User is already a Plant Manager"});
+        //return res.status(400).json({success: false, message: "User is already a Plant Manager"});
       }
       User.findOne({ username: req.body.username }, function (err, doc){
         doc.plant = true;
-        doc.lines = doc.lines.concat(req.body.line)
-        doc.save().then(updatedUser => res.json(updatedUser))
-        .catch(err => console.log(err.message));
+        req.body.lines.forEach(val => {
+          doc.lines.push(val);
+        })
+        doc.save().then(updatedUser => res.json(updatedUser)).catch(err => console.log(err.message));
       });
-    });
+    })
   })
 
   // @route POST api/users/revokePlant
   // @desc gives business manager role. 
-  // @body username, line
+  // @body username, lines
   // @access public
   router.post("/revokePlant", (req, res) => {
     User.findOne({ username: req.body.username }).then(user => {
@@ -360,24 +361,20 @@ router.post("/login", (req, res) => {
         //No local user by this name
         return res.status(400).json({success: false, message: "User does not exist"});
       }
-      
       if(user.plant) {
-        //TODO: This case is not relevant for plant manager
-        return res.status(400).json({success: false, message: "User is already a Plant Manager"});
+        //This case is not relevant for plant manager
       }
       User.findOne({ username: req.body.username }, function (err, doc){
-        doc.lines = doc.lines.filter( line => {
-          line != req.body.line
+        req.body.lines.forEach(val => {
+          doc.lines.pull(val);
         })
+        if(doc.lines.length==0) {
+          doc.plant = false;
+        }
         doc.save().then(updatedUser => res.json(updatedUser))
         .catch(err => console.log(err.message));
       });
     });
   })
 
-
-
-
-
   module.exports = router;
-  

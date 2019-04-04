@@ -40,9 +40,9 @@ const UserSchema = new Schema({
     default: false
   },
   lines: [{
-    line: {
-      type: Schema.Types.ObjectId,
-      ref: 'manufacturingline'
+    line: { 
+      type: Schema.Types.ObjectId, 
+      ref: 'manufacturingline' 
     }
   }],
   isNetIdUser: {
