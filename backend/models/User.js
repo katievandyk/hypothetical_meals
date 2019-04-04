@@ -23,6 +23,28 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now
   },
+  analyst: {
+    type: Boolean,
+    default: false
+  },
+  product: {
+    type: Boolean,
+    default: false
+  },
+  business: {
+    type: Boolean,
+    default: false
+  },
+  plant: {
+    type: Boolean,
+    default: false
+  },
+  lines: [{
+    line: { 
+      type: Schema.Types.ObjectId, 
+      ref: 'manufacturingline' 
+    }
+  }],
   isNetIdUser: {
     type: Boolean,
     default: false
