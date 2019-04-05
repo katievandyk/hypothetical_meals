@@ -8,6 +8,7 @@ const ManufacturingLine = require('../../models/ManufacturingLine');
 const ManufacturingActivity = require('../../models/ManufacturingActivity');
 const Helpers = require('../../bulk_import/helpers')
 const Constants = require('../../bulk_import/constants')
+const moment = require('moment');
 
 // @route GET api/manufacturingschedule
 // @desc get all manufacturing schedules for specific user
@@ -124,7 +125,7 @@ router.get('/skus', (req, res) => {
                         let goal_info = {
                             _id: goal._id,
                             name: goal.name,
-                            user_username: goal.user_username,
+                            user_id: goal.user_id,
                             deadline: goal.deadline
                         }
                         skus.sku.goal_info = goal_info
@@ -409,5 +410,138 @@ router.post('/warnings', (req, res) => {
         })
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
+
+// @route POST api/manufacturingschedule/automate
+// @desc automates scheduling of manufacturing activities
+// request body fields:
+// - activities: tuple list containing {goal_id, sku_id, duration} 
+// - user_id: id of the user to get their MLs
+// - start_date
+// - end_date
+// @access public
+router.post("/automate", (req, res) => {
+    var startTime = moment(req.body.start_date, 'MM-DD-YYYY')
+    var endTime = moment(req.body.end_date, 'MM-DD-YYYY')
+    SKU.populate(req.body.activities, {path: "sku_id"}).then(skus_pop => {
+        Goal.populate(skus_pop, {path: "goal_id"}).then(goals_pop => {
+            goals_pop.sort((a,b) => {
+                var a_date = new Date(a.goal_id.deadline)
+                var b_date = new Date(b.goal_id.deadline)
+                if (a_date.getTime() !== b_date.getTime()) {
+                    return a_date - b_date
+                }
+                else {
+                    return a.duration - b.duration 
+                }
+            });
+            User.findById(req.body.user_id).lean().then(user => {
+                var allowed_mls = user.lines.map(line => line._id) 
+                ManufacturingActivity.find({"line": {$in: allowed_mls}}).lean().then(activities => {
+                    var groupedByMl = activities.reduce(function(r,a) {
+                        r[a.line] = r[a.line] || [];
+                        r[a.line].push(a);
+                        return r;
+                    }, {})
+    
+                    var output = {}
+                    output.unscheduled = []
+                    goals_pop.forEach(activity => {
+                        var options = []
+                        console.log(activity.sku_id)
+                        for(var ml in allowed_mls) {
+                            if (activity.sku_id.manufacturing_lines.filter(e => e._id == allowed_mls[ml]).length == 0) {
+                                continue;
+                            }
+                            var res = scheduleNext(startTime, endTime, activity.duration, groupedByMl[allowed_mls[ml]] || [])
+                            console.log(res)
+                            if(res.success) {
+                                res.ml = allowed_mls[ml]
+                                options.push(res)
+                            }
+                        }
+                        if(options.length == 0) output.unscheduled.push(activity)
+                        else {
+                            var best = options.reduce((total, cur) => cur.start < total.start ? cur : total, options[0])
+                            let act_list = groupedByMl[allowed_mls[ml]] || []
+                            output[best.ml] = output[best.ml] || []
+                            activity.start = best.start
+                            activity.end = best.end
+                            act_list.push(activity)
+                            groupedByMl[best.ml] = act_list
+                            output[best.ml].push(activity)
+                        }
+
+                    })
+                    res.json(output)
+                })
+                
+            })
+            
+        })
+    })
+})
+
+function scheduleNext(startTime, endTime, duration, activities) {
+    while(true) {
+        console.log("before adjust start time: " + startTime.toDate())
+        var curStart = adjustStartDate(startTime)
+        console.log("start time: " + startTime.toDate())
+        var curEnd = calculateEndDate(curStart, duration)
+        if(curEnd > endTime) return {success: false}
+        var overlapping = activities.filter(a => {
+            var a_start = moment(a.start)
+            var a_end = moment(a.end)
+            return (a_start < curStart && a_end > curStart || a_start >= curStart && a_start < curEnd)
+        })
+        if(overlapping.length === 0) return {success: true, start: curStart.toDate(), end: curEnd.toDate()}
+        startTime = overlapping
+            .reduce((total, a) => moment(a.end) > total ? moment(a.end) : total, curStart)
+    }
+}
+
+function calculateEndDate(startDate, duration) {
+    var daystoAdd = Math.floor(duration/10)
+    var hours = startDate.hour() + (duration % 10)
+    if(startDate.hour() + (duration % 10) > 18) {
+        daystoAdd++;
+        hours = startDate.hour() + (duration % 10) - 10;
+    }
+    var endDate = moment(startDate);
+    endDate.add(daystoAdd, 'd')
+
+    var ds = moment("03-10-2019", "MM-DD-YYYY");
+    var ds2 = moment("11-03-2019","MM-DD-YYYY");
+    if(startDate.isBefore(ds) && endDate.isAfter(ds) && endDate.isBefore(ds2)) {
+      hours++;
+      if (hours > 18) {
+        endDate.add(1,'d')
+        hours = 9
+      }
+    }
+    else if(startDate.isAfter(ds) && startDate.isBefore(ds2) && endDate.isAfter(ds2)) {
+      hours--;
+      if (hours < 8) {
+        endDate.subtract(1, 'd')
+        hours = 17
+      }
+    }
+    endDate.set({ hour: hours })
+    return endDate
+  }
+
+  function adjustStartDate(startDate) {
+    if(startDate.get('hour') < 8) {
+      startDate.hour(8)
+      startDate.minute(0)
+      startDate.second(0)
+    }
+    else if(startDate.get('hour') >= 18) {
+      startDate.add(1, 'd')
+      startDate.hour(8)
+      startDate.minute(0)
+      startDate.second(0)
+    }
+    return startDate
+  }
 
 module.exports = router;
