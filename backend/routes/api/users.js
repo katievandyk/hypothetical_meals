@@ -169,6 +169,22 @@ router.post("/login", (req, res) => {
     })
   })
 
+  // @route POST api/users/makeAdmin
+  // @desc grants admin priviledges from req.body.username
+  // @access Private
+  router.post("/makeAdmin", (req, res) => {	
+    User.findOne({ username: req.body.username }).then(user => {	
+        if(user.isAdmin) {	
+          return res.status(400).json({ username: "User is already an admin"});	
+        }	
+        User.findOne({ username: req.body.username }, function (err, doc){	
+          doc.isAdmin = true;	
+          doc.save().then(updatedUser => res.json(updatedUser))	
+          .catch(err => console.log(err.message));	
+        });	
+      });	
+    });
+
   // @route POST api/users/revokeAdmin
   // @desc removes admin priviledges from req.body.username
   // @access Private
@@ -272,6 +288,7 @@ router.post("/login", (req, res) => {
   // @desc revokes product manager role
   // @access public
   router.post("/revokeProduct", (req, res) => {
+    console.log('is revoking product')
     User.findOne({ username: req.body.username }).then(user => {
       if (!user) {
         //No local user by this name
