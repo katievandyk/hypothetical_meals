@@ -447,9 +447,8 @@ router.post("/automate", (req, res) => {
                     output.unscheduled = []
                     goals_pop.forEach(activity => {
                         var options = []
-                        console.log(activity.sku_id)
                         for(var ml in allowed_mls) {
-                            if (activity.sku_id.manufacturing_lines.filter(e => e._id == allowed_mls[ml]).length == 0) {
+                            if (activity.sku_id.manufacturing_lines.filter(e => e._id.toString() == allowed_mls[ml].toString()).length == 0) {
                                 continue;
                             }
                             var res = scheduleNext(startTime, endTime, activity.duration, groupedByMl[allowed_mls[ml]] || [])
