@@ -489,7 +489,7 @@ router.post("/automate", (req, res) => {
                             if (activity.sku_id.manufacturing_lines.filter(e => e._id.toString() == allowed_mls[ml].toString()).length == 0) {
                                 continue;
                             }
-                            var res = scheduleNext(startTime, endTime, activity.duration, groupedByMl[allowed_mls[ml]] || [])
+                            var res = scheduleNext(startTime, endTime, activity.duration, groupedByMl[allowed_mls[ml]] || [], moment(activity.goal_id.deadline))
                             console.log(res)
                             if(res.success) {
                                 res.ml = allowed_mls[ml]
@@ -518,13 +518,13 @@ router.post("/automate", (req, res) => {
     })
 })
 
-function scheduleNext(startTime, endTime, duration, activities) {
+function scheduleNext(startTime, endTime, duration, activities, deadline) {
     while(true) {
         console.log("before adjust start time: " + startTime.toDate())
         var curStart = adjustStartDate(startTime)
         console.log("start time: " + startTime.toDate())
         var curEnd = calculateEndDate(curStart, duration)
-        if(curEnd > endTime) return {success: false}
+        if(curEnd > endTime || curEnd > deadline) return {success: false}
         var overlapping = activities.filter(a => {
             var a_start = moment(a.start)
             var a_end = moment(a.end)
