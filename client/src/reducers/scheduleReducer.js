@@ -1,6 +1,6 @@
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
   ADD_ACTIVITY, GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR,
-  SCHEDULE_REPORT, SCHEDULE_WARNING} from '../actions/types';
+  SCHEDULE_REPORT, SCHEDULE_WARNING, AUTOSCHEDULE, BULK_ACTIVITIES, CANCEL_ACTIVITIES} from '../actions/types';
 
 const initialState = {
   schedule: {},
@@ -11,6 +11,7 @@ const initialState = {
   obj: {},
   goals: [],
   warning_msgs: [],
+  autoschedule: {},
   report: {}
 };
 
@@ -34,6 +35,27 @@ export default function(state = initialState, action) {
           error_msgs: [],
           activities: action.payload
      }
+     case AUTOSCHEDULE:{
+       return {
+         ...state,
+         error_msgs: [],
+         autoschedule: action.payload
+      }
+    }
+    case BULK_ACTIVITIES:{
+      return {
+        ...state,
+        error_msgs: [],
+        autoschedule: {}
+     }
+   }
+   case CANCEL_ACTIVITIES:{
+     return {
+       ...state,
+       error_msgs: [],
+       autoschedule: {}
+    }
+  }
     case ADD_ACTIVITY:
       return {
         ...state,

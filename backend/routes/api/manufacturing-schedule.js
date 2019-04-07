@@ -411,6 +411,44 @@ router.post('/warnings', (req, res) => {
         .catch(err => res.status(404).json({success: false, message: err.message}));
 });
 
+// @route POST api/manufacturingschedule/bulkactivities
+// @desc stores activities in bulk
+// request body fields:
+// - response from the /automate call
+// @access public
+router.post("/bulkactivities", (req, res) => {
+    var activity_list = []
+    for (var key in req.body) {
+        if (req.body.hasOwnProperty(key) && key != "unscheduled") {
+          req.body[key].forEach(act => activity_list.push({activity: act, line: key}))
+        }
+      }
+    Promise.all(activity_list.map(a => createOneActivity(a.activity, a.line)))
+    .then(result => res.json(result))
+    .catch(err => { 
+        console.log(err);
+        res.status(404).json({success: false, message: err.message})});
+    
+})
+
+function createOneActivity(activity, line) {
+    return new Promise(function(resolve, reject) {
+        new ManufacturingActivity({
+            _id: new mongoose.Types.ObjectId(),
+            name : activity.sku_id.name,
+            sku : activity.sku_id._id,
+            line : line,
+            start : activity.start,
+            end : activity.end,
+            duration : activity.duration,
+            durationModified: false,
+            goal_id : activity.goal_id._id
+       }).save()
+       .then(act => resolve(act))
+       .catch(error => reject(error));
+   });
+}
+
 // @route POST api/manufacturingschedule/automate
 // @desc automates scheduling of manufacturing activities
 // request body fields:
@@ -447,9 +485,8 @@ router.post("/automate", (req, res) => {
                     output.unscheduled = []
                     goals_pop.forEach(activity => {
                         var options = []
-                        console.log(activity.sku_id)
                         for(var ml in allowed_mls) {
-                            if (activity.sku_id.manufacturing_lines.filter(e => e._id == allowed_mls[ml]).length == 0) {
+                            if (activity.sku_id.manufacturing_lines.filter(e => e._id.toString() == allowed_mls[ml].toString()).length == 0) {
                                 continue;
                             }
                             var res = scheduleNext(startTime, endTime, activity.duration, groupedByMl[allowed_mls[ml]] || [])

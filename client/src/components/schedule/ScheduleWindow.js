@@ -278,43 +278,82 @@ class ScheduleWindow extends React.Component {
         group.content = line.shortname;
         return group;
     })
-    const activities = this.props.schedule.activities;
+    var activities = this.props.schedule.activities;
+    const autoschedule = this.props.schedule.autoschedule;
+    for(var i = 0; i < Object.entries(autoschedule).length; i++){
+      if(Object.entries(autoschedule)[i][0] !== 'unscheduled'){
+        for(var j = 0; j < Object.entries(autoschedule)[i][1].length; j++){
+          var line_activity = Object.entries(autoschedule)[i][1][j];
+          line_activity.inReview = true;
+          line_activity.line_id = Object.entries(autoschedule)[i][0];
+          activities = activities.concat(line_activity);
+        }
+      }
+    }
     data.items = activities.map(activity =>{
-         var className = 'green'
-         var content = activity.name
-         const startDate = moment(activity.start)
-         const endDate = moment(activity.end)
-         if(activity.durationModified) {
-            className = 'orange'
-            content = activity.name + ' - Range Changed'
-         }
-         if(moment(activity.goal_id.deadline) <= moment(endDate)) {
-            className = 'red'
-            content = activity.name + ' - Past Due'
-         }
-         if(activity.orphan) {
-            className= 'gray'
-            content = activity.name + ' - Orphan'
-         }
-         const item = {
-                      id: activity._id,
-                      content: content,
-                      type: 'range',
-                      editable: {
-                        remove: this.props.auth.isAdmin,
-                        updateGroup: (!activity.orphan && this.props.auth.isAdmin),
-                        updateTime: (!activity.orphan && this.props.auth.isAdmin)
-                      },
-                      start: startDate,
-                      end: endDate,
-                      className: className,
-                      sku: activity.sku._id,
-                      goal: activity.goal_id._id,
-                      group: activity.line._id,
-                      duration: activity.duration,
-                      deadline: activity.goal_id.deadline
-                  };
-        return item;
+        if(activity.inReview){
+          var className = 'inReview';
+          var content = activity.sku_id.name;
+          const startDate = moment(activity.start);
+          const endDate = moment(activity.end);
+          const id = activity.sku_id._id + activity.goal_id._id;
+          const item = {
+                       id: id,
+                       content: content,
+                       type: 'range',
+                       editable: {
+                         remove: false,
+                         updateGroup: false,
+                         updateTime: false
+                       },
+                       start: startDate,
+                       end: endDate,
+                       className: className,
+                       sku: activity.sku_id._id,
+                       goal: activity.goal_id._id,
+                       group: activity.line_id,
+                       duration: activity.duration,
+                       deadline: activity.goal_id.deadline
+                   };
+         return item;
+        }
+        else{
+          var className = 'green'
+          var content = activity.name
+          const startDate = moment(activity.start)
+          const endDate = moment(activity.end)
+          if(activity.durationModified) {
+             className = 'orange'
+             content = activity.name + ' - Range Changed'
+          }
+          if(moment(activity.goal_id.deadline) <= moment(endDate)) {
+             className = 'red'
+             content = activity.name + ' - Past Due'
+          }
+          if(activity.orphan) {
+             className= 'gray'
+             content = activity.name + ' - Orphan'
+          }
+          const item = {
+                       id: activity._id,
+                       content: content,
+                       type: 'range',
+                       editable: {
+                         remove: this.props.auth.isAdmin,
+                         updateGroup: (!activity.orphan && this.props.auth.isAdmin),
+                         updateTime: (!activity.orphan && this.props.auth.isAdmin)
+                       },
+                       start: startDate,
+                       end: endDate,
+                       className: className,
+                       sku: activity.sku._id,
+                       goal: activity.goal_id._id,
+                       group: activity.line._id,
+                       duration: activity.duration,
+                       deadline: activity.goal_id.deadline
+                   };
+         return item;
+        }
     })
     return (
       <div>
