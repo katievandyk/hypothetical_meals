@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
   ADD_ACTIVITY,GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR,
-  SCHEDULE_REPORT, SCHEDULE_WARNING} from './types';
+  SCHEDULE_REPORT, SCHEDULE_WARNING, AUTOSCHEDULE, BULK_ACTIVITIES, CANCEL_ACTIVITIES} from './types';
 
 export const getSchedule = () => dispatch =>  {
   dispatch(setScheduleLoading());
@@ -36,6 +36,12 @@ export const getActivities = () => dispatch =>  {
 export const setScheduleLoading = () => {
   return {
     type: SCHEDULE_LOADING
+  };
+};
+
+export const cancelActivities = () => {
+  return {
+    type: CANCEL_ACTIVITIES
   };
 };
 
@@ -147,13 +153,54 @@ export const addActivity  = (activity, _callback) => dispatch => {
     dispatch({
       type: ADD_ACTIVITY,
       payload: res.data,
-    })    }).catch(error =>{
+    });
+        }).catch(error =>{
       dispatch({
         type: SCHEDULE_ERROR,
         payload: error.response
       })
   });
 };
+
+export const bulkActivities  = (autoschedule) => dispatch => {
+  axios.post(`/api/manufacturingschedule/bulkactivities`, autoschedule).then(res =>{
+    dispatch({
+      type: BULK_ACTIVITIES,
+      payload: res.data,
+    });
+    dispatch(setScheduleLoading());
+    axios.get(`/api/manufacturingschedule/activity`).then(res =>
+      dispatch({
+        type: GET_ACTIVITY,
+        payload: res.data
+      })
+    ).catch(error =>{
+         dispatch({
+           type: SCHEDULE_ERROR,
+           payload: error.response
+         })
+       });    }).catch(error =>{
+      dispatch({
+        type: SCHEDULE_ERROR,
+        payload: error.response
+      })
+  });
+};
+
+export const automate = (activities, id, startDate, endDate) => dispatch => {
+  const body = {activities: activities, user_id: id, start_date: startDate, end_date: endDate};
+  axios.post(`/api/manufacturingschedule/automate`, body).then(res =>{
+    dispatch({
+      type: AUTOSCHEDULE,
+      payload: res.data,
+    })    }).catch(error =>{
+      dispatch({
+        type: SCHEDULE_ERROR,
+        payload: error.response
+      })
+  });
+
+}
 
 export const updateActivity  = (activity, activity_id) => dispatch => {
   axios.post(`api/manufacturingschedule/update/activity/${activity_id}`, activity).then(res =>{
