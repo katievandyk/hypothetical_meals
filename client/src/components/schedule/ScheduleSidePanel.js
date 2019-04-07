@@ -6,6 +6,7 @@ import { getLines } from '../../actions/linesActions';
 import { getSchedule, getGoalSKUs, enableGoal, disableGoal, setScheduleLoading } from '../../actions/scheduleActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import AutoScheduler from './AutoScheduler';
 
 class ScheduleSidePanel extends React.Component {
   constructor(props) {
@@ -70,6 +71,8 @@ class ScheduleSidePanel extends React.Component {
         return 'danger';
       if(item[0].className === 'orange')
         return 'warning';
+      if(item[0].className === 'inReview')
+        return 'primary';
     }
     else {
       return 'default';
@@ -102,6 +105,9 @@ class ScheduleSidePanel extends React.Component {
       <div>
       {this.props.auth.isAdmin ?
               ( <div>
+                <div style={{textAlign:'center', paddingBottom:'1.5em'}}>
+                <AutoScheduler></AutoScheduler>
+                </div>
                 <Card>
                     <CardHeader onClick={this.modal_toggle}>
                         <Row>&nbsp; &nbsp;
