@@ -272,10 +272,12 @@ class ScheduleWindow extends React.Component {
 
   render() {
     const { lines } = this.props.lines;
+    console.log(this.props.auth);
     data.groups = lines.map(line =>{
         var group = {};
         group.id = line._id;
         group.content = line.shortname;
+        group.style = "background-color: pink";
         return group;
     })
     var activities = this.props.schedule.activities;
@@ -293,7 +295,7 @@ class ScheduleWindow extends React.Component {
     data.items = activities.map(activity =>{
         if(activity.inReview){
           var className = 'inReview';
-          var content = activity.sku_id.name;
+          var content = activity.sku_id.name + ' - Pending Approval';
           const startDate = moment(activity.start);
           const endDate = moment(activity.end);
           const id = activity.sku_id._id + activity.goal_id._id;

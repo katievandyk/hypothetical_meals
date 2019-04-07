@@ -13,6 +13,7 @@ class AutoScheduler extends React.Component {
 
   state = {
     modal: false,
+    unscheduled_modal: false,
     selectAllActivities: true,
     selected_activities: [],
     showAllActivities: false,
@@ -22,11 +23,22 @@ class AutoScheduler extends React.Component {
   }
 
   componentDidMount() {
+    if(Object.keys(this.props.schedule.autoschedule).length > 0){
+      this.setState({
+        inReview: true
+      })
+    }
   }
 
   modal_toggle = () => {
       this.setState({
         modal: !this.state.modal,
+      });
+  }
+
+  unscheduled_toggle = () => {
+      this.setState({
+        unscheduled_modal: !this.state.unscheduled_modal
       });
   }
 
@@ -46,9 +58,14 @@ class AutoScheduler extends React.Component {
   modifyActivities = (e, goal, sku) => {
      var activities_options = [];
      const goal_skus = this.props.schedule.goal_skus;
+     const schedule_activities = this.props.schedule.activities;
+
      for(var i = 0; i < goal_skus.length; i++){
        for(var j = 0; j < goal_skus[i].skus.length; j++){
-         activities_options = activities_options.concat({goal_id: goal_skus[i].goal._id, sku_id: goal_skus[i].skus[j]._id, duration: goal_skus[i].skus[j].duration});
+         const onschedule = schedule_activities.filter(({goal_id, sku}) => goal_id._id === goal_skus[i].goal._id && sku._id === goal_skus[i].skus[j]._id);
+         if(onschedule.length === 0){
+           activities_options = activities_options.concat({goal_id: goal_skus[i].goal._id, sku_id: goal_skus[i].skus[j]._id, duration: goal_skus[i].skus[j].duration});
+         }
        }
      }
      var new_selected_activities = [];
@@ -89,9 +106,13 @@ class AutoScheduler extends React.Component {
       }
       else {
         const goal_skus = this.props.schedule.goal_skus;
+        const schedule_activities = this.props.schedule.activities;
         for(var i = 0; i < goal_skus.length; i++){
           for(var j = 0; j < goal_skus[i].skus.length; j++){
-            activities = activities.concat({goal_id: goal_skus[i].goal._id, sku_id: goal_skus[i].skus[j]._id, duration: goal_skus[i].skus[j].duration});
+            const onschedule = schedule_activities.filter(({goal_id, sku}) => goal_id._id === goal_skus[i].goal._id && sku._id === goal_skus[i].skus[j]._id);
+            if(onschedule.length === 0){
+              activities = activities.concat({goal_id: goal_skus[i].goal._id, sku_id: goal_skus[i].skus[j]._id, duration: goal_skus[i].skus[j].duration});
+            }
           }
         }
       }
@@ -107,8 +128,15 @@ class AutoScheduler extends React.Component {
       const endDate = this.state.endDate.format('MM-DD-YYYY');
       this.props.automate(activities, this.props.auth.user.id, startDate, endDate);
       this.setState({
-        inReview: true
-      })
+        inReview: true,
+        selectAllActivities: true,
+        selected_activities: [],
+        showAllActivities: false,
+        startDate: null,
+        endDate: null
+      });
+      this.modal_toggle();
+      this.unscheduled_toggle();
     }
   }
 
@@ -116,6 +144,7 @@ class AutoScheduler extends React.Component {
     this.props.bulkActivities(this.props.schedule.autoschedule);
     this.setState({
       inReview: false,
+      modal:false,
       selectAllActivities: true,
       selected_activities: [],
       showAllActivities: false,
@@ -137,9 +166,23 @@ class AutoScheduler extends React.Component {
     })
   }
 
+  goal_skus_input = (goal, sku_id) => {
+    const schedule_activities = this.props.schedule.activities;
+    const onschedule = schedule_activities.filter(({goal_id, sku}) => goal_id._id === goal._id && sku._id === sku_id._id);
+    if(onschedule.length === 0){
+      return(<CustomInput key={goal._id + '' + sku_id._id} type="checkbox" id={goal._id + sku_id._id} label={goal.name + ": " + sku_id.name}
+        checked={this.state.selectAllActivities || this.isSelected(goal, sku_id)} onChange={e => this.modifyActivities(e, goal, sku_id)}/>);
+    }
+    else{
+      return '';
+    }
+  }
+
   render() {
     var goal_skus = this.props.schedule.goal_skus;
-    if(this.state.inReview){
+    var autoschedule = this.props.schedule.autoschedule;
+
+    if(this.state.inReview && Object.keys(autoschedule).length > 1){
       return (
       <div>
         <div style={{paddingBottom: '1em'}}>
@@ -148,6 +191,24 @@ class AutoScheduler extends React.Component {
       <div>
           <Button style={{width:'100%'}}color="danger" onClick={this.cancelActivities}>Cancel Pending Activities</Button>
         </div>
+
+        <Modal isOpen={this.state.unscheduled_modal} toggle={this.unscheduled_toggle}>
+          <ModalHeader>{autoschedule.unscheduled && autoschedule.unscheduled.length > 0 ?(<div>Could not schedule all activities</div>):(<div>All Activities Scheduled!</div>)}</ModalHeader>
+          <ModalBody>{autoschedule.unscheduled && autoschedule.unscheduled.length > 0 ?(
+              <div>
+                The following activities were not scheduled.
+                <ol>
+                {autoschedule.unscheduled.map(({goal_id, sku_id}) => (
+                  <li key={goal_id._id + sku_id._id}>{goal_id.name + ": " + sku_id.name}</li>
+                ))}
+                </ol>
+              </div>
+            ):(
+              <div> Review the schedule of activities (in blue) on the timeline. Accept or Reject the schedule generated by the autoscheduler by clicking the corresponding buttons on the left.</div>
+            )}
+          </ModalBody>
+          <ModalFooter><Button color="success" onClick={this.unscheduled_toggle}>OK</Button></ModalFooter>
+        </Modal>
       </div>)
 
     }
@@ -175,8 +236,7 @@ class AutoScheduler extends React.Component {
                 {this.state.showAllActivities &&
                    <div style={{marginLeft: '20px'}}>
                      {goal_skus.map(({goal, skus}) => skus.map((sku) =>
-                     <CustomInput key={goal._id + '' + sku._id} type="checkbox" id={goal._id + sku._id} label={goal.name + ": " + sku.name}
-                     checked={this.state.selectAllActivities || this.isSelected(goal, sku)} onChange={e => this.modifyActivities(e, goal, sku)}/>
+                     this.goal_skus_input(goal, sku)
                    ))
                      }
                    </div>}
@@ -204,6 +264,23 @@ class AutoScheduler extends React.Component {
             <Button color="success" onClick={this.onSubmit}>Auto-Schedule</Button>{' '}
             <Button color="secondary" onClick={this.modal_toggle}>Cancel</Button>
           </ModalFooter>
+        </Modal>
+        <Modal isOpen={this.state.unscheduled_modal} toggle={this.unscheduled_toggle}>
+          <ModalHeader>{autoschedule.unscheduled && autoschedule.unscheduled.length > 0 ?(<div>Could not schedule all activities</div>):(<div>All Activities Scheduled!</div>)}</ModalHeader>
+          <ModalBody>{autoschedule.unscheduled && autoschedule.unscheduled.length > 0 ?(
+              <div>
+                The following activities were not scheduled.
+                <ol>
+                {autoschedule.unscheduled.map(({goal_id, sku_id}) => (
+                  <li key={goal_id._id +''+ sku_id._id}>{goal_id.name + ": " + sku_id.name}</li>
+                ))}
+                </ol>
+              </div>
+            ):(
+              <div> Review the schedule of activities (in blue) on the timeline. Accept or Reject the schedule generated by the autoscheduler by clicking the corresponding buttons on the left.</div>
+            )}
+          </ModalBody>
+          <ModalFooter><Button color="success" onClick={this.unscheduled_toggle}>OK</Button></ModalFooter>
         </Modal>
       </div>
       )
