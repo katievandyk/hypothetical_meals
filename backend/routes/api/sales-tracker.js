@@ -18,7 +18,12 @@ function groupByYear(res) {
 
 function groupByPL(res) {
     return res.reduce(function(r,a) {
-        r[a.pl] = r[a.pl] || [];
+        r[a.pl] = r[a.pl] || [{revenue: 0}];
+        r[a.pl][0].revenue += a.summary.sum_revenue
+        a.entries.forEach(e => {
+            r[a.pl][0][e.year] = r[a.pl][0][e.year] || 0;
+            r[a.pl][0][e.year] += e.revenue
+        })
         r[a.pl].push(a);
         return r;
     }, Object.create(null))
@@ -139,26 +144,33 @@ router.post('/summary', (req, res) => {
     Promise.all(req.body.skus.map(sku_id => {
         return calculateAggregatedForOneSKU(sku_id, startDate, endDate, req.body.customer)
     })).then(results => {
+        resultsGrouped = groupByPL(results)
         if(req.body.export) {
-            results = generateCsvSummary(results)
+            results = generateCsvSummary(resultsGrouped)
             res.setHeader('Content-Type', 'text/csv')
             res.status(200).send(results)
         }
         else {
-            res.json(results)
+            var pl_summary = []
+            Object.entries(resultsGrouped).forEach((e) => {
+                Object.entries(e[1][0]).forEach(j => {
+                    pl_summary.push({"pl": e[0], "year":j[0], "revenue": j[1]})
+                })
+            })
+            var finalres = {sku_res: results, pl_summary: pl_summary}
+            res.json(finalres)
         }
     })
 })
 
 function generateCsvSummary(results) {
-    results = groupByPL(results)
     var lines = []
     var keys = Object.keys(results)
     keys.forEach(pl => {
         lines.push("Product line")
-        lines.push(pl)
+        lines.push(`${pl}`)
         lines.push("Name,Unit size,Count per case,Year,Revenue,Sales,Average")
-        results[pl].forEach(sku_entry => {
+        results[pl].slice(1).forEach(sku_entry => {
             sku_entry.entries.forEach(entry => {
                 lines.push(`${sku_entry.name},${sku_entry.unit_size},${sku_entry.count_per_case},${entry.year},${round(entry.revenue)},${round(entry.sales)},${round(entry.average)}`)
             })
@@ -166,6 +178,14 @@ function generateCsvSummary(results) {
             lines.push("Yearly revenue,Avg mfg run size,Ing cost per case,Avg mfg setup cost,Mfg run cost per case,Total COGS,Avg revenue per case,Avg profit per case,Avg profit margin(%)")
             lines.push(`${round(sku_entry.summary.sum_revenue)},${round(sku_entry.summary.average_run_size)},${round(sku_entry.summary.ing_cost_per_case)},${round(sku_entry.summary.average_setup_cost)},${round(sku_entry.run_cost)},${round(sku_entry.summary.cogs)},${round(sku_entry.summary.avgerage_revenue)},${round(sku_entry.summary.average_profit)},${round(sku_entry.summary.profit_margin*100)}`)
         })
+        lines.push(`${pl} revenues`)
+        lines.push("Year,Revenue")
+        Object.entries(results[pl][0]).forEach((e) => {
+            if(e[0] != "revenue")
+                lines.push(`${e[0]},${e[1]}`)
+        })
+        lines.push("Total for 10 years")
+        lines.push(results[pl][0].revenue)
     })
     return lines.join("\r\n")
 }

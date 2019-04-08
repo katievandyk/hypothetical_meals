@@ -3,8 +3,9 @@ import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { makeAdmin, revokeAdmin, makeAnalyst, revokeAnalyst, makeProduct, revokeProduct, 
-  makeBusiness, revokeBusiness, deleteUser, getAllUsers } from "../../actions/authActions";
-import {Alert} from 'reactstrap';
+  makeBusiness, revokeBusiness, deleteUser, getAllUsers, makePlant, revokePlant } from "../../actions/authActions";
+  import { getLines } from '../../actions/linesActions';
+import {Alert,  ListGroup, ListGroupItem} from 'reactstrap';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {Container,
@@ -26,12 +27,14 @@ class UsersEntry extends Component {
       grant_business_modal: false,
       revoke_plant_modal: false,
       grant_plant_modal: false,
+      lines: [],
       edit_user: {}
     };
   }
 
 componentDidMount() {
   this.props.getAllUsers();
+  this.props.getLines()
 }
 
 componentWillReceiveProps(nextProps) {
@@ -183,15 +186,17 @@ onEditPlantClick = (_id, name, username, plant, lines, e) => {
   const newObj = {_id: _id, name: name, username: username, plant: plant};
   if(plant){
     this.setState({
-      revoke_modal: true,
-      grant_modal: false,
+      revoke_plant_modal: false,
+      grant_plant_modal: true,
+      lines : lines,
       edit_user: newObj
     });
   }
   else {
     this.setState({
-      revoke_modal: false,
-      grant_modal: true,
+      revoke_plant_modal: false,
+      grant_plant_modal: true,
+      lines : lines,
       edit_user: newObj
     });
   }
@@ -241,11 +246,46 @@ grant_business = (username, e) => {
   this.grant_business_toggle();
 }
 
+grant_plant = (username, lines, e) => {
+  this.props.makePlant({username: username, lines: lines});
+  this.grant_plant_toggle();
+}
+
+assignLine = (id, username, e) => {
+  const user = this.props.auth.users.find( doc => {
+    return doc.username === username;
+  })
+  const lines = user.lines;
+  const index = lines.findIndex(i => i._id === id)
+    if (index < 0) {
+      this.props.makePlant({line : id, username: username})
+    } else {
+      this.props.revokePlant({line : id, username: username})
+    }
+}
+
+checkLinesContains = (id) => {
+  var user;
+    user =this.props.auth.users.find(doc => {
+      return doc.username ===this.state.edit_user.username
+    })
+ 
+  var i;
+  try {
+    for(i=0; i < user.lines.length; i++) {
+      if(user.lines[i]._id === id) {
+        return true;
+      }
+    }
+  }
+  catch(err) {
+    console.log('No edit user has been defined')
+  }
+}
 
 render() {
     const { errors } = this.state;
     const users = this.props.auth.users;
-    console.log(this.props.auth.user);
 return (
       <div className="container">
         <Container>
@@ -421,11 +461,28 @@ return (
         <ModalHeader toggle={this.grant_business_toggle}>
         Grant Business Manager Status to {this.state.edit_user.name}</ModalHeader>
       <ModalBody>
-        Are you sure you want to <b>Grant makeBusiness Manager Status</b> to {this.state.edit_user.name} (Username: {this.state.edit_user.username})?
+        Are you sure you want to <b>Grant Business Manager Status</b> to {this.state.edit_user.name} (Username: {this.state.edit_user.username})?
       </ModalBody>
       <ModalFooter>
         <Button color="success" onClick={this.grant_business.bind(this, this.state.edit_user.username)}>Yes - Grant</Button>
         <Button onClick={this.grant_toggle}>Cancel</Button></ModalFooter></Modal>
+
+        <Modal isOpen={this.state.grant_plant_modal} toggle={this.grant_plant_toggle}>
+        <ModalHeader toggle={this.grant_plant_toggle}>
+        Grant Plant Manager Status to {this.state.edit_user.name} for the following lines</ModalHeader>
+      <ModalBody>
+        <ListGroup>
+            {this.props.lines.lines.map(({name, shortname, _id}) => (
+            <ListGroupItem key={_id} 
+              action color={this.checkLinesContains(_id)?("info"):("")} 
+              tag="button" onClick={() => this.assignLine(_id, this.state.edit_user.username)} 
+              md={2} >
+              {name}
+            </ListGroupItem>
+            ))}
+        </ListGroup>
+      </ModalBody>
+      </Modal>
       </div>
     );
   }
@@ -438,17 +495,22 @@ UsersEntry.propTypes = {
   makeProduct: PropTypes.func.isRequired,
   revokeProduct: PropTypes.func.isRequired,
   makeBusiness: PropTypes.func.isRequired,
-  makeBusiness: PropTypes.func.isRequired,
+  revokeBusiness: PropTypes.func.isRequired,
   getAllUsers: PropTypes.func.isRequired,
   deleteUser: PropTypes.func.isRequired,
+  makePlant: PropTypes.func.isRequired,
+  revokePlant: PropTypes.func.isRequired,
+  getLines: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
+  lines: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
 const mapStateToProps = state => ({
   auth: state.auth,
+  lines: state.lines,
   errors: state.errors
 });
 export default connect(
   mapStateToProps,
   { makeAdmin, revokeAdmin, makeAnalyst, revokeAnalyst, makeProduct, revokeProduct,
-     makeBusiness, revokeBusiness, getAllUsers, deleteUser })(withRouter(UsersEntry));
+     makeBusiness, revokeBusiness, getAllUsers, deleteUser, makePlant, revokePlant, getLines })(withRouter(UsersEntry));

@@ -360,9 +360,7 @@ router.post("/login", (req, res) => {
       }
       User.findOne({ username: req.body.username }, function (err, doc){
         doc.plant = true;
-        req.body.lines.forEach(val => {
-          doc.lines.push(val);
-        })
+        doc.lines.push(req.body.line);
         doc.save().then(updatedUser => res.json(updatedUser)).catch(err => console.log(err.message));
       });
     })
@@ -382,9 +380,7 @@ router.post("/login", (req, res) => {
         //This case is not relevant for plant manager
       }
       User.findOne({ username: req.body.username }, function (err, doc){
-        req.body.lines.forEach(val => {
-          doc.lines.pull(val);
-        })
+        doc.lines.pull(req.body.line);
         if(doc.lines.length==0) {
           doc.plant = false;
         }

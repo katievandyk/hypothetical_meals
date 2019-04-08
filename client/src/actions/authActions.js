@@ -8,6 +8,36 @@ import {
   GET_USERS
 } from "./types";
 
+//Revoke user a plant manager for a specific line
+export const revokePlant = (userData) => dispatch => {
+  axios
+    .post("/api/users/revokePlant", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+//Make user a plant manager for a specific line
+export const makePlant = (userData) => dispatch => {
+  axios
+    .post("/api/users/makePlant", userData)
+    .then(res=> {
+      dispatch(getAllUsers());
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
 //Make existing user an Business Manger
 export const makeBusiness = (userData) => dispatch => {
   axios

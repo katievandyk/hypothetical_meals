@@ -55,7 +55,8 @@ class SummaryReportDisplay extends React.Component {
   }
 
   render() {
-    const report = this.props.sales.summary;
+    const report = this.props.sales.summary.sku_res;
+    const pl_totals = this.props.sales.summary.pl_summary;
     const pline_groups = this.props.sales.pline_groups;
     const loading = this.props.sales.loading;
     if(loading && !this.state.sku_drilldown_modal){
@@ -106,6 +107,25 @@ class SummaryReportDisplay extends React.Component {
                               </tr>
 
                             ))}
+                        </tbody>
+                        <thead>
+                          <tr>
+                            <th>Year</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {pl_totals.filter(elem => elem.pl === key && elem.year !== "revenue").map(({pl, year, revenue}) => (
+                            <tr key={year}>
+                                <td> {year} </td>
+                                <td> ${revenue.toFixed(2)} </td>
+                            </tr>
+                          ))}
+                            <tr>
+                                <td><b>Total for 10 Years</b></td>
+                                <td><b>${pl_totals.filter(elem => elem.pl === key && elem.year === "revenue")[0].revenue}</b></td>
+                            </tr>
                         </tbody>
                       </Table>
                     ):(
