@@ -32,6 +32,7 @@ import { setCurrentUser, logoutUser } from "./actions/authActions";
 
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import AdminRoute from "./components/private-route/AdminRoute";
+import NotUserRoute from "./components/private-route/NotUserRoute";
 
 library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
    faSortAlphaDown, faSortNumericUp, faSortNumericDown,
@@ -71,9 +72,9 @@ class App extends Component {
                       <Route exact={true} path="/netid" component={NetID} />
                       <AdminRoute exact={true} path="/manageUsers" component={ManageUsers} />
                       <PrivateRoute path="/ingredients" component={Ingredients} />
-                      <PrivateRoute path="/manufacturinggoals" component={ManufacturingGoals} />
+                      <NotUserRoute path="/manufacturinggoals" component={ManufacturingGoals} />
                       <PrivateRoute path="/manufacturinglines" component={ManufacturingLines} />
-                      <PrivateRoute path="/manufacturingschedule" component={ManufacturingSchedule} />
+                      <NotUserRoute path="/manufacturingschedule" component={ManufacturingSchedule} />
                       <PrivateRoute path="/productlines" component={ProductLines} />
                       <PrivateRoute path="/sku" component={SKU} />
                       <PrivateRoute path="/formulas" component={Formulas} />
