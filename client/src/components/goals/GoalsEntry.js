@@ -2,7 +2,7 @@ import React from 'react';
 import {  Col, Row, Input,
           Modal, ModalHeader, ModalBody, ModalFooter,
           Button, Table, Form, FormGroup, FormFeedback, Label,
-          Tooltip } from 'reactstrap';
+          Tooltip, CustomInput } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import CalculatorEntry from './CalculatorEntry';
@@ -16,7 +16,7 @@ import * as jsPDF from 'jspdf';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getGoals, getAllGoals, updateGoal, sortGoals, getGoalsIngQuantity, deleteGoal } from '../../actions/goalsActions';
+import { getGoals, getAllGoals, updateGoal, enableGoal, sortGoals, getGoalsIngQuantity, deleteGoal } from '../../actions/goalsActions';
 import { getSKUs } from '../../actions/skuActions';
 import moment from 'moment';
 
@@ -70,7 +70,7 @@ class GoalsEntry extends React.Component {
       this.setState({
         calculator_modal: !this.state.calculator_modal,
          });
-     }
+  }
 
    exportPDF = () => {
      const input = document.getElementById("toPDF")
@@ -188,13 +188,16 @@ class GoalsEntry extends React.Component {
     if(this.state.edit_name.length === 0 || goals.find(elem => ((elem.name === this.state.edit_name) && (elem._id !== this.state.edit_id))) != null) alert("Please enter a unique name for your goal.")
     else if(this.state.validDate !== 'success') alert("Please enter a valid date.")
     else {
+        const goal = goals.find(goal => goal._id === this.state.edit_id)
         const editedGoal = {
           id: this.state.edit_id,
           name: this.state.edit_name,
           skus_list: this.state.edit_skus_list,
-          deadline: this.state.edit_date
+          deadline: this.state.edit_date,
+          enabled: goal.enabled,
+          user_id: goal.user_id
         };
-        this.props.updateGoal(editedGoal, this.props.auth.user.id);
+        this.props.updateGoal(editedGoal);
         this.setState({name: '', quantity: '', skuSel: '',
         skus_list: [],
         date: '',
@@ -270,46 +273,52 @@ class GoalsEntry extends React.Component {
                   <th onClick={this.sortCol.bind(this, 'edit_timestamp')}>Timestamp of Last Edit {this.getSortIcon('edit_timestamp')}</th>
                   <th>Deadline</th>
                   <th>SKU List</th>
+                  <th>Enable</th>
                   <th>Edit</th>
                   <th>Delete</th>
                 </tr>
               </thead>
               <tbody>
-                {goals.map(({ _id, name, user_id, deadline, edit_timestamp, skus_list}) => (
-                    <tr key={_id}>
+                {goals.map((goal) => (
+                    <tr key={goal._id}>
                       <td>
                         <Button color="link"
-                        onClick={this.calculator_clicked.bind(this, _id)}
+                        onClick={this.calculator_clicked.bind(this, goal._id)}
                         >
-                        {name}
+                        {goal.name}
                         </Button>
                       </td>
                       <td>
-                        {user_id.username}
+                        {goal.user_id.username}
                       </td>
                       <td>
-                        {moment(new Date(edit_timestamp)).format('llll')}
+                        {moment(new Date(goal.edit_timestamp)).format('llll')}
                       </td>
                       <td>
-                        {moment(new Date(deadline)).utc().format('ddd, DD MMM YYYY')}
+                        {moment(new Date(goal.deadline)).utc().format('ddd, DD MMM YYYY')}
                       </td>
                       <td>
                         <Button size="sm" color="link"
-                        onClick={this.sku_clicked.bind(this, skus_list, _id)}
+                        onClick={this.sku_clicked.bind(this, goal.skus_list, goal._id)}
                         style={{'color':'black'}}>
                         <FontAwesomeIcon icon="list"/>
                         </Button>
                       </td>
                       <td>
+                        <CustomInput id={"enable_" + goal._id} type="switch" onClick={() => {
+                        goal.enabled = !goal.enabled
+                        this.props.enableGoal(goal)}} checked={goal.enabled}/>
+                      </td>
+                      <td>
                         <Button size="sm" color="link"
-                        onClick={e => this.onEditClick(_id, name, deadline, skus_list)}
+                        onClick={e => this.onEditClick(goal._id, goal.name, goal.deadline, goal.skus_list)}
                         style={{'color':'black'}}>
                         <FontAwesomeIcon icon="edit"/>
                         </Button>
                       </td>
                       <td>
                         <Button size="sm" color="link"
-                        onClick={this.onDeleteClick.bind(this, _id)}
+                        onClick={this.onDeleteClick.bind(this, goal._id)}
                         style={{'color':'black'}}>
                         <FontAwesomeIcon icon="trash"/>
                         </Button>
@@ -457,4 +466,4 @@ const mapStateToProps = (state) => ({
   skus: state.skus
 });
 
-export default connect(mapStateToProps, { getSKUs, getAllGoals, updateGoal, deleteGoal, sortGoals, getGoalsIngQuantity })(GoalsEntry);
+export default connect(mapStateToProps, { getSKUs, getAllGoals, updateGoal, enableGoal, deleteGoal, sortGoals, getGoalsIngQuantity })(GoalsEntry);

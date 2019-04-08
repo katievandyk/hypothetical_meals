@@ -1,4 +1,4 @@
-import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, ENABLE_GOAL, DISABLE_GOAL,
+import { GET_SCHEDULE, SCHEDULE_LOADING, GET_GOAL_SKUS, DISABLE_GOAL,
   ADD_ACTIVITY, GET_ACTIVITY, UPDATE_ACTIVITY, DELETE_ACTIVITY, SCHEDULE_ERROR,
   SCHEDULE_REPORT, SCHEDULE_WARNING, AUTOSCHEDULE, BULK_ACTIVITIES, CANCEL_ACTIVITIES} from '../actions/types';
 
@@ -72,13 +72,6 @@ export default function(state = initialState, action) {
           ...state,
           error_msgs: [],
           activities: state.activities.filter( act => act._id !== action.payload)
-     }
-    case ENABLE_GOAL:
-        state.schedule.enabled_goals.push(action.payload.goal)
-        return {
-          ...state,
-          schedule: state.schedule,
-          loading: false
      }
     case DISABLE_GOAL:
         state.schedule.enabled_goals = state.schedule.enabled_goals.filter( goal => goal._id !== action.payload.goal_id )
