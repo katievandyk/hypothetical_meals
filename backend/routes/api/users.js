@@ -72,7 +72,12 @@ router.post("/login", (req, res) => {
             id: user.id,
             name: user.name,
             username: user.username,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            analyst: user.analyst,
+            business: user.business,
+            lines: user.lines,
+            plant: user.plant,
+            product: user.product
           };
   // Sign token
           jwt.sign(

@@ -67,7 +67,9 @@ router.post('/', (req, res) => {
         deadline: req.body.deadline
     });
 
-    newGoal.save().then(goal => res.json(goal))
+    newGoal.save().then(goal => {
+            res.json(goal)
+        })
         .catch(err => res.json({success: false, message: err.message}));
 });
 
@@ -98,6 +100,20 @@ router.delete('/:id', (req, res) => {
         })
      })
 });
+
+// @route POST api/manufacturing/enable/:id
+// @desc get all goals for specific user
+// @access public
+router.post('/enable/:id', (req, res) => {
+    Goal.findById(req.params.id)
+        .then(goal => {
+            goal.enabled = !goal.enabled
+            Goal.findByIdAndUpdate(req.params.id, {$set:goal})
+            .then(() => res.json(goal))
+            .catch(err => res.status(404).json({success: false, message: err.message}))
+        })
+});
+
 
 // @route POST api/manufacturing/update/:id
 // @desc updates a goal
@@ -134,7 +150,7 @@ router.post('/update/:id', (req, res) => {
                             })
                         })
                     })).then(() => {
-                        req.body.edit_timestamp = Date.now() 
+                        req.body.edit_timestamp = Date.now()
                         Goal.findByIdAndUpdate(req.params.id, {$set:req.body})
                         .then(() => res.json({success: true}))
                         .catch(err => res.status(404).json({success: false, message: err.message}))

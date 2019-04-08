@@ -1,5 +1,5 @@
 import {GET_GOALS, GET_ALL_GOALS, ADD_GOAL, UPDATE_GOAL, DELETE_GOAL, GOALS_LOADING, GOALS_INGQUANTITY, GOAL_EXPORT, GOAL_CALCULATOREXPORT,
-  GOAL_ERROR, SCHEDULE_KW_SEARCH, SKU_PROJECTION, GOALS_SORT} from '../actions/types';
+  GOAL_ERROR, SCHEDULE_KW_SEARCH, SKU_PROJECTION, GOALS_SORT, ENABLE_GOAL } from '../actions/types';
 
 const initialState = {
    goals: [],
@@ -57,6 +57,13 @@ export default function(state = initialState, action) {
     case UPDATE_GOAL:{
       return {
         ...state,
+        error_msgs: []
+      }
+    }
+    case ENABLE_GOAL:{
+      return {
+        ...state,
+        goals: state.goals.map(goal => (goal._id === action.payload._id) ? action.payload : goal),
         error_msgs: []
       }
     }

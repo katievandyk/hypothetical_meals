@@ -73,6 +73,7 @@ export const getGoalSKUs = () => dispatch => {
   });
 };
 
+// TODO REMOVE
 export const enableGoal = (goal_id, schedule_id) => dispatch => {
   axios.post(`/api/manufacturingschedule/enable/${goal_id}/${schedule_id}`).then(res =>{
     dispatch({
