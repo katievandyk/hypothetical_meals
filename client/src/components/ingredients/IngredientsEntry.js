@@ -216,10 +216,10 @@ class IngredientsEntry extends React.Component {
               </th>
               <th>SKUs</th>
               <th>Comments</th>
-              {this.props.auth.isAdmin &&
+              {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                 <th>Edit</th>
               }
-              {this.props.auth.isAdmin &&
+              {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                 <th>Delete</th>
               }
             </tr>
@@ -243,7 +243,7 @@ class IngredientsEntry extends React.Component {
                       </Button>
                     </td>
                     <td style={{wordBreak:'break-all'}}> {comment} </td>
-                    {this.props.auth.isAdmin &&
+                    {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                       <td>
                         <Button size="sm" color="link"
                           onClick={this.onEditClick.bind(this,
@@ -255,7 +255,7 @@ class IngredientsEntry extends React.Component {
                         </Button>
                       </td>
                      }
-                    {this.props.auth.isAdmin &&
+                    {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                       <td >
                         <Button size="sm" color="link"
                           onClick={this.onDeleteClick.bind(this, _id)}

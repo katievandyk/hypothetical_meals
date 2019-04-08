@@ -106,7 +106,7 @@ class SKU extends Component {
                </Col>
                <Col style={{'textAlign': 'right'}}>
                  <Button onClick={this.onGBPLClick}> {groupByMsg}</Button> {' '}&nbsp;
-                 {this.props.auth.isAdmin &&
+                 {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                    <SKUAddModal/>}
                </Col>
              </Row>
@@ -135,14 +135,14 @@ class SKU extends Component {
                  </Button>
                </Col>
                </Row>
-            <Row>
+            {(this.props.auth.user.product || this.props.auth.isAdmin) && <Row>
               <Col style={{textAlign:'left'}}>
                 <SKUBulkEditMLines/>
               </Col>
               <Col style={{'textAlign': 'right'}}>
              <Button onClick={() =>  this.props.exportSKUs(this.props.skus.obj)}>Export SKUs</Button> &nbsp;
              </Col>
-             </Row>
+             </Row>}
            </Container>
          </div>
        </Provider>

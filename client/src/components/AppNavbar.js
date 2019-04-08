@@ -107,7 +107,7 @@ class AppNavbar extends Component {
                  </NavLink>
                </DropdownMenu>
              </UncontrolledDropdown>
-            {(this.props.auth.isAdmin) ? (<NavItem>
+            {(this.props.auth.isAdmin || this.props.auth.user.product) ? (<NavItem>
               <NavLink tag={RRNavLink} to="/import" className="nav-link" activeClassName="active">Import</NavLink>
             </NavItem>): (<div></div>)}
             {(this.props.auth.isAdmin || this.props.auth.user.business || this.props.auth.user.plant || this.props.auth.user.product || this.props.auth.user.analyst) ?
@@ -145,6 +145,7 @@ class AppNavbar extends Component {
                 <NavLink tag={RRNavLink} to="/manufacturinglines" className="nav-link" activeClassName="active">Manufacturing Lines</NavLink>
             </NavItem>)
              }
+            {(this.props.auth.isAdmin || this.props.auth.user.business || this.props.auth.user.plant || this.props.auth.user.product || this.props.auth.user.analyst) &&
             <UncontrolledDropdown nav
               active={
               (this.props.location.pathname === '/ingredients-dependency-report' ||
@@ -170,7 +171,7 @@ class AppNavbar extends Component {
                 </DropdownItem>
                 </NavLink>
               </DropdownMenu>
-            </UncontrolledDropdown>
+            </UncontrolledDropdown>}
             <NavItem>
               <NavLink tag={RRNavLink} onClick={this.onLogoutClick} to="/login" className="nav-link" activeClassName="active">Sign Out</NavLink>
             </NavItem>

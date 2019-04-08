@@ -724,8 +724,8 @@ class SKUsEntry extends React.Component {
                       {this.getSortIcon('run_cost')}
                   </th>
                   <th>Comments</th>
-                  {this.props.auth.isAdmin && <th>Edit</th>}
-                  {this.props.auth.isAdmin && <th>Delete</th>}
+                  {(this.props.auth.isAdmin || this.props.auth.user.product) &&  <th>Edit</th>}
+                  {(this.props.auth.isAdmin || this.props.auth.user.product) && <th>Delete</th>}
                 </tr>
               </thead>
               <tbody is="transition-group" >
@@ -763,7 +763,7 @@ class SKUsEntry extends React.Component {
                         <td> {setup_cost} </td>
                         <td> {run_cost} </td>
                         <td style={{wordBreak:'break-all'}}> {comment} </td>
-                        {this.props.auth.isAdmin &&
+                        {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                           <td>
                             <Button size="sm" color="link"
                               onClick={this.onEditClick.bind(this,
@@ -776,7 +776,7 @@ class SKUsEntry extends React.Component {
                             </Button>
                           </td>
                         }
-                        {this.props.auth.isAdmin &&
+                        {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                           <td >
                             <Button size="sm" color="link"
                               onClick={this.onDeleteClick.bind(this, _id)}
@@ -866,8 +866,8 @@ class SKUsEntry extends React.Component {
                     {this.getSortIcon('run_cost')}
                 </th>
                 <th>Comments</th>
-                {this.props.auth.isAdmin && <th>Edit</th> }
-                {this.props.auth.isAdmin && <th>Delete</th>}
+                {(this.props.auth.isAdmin || this.props.auth.user.product) && <th>Edit</th> }
+                {(this.props.auth.isAdmin || this.props.auth.user.product) && <th>Delete</th>}
               </tr>
             </thead>
             <tbody is="transition-group" >
@@ -905,7 +905,7 @@ class SKUsEntry extends React.Component {
                       <td> {setup_cost} </td>
                       <td> {run_cost} </td>
                       <td style={{wordBreak:'break-all'}}> {comment} </td>
-                      {this.props.auth.isAdmin &&
+                      {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                         <td>
                           <Button size="sm" color="link"
                             onClick={this.onEditClick.bind(this,
@@ -918,7 +918,7 @@ class SKUsEntry extends React.Component {
                           </Button>
                         </td>
                       }
-                      {this.props.auth.isAdmin &&
+                      {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                         <td >
                           <Button size="sm" color="link"
                             onClick={this.onDeleteClick.bind(this, _id)}
