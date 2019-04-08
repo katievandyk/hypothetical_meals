@@ -37,12 +37,15 @@ class ManufacturingGoals extends Component {
                    <Row>
                         <Col> <h1>Manufacturing Goals</h1> </Col>
                    </Row>
-                   <Row>
+                    {(this.props.auth.isAdmin || this.props.auth.user.business) && <Row>
                       <Col> Click on a goal to view its ingredients. </Col>
                       <Col style={{'textAlign': 'right'}}> </Col>
                       <GoalsCreateModal buttonLabel="Create Goal"/> &nbsp;
                       <GoalsExport goals={this.props.goals}/>
-                   </Row>
+                      </Row>}
+                    {!(this.props.auth.isAdmin || this.props.auth.user.business) && <Row>
+                      <Col> Click on a goal to view its ingredients. </Col>
+                      </Row>}
                 </Container>
                 <GoalsEntry/>
               </Container>

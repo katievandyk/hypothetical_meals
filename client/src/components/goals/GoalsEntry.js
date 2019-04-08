@@ -273,9 +273,13 @@ class GoalsEntry extends React.Component {
                   <th onClick={this.sortCol.bind(this, 'edit_timestamp')}>Timestamp of Last Edit {this.getSortIcon('edit_timestamp')}</th>
                   <th>Deadline</th>
                   <th>SKU List</th>
-                  <th>Enable</th>
-                  <th>Edit</th>
-                  <th>Delete</th>
+                  {(this.props.auth.isAdmin || this.props.auth.user.business) &&
+                  <div>
+                      <th>Enable</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
+                  </div>
+                  }
                 </tr>
               </thead>
               <tbody>
@@ -304,7 +308,8 @@ class GoalsEntry extends React.Component {
                         <FontAwesomeIcon icon="list"/>
                         </Button>
                       </td>
-                      <td>
+                      {(this.props.auth.isAdmin || this.props.auth.user.business) && <div>
+                       <td>
                         <CustomInput id={"enable_" + goal._id} type="switch" onClick={() => {
                         goal.enabled = !goal.enabled
                         this.props.enableGoal(goal)}} checked={goal.enabled}/>
@@ -323,6 +328,7 @@ class GoalsEntry extends React.Component {
                         <FontAwesomeIcon icon="trash"/>
                         </Button>
                       </td>
+                      </div>}
                     </tr>
               ))}
               </tbody>

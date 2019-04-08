@@ -67,7 +67,9 @@ router.post('/', (req, res) => {
         deadline: req.body.deadline
     });
 
-    newGoal.save().then(goal => res.json(goal))
+    newGoal.save().then(goal => {
+            res.json(goal)
+        })
         .catch(err => res.json({success: false, message: err.message}));
 });
 
