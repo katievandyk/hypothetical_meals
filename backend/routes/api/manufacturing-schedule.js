@@ -111,7 +111,7 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
 // @desc get all sku's and range for an array of goals
 // @access public
 router.get('/skus', (req, res) => {
-    Goal.find({enabled: true}).then(goals => {
+    Goal.find({enabled: true}).lean().then(goals => {
         SKU.populate(goals, {path:"skus_list.sku"}).then(goals => {
             Formula.populate(goals, {path:"skus_list.sku.formula"}).then(goals => {
                 var output = []
@@ -124,7 +124,11 @@ router.get('/skus', (req, res) => {
                     }
                     var obj = {}
                     obj.goal = goal_info
-                    obj.skus = goal.skus_list.map(entry => entry.sku)
+                    obj.skus = goal.skus_list.map(entry => {
+                        var sku = entry.sku.toObject()
+                        sku["duration"] = Math.ceil(entry.quantity/entry.sku.manufacturing_rate)
+                        return sku
+                    })
                     output.push(obj)
                 })
                 res.json(output)
