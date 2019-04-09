@@ -293,7 +293,7 @@ class GoalsEntry extends React.Component {
                         </Button>
                       </td>
                       <td>
-                        {goal.user_id.username}
+                        {goal.user_id ? (goal.user_id.username):('deleted user')}
                       </td>
                       <td>
                         {moment(new Date(goal.edit_timestamp)).format('llll')}
