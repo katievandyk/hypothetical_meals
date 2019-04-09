@@ -112,7 +112,7 @@ class Ingredients extends Component {
                     <SKUFilters/>
                   </Col>
                   <Col style={{'textAlign': 'right'}}>
-                    {this.props.auth.isAdmin ? (<IngredientsAddModal/>): (<div></div>)}
+                    {(this.props.auth.isAdmin || this.props.auth.user.product) ? (<IngredientsAddModal/>): (<div></div>)}
                   </Col>
                 </Row>
               </Container>
@@ -140,9 +140,12 @@ class Ingredients extends Component {
                   </Button>
                 </Col>
                 </Row>
+
                 <Row>
                   <Col style={{'textAlign': 'left'}}>
+                  { (this.props.auth.isAdmin || this.props.auth.user.analyst || this.props.auth.user.business || this.props.auth.user.plant || this.props.auth.user.product) &&
                     <div style={{paddingRight:'10px'}}><Button color="success" onClick={this.genReportClick}>Generate Ingredients Dependency Report</Button>{' '}</div>
+                  }
                   </Col>
                   <Col style={{textAlign: 'right'}}>
                   <Button onClick={() =>  this.props.exportIngs(this.props.ing.obj)}>Export Ingredients</Button>

@@ -97,10 +97,10 @@ class PLinesEntry extends React.Component {
           <thead>
             <tr>
               <th>Name</th>
-                {this.props.auth.isAdmin &&
+                {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                   <th>Edit</th>
                 }
-                {this.props.auth.isAdmin &&
+                {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                   <th>Delete</th>
                 }
             </tr>
@@ -111,7 +111,7 @@ class PLinesEntry extends React.Component {
                 <CSSTransition key={_id} timeout={500} classNames="fade">
                   <tr>
                     <td> {name} </td>
-                    {this.props.auth.isAdmin &&
+                    {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                       <td>
                         <Button size="sm" color="link"
                           onClick={this.onEditClick.bind(this,
@@ -121,7 +121,7 @@ class PLinesEntry extends React.Component {
                           <FontAwesomeIcon icon = "edit"/>
                         </Button>
                       </td> }
-                    {this.props.auth.isAdmin &&
+                    {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                       <td >
                         <Button size="sm" sm="2"color="link"
                           onClick={this.onDeleteClick.bind(this, _id)}

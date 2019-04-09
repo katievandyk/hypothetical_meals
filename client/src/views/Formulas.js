@@ -85,7 +85,7 @@ class Formulas extends Component {
                </Col>
                <Col></Col>
                <Col style={{'textAlign': 'right'}}>
-                 {this.props.auth.isAdmin && <FormulasAddModal/>}
+                 {(this.props.auth.isAdmin || this.props.auth.user.product) && <FormulasAddModal/>}
                </Col>
              </Row>
            </Container>

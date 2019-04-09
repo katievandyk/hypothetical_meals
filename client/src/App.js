@@ -32,6 +32,8 @@ import { setCurrentUser, logoutUser } from "./actions/authActions";
 
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import AdminRoute from "./components/private-route/AdminRoute";
+import ProductRoute from "./components/private-route/ProductRoute";
+import NotUserRoute from "./components/private-route/NotUserRoute";
 
 library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
    faSortAlphaDown, faSortNumericUp, faSortNumericDown,
@@ -71,16 +73,16 @@ class App extends Component {
                       <Route exact={true} path="/netid" component={NetID} />
                       <AdminRoute exact={true} path="/manageUsers" component={ManageUsers} />
                       <PrivateRoute path="/ingredients" component={Ingredients} />
-                      <PrivateRoute path="/manufacturinggoals" component={ManufacturingGoals} />
+                      <NotUserRoute path="/manufacturinggoals" component={ManufacturingGoals} />
                       <PrivateRoute path="/manufacturinglines" component={ManufacturingLines} />
-                      <PrivateRoute path="/manufacturingschedule" component={ManufacturingSchedule} />
+                      <NotUserRoute path="/manufacturingschedule" component={ManufacturingSchedule} />
                       <PrivateRoute path="/productlines" component={ProductLines} />
                       <PrivateRoute path="/sku" component={SKU} />
                       <PrivateRoute path="/formulas" component={Formulas} />
-                      <AdminRoute path="/import" component={Import} />
-                      <PrivateRoute path="/ingredients-dependency-report" component={IngDepReportView} />
-                      <PrivateRoute path="/manufacturing-schedule-report" component={MScheduleReport} />
-                      <PrivateRoute path="/sales-report" component={SalesReport} />
+                      <ProductRoute path="/import" component={Import} />
+                      <NotUserRoute path="/ingredients-dependency-report" component={IngDepReportView} />
+                      <NotUserRoute path="/manufacturing-schedule-report" component={MScheduleReport} />
+                      <NotUserRoute path="/sales-report" component={SalesReport} />
                     </Switch>
 
                   </div>

@@ -75,7 +75,7 @@ class ProductLines extends Component {
                <Col>
                </Col>
                <Col style={{'textAlign': 'right'}}>
-                 {this.props.auth.isAdmin && <PLinesAddModal/>}
+                 {(this.props.auth.isAdmin || this.props.auth.user.product) && <PLinesAddModal/>}
                </Col>
              </Row>
            </Container>

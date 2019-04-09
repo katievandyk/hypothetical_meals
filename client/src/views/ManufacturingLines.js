@@ -9,6 +9,9 @@ import '../styles.css';
 import { Provider } from 'react-redux';
 import store from '../store';
 
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { Container, Row, Col} from 'reactstrap';
 
 class ManufacturingLines extends Component {
@@ -26,10 +29,12 @@ class ManufacturingLines extends Component {
                        <Row>
                             <Col> <h1>Manufacturing Lines</h1> </Col>
                        </Row>
+                       {(this.props.auth.user.product || this.props.auth.isAdmin) &&
                        <Row>
                             <Col style={{'textAlign': 'right'}}> </Col>
                             <LinesCreateModal />
                        </Row>
+                       }
                    </Container>
                    <LinesEntry/>
                 </Container>
@@ -40,5 +45,12 @@ class ManufacturingLines extends Component {
    }
 }
 
+ManufacturingLines.propTypes = {
+  auth: PropTypes.object.isRequired
+};
 
-export default ManufacturingLines;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps)(ManufacturingLines);

@@ -114,8 +114,8 @@ class LinesEntry extends React.Component {
                   <th>Name</th>
                   <th>Short Name</th>
                   <th>Comment</th>
-                  <th className={(this.props.auth.isAdmin) ? "" : "hidden"}>Edit</th>
-                  <th className={(this.props.auth.isAdmin) ? "" : "hidden"}>Delete</th>
+                  <th className={(this.props.auth.isAdmin || this.props.auth.user.product) ? "" : "hidden"}>Edit</th>
+                  <th className={(this.props.auth.isAdmin || this.props.auth.user.product) ? "" : "hidden"}>Delete</th>
                 </tr>
               </thead>
               <tbody>
@@ -130,14 +130,14 @@ class LinesEntry extends React.Component {
                       <td>
                         {comment}
                       </td>
-                      <td className={(this.props.auth.isAdmin) ? "" : "hidden"}>
+                      <td className={(this.props.auth.isAdmin || this.props.auth.user.product) ? "" : "hidden"}>
                         <Button size="sm" color="link"
                         onClick={e => this.onEditClick(_id, name, shortname, comment)}
                         style={{'color':'black'}}>
                         <FontAwesomeIcon icon="edit"/>
                         </Button>
                       </td>
-                      <td className={(this.props.auth.isAdmin) ? "" : "hidden"}>
+                      <td className={(this.props.auth.isAdmin || this.props.auth.user.product) ? "" : "hidden"}>
                         <Button size="sm" color="link"
                         onClick={this.onDeleteClick.bind(this, _id)}
                         style={{'color':'black'}}>

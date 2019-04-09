@@ -284,10 +284,10 @@ class FormulasEntry extends React.Component {
               <th>Ingredients List</th>
               <th>SKUs</th>
               <th>Comment</th>
-                {this.props.auth.isAdmin &&
+                {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                   <th>Edit</th>
                 }
-                {this.props.auth.isAdmin &&
+                {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                   <th>Delete</th>
                 }
             </tr>
@@ -314,7 +314,7 @@ class FormulasEntry extends React.Component {
                       </Button>
                     </td>
                     <td style={{wordBreak:'break-all'}}> {comment} </td>
-                    {this.props.auth.isAdmin &&
+                    {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                       <td>
                         <Button size="sm" color="link"
                           onClick={this.onEditClick.bind(this,
@@ -324,7 +324,7 @@ class FormulasEntry extends React.Component {
                           <FontAwesomeIcon icon = "edit"/>
                         </Button>
                       </td> }
-                    {this.props.auth.isAdmin &&
+                    {(this.props.auth.isAdmin || this.props.auth.user.product) &&
                       <td >
                         <Button size="sm" sm="2"color="link"
                           onClick={this.onDeleteClick.bind(this, _id)}
