@@ -70,20 +70,18 @@ export const getGoalsIngQuantity = (goal) => dispatch =>  {
   });
 };
 
-export const addGoal = (goal) => dispatch =>  {
+export const addGoal = (goal, field, asc) => dispatch =>  {
   axios.post(`/api/manufacturing`, goal).then(res => {
     dispatch({
       type: ADD_GOAL,
       payload: res.data
     });
     dispatch(setGoalsLoading());
-    axios.get('/api/manufacturing').then(res =>
-        {
-        dispatch({
-          type: GET_ALL_GOALS,
-          payload: res.data
-        })
-      }
+    axios.get(`/api/manufacturing/sort/${field}/${asc}`).then(res =>
+      dispatch({
+        type: GOALS_SORT,
+        payload: {data: res.data, sortby: field, sortdir: asc}
+      })
       ).catch(error =>{
         dispatch({
           type: GOAL_ERROR,
@@ -98,20 +96,17 @@ export const addGoal = (goal) => dispatch =>  {
     })});
 }
 
-export const updateGoal = (goal) => dispatch => {
+export const updateGoal = (goal, field, asc) => dispatch => {
   axios.post(`/api/manufacturing/update/${goal.id}`, goal).then(res => {
       dispatch({
         type: UPDATE_GOAL,
         payload: res.data
       });
-      dispatch(setGoalsLoading());
-      axios.get('/api/manufacturing').then(res =>
-        {
+      axios.get(`/api/manufacturing/sort/${field}/${asc}`).then(res =>
         dispatch({
-          type: GET_ALL_GOALS,
-          payload: res.data
+          type: GOALS_SORT,
+          payload: {data: res.data, sortby: field, sortdir: asc}
         })
-      }
       ).catch(error =>{
         dispatch({
           type: GOAL_ERROR,

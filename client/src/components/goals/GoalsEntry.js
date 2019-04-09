@@ -184,7 +184,7 @@ class GoalsEntry extends React.Component {
    }
 
   edit_submit = () => {
-    var goals  = this.props.goals.all_goals
+    var goals  = this.props.goals.goals
     if(this.state.edit_name.length === 0 || goals.find(elem => ((elem.name === this.state.edit_name) && (elem._id !== this.state.edit_id))) != null) alert("Please enter a unique name for your goal.")
     else if(this.state.validDate !== 'success') alert("Please enter a valid date.")
     else {
@@ -197,7 +197,7 @@ class GoalsEntry extends React.Component {
           enabled: goal.enabled,
           user_id: goal.user_id
         };
-        this.props.updateGoal(editedGoal);
+        this.props.updateGoal(editedGoal, this.props.goals.sortby, this.props.goals.sortdir);
         this.setState({name: '', quantity: '', skuSel: '',
         skus_list: [],
         date: '',
@@ -263,6 +263,7 @@ class GoalsEntry extends React.Component {
 
   render() {
     const { goals } = this.props.goals;
+    console.log(goals);
     return (
         <div>
             <Table>
