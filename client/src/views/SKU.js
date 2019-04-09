@@ -135,14 +135,15 @@ class SKU extends Component {
                  </Button>
                </Col>
                </Row>
-            {(this.props.auth.user.product || this.props.auth.isAdmin) && <Row>
+            <Row>
+              {(this.props.auth.user.product || this.props.auth.isAdmin) &&
               <Col style={{textAlign:'left'}}>
                 <SKUBulkEditMLines/>
-              </Col>
+              </Col>}
               <Col style={{'textAlign': 'right'}}>
              <Button onClick={() =>  this.props.exportSKUs(this.props.skus.obj)}>Export SKUs</Button> &nbsp;
              </Col>
-             </Row>}
+             </Row>
            </Container>
          </div>
        </Provider>
