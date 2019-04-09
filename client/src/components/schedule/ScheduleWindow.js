@@ -83,7 +83,7 @@ class ScheduleWindow extends React.Component {
                     alert("Move item to a valid manufacturing line.")
                     callback(null)
               }
-              else if(this.props.auth.user.lines.filter(line => line._id === item.group).length === 0) {
+              else if(!this.props.auth.isAdmin && this.props.auth.user.plant && this.props.auth.user.lines.filter(line => line._id === item.group).length === 0) {
                 alert("You don't have access to this manufacturing line.")
                 callback(null)
               }
@@ -123,7 +123,7 @@ class ScheduleWindow extends React.Component {
                     alert("Move item to a valid manufacturing line.")
                     callback(null)
               }
-              else if(this.props.auth.user.lines.filter(line => line._id === item.group).length === 0) {
+              else if(!this.props.auth.isAdmin && this.props.auth.user.plant && this.props.auth.user.lines.filter(line => line._id === item.group).length === 0) {
                 alert("You don't have access to this manufacturing line.")
                 callback(null)
               }
@@ -285,7 +285,7 @@ class ScheduleWindow extends React.Component {
         var group = {};
         group.id = line._id;
         group.content = line.shortname;
-        if(contains_line.length === 0){
+        if(!this.props.auth.isAdmin && contains_line.length === 0 && this.props.auth.user.plant){
           group.style = "background-color: pink";
           group.className = 'disabled-mline';
         }
