@@ -111,43 +111,26 @@ router.post('/disable/:goal_id/:schedule', (req, res) => {
 // @desc get all sku's and range for an array of goals
 // @access public
 router.get('/skus', (req, res) => {
-    ManufacturingSchedule.findOne().then(schedule => {
-    Promise.all(schedule.enabled_goals.map(_id => {
-        return new Promise(function(accept, reject) {
-            Goal
-            .findById(_id)
-            .populate("skus_list.sku")
-            .lean()
-            .then(goal => {
-                Formula.populate(goal, {path:"skus_list.sku.formula"}).then(goal => {
-                    let skus_list = goal.skus_list.map(skus => {
-                        skus.sku.duration = Math.ceil(skus.quantity/skus.sku.manufacturing_rate)
-                        let goal_info = {
-                            _id: goal._id,
-                            name: goal.name,
-                            user_id: goal.user_id,
-                            deadline: goal.deadline
-                        }
-                        skus.sku.goal_info = goal_info
-                        return skus.sku;
-                    })
-                    let groupedByGoal = groupByGoal(skus_list)
-                    let final_output = []
-                    Object.values(groupedByGoal).forEach(goal_skus => {
-                        final_output.push({
-                            goal: goal_skus[0].goal_info,
-                            skus: goal_skus
-                        })
-                    })
-                    accept(final_output)
+    Goal.find({enabled: true}).then(goals => {
+        SKU.populate(goals, {path:"skus_list.sku"}).then(goals => {
+            Formula.populate(goals, {path:"skus_list.sku.formula"}).then(goals => {
+                var output = []
+                goals.forEach(goal => {
+                    let goal_info = {
+                        _id: goal._id,
+                        name: goal.name,
+                        user_id: goal.user_id,
+                        deadline: goal.deadline
+                    }
+                    var obj = {}
+                    obj.goal = goal_info
+                    obj.skus = goal.skus_list.map(entry => entry.sku)
+                    output.push(obj)
                 })
-            }).catch(reject);
+                res.json(output)
+            })
         })
-    })).then(skus => {
-        let flat = [].concat.apply([], skus);
-        res.json(flat)
     })
-  })
 })
 
 function groupByGoal(res) {
