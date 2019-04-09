@@ -103,17 +103,17 @@ class ScheduleSidePanel extends React.Component {
     const lines = this.props.lines.lines;
     return (
       <div>
-      {this.props.auth.isAdmin ?
+      {(this.props.auth.isAdmin || this.props.auth.user.plant)?
               ( <div>
                 <div style={{textAlign:'center', paddingBottom:'1.5em'}}>
                 <AutoScheduler></AutoScheduler>
                 </div>
                 <Card>
-                    <CardHeader onClick={this.modal_toggle}>
+                    <CardHeader>
                         <Row>&nbsp; &nbsp;
-                            Active Goals
+                            Enabled Goals
                             <Col style={{textAlign: 'right'}}/>
-                            <FontAwesomeIcon icon = "edit"/>
+                            {/*<FontAwesomeIcon icon = "edit"/>*/}
                         </Row>
                     </CardHeader>
                     <CardBody>
@@ -124,7 +124,7 @@ class ScheduleSidePanel extends React.Component {
                 </Card> &nbsp;
                 </div>
                 ) : (<div></div>)}
-                <Modal isOpen={this.state.modal} toggle={this.modal_toggle} >
+                {/*<Modal isOpen={this.state.modal} toggle={this.modal_toggle} >
                     <ModalHeader>Set Active Manufacturing Lines</ModalHeader>
                     <CardBody>
                         <div style={{fontSize:'0.8em', paddingBottom: '1em'}}>Change which goals are active by clicking them in this list. Goals which are active are displayed in blue. Use the search bar to view specific goals.
@@ -143,9 +143,9 @@ class ScheduleSidePanel extends React.Component {
                             ))}
                         </ListGroup>
                     </CardBody>
-                </Modal>
+                </Modal>*/}
                 <Card>
-                <CardHeader>SKUs for Selected Goals</CardHeader>
+                <CardHeader>SKU Activities for Goals</CardHeader>
                     <CardBody>
                             {goal_skus.map(({goal, skus}) =>
                                 <div key={goal._id} style={{paddingBottom: '1.5em'}}>

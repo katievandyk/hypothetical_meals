@@ -152,6 +152,10 @@ body{
   text-decoration: underline;
 }
 
+.disabled-mline {
+  background-color: rgba(193, 188, 188, 0.2)
+}
+
 .modal-xl {
     width: 100%
 }

@@ -56,11 +56,11 @@ class ScheduleWindow extends React.Component {
             zoomMin: 1000 * 60 * 60 * 24,
             zoomMax: 1000 * 60 * 60 * 24 * 31 * 12 * 10,
             editable: {
-                add: this.props.auth.isAdmin,
+                add: this.props.auth.isAdmin || this.props.auth.user.plant,
                 overrideItems: false,
-                updateTime: this.props.auth.isAdmin,
-                updateGroup: this.props.auth.isAdmin,
-                remove: this.props.auth.isAdmin
+                updateTime: this.props.auth.isAdmin || this.props.auth.user.plant,
+                updateGroup: this.props.auth.isAdmin || this.props.auth.user.plant,
+                remove: this.props.auth.isAdmin || this.props.auth.user.plant
             },
             orientation: 'top',
             horizontalScroll: true,
@@ -82,6 +82,10 @@ class ScheduleWindow extends React.Component {
               else if(lines.indexOf(item.group) === -1) {
                     alert("Move item to a valid manufacturing line.")
                     callback(null)
+              }
+              else if(!this.props.auth.isAdmin && this.props.auth.user.plant && this.props.auth.user.lines.filter(line => line._id === item.group).length === 0) {
+                alert("You don't have access to this manufacturing line.")
+                callback(null)
               }
               else {
                 const startDate =this.adjustStartDate(moment(item.start));
@@ -118,6 +122,10 @@ class ScheduleWindow extends React.Component {
               else if(lines.indexOf(item.group) === -1) {
                     alert("Move item to a valid manufacturing line.")
                     callback(null)
+              }
+              else if(!this.props.auth.isAdmin && this.props.auth.user.plant && this.props.auth.user.lines.filter(line => line._id === item.group).length === 0) {
+                alert("You don't have access to this manufacturing line.")
+                callback(null)
               }
               else {
                 const act = this.props.schedule.activities.find(({_id}) => (item.id === _id))
@@ -273,9 +281,14 @@ class ScheduleWindow extends React.Component {
   render() {
     const { lines } = this.props.lines;
     data.groups = lines.map(line =>{
+        const contains_line = this.props.auth.user.lines.filter(user_line => user_line._id === line._id);
         var group = {};
         group.id = line._id;
         group.content = line.shortname;
+        if(!this.props.auth.isAdmin && contains_line.length === 0 && this.props.auth.user.plant){
+          group.style = "background-color: pink";
+          group.className = 'disabled-mline';
+        }
         return group;
     })
     var activities = this.props.schedule.activities;
@@ -293,7 +306,7 @@ class ScheduleWindow extends React.Component {
     data.items = activities.map(activity =>{
         if(activity.inReview){
           var className = 'inReview';
-          var content = activity.sku_id.name;
+          var content = activity.sku_id.name + ' - Pending Approval';
           const startDate = moment(activity.start);
           const endDate = moment(activity.end);
           const id = activity.sku_id._id + activity.goal_id._id;
@@ -319,7 +332,7 @@ class ScheduleWindow extends React.Component {
         }
         else{
           var className = 'green'
-          var content = activity.name
+          var content = activity.name;
           const startDate = moment(activity.start)
           const endDate = moment(activity.end)
           if(activity.durationModified) {
@@ -339,9 +352,9 @@ class ScheduleWindow extends React.Component {
                        content: content,
                        type: 'range',
                        editable: {
-                         remove: this.props.auth.isAdmin,
-                         updateGroup: (!activity.orphan && this.props.auth.isAdmin),
-                         updateTime: (!activity.orphan && this.props.auth.isAdmin)
+                         remove: this.props.auth.isAdmin || this.props.auth.user.plant,
+                         updateGroup: (!activity.orphan && (this.props.auth.isAdmin || this.props.auth.user.plant)),
+                         updateTime: (!activity.orphan && (this.props.auth.isAdmin|| this.props.auth.user.plant))
                        },
                        start: startDate,
                        end: endDate,
