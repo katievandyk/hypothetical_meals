@@ -160,12 +160,14 @@ class SKUAddModal extends React.Component {
       comment: this.state.comment
     };
 
-    if(this.state.use_added_formula){
-      newSKU.formula = this.props.formulas.added_formula;
-    }
-
     var allRequiredFields = true;
     var newValidate = this.state.validate;
+
+    if(this.state.use_added_formula){
+      newSKU.formula = this.props.formulas.added_formula;
+      newValidate.formula = 'has-success';
+    }
+
     if(newValidate.name !== 'has-success'){
       newValidate.name = 'is-empty';
       allRequiredFields = false;
