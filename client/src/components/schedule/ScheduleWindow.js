@@ -372,7 +372,7 @@ class ScheduleWindow extends React.Component {
       <div>
         <Row style={{paddingBottom: '1.5em'}}>
             <Col style={{'textAlign': 'right'}}> </Col>
-            <CreateScheduleReport/>
+            {(this.props.auth.isAdmin || this.props.auth.user.analyst) && <CreateScheduleReport/>}
         </Row>
         <Row>
            <Col md={3}>
