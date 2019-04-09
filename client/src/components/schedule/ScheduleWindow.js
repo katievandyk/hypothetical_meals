@@ -352,9 +352,9 @@ class ScheduleWindow extends React.Component {
                        content: content,
                        type: 'range',
                        editable: {
-                         remove: this.props.auth.isAdmin || this.props.auth.user.plant,
-                         updateGroup: (!activity.orphan && (this.props.auth.isAdmin || this.props.auth.user.plant)),
-                         updateTime: (!activity.orphan && (this.props.auth.isAdmin|| this.props.auth.user.plant))
+                         remove: this.props.auth.isAdmin || (this.props.auth.user.plant && this.props.auth.user.lines.filter(line => line._id === activity.line._id).length > 0),
+                         updateGroup: (!activity.orphan && (this.props.auth.isAdmin || (this.props.auth.user.plant && this.props.auth.user.lines.filter(line => line._id === activity.line._id).length > 0))),
+                         updateTime: (!activity.orphan && (this.props.auth.isAdmin|| (this.props.auth.user.plant && this.props.auth.user.lines.filter(line => line._id === activity.line._id).length > 0)))
                        },
                        start: startDate,
                        end: endDate,
