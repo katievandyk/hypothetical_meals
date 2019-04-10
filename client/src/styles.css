@@ -121,7 +121,6 @@ body{
  .menu {
     position: relative;
     margin: 5px;
-    z-index: 9999;
  }
 
 .vis-item .vis-onUpdateTime-tooltip {
