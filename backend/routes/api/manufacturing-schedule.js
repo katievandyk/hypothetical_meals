@@ -468,7 +468,6 @@ router.post("/automate", (req, res) => {
                 activityPromise.then(temp => {
                     activities = temp[0]
                     allowed_mls = temp[1].map(line => line._id) 
-                    console.log(allowed_mls)
                     var groupedByMl = activities.reduce(function(r,a) {
                         r[a.line] = r[a.line] || [];
                         r[a.line].push(a);
@@ -484,7 +483,6 @@ router.post("/automate", (req, res) => {
                                 continue;
                             }
                             var res = scheduleNext(startTime, endTime, activity.duration, groupedByMl[allowed_mls[ml]] || [], moment(activity.goal_id.deadline))
-                            console.log(res)
                             if(res.success) {
                                 res.ml = allowed_mls[ml]
                                 options.push(res)
@@ -514,9 +512,7 @@ router.post("/automate", (req, res) => {
 
 function scheduleNext(startTime, endTime, duration, activities, deadline) {
     while(true) {
-        console.log("before adjust start time: " + startTime.toDate())
         var curStart = adjustStartDate(startTime)
-        console.log("start time: " + startTime.toDate())
         var curEnd = calculateEndDate(curStart, duration)
         if(curEnd > endTime || curEnd > deadline) return {success: false}
         var overlapping = activities.filter(a => {
