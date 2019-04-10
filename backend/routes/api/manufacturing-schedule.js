@@ -461,7 +461,14 @@ router.post("/automate", (req, res) => {
             });
             User.findById(req.body.user_id).lean().then(user => {
                 var allowed_mls = user.lines.map(line => line._id) 
-                ManufacturingActivity.find({"line": {$in: allowed_mls}}).lean().then(activities => {
+                var activityPromise = Promise.all([ManufacturingActivity.find({"line": {$in: allowed_mls}}).lean(), Promise.resolve(user.lines)])
+                if (user.isAdmin) {
+                    activityPromise = Promise.all([ManufacturingActivity.find().lean(), ManufacturingLine.find().select('_id').lean()])
+                }
+                activityPromise.then(temp => {
+                    activities = temp[0]
+                    allowed_mls = temp[1].map(line => line._id) 
+                    console.log(allowed_mls)
                     var groupedByMl = activities.reduce(function(r,a) {
                         r[a.line] = r[a.line] || [];
                         r[a.line].push(a);
