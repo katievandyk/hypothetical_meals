@@ -60,6 +60,7 @@ router.post('/projection/:id', (req, res) => {
     var startYearBefore = start_month > end_month || 
         (start_month == end_month && start_day > end_day)
 
+    console.log(startYearBefore + " " + years)
     var timespans = years.map(year => {
         var startYear = startYearBefore ? year-1 : year 
         return {
@@ -82,8 +83,7 @@ router.post('/projection/:id', (req, res) => {
             })
         }
         else {
-            return Sale.find({year: { $gte: startDate.year()}, week: { $gte: startDate.week()}})
-                .find({year: {$lte: endDate.year()}, week: { $lte: endDate.week()}}).lean()
+            return Sale.find({sku: req.params.id, year: startDate.year(), week: { $gte: startDate.week(), $lte: endDate.week()}}).lean()
         }
     })
 
