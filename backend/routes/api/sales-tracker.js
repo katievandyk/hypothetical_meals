@@ -60,7 +60,7 @@ router.post('/projection/:id', (req, res) => {
     var startYearBefore = start_month > end_month || 
         (start_month == end_month && start_day > end_day)
 
-    console.log(startYearBefore + " " + years)
+    // console.log(startYearBefore + " " + years)
     var timespans = years.map(year => {
         var startYear = startYearBefore ? year-1 : year 
         return {
@@ -76,14 +76,17 @@ router.post('/projection/:id', (req, res) => {
     var promises = timespans.map(timespan => {
         var startDate = timespan.start
         var endDate = timespan.end
+        var endWeek = (endDate.month() === 11 && endDate.week() === 1) ? 53 : endDate.week()
         if(startYearBefore) {
-            return Sale.find({
-                $or: [ {year: startDate.year(), week: { $gte: startDate.week()}}, 
-                    {year: endDate.year(), week: { $lte: endDate.week()}}]
+            return Sale.find({sku: req.params.id, 
+                $or: [ {year: startDate.year(), week: { $gt: startDate.week()}}, 
+                    {year: endDate.year(), week: { $lte: endWeek}}]
             })
         }
         else {
-            return Sale.find({sku: req.params.id, year: startDate.year(), week: { $gte: startDate.week(), $lte: endDate.week()}}).lean()
+            // console.log(startDate.year() + " " + startDate.week() + " " + endDate.year() + " "+  endDate.week())
+            
+            return Sale.find({sku: req.params.id, year: startDate.year(), week: { $gte: startDate.week(), $lte: endWeek}}).lean()
         }
     })
 
