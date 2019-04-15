@@ -2,7 +2,8 @@ import {
     SET_CURRENT_USER,
     USER_LOADING,
     SET_NETID_USER,
-    GET_USERS
+    GET_USERS,
+    NETID_LOGIN_ERROR
   } from "../actions/types";
   const isEmpty = require("is-empty");
   const initialState = {
@@ -41,9 +42,16 @@ import {
         if(action.payload.users){
           usersArray = action.payload.users;
         };
+      
         return{
           ...state,
           users: usersArray
+        }
+      }
+      case NETID_LOGIN_ERROR:{
+        return {
+          ...state,
+          isAuthenticated:false
         }
       }
       default:

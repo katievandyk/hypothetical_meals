@@ -17,6 +17,7 @@ export const USER_LOADING = "USER_LOADING";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 export const SET_NETID_USER = "SET_NETID_USER";
 export const GET_USERS = "GET_USERS"
+export const NETID_LOGIN_ERROR = "NETID_LOGIN_ERROR"
 // Manufacturing Goals
 export const GET_GOALS = 'GET_GOALS';
 export const GET_ALL_GOALS = 'GET_ALL_GOALS';
