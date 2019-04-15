@@ -109,7 +109,7 @@ class SKUProjectionModal extends React.Component {
                         </thead>
                         <tbody>
                             {this.props.goals.sku_projection.map((obj) =>(
-                                (obj.sales > 0 &&
+                                (obj.sales >= 0 &&
                                       <tr>
                                         <td> {moment(obj.start).format('MMM DD YYYY')} </td>
                                         <td> {moment(obj.end).format('MMM DD YYYY')} </td>
