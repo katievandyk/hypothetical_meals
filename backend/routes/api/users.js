@@ -126,26 +126,42 @@ router.post("/login", (req, res) => {
         });
         newUser
               .save( function(err, newDocument) {
-                const payload = {
-                  id: newDocument.id,
-                  name: newDocument.name,
-                  username: newDocument.username,
-                  isAdmin: newDocument.isAdmin
-                };
-                // Sign token
-                jwt.sign(
-                  payload,
-                  keys.secretOrKey,
-                  {
-                    expiresIn: 31556926 // 1 year in seconds
-                  },
-                  (err, token) => {
-                    res.json({
-                      success: true,
-                      token: "Bearer " + token
-                    });
-                  }
-                );
+                if (err) {
+                  res.json({
+                    success: false,
+                    message: err.message
+                  })
+                }
+                else {
+                  const payload = {
+                    id: newDocument.id,
+                    name: newDocument.name,
+                    username: newDocument.username,
+                    isAdmin: newDocument.isAdmin
+                  };
+                  // Sign token
+                  jwt.sign(
+                    payload,
+                    keys.secretOrKey,
+                    {
+                      expiresIn: 31556926 // 1 year in seconds
+                    },
+                    (err, token) => {
+                      if(err) {
+                        res.json({
+                          success: false,
+                          message: err.message
+                        })
+                      }
+                      else {
+                        res.json({
+                          success: true,
+                          token: "Bearer " + token
+                        });
+                      }
+                    }
+                  );
+                }
               })
       }
       else {
@@ -163,10 +179,18 @@ router.post("/login", (req, res) => {
             expiresIn: 31556926 // 1 year in seconds
           },
           (err, token) => {
-            res.json({
-              success: true,
-              token: "Bearer " + token
-            });
+            if(err) {
+              res.json({
+                success: false,
+                message: err.message
+              })
+            }
+            else {
+              res.json({
+                success: true,
+                token: "Bearer " + token
+              });
+            }
           }
         );
       }
