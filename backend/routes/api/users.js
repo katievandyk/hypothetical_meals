@@ -137,7 +137,12 @@ router.post("/login", (req, res) => {
                     id: newDocument.id,
                     name: newDocument.name,
                     username: newDocument.username,
-                    isAdmin: newDocument.isAdmin
+                    isAdmin: newDocument.isAdmin,
+                    analyst: false,
+                    business: false,
+                    lines: false,
+                    plant: false,
+                    product: false
                   };
                   // Sign token
                   jwt.sign(
@@ -169,7 +174,12 @@ router.post("/login", (req, res) => {
           id: user.id,
           name: user.name,
           username: user.username,
-          isAdmin: user.isAdmin
+          isAdmin: user.isAdmin,
+          analyst: user.analyst,
+          business: user.business,
+          lines: user.lines,
+          plant: user.plant,
+          product: user.product
         };
         // Sign token
         jwt.sign(
