@@ -5,7 +5,8 @@ import {
   GET_ERRORS,
   SET_CURRENT_USER,
   USER_LOADING,
-  GET_USERS
+  GET_USERS,
+  NETID_LOGIN_ERROR
 } from "./types";
 
 //Revoke user a plant manager for a specific line
@@ -200,7 +201,6 @@ export const loginUser = userData => dispatch => {
     .then(res => {
       // Save to localStorage
       // Set token to localStorage
-      console.log("on front end");
       const { token } = res.data;
       localStorage.setItem("jwtToken", token);
       // Set token to Auth header
@@ -234,14 +234,12 @@ export const loginNetID = token => dispatch => {
       username: username,
       name: name
     }
-    localStorage.setItem("testItem", "isRyanGreat");
     axios
       .post("/api/users/netid", userdata)
       .then(res => {
         // Save to localStorage
         // Set token to localStorage
         const { token } = res.data;
-
         localStorage.setItem("jwtToken", token);
         // Set token to Auth header
         setAuthToken(token);
@@ -252,7 +250,7 @@ export const loginNetID = token => dispatch => {
       })
       .catch(err =>
         dispatch({
-          type: GET_ERRORS,
+          type: NETID_LOGIN_ERROR,
           payload: err.response.data
         })
       );
