@@ -97,7 +97,7 @@ class LinesCreateModal extends React.Component {
   render() {
     return (
       <div>
-        <Button className={(this.props.auth.isAdmin) ? "" : "hidden"} onClick={this.toggle} color="success" style={{'display': 'inline-block'}}>Create Line</Button>
+        <Button className={(this.props.auth.isAdmin || this.props.auth.user.product) ? "" : "hidden"} onClick={this.toggle} color="success" style={{'display': 'inline-block'}}>Create Line</Button>
         <Modal size="lg" isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader>Create Manufacturing Line</ModalHeader>
           <ModalBody>
