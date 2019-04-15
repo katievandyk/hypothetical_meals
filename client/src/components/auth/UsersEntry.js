@@ -319,7 +319,7 @@ return (
                         <td> {name} </td>
                         <td> {username} </td>
                         <td>
-                            {analyst?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
+                            {analyst?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditAnalystClick.bind(this,
                                 _id, name, username, analyst
@@ -329,7 +329,7 @@ return (
                             </Button>
                         </td>
                         <td>
-                            {product?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
+                            {product?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditProductClick.bind(this,
                                 _id, name, username, product
@@ -339,7 +339,7 @@ return (
                             </Button>
                         </td>
                         <td>
-                            {business?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
+                            {business?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditBusinessClick.bind(this,
                                 _id, name, username, business
@@ -349,7 +349,7 @@ return (
                             </Button>
                         </td>
                         <td>
-                            {plant?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
+                            {plant?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditPlantClick.bind(this,
                                 _id, name, username, plant, lines
@@ -358,11 +358,7 @@ return (
                               <FontAwesomeIcon icon = "user-cog"/>
                             </Button>
                         </td>
-<<<<<<< HEAD
-                        <td> {isAdmin?("Y"):("N")}
-=======
-                        <td> {isAdmin?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
->>>>>>> afce36cb34c49557fb4c87d89b76bbbb07a08410
+                        <td> {isAdmin?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditAdminClick.bind(this,
                                 _id, name, username, isAdmin
