@@ -20,7 +20,8 @@ import { faSearch, faEdit, faTrash, faList, faSortAlphaUp,
   faSortAlphaDown, faSortNumericUp, faSortNumericDown,
   faTimes, faChevronLeft, faChevronRight, faInfoCircle,
   faSort, faSortUp, faSortDown, faSearchPlus, faSearchMinus,
-  faQuestionCircle, faUserCog, faChartLine, faClipboard
+  faQuestionCircle, faUserCog, faChartLine, faClipboard, 
+  faCheckCircle, faTimesCircle
 }
 from '@fortawesome/free-solid-svg-icons';
 
@@ -39,7 +40,8 @@ library.add(faSearch, faEdit, faTrash, faList, faSortAlphaUp,
    faSortAlphaDown, faSortNumericUp, faSortNumericDown,
    faTimes, faChevronLeft, faChevronRight, faInfoCircle,
    faSort, faSortUp, faSearchPlus, faSearchMinus, faSortDown,
-   faQuestionCircle, faUserCog, faChartLine, faClipboard
+   faQuestionCircle, faUserCog, faChartLine, faClipboard,
+   faCheckCircle, faTimesCircle
   );
 
 // Check for token to keep user logged in

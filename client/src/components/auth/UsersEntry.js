@@ -319,7 +319,7 @@ return (
                         <td> {name} </td>
                         <td> {username} </td>
                         <td>
-                            {analyst?("Y"):("N")}
+                            {analyst?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditAnalystClick.bind(this,
                                 _id, name, username, analyst
@@ -329,7 +329,7 @@ return (
                             </Button>
                         </td>
                         <td>
-                            {product?("Y"):("N")}
+                            {product?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditProductClick.bind(this,
                                 _id, name, username, product
@@ -339,7 +339,7 @@ return (
                             </Button>
                         </td>
                         <td>
-                            {business?("Y"):("N")}
+                            {business?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditBusinessClick.bind(this,
                                 _id, name, username, business
@@ -349,7 +349,7 @@ return (
                             </Button>
                         </td>
                         <td>
-                            {plant?("Y"):("N")}
+                            {plant?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditPlantClick.bind(this,
                                 _id, name, username, plant, lines
@@ -358,7 +358,7 @@ return (
                               <FontAwesomeIcon icon = "user-cog"/>
                             </Button>
                         </td>
-                        <td> {isAdmin?("Y"):("N")} 
+                        <td> {isAdmin?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditAdminClick.bind(this,
                                 _id, name, username, isAdmin
@@ -412,7 +412,7 @@ return (
         </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={this.revoke_analyst.bind(this, this.state.edit_user.username)}>Yes - Revoke</Button>
-        <Button onClick={this.revoke_toggle}>Cancel</Button>
+        <Button onClick={this.revoke_analyst_toggle}>Cancel</Button>
       </ModalFooter></Modal>
 
       <Modal isOpen={this.state.grant_analyst_modal} toggle={this.grant_analyst_toggle}>
@@ -423,7 +423,7 @@ return (
       </ModalBody>
       <ModalFooter>
         <Button color="success" onClick={this.grant_analyst.bind(this, this.state.edit_user.username)}>Yes - Grant</Button>
-        <Button onClick={this.grant_toggle}>Cancel</Button></ModalFooter></Modal>
+        <Button onClick={this.grant_analyst_toggle}>Cancel</Button></ModalFooter></Modal>
 
         <Modal isOpen={this.state.revoke_product_modal} toggle={this.revoke_product_toggle}>
           <ModalHeader toggle={this.revoke_product_toggle}>
@@ -433,7 +433,7 @@ return (
         </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={this.revoke_product.bind(this, this.state.edit_user.username)}>Yes - Revoke</Button>
-        <Button onClick={this.revoke_toggle}>Cancel</Button>
+        <Button onClick={this.revoke_product_toggle}>Cancel</Button>
       </ModalFooter></Modal>
 
       <Modal isOpen={this.state.grant_product_modal} toggle={this.grant_product_toggle}>
@@ -444,7 +444,7 @@ return (
       </ModalBody>
       <ModalFooter>
         <Button color="success" onClick={this.grant_product.bind(this, this.state.edit_user.username)}>Yes - Grant</Button>
-        <Button onClick={this.grant_toggle}>Cancel</Button></ModalFooter></Modal>
+        <Button onClick={this.grant_product_toggle}>Cancel</Button></ModalFooter></Modal>
 
         <Modal isOpen={this.state.revoke_business_modal} toggle={this.revoke_business_toggle}>
           <ModalHeader toggle={this.revoke_business_toggle}>
@@ -454,7 +454,7 @@ return (
         </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={this.revoke_business.bind(this, this.state.edit_user.username)}>Yes - Revoke</Button>
-        <Button onClick={this.revoke_toggle}>Cancel</Button>
+        <Button onClick={this.revoke_business_toggle}>Cancel</Button>
       </ModalFooter></Modal>
 
       <Modal isOpen={this.state.grant_business_modal} toggle={this.grant_business_toggle}>
@@ -465,7 +465,7 @@ return (
       </ModalBody>
       <ModalFooter>
         <Button color="success" onClick={this.grant_business.bind(this, this.state.edit_user.username)}>Yes - Grant</Button>
-        <Button onClick={this.grant_toggle}>Cancel</Button></ModalFooter></Modal>
+        <Button onClick={this.grant_business_modal}>Cancel</Button></ModalFooter></Modal>
 
         <Modal isOpen={this.state.grant_plant_modal} toggle={this.grant_plant_toggle}>
         <ModalHeader toggle={this.grant_plant_toggle}>
