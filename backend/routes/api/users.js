@@ -140,7 +140,7 @@ router.post("/login", (req, res) => {
                     isAdmin: newDocument.isAdmin,
                     analyst: false,
                     business: false,
-                    lines: false,
+                    lines: [],
                     plant: false,
                     product: false
                   };
