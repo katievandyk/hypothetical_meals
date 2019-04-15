@@ -13,6 +13,8 @@ class NetID extends Component {
           errors: {},
           token: querystring.parse(window.location.hash).access_token
         };
+        console.log('at netid login page')
+        console.log(this.state.token)
         this.props.loginNetID(this.state.token);
     }
    render() {

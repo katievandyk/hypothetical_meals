@@ -250,7 +250,7 @@ export const loginNetID = token => dispatch => {
       })
       .catch(err =>
         dispatch({
-          type: NETID_LOGIN_ERROR,
+          type: GET_ERRORS,
           payload: err.response.data
         })
       );
