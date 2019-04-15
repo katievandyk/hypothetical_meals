@@ -60,6 +60,7 @@ router.post('/projection/:id', (req, res) => {
     var startYearBefore = start_month > end_month || 
         (start_month == end_month && start_day > end_day)
 
+    // console.log(startYearBefore + " " + years)
     var timespans = years.map(year => {
         var startYear = startYearBefore ? year-1 : year 
         return {
@@ -75,21 +76,23 @@ router.post('/projection/:id', (req, res) => {
     var promises = timespans.map(timespan => {
         var startDate = timespan.start
         var endDate = timespan.end
-        if(startYearBefore) {
-            return Sale.find({
-                $or: [ {year: startDate.year(), week: { $gte: startDate.week()}}, 
-                    {year: endDate.year(), week: { $lte: endDate.week()}}]
-            })
-        }
-        else {
-            return Sale.find({year: { $gte: startDate.year()}, week: { $gte: startDate.week()}})
-                .find({year: {$lte: endDate.year()}, week: { $lte: endDate.week()}}).lean()
-        }
+        return Sale.find({
+            $and: [
+                {sku: req.params.id},
+                {$or: [ {year: {$gt: startDate.isoWeekYear()}}, 
+                    {year: startDate.isoWeekYear(), week: { $gte: startDate.isoWeek()}}, 
+                ]},
+                {$or: [ {year: {$lt: endDate.isoWeekYear()}}, 
+                    {year: endDate.isoWeekYear(), week: { $lte: endDate.isoWeek()}}, 
+                ]}
+            ]})
+
     })
 
     Promise.all(promises).then(results => {
         var final_res = timespans.map(function(timespan, i) {
             var total_sales = results[i].reduce((total, sale) =>  total + sale.sales, 0)
+            total_sales = total_sales || 0
             return {
                 start: timespan.start,
                 end: timespan.end,
@@ -106,8 +109,8 @@ router.post('/projection/:id', (req, res) => {
 })
 
 function convertToDate(month, date, year) {
-    var month_str = month % 10 > 0 ? ""+month : "0"+month
-    var date_str = date % 10 > 0 ? ""+date : "0"+date
+    var month_str = (month >= 10) ? ""+month : "0"+month
+    var date_str = (date >= 10) ? ""+date : "0"+date
     var str = month_str + "-" + date_str + "-" + year
     return moment(str, 'MM-DD-YYYY')
 }
