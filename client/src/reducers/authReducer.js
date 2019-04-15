@@ -12,7 +12,8 @@ import {
     user_username: "",
     user: {},
     users: [],
-    loading: false
+    loading: false,
+    netid_exists: false
   };
   export default function(state = initialState, action) {
     switch (action.type) {
@@ -51,7 +52,8 @@ import {
       case NETID_LOGIN_ERROR:{
         return {
           ...state,
-          isAuthenticated:false
+          isAuthenticated:false,
+          netid_exists: true
         }
       }
       default:

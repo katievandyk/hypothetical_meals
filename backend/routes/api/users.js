@@ -111,8 +111,7 @@ router.post("/login", (req, res) => {
     User.findOne({ username: username }).then(user => {
       if(user && !user.isNetIdUser) {
         res.status(404).json({
-          success: false,
-          message: "Username already exists."
+          usernameexists: "A username with your netid already exists."
         })
         return;
       }

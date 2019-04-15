@@ -85,11 +85,12 @@ return (
             id="username"
             type="username"
             className={classnames("", {
-              invalid: errors.username || errors.usernamenotfound
+              invalid: errors.username || errors.usernamenotfound || errors.usernameexists
             })}></Input>
             <span style={{'color': 'red'}}>
               {errors.username}
               {errors.usernamenotfound}
+              {errors.usernameexists}
             </span>
           </FormGroup>
           <FormGroup>
