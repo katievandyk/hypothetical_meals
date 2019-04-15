@@ -111,7 +111,7 @@ router.post("/login", (req, res) => {
     User.findOne({ username: username }).then(user => {
       if(user && !user.isNetIdUser) {
         console.log('already a user')
-        res.json({
+        res.status(404).json({
           success: false,
           message: "Username already exists."
         })
@@ -127,35 +127,60 @@ router.post("/login", (req, res) => {
         });
         newUser
               .save( function(err, newDocument) {
-                const payload = {
-                  id: newDocument.id,
-                  name: newDocument.name,
-                  username: newDocument.username,
-                  isAdmin: newDocument.isAdmin
-                };
-                // Sign token
-                jwt.sign(
-                  payload,
-                  keys.secretOrKey,
-                  {
-                    expiresIn: 31556926 // 1 year in seconds
-                  },
-                  (err, token) => {
-                    res.json({
-                      success: true,
-                      token: "Bearer " + token
-                    });
-                  }
-                );
+                if (err) {
+                  res.json({
+                    success: false,
+                    message: err.message
+                  })
+                }
+                else {
+                  const payload = {
+                    id: newDocument.id,
+                    name: newDocument.name,
+                    username: newDocument.username,
+                    isAdmin: newDocument.isAdmin,
+                    analyst: false,
+                    business: false,
+                    lines: [],
+                    plant: false,
+                    product: false
+                  };
+                  // Sign token
+                  jwt.sign(
+                    payload,
+                    keys.secretOrKey,
+                    {
+                      expiresIn: 31556926 // 1 year in seconds
+                    },
+                    (err, token) => {
+                      if(err) {
+                        res.json({
+                          success: false,
+                          message: err.message
+                        })
+                      }
+                      else {
+                        res.json({
+                          success: true,
+                          token: "Bearer " + token
+                        });
+                      }
+                    }
+                  );
+                }
               })
-              .catch(err => console.log(err));
       }
       else {
         const payload = {
           id: user.id,
           name: user.name,
           username: user.username,
-          isAdmin: user.isAdmin
+          isAdmin: user.isAdmin,
+          analyst: user.analyst,
+          business: user.business,
+          lines: user.lines,
+          plant: user.plant,
+          product: user.product
         };
         // Sign token
         jwt.sign(
@@ -165,10 +190,18 @@ router.post("/login", (req, res) => {
             expiresIn: 31556926 // 1 year in seconds
           },
           (err, token) => {
-            res.json({
-              success: true,
-              token: "Bearer " + token
-            });
+            if(err) {
+              res.json({
+                success: false,
+                message: err.message
+              })
+            }
+            else {
+              res.json({
+                success: true,
+                token: "Bearer " + token
+              });
+            }
           }
         );
       }

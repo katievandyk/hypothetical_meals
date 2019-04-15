@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { makeAdmin, revokeAdmin, makeAnalyst, revokeAnalyst, makeProduct, revokeProduct, 
+import { makeAdmin, revokeAdmin, makeAnalyst, revokeAnalyst, makeProduct, revokeProduct,
   makeBusiness, revokeBusiness, deleteUser, getAllUsers, makePlant, revokePlant } from "../../actions/authActions";
   import { getLines } from '../../actions/linesActions';
 import {Alert,  ListGroup, ListGroupItem} from 'reactstrap';
@@ -202,8 +202,8 @@ onEditPlantClick = (_id, name, username, plant, lines, e) => {
   }
 }
 
-onDeleteClick = (username, e) => {
-  this.props.deleteUser({username:username});
+onDeleteClick = (id, e) => {
+  this.props.deleteUser({userid:id});
 }
 
 revoke = (username, e) => {
@@ -269,7 +269,7 @@ checkLinesContains = (id) => {
     user =this.props.auth.users.find(doc => {
       return doc.username ===this.state.edit_user.username
     })
- 
+
   var i;
   try {
     for(i=0; i < user.lines.length; i++) {
@@ -319,7 +319,7 @@ return (
                         <td> {name} </td>
                         <td> {username} </td>
                         <td>
-                            {analyst?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
+                            {analyst?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditAnalystClick.bind(this,
                                 _id, name, username, analyst
@@ -329,7 +329,7 @@ return (
                             </Button>
                         </td>
                         <td>
-                            {product?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
+                            {product?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditProductClick.bind(this,
                                 _id, name, username, product
@@ -339,7 +339,7 @@ return (
                             </Button>
                         </td>
                         <td>
-                            {business?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
+                            {business?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditBusinessClick.bind(this,
                                 _id, name, username, business
@@ -349,7 +349,7 @@ return (
                             </Button>
                         </td>
                         <td>
-                            {plant?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
+                            {plant?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditPlantClick.bind(this,
                                 _id, name, username, plant, lines
@@ -358,7 +358,7 @@ return (
                               <FontAwesomeIcon icon = "user-cog"/>
                             </Button>
                         </td>
-                        <td> {isAdmin?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>} 
+                        <td> {isAdmin?<FontAwesomeIcon color = "green" icon = "check-circle"/>: <FontAwesomeIcon color="red" icon = "times-circle"/>}
                             <Button size="sm" color="link" disabled={this.props.auth.user.id === _id}
                               onClick={this.onEditAdminClick.bind(this,
                                 _id, name, username, isAdmin
@@ -366,10 +366,10 @@ return (
                               style={this.props.auth.user.id === _id?({'color': 'lightgrey'}):({'color':'black'})}>
                               <FontAwesomeIcon icon = "user-cog"/>
                             </Button> </td>
-                        
+
                         <td >
                           <Button size="sm" sm="2"color="link" disabled={this.props.auth.user.id === _id}
-                            onClick={this.onDeleteClick.bind(this, username)}
+                            onClick={this.onDeleteClick.bind(this, _id)}
                               style={this.props.auth.user.id === _id?({'color': 'lightgrey'}):({'color':'black'})}>
                             <FontAwesomeIcon icon="trash"/>
                           </Button>
@@ -473,9 +473,9 @@ return (
       <ModalBody>
         <ListGroup>
             {this.props.lines.lines.map(({name, shortname, _id}) => (
-            <ListGroupItem key={_id} 
-              action color={this.checkLinesContains(_id)?("info"):("")} 
-              tag="button" onClick={() => this.assignLine(_id, this.state.edit_user.username)} 
+            <ListGroupItem key={_id}
+              action color={this.checkLinesContains(_id)?("info"):("")}
+              tag="button" onClick={() => this.assignLine(_id, this.state.edit_user.username)}
               md={2} >
               {name}
             </ListGroupItem>

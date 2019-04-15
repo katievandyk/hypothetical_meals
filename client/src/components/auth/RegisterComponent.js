@@ -48,10 +48,13 @@ onChange = e => {
       }
       else if(field_type === 'password2'){
         if (e.target.value.length >= 6) {
-          validate[field_type] = 'has-success';
-        }
-        else if(e.target.value !== this.state.password){
-          validate[field_type] = 'need-match'
+          if(e.target.value !== this.state.password){
+            validate[field_type] = 'need-match'
+          }
+          else {
+            validate[field_type] = 'has-success';
+          }
+
         }
         else {
           validate[field_type] = 'not-valid'
