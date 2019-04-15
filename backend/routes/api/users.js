@@ -109,7 +109,7 @@ router.post("/login", (req, res) => {
     const name = req.body.name;
     const username = req.body.username;
     User.findOne({ username: username }).then(user => {
-      if(user && user.isNetIdUser) {
+      if(user && !user.isNetIdUser) {
         res.json({
           success: false,
           message: "Username already exists."
@@ -147,7 +147,6 @@ router.post("/login", (req, res) => {
                   }
                 );
               })
-              .catch(err => console.log(err));
       }
       else {
         const payload = {
