@@ -195,7 +195,7 @@ function generateCsvSummary(results) {
 
 function calculateAggregatedForOneSKU(sku_id, startDate, endDate, customer) {
     return new Promise(function(accept, reject) {
-        var saleFindPromise = Sale.find({sku: sku_id}).where('year').gte(startDate.year()).lte(endDate.year())
+        var saleFindPromise = Sale.find({sku: sku_id}).where('year').gte(2010).lte(2019)
         if (customer != null) {
             saleFindPromise = saleFindPromise.where({customer: customer})
         }
@@ -274,19 +274,19 @@ function calculateSummaryStats(sku_id, entries, startDate, endDate) {
 router.post('/detailed/:sku_id', (req, res) => {
     var startDate = moment(req.body.start_date, 'MM-DD-YYYY')
     var endDate = moment(req.body.end_date, 'MM-DD-YYYY')
-    // console.log("start date: "+ startDate.year() + " " + startDate.week())
-    // console.log("end date: " + endDate.year() + " " + endDate.week())
+    // console.log("start date: "+ startDate.isoWeekYear() + " " + startDate.isoWeek())
+    // console.log("end date: " + endDate.isoWeekYear() + " " + endDate.isoWeek())
 
     var saleFindPromise = Sale
         .find({
             $and: [
                 { $or: [
-                    {year: { $gt: startDate.year()}}, 
-                    {year: startDate.year(), week: { $gte: startDate.week()}}, 
+                    {year: { $gt: startDate.isoWeekYear()}}, 
+                    {year: startDate.isoWeekYear(), week: { $gte: startDate.isoWeek()}}, 
                 ]},
                 { $or: [
-                    {year: { $lt: endDate.year() }},
-                    {year: endDate.year(), week: { $lte: endDate.week()}}, 
+                    {year: { $lt: endDate.isoWeekYear() }},
+                    {year: endDate.isoWeekYear(), week: { $lte: endDate.isoWeek()}}, 
                 ]},
                 { sku: req.params.sku_id }
             ]
