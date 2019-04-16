@@ -66,8 +66,8 @@ class SKUDrilldownModal extends React.Component {
     return newOptions;
   }
 
-  onChangeCustomers = (e) => {
-    var newVal = this.state.validate;
+  onChangeCustomers = () => {
+    var newVal = this.state.validateCustomers;
     if(this.state.selected_customerDD === '' ){
         newVal = 'isInvalid'
     }
@@ -76,7 +76,6 @@ class SKUDrilldownModal extends React.Component {
     }
     this.setState({
       allCustomersCheckedDD: false,
-      selected_customerDD: e.value,
       validateCustomers: newVal
     });
   }
@@ -136,7 +135,7 @@ class SKUDrilldownModal extends React.Component {
                     </Row>
                     <Row style={{marginBottom: '10px'}}>
                         <Col md={6}>
-                            <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersCheckedDD} onChange={e => this.onChangeCustomers(e)} label='Select a specific customer:'/>
+                            <CustomInput id={200} type="radio" name="cust" checked={!this.state.allCustomersCheckedDD} onChange={ () => this.onChangeCustomers()} label='Select a specific customer:'/>
                         </Col>
                     </Row>
                     <Row>
@@ -146,7 +145,7 @@ class SKUDrilldownModal extends React.Component {
                             className={this.state.validateCustomers}
                             classNamePrefix="react-select"
                             options={this.genOptionsDD(this.props.sales.summary_customers)}
-                            defaultInputValue={(this.state.allCustomersCheckedDD) ? '' : this.props.sales.summary_customers.find(c => c._id === this.state.selected_customerDD).name}
+                            defaultInputValue={(this.props.all_customers) ? '' : this.props.sales.summary_customers.find(c => c._id === this.props.sel_customer).name}
                             onChange={this.onChange}/>
                         </Col>
                    </Row>
